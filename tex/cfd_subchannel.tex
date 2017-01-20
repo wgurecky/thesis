@@ -1,0 +1,524 @@
+\documentclass[10pt,a4paper]{report}
+\usepackage[a4paper, total={6.25in, 9in}]{geometry}
+\usepackage{setspace}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{subfig}
+\usepackage{pgfgantt}
+\usepackage{rotating}
+\usepackage{bm}
+\usepackage{graphicx}
+
+\author{William Gurecky}
+\title{CFD Informed Subchannel}
+
+\begin{document}
+
+%-----------------------------------------------------------------------------%
+\begin{titlepage}
+	\centering
+	{\scshape\LARGE The University of Texas at Austin \par}
+	\vspace{1cm}
+	{\scshape\Large Nuclear \& Radiation Engineering \par}
+	\vspace{1.5cm}
+	{\huge\bfseries Improving CRUD Induced Power Shift and local corrosion Prediction \par}
+	\vspace{2cm}
+	{\Large William L. Gurecky \par}
+	\vfill
+
+	\begin{flushright}
+	Dissertation Committee \par
+	\bigskip
+	Dr.~Erich A. \textsc{Schneider}, Supervisor \par
+	Dr. Steven R. Biegalski \par
+	Dr. Kevin Klarno \par
+	Dr. Stuart Slattery \par
+	\end{flushright}
+	\vfill
+	{\large \today\par}
+\end{titlepage}
+%-----------------------------------------------------------------------------%
+\pagebreak
+\tableofcontents
+\pagebreak
+
+\section*{Acronyms}
+\begin{tabular}{l l}
+CASL & Consortium for the Advanced Simulation of LWRs \\
+CFD &  Computational Fluid Dynamics \\
+CILC & CRUD Induced Local Corrosion \\
+CIPS & CRUD Induced Power Shift \\
+CRUD & Chalk River Unidentified Deposit \\
+CTF &  Cobra-TF \\
+LS  &  Least Squares \\
+MLE &  Maximum Likelihood Estimate \\
+MOM &  Method of Moments \\
+PC  &  Pair Copula \\
+ROM &  Reduced Order Model \\
+VERA & Virtual Environment for Reactor Applications \\
+\end{tabular}
+
+\section*{Symbols}
+\begin{tabular}{l l}
+t & Time \\
+T & Temperature \\
+$\phi$ & Scalar flux \\
+\end{tabular}
+
+\pagebreak
+\onehalfspacing
+
+%-----------------------------------------------------------------------------%
+\chapter{Introduction}
+
+\section{CASL Challenge Problems}
+
+CASL has identified several problems identified by industry partners as 
+
+\subsection{CIPS \& CILC Challenge Problems}
+
+The Virtual Environment for Reactor Applications (VERA).
+
+Outline of CIPS and CILC challenge problem.  Role of CFD informed subchannel.
+
+\section{Benefit and Novelty}
+
+Accurately predicting CRUD induced power shift (CIPS) requires accurate CRUD thickness and boron deposition estimates in all regions of the core.  Core wide phenomena are out of scope for high fidelity CFD-Neutronic-CRUD coupled simulations.  Instead, we rely on CASL's CTF-MAMBA1D coupling capability to predict CIPS throughout a cycle.  CTF is not capable of simulating the detailed flow patterns downstream the spacer grids.  Details in the flow field downstream of spacer grids have important consequences for CRUD growth and erosion, namely the local depression in surface temperatures and locally increased shear stresses.  CRUD growth is extremely sensitive to the surface temperature around the saturation point.  Therefore, growing crud at the bulk average predicted TH conditions given by CTF in a coarse axial segment may not yield the correct amount of CRUD growth in that region.
+
+%-----------------------------------------------------------------------------%
+\chapter{Literature Review}
+
+\section{CFD Informed Subchannel}
+Todo.
+
+\section{Existing CIPS and CILC Literature}
+Todo.
+
+%-----------------------------------------------------------------------------%
+\chapter{Theory}
+
+\section{CFD Informed Subchannel}
+
+CFD informed subchannel approach.
+
+\subsubsection{Sample Auto-Correlation}
+
+How to quantify, and model auto-correlated data.
+
+\subsubsection{Jointly distributed Correlated Parameters}
+
+While the CTF solution may predict bulk fluid behaviour the CFD solution can provide additional information of the fine solution structure.  From a statistical perspective, the coarse CTF solution can approximate the mean while the CFD solution enables modelling of higher order moments about the mean.
+
+TODO: explain shortcoming of using only linear correlation coefficient to capture relationship between two correlated variables. The covariance matrix will provide only linear estimates for the dependence between variables of interest (not good enough!). 
+
+Consider a randomly sampled location on a single pin cladding surface in a reactor:  The temperature of the cladding, $T_s$ will be dependent on the heat flux from the fuel, $q''$, the local heat transfer coefficient, $h$, and the free-stream fluid temperature, $T_{\infty}$.  Let us consider only the conditional dependence between the wall temperature and heat transfer coefficient for simplicity.  The factorization of the situation is provided in equation \ref{joint_voi}.
+
+\begin{equation}
+P(T_s, h) = P(T_s) \cdot P(h | T_s)
+\label{joint_voi}
+\end{equation}
+This is the product rule of probability.  The comma denotes the conjunction ``and'' and the bar, $|$, is read ``given''.
+
+Marginalized distributions are defined below. Dependence information is lost in the marginalization process.
+
+\begin{align*}
+P(T_s) &= \int P(h) P(T_s|h) dh \\
+P(h) &= \int P(T_s) P(h|T_s) dT_s
+\end{align*}
+
+The process of decomposing a multivariate distribution into univariate marginal distributions and an object which describes their conditional dependence was formalized by Sklar (1959).  Shown in equation \ref{sklar1},  Sklar's Theorem defines some \emph{copula}, $C$, that describes the dependence structure underpinning multiple correlated variables.
+
+Let CDFs, $F_1\ \&\ F_2$ be:
+\begin{align*}
+F_1 &= P_1[X < x] = \int_{-\infty}^x P_1(t)dt \\
+F_2 &= P_2[Y < y] = \int_{-\infty}^y P_2(t)dt
+\end{align*}
+
+For brevity, two variables $u, v$ that represent samples from their CDFs can be introduced as follows:
+\begin{align*}
+u &= F_1(x) \\
+v &= F_2(y) \\
+u,v &\in [0, 1]
+\end{align*}
+
+\begin{equation}
+F(x,y) = C(F_1(x), F_2(y))
+\label{sklar1}
+\end{equation}
+The joint cumulative probability distribution $F(x,y)$ can be computed from constituent marginalized univariate distributions and the \emph{copula}, $C$.  The copula is given by:
+
+\begin{equation}
+C(u, v) = F(F_1^{-1}(u), F_2^{-1}(v))
+\label{sklar2}
+\end{equation}
+The copula marginal distributions are uniformly distributed (easy to prove this).  The inversion of the cumulatives are usually computed by simple numerical techniques since the functional form of the PDFs may be complicated or non-smooth.  Sklar's Theorem allows for the separation of copula model selection and inference from marginal model selection and fitting. In addition, Sklar's approach allows a threshold model to be applied for a single marginalized parameter of interest, in this case the cladding wall temperature, while modeling all other parameters without a threshold model.  
+
+The current application requires that the collected point-wise data can be represented by some parametrized, smooth copula model.  In general this is a non-linear least squares (NLS) problem.  Provided in Table (), a wide variety of standard Copula exist each which describe a certain type of dependence structure.  Perhaps the strength of correlation between the variables of interest are highly correlated in the tails but uncorrelated elsewhere:  one may consider the Clayton or student-t type copula to capture tail-heavy dependence.  The practitioner requires some measure of best-fit after attempting to fit many different copula to the data.
+
+Example bivariate copula fitting:
+\begin{figure}[hbtp]
+\centering
+\includegraphics[scale=.35]{images/lower_t_tke_original.png}
+\caption{Original CFD span data.}
+\label{tri_var}
+\end{figure}
+
+\begin{figure}[hbtp]
+\centering
+\includegraphics[scale=.35]{images/lower_t_tke_copula_pdf.png}
+\caption{Fitted copula.}
+\label{tri_var}
+
+\end{figure}
+\begin{figure}[hbtp]
+\centering
+\includegraphics[scale=.35]{images/lower_t_tke_resampled.png}
+\caption{Resampled span data.}
+\label{tri_var}
+\end{figure}
+
+
+However, the situation at hand is more complex than the bivariate case introduced previously in equation \ref{sklar1}.  The minimum number of co-dependent variables of interest to consider is three:  The surface temperature, turbulent kinetic energy, and boundary heat flux.  Each of these variables are required inputs to the CRUD and surface chemistry codes.  The collective works of Joe (1996), Belford and Cooke (2001, 2002) provide an avenue for high order ($d>=3$) copula model fitting via chaining together bivariate copula in a nested tree-like data structure.  The copula chain is known as a \emph{vine}. In a vine, pair copula constructions (PCC) constitute pairs of nodes joined by an \emph{edge}.  The nodes contain marginal univariate PDFs and edges contain the copula.
+
+Other methods exist for establishing a relationships between correlated data sets.  Principal among them are methods build upon a Bayesian network in which the coupling between parameters is described by a graph.
+
+\subsubsection{Data Assimilation}
+
+Describe data collection procedures.
+
+\subsubsection{Model Construction}
+
+Describe model construction.
+
+\subsection{Model Sensitivity Study}
+
+Determine key model explanatory variables with the help of DAKOTA.  Principal component analysis.
+
+\subsection{Uncertainty Propagation}
+
+Large uncertainties are present inside the CFD field data used in the construction of the reduced order model.  Surface temperature, for instance, is sensitive to parameters in the wall boiling model, choice of turbulent model \& wall treatment in the relationships used to obtain the heat transfer coefficient.
+An effort must be made to estimate the influence of these uncertainties on the reduced order model.
+
+The primary barrier to studying the impact of these uncertainties on the ROM's predicted quantities is the expense to complete a CFD calculation.  If a surrogate (or smaller representative CFD run) can adequately capture all the physics relevant to a CRUD calculation, this issue could be avoided.
+
+Using monte-carlo style uncertainty quantification may be impossible due to the expense of evaluating the CFD model.
+
+Assuming the CFD model remains expensive to evaluate, there are techniques which can reduce the number of CFD calculations required to determine the behaviour of the ROM under uncertain inputs.  These techniques assume some structure to the output response - namely that the outputs behave smoothly as input parameters are perturbed. One method to take advantage of such a smooth output response is the polynomial chaos (PC) expansion method.
+
+The uncertainties in the input are propagated through the model.  Finally, confidence intervals for each of the output ROM parameters can be drawn.  This has the effect of broadening (\& perhaps skewing) the original frequency distributions.
+
+%-----------------------------------------------------------------------------%
+\chapter{Work To Date}
+
+
+\subsubsection{STAR-CCM+ vs CTF Comparisons}
+
+Comparisons in the TH solutions between STARCCM+ (CFD) and CTF (subchannel) without considering CRUD deposition. \\
+
+Comparisons between STAR-CCM+ results with CTF provide can provide useful information to both CTF developers and CFD practitioners.   A CFD-CTF comparison can serve to tune CTF grid loss and mixing coefficients for a given spacer grid design provided that a CFD simulation can explicitly define the spacer grid geometry, resolve mixing vane induced cross flow, local heat transfer coefficients, and pressure loss across the grid.
+
+CFD practitioners can greatly benefit from comparison with CTF results in cases where two phase flow becomes important.  Though STAR-CCM+ is contains fully segregated Eulerian two phase flow models and highly tunable subcooled boiling models, the sophistication brings little benefit if the parameters to these models are not tuned to reflect the flow regime at hand.  CTF results provide one avenue for sanity checking the model parameters in the CFD two phase model; of course, a complete validation study of CFD boiling model must include experimental work.  An example of such a two phase flow comparison is provided in Figure \ref{compare}.  STAR-CCM+'s Eulerian multiphase mixture model was selected to simplify the computation.  The multiphase mixture model homogenizes the liquid and vapor phases into a single fluid.  The Rohsenow wall boiling model was selected to compute the surface heat flux due to subcooled boiling and the vapor generation rate at the coolant-cladding interface.  
+
+\begin{figure}
+\centering
+\subfloat[]{
+  \includegraphics[width=85mm]{images/Cladding_Temperature__C_.png}
+}
+\subfloat[]{
+  \includegraphics[width=85mm]{images/Coolant_Temperature__C_.png}
+}
+\hspace{0mm}
+\subfloat[]{
+  \includegraphics[width=85mm]{images/Surface_TKE__J_kg_.png}
+}
+\subfloat[]{
+  \includegraphics[width=85mm]{images/Axial_Velocity__m_s_.png}
+}
+\caption{(a) Moderator - cladding interface temperature. (b) Bulk homogenized fluid temperature. (c)  Turbulent kinetic energy at the moderator - cladding interface. (d) Axial velocity. }
+\label{compare}
+\end{figure}
+
+\section{CFD-MAMBA vs CTF-MAMBA Comparisons}
+
+Review of previous work performed by ORNL, UTAustin, and UMich.
+
+\section{Multiphysics Coupling}
+
+CRUD, Neutronic and TH Coupling Implementation overview.
+
+\subsection{Development of MAMBA-STARCCM+ Coupling: Cicada}
+
+Minimal Cicada implementation information and capabilities goes here.
+
+Introduction to Cicada goes here.  Include brief description of CILC and CIPS challenge problem.
+
+Initially developed in pure C as a demonstrative tool for STAR-CCM+ and CRUD coupling, Cicada's capabilities have evolved to encompass a variety new technologies.  Successful incorporation of the HDF5 library and portions of Trilinos have shown it is possible to leverage powerful C/C++ tools inside STAR-CCM+ user code.  Cicada's I/O capabilities, usability and internal error handling benefited from the inclusion of these third party tools.
+
+Significant steps have been taken to collect and distil CFD-scale CRUD and TH field data sets into useful formats.  To this end, Cicada is accompanied by a powerful post processing pipeline which simplifies CTF-CFD comparison, statistical model inference, and interoperability with VERA-View, a CASL visualization tool. The core data assimilation capabilities rely heavily on the HDF5 library.  As a result of recent developments, Cicada is capable of exporting CFD field-data and finely resolved MAMBA results directly from a STAR-CCM+ simulation to the HDF5 format for later post processing.  
+
+A HDF5 read capability was implemented in Cicada to allow externally generated power profiles to be applied as a thermal boundary condition in the STAR-CCM+ domain.  This feature enables loose out of memory coupling with a neutronics package. 
+
+If ``power\_coupling'' is enabled, an external HDF5 file containing pin powers in the standard VERA HDF5 format must be supplied.  The total integrated power injected into the CFD domain must also be specified.  A VERA HDF5 file can contain power profiles for many pins spanning the entire core.  Therefore, in the ``coupling\_regions'' ParamaterList there exists and option to map a given pin's power profile to a CFD surface. Control over this mapping is enforced through an integer triplet:  $\{pin_{ik} \>, pin_{jk}, assembly_k \}$  where $\{i,j,k\}$ are indexed relative to zero.  The input can accommodate multi-pin cases provided that each surface is uniquely named in the STAR model.
+
+The axial power distribution is mapped to a CFD surface via 1D linear interpolation along the transverse axis.  Power normalization is performed to obtain the correct heat flux magnitude such that the total energy injected into the domain is equivalent to the user specified value.   Figure \ref{heat_flux_ex} displays a power profile obtained from MPACT applied on the interior surface of the cladding in STAR-CCM+.
+
+\begin{figure}[hbtp]
+\centering
+\includegraphics[scale=.35]{images/heat_flux_ex.png}
+\caption{Power profile read from an external HDF5 file applied to the interior surface of the cladding.}
+\label{heat_flux_ex}
+\end{figure}
+
+The development of Cicada's HDF5 data export capabilities revealed weakness in the current tools provided by CD-Adpaco for executing C/C++ user code inside STAR-CCM+.  When writing I/O routines in user code it is desirable to leverage the parallel capabilities of the HDF5 library, however, STAR-CCM+ carries an internal dependency on a serial version (v1.8.6) of the HDF5 library.  At the time of this writing, Cicada cannot be linked against a parallel version of the library due to symbol conflicts encountered between the user specified library compiled with parallel capabilities enabled and the serial-only hdf5 library built into STAR-CCM+.
+Collaboration with CD-Adapco targeted at addressing library conflicts could benefit future multiphysics coupling endeavours that leverage STAR's C-API.
+
+STAR-CCM+ is typically executed in a parallel environment in which each MPI processes owns a subset of the CFD domain with overlapping regions for solution transfer.  Care must be observed that data from these overlapping ``halo cells'' are not included in the export.  In a parallel environment field data is first collected on the root MPI process in sequential order before being exported to the HDF5 file.  Consequently, the serial version of the HDF5 library is sufficient for performing data transfer.  The sequential MPI send-receive paradigm guarantees that the ordering of data points is identical for each exported data field: E.g. the data is consistent with respect to global cell index in the output arrays.   
+
+The resultant HDF5 output from Cicada is written in a point wise format.  For each user specified volumetric or surface region the respective cells' volume or area are exported alongside Cartesian coordinates of the cells' centroid.  Likewise, thermal hydraulic and CRUD fields supported at the cells' centroids are written as desired.  The raw CFD solution data residing in a Cicada HDF5 output file is useful for external multiphysics applications that are compatible with point-cloud data sets.  Additionally, the availability of point cloud data in a high performance format facilitates data analysis outside of the STAR-CCM+ environment.  
+
+Though Cicada is ideal for local hotspot and CRUD prediction within a single assembly it is not applicable to the full core scenario and is therefore not applicable to the CIPS problem outright.   Core simulation with CFD scale TH resolution remains out of reach.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[scale=.4]{images/mvd_2_597.png}
+\caption{Frequency binned field results tallied over a subset of the rod surface.   Axial boundaries at $[259.7, 267.0](cm)$.  Results were generated at 160 percent nominal power in a single pin configuration. }
+\label{pairgrid}
+\end{figure}
+
+Figure \ref{pairgrid} displays frequency binned CFD data tallied over a small section of a rod surface. CRUD growth favours areas of high surface temperature, low local shear stress (related to the local turbulent kinetic energy) and high heat flux.   Furthermore, the B10 deposition model within MAMBA is sensitive to the local superheat.  The relationship between boron hideout and surface temperature reveals a threshold behaviour with effectively zero boron hideout occurring in cells that reside below the saturation temperature.  Thus it is not possible to accurately compute integral CRUD quantities without accounting for local variation in the TH solution around mixing vanes since there a strong potential to miss CRUD bound B10 deposits in these localized areas.  CIPS prediction is a multi scale problem which requires the spatial fidelity of a CFD tool and the computational benefits of a nodal subchannel TH code to enable full core cycle depletion computations.
+
+To bridge the scale gap, Cicada will play a central role by providing high fidelity training data sets upon which a bridging Hi2Low (high-to-low fidelity) model is constructed.  
+
+\subsubsection{CRUD Model: MAMBA-1D}
+
+MAMBA-1D inputs and design.
+
+\subsubsection{Corrosion Model: EPRI/KWU}
+
+Corrosion model inputs and design.
+
+\subsubsection{Two-Way Coupling to Neutronics}
+
+Method of passing information between Cicada and MPACT (looking to be HDF5).  Method used to reach steady state solution:  Picard iterations \& Anderson acceleration.
+
+%-----------------------------------------------------------------------------%
+\chapter{Future Work}
+
+\section{Implementation of ROM in VERA}
+
+Reiteration of CIPS and CILC challenge problems.  Description of 
+
+\subsection{ROM Implementation in CTF}
+
+How is the reduced order model utilized by CTF to obtain better estimates for CRUD thickness?
+
+\subsection{VERA Time Stepping}
+
+Method used to propagate CRUD solution in time over the course of a cycle.
+
+%-----------------------------------------------------------------------------%
+\chapter{Conclusion}
+
+TODO
+
+\pagebreak
+\section*{Project Schedule}
+
+\begin{enumerate}
+\item \textbf{Literature review.}
+\item \textbf{Develop coupled CFD-CRUD tool for high fidelity CRUD (CIPS/CILC) prediction.}  
+          This is the platform used to generate datasets that are
+          required to inform a scale-bridging model.
+    \begin{enumerate}
+        \item Create CFD data extraction and post processing utilities.
+        \item Develop STAR-CCM+ plugin to extract cladding surface and volumetric TH quantities from a CFD computation.
+        \item Develop tool to compute the required volume and surface integrals to
+              distill finely resolved CFD datasets into subchannel-like results.
+    \end{enumerate}
+\item \textbf{Demonstrate differences between CFD and Subchannel predictions.} (NO CRUD)
+    \begin{enumerate}
+        \item Compute differences between volume/surface averaged CFD quantities and subchannel predictions.
+        \item Identify deficiencies in subchannel predictions wrt. CRUD growth and CILC.
+    \end{enumerate}
+\item \textbf{Investigate CRUD model sensitives.}
+    \begin{enumerate}
+        \item Identify CRUD (MAMBA) sensitivities to TH boundary conditions
+        \item Produce correlation coefficients and scatter plot depictions of the relationship(s) between input
+              and output of the CRUD model.
+        \item Identify TH conditions under which CFD scale CRUD predictions greatly diverge from subchannel-CRUD results.
+    \end{enumerate}
+\item \textbf{Preliminary methods implementation and demonstration} (Dec-Feb)
+    \begin{enumerate}
+        \item De-trend pointwise CFD datasets (Moving average based) \& compute residual distributions.
+        \item Construct description of the spatially dependent co-variance between (residual) wall temperatures, surface shear stress, and
+              boundary heat flux downstream of a grid span.
+        \begin{enumerate}
+            \item Develop flexible dependence modeling package capable of capturing skewed covariance behavior (Vine copula).
+            \item Develop Kriging model to capture spatial dependence of covariance (may not be necessary).
+        \end{enumerate}
+        \item Construct a non-parametric regression model (Gradient boosted tree model [GBM]):
+        \begin{enumerate}
+            \item Regress covariance model parameters, $\bm{\hat\theta}$, on local-average CTF provided inputs.
+            \item Evaluate regression: $[CTF\ Data] \rightarrow {P(T>t,...|\bm{\hat\theta})}$
+        \end{enumerate}
+        \item Compute areas of input space with highest regression model sensitivity (develop capability to super sample these regions).
+        \item Demonstrate ability to propagate uncertainty through regression model.
+        \item Demonstrate ability to rank inputs by \% output variance explained via PCA.  Also demonstrate ability to
+              perform dimensionality reduction via PCA.
+          \item Perform CFD informed subchannel based CRUD prediction for a \emph{single pin}.
+    \end{enumerate}
+\item \textbf{Write proposal document} (Dec-Feb)
+\item \textbf{Methods analysis and improvement} (June)
+    \begin{enumerate}
+        \item Perform Large scale CFD runs to inform finalized scale-bridging model
+        \item Large scale application of PCA: Determine best set of inputs to capture maximum output variance.
+        \item Tune regression algorithm's (GBM) hyperparameters
+        \item Validate CFD informed subchannel CRUD results against plant data (IF AVAILABLE).
+    \end{enumerate}
+\item \textbf{Final model construction and demonstration} (July-Aug)
+    \begin{enumerate}
+        \item Complete initial implementation of CFD informed subchannel model in VERA-CS.
+        \item Demonstrate CFD informed subchannel model on a full-height, assembly scale problem.
+        \item Assess CILC/CIPS prediction improvements vs. base model (no CFD informed TH).
+        \item Validate CIPS predictions against experimental plant data.
+    \end{enumerate}
+\item \textbf{Write Dissertation} (July-Aug)
+\end{enumerate}
+
+\pagebreak
+
+\begin{sidewaysfigure}
+%-----------------------------------------------------------------------------%
+\begin{ganttchart}[
+        inline,
+        x unit=1.5cm,
+        y unit title =0.8cm,
+        y unit chart=0.75cm,
+        hgrid,
+        vgrid,
+        time slot format=isodate,
+        compress calendar
+    ]{2016-06-01}{2017-08-01}
+    \gantttitlecalendar*[compress calendar, time slot format=isodate]{2016-06-01}{2017-08-01}{year, month=shortname} \\
+    \gantttitlelist{1,...,15}{1} \\
+%%%%%%% Phase 1
+\ganttgroup{Proposal Epic}{2016-06-01}{2017-02-28} \\
+\ganttbar{Lit. Review}{2016-06-01}{2016-11-01} \\
+\ganttbar{CFD Post Proc. Dev.}{2016-06-01}{2016-08-20} \\
+\ganttlinkedbar{CTF vs CFD}{2016-06-20}{2016-07-30} \ganttnewline
+\ganttlinkedbar{MAMBA Sensitivity}{2016-07-01}{2016-08-30} \ganttnewline
+\ganttbar{Covariance Model Construction}{2016-10-01}{2017-01-10}  \\
+\ganttlinkedbar{Regression Model Dev.}{2016-12-01}{2017-02-28}  \\
+\ganttbar{Write Proposal}{2016-12-01}{2017-02-28}
+\ganttmilestone{Proposal}{2017-02-28} \ganttnewline
+%%%%%%% Phase 2
+\ganttgroup{Dissertation Epic}{2017-03-1}{2017-08-30} \\
+%\ganttlinkedbar{Task 2}{3}{7} \ganttnewline
+\ganttbar{Methods Refinement}{2017-03-01}{2017-05-01} \ganttnewline
+\ganttlinkedbar{Final CFD }{2017-06-01}{2017-07-01} \ganttnewline
+\ganttlinkedbar{Merge in VERA-CS}{2017-06-01}{2017-07-01} \ganttnewline
+\ganttbar{Write Dissertation}{2017-06-01}{2017-08-01}
+\ganttmilestone{Dissertation}{2017-08-01} \ganttnewline
+%\ganttlink{elem2}{elem3}
+%%%%%%%% Extra Task Linkages
+%\ganttlink{elem6}{elem7}
+\end{ganttchart}
+%-----------------------------------------------------------------------------%
+\end{sidewaysfigure}
+\pagebreak
+
+\section*{References}
+
+TODO
+
+%-----------------------------------------------------------------------------%
+\chapter{Appendix}
+
+%-----------------------------------------------------------------------------%
+\section{Copula}
+Todo: Intro to copula theory.
+
+%-----------------------------------------------------------------------------%
+\section{Vine Copula}
+Todo: Intro to vine copula theory.
+
+C-vine example:
+
+\begin{figure}[hbtp]
+\centering
+\includegraphics[scale=.35]{images/tri_varaite_ex.png}
+\caption{Example tri-variate data set.}
+\label{tri_var}
+\end{figure}
+
+\begin{figure}[hbtp]
+\centering
+\includegraphics[scale=.35]{images/c_vine_graph_ex.png}
+\caption{C-vine graph structure.}
+\label{c_vine}
+\end{figure}
+
+TODO: place C-vine fitting statistics into table format:
+\begin{verbatim}
+Tree 0, Edge 1
+=====================================================
+Fitting trial copula gumbel-270... |AIC|: 2.04081650246
+Fitting trial copula frank... |AIC|: 64.6576414829
+Fitting trial copula gauss... |AIC|: 71.4134411579
+Fitting trial copula clayton... |AIC|: 47.008110673
+Fitting trial copula gumbel-180... |AIC|: 60.2608294167
+Fitting trial copula frank-270... |AIC|: 2.04081644962
+Fitting trial copula frank-90... |AIC|: 2.04081644968
+Fitting trial copula clayton-180... |AIC|: 62.8939677227
+Fitting trial copula gumbel-90... |AIC|: 2.04081647377
+Fitting trial copula clayton-270... |AIC|: 2.04081656625
+Fitting trial copula clayton-90... |AIC|: 2.04081610975
+Fitting trial copula frank-180... |AIC|: 64.6576414833
+Fitting trial copula gumbel... |AIC|: 69.4436980538
+Fitting trial copula t... |AIC|: 69.2855005911
+gauss copula selected
+
+Tree 0, Edge 2
+=====================================================
+Fitting trial copula gumbel-270... |AIC|: 2.04081639589
+Fitting trial copula frank... |AIC|: 9.69501210111
+Fitting trial copula gauss... |AIC|: 10.6579618661
+Fitting trial copula clayton... |AIC|: 7.65096511507
+Fitting trial copula gumbel-180... |AIC|: 9.88721078351
+Fitting trial copula frank-270... |AIC|: 2.04081643717
+Fitting trial copula frank-90... |AIC|: 2.04081643717
+Fitting trial copula clayton-180... |AIC|: 9.95013346487
+Fitting trial copula gumbel-90... |AIC|: 2.04081640033
+Fitting trial copula clayton-270... |AIC|: 2.04081627815
+Fitting trial copula clayton-90... |AIC|: 2.04080398859
+Fitting trial copula frank-180... |AIC|: 9.6950121011
+Fitting trial copula gumbel... |AIC|: 11.4927855607
+Fitting trial copula t... |AIC|: 8.53383006958
+gumbel copula selected
+
+Tree 1, Edge 1
+=====================================================
+Fitting trial copula gumbel-270... |AIC|: 1.15514572603
+Fitting trial copula frank... |AIC|: 2.04081643013
+Fitting trial copula gauss... |AIC|: 0.800989460587
+Fitting trial copula clayton... |AIC|: 2.04081255649
+Fitting trial copula gumbel-180... |AIC|: 2.0408163655
+Fitting trial copula frank-270... |AIC|: 0.80079704728
+Fitting trial copula frank-90... |AIC|: 0.800797047281
+Fitting trial copula clayton-180... |AIC|: 2.04081439374
+Fitting trial copula gumbel-90... |AIC|: 1.11621393154
+Fitting trial copula clayton-270... |AIC|: 0.778435269306
+Fitting trial copula clayton-90... |AIC|: 1.49541951078
+Fitting trial copula frank-180... |AIC|: 2.04081643013
+Fitting trial copula gumbel... |AIC|: 2.04081636204
+Fitting trial copula t... |AIC|: 2.97820764684
+t copula selected
+\end{verbatim}
+
+TODO: R-vine example and comparison between C-vine.  How to determine which vine structure best captures dependence in the data?  Explain stat tests used to determine this!
+
+\end{document}

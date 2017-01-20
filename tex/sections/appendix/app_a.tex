@@ -1,0 +1,100 @@
+%-----------------------------------------------------------------------------%
+\section{Copula}
+
+Intro to copula theory.
+
+\begin{equation}
+P(x, y) = P(x) \cdot P(y | x)
+\label{joint_voi}
+\end{equation}
+
+This is the product rule of probability.  The comma denotes the conjunction
+``and'' and the bar, $|$, is read ``given''.
+
+Marginal distributions are defined below. Dependence information between $x$
+and $y$ is not captured in the margins.
+
+\begin{align*}
+    P(x) &= \int P(y) P(x|y) dy \\ P(y) &= \int P(x) P(y|x) dx
+\end{align*}
+
+The process of decomposing a multivariate distribution into univariate marginal
+distributions and an object which describes their conditional dependence was
+formalized by Sklar (1959).  Shown in equation \ref{sklar1},  Sklar's Theorem
+defines some \emph{copula}, $C$, that describes the dependence structure
+underpinning multiple correlated variables.
+
+Let $F_1\ \&\ F_2$ represent unbounded cumulative density functions (CDFs):
+
+\begin{align*} 
+F_1 &= P[X < x] = \int_{-\infty}^x P(x)dx \\
+F_2 &= P[Y < y] = \int_{-\infty}^y P(y)dy
+\end{align*}
+
+For brevity, two variables $u, v$ that represent samples from their CDFs can be
+introduced as follows:
+
+\begin{align*} u &= F_1(x) \\ v &= F_2(y) \\ u,v &\in
+[0, 1]
+\end{align*}
+
+\begin{equation}
+H(x,y) = C(F_1(x), F_2(y))
+\label{sklar1}
+\end{equation}
+
+The joint cumulative probability distribution, $H(x,y)$, can be computed from
+constituent marginalized univariate distributions and the \emph{copula}, $C$.
+The copula is given by equation \ref{sklar2}:
+
+\begin{equation}
+C(u, v) = F(F_1^{-1}(u), F_2^{-1}(v))
+\label{sklar2}
+\end{equation}
+
+The power of Sklar's theorem resides in the ability to construct
+models for the margins separately from a model of the dependence structure.
+When combined according to Sklar's theorem, the margins and the copula completely
+specify any multivariate probability density function.
+
+Compared to rudimentary approaches based on an assumed linear dependence structure,
+a copula based approach can treat skewed dependence structures in which the
+strength of dependence (as measured via a local correlation coefficient) is allowed
+to vary depending on location in the parameter space.
+It can be shown that by restricting the dependence model to only consider elliptic Gaussian
+copula, one achieves a multiple linear dependence model [ref] in which a covariance matrix
+completely defines the dependence structure.
+
+\section*{Copula Families}
+
+\subsection*{Elliptic}
+
+Provided an Elliptic copula lines of constant probability density form ellipses.
+
+This family of copula are unsuitable for capturing skewed dependence structures.
+
+\subsection*{Archimedian}
+
+Archimedian copula are defined by the relationship.
+
+Where $\psi$ is a monotonically decreasing and convex function.
+
+Archimedian copula are not necessarily symmetric, and therefore allow one to capture
+skewed dependence structures.
+
+%-----------------------------------------------------------------------------%
+\section{Vine Copula} 
+
+Intro to vine copula theory.
+
+A vine copula is a nested tree-like structure consisting of bivariate copula
+edges and univariate marginal nodes which represents a decomposition of a high
+($d>=3$) dimensional cumulative probability density function.  Traditionally,
+three classes of vine copula are discussed:
+
+\begin{enumerate}
+    \item \textbf{Canonical vines} (C-vines):  In each tree in the vine, all edges share a common root node.
+    \item \textbf{D-vines}:  All nodes have exactly two connecting edges.
+    \item \textbf{Regular vines} (R-vines):  Super set of all possible vine structures.
+
+We will only consider canonical vines in this work.

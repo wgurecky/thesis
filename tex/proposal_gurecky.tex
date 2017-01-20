@@ -1,0 +1,71 @@
+\documentclass[10pt,a4paper]{report}
+\usepackage[a4paper, total={6.25in, 9in}]{geometry}
+\usepackage{setspace}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{subfig}
+\usepackage{pgfgantt}
+\usepackage{rotating}
+\usepackage{bm}
+\usepackage{graphicx}
+
+\author{William Gurecky}
+\title{CFD Informed Subchannel}
+
+\begin{document}
+
+%=================================TITLE=======================================%
+%-----------------------------------------------------------------------------%
+\input{./sections/title.tex}
+
+%-----------------------------------------------------------------------------%
+\input{./sections/acryn.tex}
+
+%=================================BODY========================================%
+\onehalfspacing
+%-----------------------------------------------------------------------------%
+\chapter{Introduction}
+\label{chap:intro}
+\input{./sections/intro.tex}
+
+%-----------------------------------------------------------------------------%
+\chapter{Literature Review}
+\label{chap:lit}
+\input{./sections/lit_review.tex}
+
+%-----------------------------------------------------------------------------%
+\chapter{Theory}
+\label{chap:theory}
+\input{./sections/theory.tex}
+
+%-----------------------------------------------------------------------------%
+\chapter{Work To Date}
+\label{chap:work}
+\input{./sections/work_todate.tex}
+
+%-----------------------------------------------------------------------------%
+\chapter{Future Work}
+\label{chap:fw}
+
+%-----------------------------------------------------------------------------%
+\chapter{Conclusion}
+\label{chap:conc}
+\input{./sections/conclusion.tex}
+
+%-----------------------------------------------------------------------------%
+\input{./sections/gantt.tex}
+
+%-----------------------------------------------------------------------------%
+\input{./sections/references.tex}
+
+%=================================APPX========================================%
+%-----------------------------------------------------------------------------%
+\chapter{Appendix}
+\input{./sections/appendix/app_a.tex}
+
+
+\end{document}
