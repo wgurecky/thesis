@@ -1,5 +1,25 @@
 
-\section{Hi2Low Approach}
+
+\section{Background}
+
+TODO: provide example CTF spatial discritization image.
+
+On a given CTF rod surface patch a single value is predicted.  The predicted quantity is an estimate for the average thermal hydraulic conditions over that coarse patch.
+
+On a single coarse CTF patch:
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=8cm]{figs/model_relations.png}
+\label{model_overview}
+\end{figure}
+
+\subsection{Hi2Low Approach}
+\begin{equation}
+    F(\mathbf x) = \underbrace{\mu(\mathbf{x})}_\text{CTF} + \underbrace{\varepsilon(\mathbf{x, \theta})}_\text{CFD Informed} + b(\mathbf{x})
+\end{equation}
+ $ \varepsilon(\cdot) $ is treated as a random field.  $\varepsilon(x, \theta)$ is the random component of the spatially vairing field and is a CFD informed model. \\
+$b$ is bias present in the mean prediction between the CTF and CFD solutions ($\mu_{CTF} - \mu_{CFD}$). \\
+The locally averaged quanity $\mu$ is spatially averaged over a CTF patch.
 
 In this approach the the deterministic and random components of the spatial field are modeled seperately.  The deterministic component is supplied by the coarse CTF solution and an model that describes small purtubations from the mean is constructed upon available CFD data sets.
 
