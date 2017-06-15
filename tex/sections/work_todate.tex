@@ -1,0 +1,26 @@
+\subsection{Data Extraction from CFD Simulations}
+
+\subsection{Synthetic Training Data Generation}
+
+A toolkit to overlay custom noise atop a CTF solution has been developed.  The synthetic data generation tool is to provides training data sets with lower computational cost than equivilent CFD calculations.  Some properties of real CFD solution field data are preserved by the tool, namely that the shape of the marginal and copula distributions change as a function of position and local thermal hydraulic conditions in the core.  The synthetic data is not to be viewed as complete substitute for CFD data since it lacks the ability to capture spatial auto-correlation in the predicted spatial fields that arise due to the nature of the governing PDEs.
+This tool provides a means to verify that known relationships between the explanatory variables and the copula parameters (user inputs to the synthetic data generation tool) are recovered by the gradient boosted model. \\
+
+A unique blended copula model can be specifed in each span providing a method to artificially create spatially dependent dependence distributions.
+Furthermore, the parameters of the marginal distributions can themselves be made function of space, and local averaged TH conditions provided by CTF.
+
+\subsection{Gradient Boosting Toolkit}
+
+A gradient boosting library was developed in the python programming language with the aim to provide an easily extensible loss function class, allowing the user to implement arbitrary loss functions in the gradient boosting method.   Controls over weak learner construction are also provided.
+The library interface was constructed to be indentical to scikit learn's gradient boosting package so that the newly developed boosting algorithms can stand as drop in replacements for those available in scikit learn.
+
+\subsection{Copula Toolkit}
+
+Copula toolkits are available for the R programming language, however, many of these packages do no implement all rotations of copula making it burdensome to handle negative dependence structures out-of-the-box.  Careful attention was paid to develop a flexible abstract copula class which enables custom coupla functions to be specified.  Importantly, all copula rotations are supported by default allowing one to model positive and negative dependence structures without having to write implementations for each copula rotation.
+Connonical vine-copula construction and sampling algorithms are included in this package to handle the decomposition of arbitrary joint density functions of any dimension.
+Copula parameters can be determined by a maximum likelihood fit to empirically supplied data or by specifing a rank correlation coefficent in the case of Archimedean copula.  In the proposed Hi2Low work, both capabilities are leveraged.
+
+\subsection{Python Interfaces to CRUD Codes}
+
+As part of this work, pythonic interfaces were developed for both the lecacy CASL CRUD tool known as MAMBA1D and the state-of-the art CRUD package, Mongoose.  The python wrappers to these Fortran codes facilitate rapid prototyping of Hi2Low procedures which provide bondary conditions to the CRUD codes.  Additionally, the high level interface allows one to quickly orchestrate large CRUD sensitivity studies.
+
+The python wrappers are available for download from casl-dev at \url{git@casl-dev:collaboration/MAMBA/pyMAMBA} and \url{git@casl-dev:collaboration/Mongoose/pygoose}.

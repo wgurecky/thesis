@@ -9,7 +9,7 @@ On a given CTF rod surface patch a single value is predicted.  The predicted qua
 On a single coarse CTF patch:
 \begin{figure}[!htbp]
 \centering
-\includegraphics[width=8cm]{figs/model_relations.png}
+\includegraphics[width=8cm]{images/model_relations.png}
 \label{model_overview}
 \end{figure}
 
@@ -24,3 +24,36 @@ The locally averaged quanity $\mu$ is spatially averaged over a CTF patch.
 In this approach the the deterministic and random components of the spatial field are modeled seperately.  The deterministic component is supplied by the coarse CTF solution and an model that describes small purtubations from the mean is constructed upon available CFD data sets.
 
 The availability of the deterministic portion of the fields of interest via CTF is a boon the proposed Hi2Low methodology.  Typically, additional modeling descisions must be made to construct an estimator for the average behavior of the output fields.
+
+\subsection{Capturing Dependence: Copula}
+
+\subsection{Modeling the Margins}
+
+\subsubsection{Gradient Boosting}
+
+\subsubsection{Quantile Regression}
+
+The marginal distributions for the temperature and turbulent kinetic energy are shown to be non gaussian in shape in figure ().  The asymitries in the distributions must be predicted accurately by the regression model.  To this end, a non-parametric model for the margins is built by combining several quantile predictors.  Leveraging quantile regressions to decompose single dimensional distributions is explained in depth by Oaxaca (1973).
+
+Given a cumulative distribution function (CDF) and a random variable $X$:
+\begin{equation}
+F_X(x) = P(X \leq x)
+\end{equation}
+The $\tau^{th}$ quantile $Q$ of $X$ is given by:
+\begin{equation}
+Q_\tau(X) = F_X^{-1}(\tau)
+\end{equation}
+Where $F_X^{-1}$ is the inverse cumulative distribution.
+
+The quantile loss function is given by equation ().
+\begin{equation}
+\rho_\tau(x) = x(\tau - \mathbb{1}_{(x < 0)})
+\end{equation}
+Where $\mathbb{1}$ is the indicator function.
+
+The quantile loss function is substituted for the squared-error loss function in the gradient boosting algorithm.  The result of multiple quantile predictores is shown in figure (). \\
+
+A one dimensional slice from the multiple regression is provided in figure ().
+The resulting quantiles are used to construct a step-wise cumulative distribution, which in turn is used to build a histogram of the predicted quantity of interest. \\
+
+Shown in figure (), in place of the stepwise reprentation, a PCHIP regression can be applied to the discrete quantile estimate to generate a differentiable CDF.

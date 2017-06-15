@@ -3,10 +3,14 @@ CRUD
 A literature review of Hi2Low modeling approaches to CFD-informed subchannel
 problems is given in \autoref{chap:lit}.  Several advances in CRUD modeling are
 also discused in \autoref{chap:lit} including a CASL developed high fidelity
-CFD based CRUD tool currently under development.  Additionally a review
-covering the non-parametric relm of gradient boosted regression trees is
-provided.  Finally, work pertaining to correlated tail risk analysis is also
-provided with a focus on engineering rather than financial applications.
+CFD based CRUD tool currently under development.
+Techniques for surrogate model construction are also reviewed.  Examples of
+surrogate models developed using regression kriging are provided.  These
+techniques are highly relevent to the current Hi2Low problem as these models
+seek to describe the behavior of random fields given a sparse set of inputs.
+Additionally a review
+of the gradient boosted algorithm and applications to surrogate model construction
+are provided.
 
 In \autoref{chap:theory}, the overarching Hi2Low pipeline is introduced.  
 
@@ -38,6 +42,25 @@ increased shear stresses.  CRUD growth is extremely sensitive to the surface
 temperature around the saturation point.  Therefore, growing crud at the bulk
 average predicted TH conditions given by CTF in a coarse axial segment may not
 yield the correct amount of CRUD growth in that region.
+
+To this end a novel method based on the marriage of copula and gradient boosting techniques
+is proposed.  The spatial distributions are not resolved on each CTF patch, rather
+multivariate probability density of the surface temperature, TKE, and bundary heat flux
+are predicted by the model.
+The resultant model produces CRUD estimates that account for the presence of
+hot and cold spots on the rod surface induced by turbulent flow downstream of spacer grids.
+
+Copula are used to resolve the dependence structure underpinning correlated distributions
+of rod surface temperature and TKE.  In this work, Sklar's theom is leveraged
+to decompose multivariate probability densities into into indipendent copula
+and marginal models. This technique is inspired from previous work conducted by
+() in generating spatially dependent covarience models using vine-copula (Delft).
+
+The free parameters within the copula model are prediced using a combination of
+supervised regression and classification machine learning techniques. A
+gradient boosted regression tree (GBRT) methodology is proposed to provide the
+required relationships between the copula model parameters and the
+explanatory variables.
 
 \section{CASL Challenge Problems}
 
