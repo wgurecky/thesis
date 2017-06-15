@@ -1,0 +1,20 @@
+\section{CASL Literature Overview}
+
+Previous Hi2Low work conducted by CASL focused on accouting for spacer grid effects on the heat transfer coefficent and on inter channel mixing.  This work targeted departure from nucleate boiling (DNB) predictions.  The strategy for these works involved adding additional terms in the momentum balance implemented in CTF that approximately capture fine scale flow effects introduced by the presence of the spacer grid arrays. In much the same way grid loss coefficents are determined, non mechanisitc empirical models were fit to experimental data supplied by [].  The empirical mixing relationships provided the coefficints in the new momentum source terms.
+
+A similar strategy was employed to develop empirical models which capture grid-enchanced heat transfer in CTF.  A function parameterized by vane angle is used as a multiplier map to adjust the heat transfer coefficent to reflect the presence of the spacer grids.  Due to CTF's coarse spatial discritization, the code cannot explicitly resolve the small scale voticies responsible for the increased heat transfer on the rod surface without these empirical enchancement functions. 
+
+Leveragig CFD and experimental data to inform parameterized scale bridging models is a common theme in these previous Hi2Low works.  The current Hi2Low strategy to distill CFD data into a scale bridging model specifically to capture spacer grid effects on CRUD growth is in a similar vein to these past Hi2Low efforts.
+
+In a recent development, a CRUD enchancement strategy that relies on mapping spatial distributions of the heat transfer coefficent and shear stress onto the coarse CTF grid is proposed.  Though mapping spatial distributions is straight forward in principal, it is difficult to account for all pin configurations in the core as a CFD solution must be avalible at precisely the current operation conditions of the CTF model to perform a map.  If corresponding CFD data is unavailabe for some portions of the thermal hydraulic envelope present in the core at a given state point an interpolation procedure is required.  The effectiveness the interpolation procedure depends on the sensitivity of the spatial heat transfer and shear stress distributions on the rod surface.  If the spatial distributions are ill behaved as a function of rod orientaion and locally-averaged thermal hydraulic conditions in the core it can become prohibtively expensive to pre-compute the necissary CFD data required to build an interpolant with an acceptible level of uncertainty in the predicted quantites.
+
+A key metric of success can be assertained from this study:  The Hi2Low technique which utilizes the fewest number of CFD runs to drive down uncertainties in the prediced quantites of interest (those which significantly impact CRUD growth) is a suppirior model.
+
+
+\section{Kriging Literature Review}
+
+Kriging is popular technique used in the construction of surrogate models.  As discused in section [future_work], a regression kriging model is currently under consideration as a means to map high fidelity spatial data the coase CTF mesh. The following is an overview of kriging applied to engineering scale problems.
+
+The technique of Kriging was pioneered by Danie G. Krige[1960] in an effort to model the spatial distribution of gold ore concentrations given sparse, uncertain ore concentration estimates. Since Krigins conception, the technique has propogated through the geostatistics community.
+
+Kriging is related to Gaussian process regression in which the model captures the spatially dependent covariance of a random field.  Typically, Kriging is applied when the input data is sparse [ref].
