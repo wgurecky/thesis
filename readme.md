@@ -8,3 +8,5 @@ Author
 ======
 
 William Gurecky
+
+william.gurecky@utexas.edu
