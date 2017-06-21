@@ -66,6 +66,9 @@ If we restrict ourselves to the class of Archimedean copula we only need $\rho_\
 
 A description of the underlying dependence structure is not sufficient to reconstruct the full joint probability density.  An additional model is required to provide the shape of margins conditioned on the location in the reactor and the local thermal hydraulic conditions.  To this end, a gradient boosted quantile regression model is used.
 
+Gradient boosting provides a means to estimate the relative importance of each explanatory variable (covariate).  The 
+It is imparative when choosing a set of exogenous variables that.
+
 \subsubsection{Quantile Regression}
 
 The univariate distributions of the temperature and turbulent kinetic energy are shown to be non gaussian in shape in figure ().  The asymitries in the distributions must be predicted accurately by the regression model.  A non-parametric model for the margins is built by combining several quantile predictors.  Leveraging quantile regressions to decompose single dimensional distributions is explained in depth by Oaxaca (1973).
@@ -86,7 +89,7 @@ The quantile loss function is given by equation ().
 \end{equation}
 Where $\mathbb{1}$ is the indicator function.
 
-The quantile loss function is substituted for the squared-error loss function in the gradient boosting algorithm.  The result of multiple quantile predictores is shown in figure (). \\
+The quantile loss function is substituted for the squared-error loss function in the gradient boosting algorithm to regress on a qunatile of interest rather than on the mean.  The result of multiple quantile predictores is shown in figure ().  It is important to mention that the prediced quantiles are \emph{conditioned} on the location in the core.  It is not possible to ask if a given temperature resides above a predicted quantile band [Powell 2014]. Only information about the distribution as a whole can be ascertained from a quantile regression which is adequet for the current application since we are not interested in where individual samples reside but rather we are interested in the shape and spread of the conditional quantile distribution as we move about in the core.
 
 A one dimensional slice from the multiple regression is provided in figure ().
 The resulting quantiles are used to construct a step-wise cumulative distribution, which in turn is used to build a histogram of the predicted quantity of interest. \\
