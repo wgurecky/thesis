@@ -1,12 +1,10 @@
 \subsection{Data Extraction from CFD Simulations}
 
-Initially developed in pure C as a demonstrative tool for STAR-CCM+ and CRUD coupling, Cicada's capabilities have evolved to encompass a variety new technologies.  Successful incorporation of the HDF5 library and portions of Trilinos have shown it is possible to leverage powerful C/C++ tools inside STAR-CCM+ user code.  Cicada's I/O capabilities, usability and internal error handling benefited from the inclusion of these third party tools.
+In order to prepair training data sets upon which to construct a Hi2Low model, a small package has been developed to aid in data extraction from STAR-CCM+ CFD simulations.  This was developed as part of the CASL program and is named Cicada. Initially developed in pure C as a demonstrative tool for STAR-CCM+ and CRUD coupling, Cicada's capabilities have evolved to encompass a variety new technologies.  Successful incorporation of the HDF5 library and portions of Trilinos have shown it is possible to leverage powerful C/C++ tools inside STAR-CCM+ user code.  Cicada's I/O capabilities, usability and internal error handling benefited from the inclusion of these third party tools.
 
-Significant steps have been taken to collect and distil CFD-scale CRUD and TH field data sets into useful formats.  To this end, Cicada is accompanied by a powerful post processing pipeline which simplifies CTF-CFD comparison, statistical model inference, and interoperability with VERA-View, a CASL visualization tool. The core data assimilation capabilities rely heavily on the HDF5 library.  As a result of recent developments, Cicada is capable of exporting CFD field-data and finely resolved MAMBA results directly from a STAR-CCM+ simulation to the HDF5 format for later post processing.  
+Significant steps have been taken to collect and distil CFD-scale CRUD and TH field data sets into useful formats.  To this end, Cicada is accompanied by a powerful suite of post processing tools which simplifies CTF-CFD comparison, statistical model inference, and interoperability with VERA-View, a CASL visualization tool. The core data assimilation capabilities rely heavily on the HDF5 library.  As a result of recent developments, Cicada is capable of exporting CFD field-data and finely resolved MAMBA results directly from a STAR-CCM+ simulation to the HDF5 format for later post processing.  
 
 A HDF5 read capability was implemented in Cicada to allow externally generated power profiles to be applied as a thermal boundary condition in the STAR-CCM+ domain.  This feature enables loose out of memory coupling with a neutronics package. 
-
-If ``power\_coupling'' is enabled, an external HDF5 file containing pin powers in the standard VERA HDF5 format must be supplied.  The total integrated power injected into the CFD domain must also be specified.  A VERA HDF5 file can contain power profiles for many pins spanning the entire core.  Therefore, in the ``coupling\_regions'' ParamaterList there exists and option to map a given pin's power profile to a CFD surface. Control over this mapping is enforced through an integer triplet:  $\{pin_{ik} \>, pin_{jk}, assembly_k \}$  where $\{i,j,k\}$ are indexed relative to zero.  The input can accommodate multi-pin cases provided that each surface is uniquely named in the STAR model.
 
 The axial power distribution is mapped to a CFD surface via 1D linear interpolation along the transverse axis.  Power normalization is performed to obtain the correct heat flux magnitude such that the total energy injected into the domain is equivalent to the user specified value.   Figure \ref{heat_flux_ex} displays a power profile obtained from MPACT applied on the interior surface of the cladding in STAR-CCM+.
 
@@ -26,11 +24,20 @@ The resultant HDF5 output from Cicada is written in a point wise format.  For ea
 
 \subsection{Synthetic Training Data Generation}
 
-A toolkit to overlay custom noise atop a CTF solution was developed to support this work.  The synthetic data generation tool provides training data sets with lower computational cost than equivalent CFD calculations.  Some properties of real CFD solution field data are preserved by the tool, namely that the shape of the marginal and copula distributions change as a function of position and local thermal hydraulic conditions in the core.  The synthetic data is not to be viewed as complete substitute for CFD data since it lacks the ability to capture spatial auto-correlation in the predicted spatial fields that arise due to the nature of the governing PDEs.
-This tool provides a means to verify that known relationships between the explanatory variables and the copula parameters (user inputs to the synthetic data generation tool) are recovered by the gradient boosted model. \\
+A toolkit to overlay custom noise atop a CTF solution was developed to provide a secondary source of training data sets.  The synthetic data generation tool provides training data sets with lower computational cost than equivalent CFD calculations.  Some properties of a true CFD solution field are preserved by the tool, namely that the shape of the marginal and copula distributions change as a function of position and local thermal hydraulic conditions in the core.  The synthetic data is not to be viewed as complete substitute for CFD data since it lacks the ability to capture spatial auto-correlation in the predicted spatial fields that arise naturally from the governing PDEs.  Neighboring points on the rod surface do not exchange any TH information in this tool.  Despite the unphysical nature of the synthetic data, the tool provides a means to verify that known relationships between the explanatory variables and the copula parameters are recovered by the gradient boosted model.  This is possible because the user specifies these relationships as inputs to the surface field sampling routines. \\
 
-A unique blended copula model can be specified in each span providing a means to create spatially dependent correlated tri-variate $P(temperature,\ tke,\ bhf)$  distributions.
-In order to completelly specify the local TH distrubtions conditioned on space, and local TH conditions, the parameters of the marginal distributions can themselves be made function of space, and local averaged TH conditions provided by CTF.  A single pin example is given below:
+A unique blended copula model can be specified in each span providing spatially differentiated, correlated tri-variate $P(temperature,\ tke,\ bhf)$  distributions.
+In order to completelly specify the local TH distrubtions conditioned on space, and local TH conditions, the parameters of the marginal distributions can themselves be made function of space and local averaged TH conditions provided by CTF.  A single pin example is given below: \\
+
+Figure here \\
+
+The input for this dataset is given below:
+
+\begin{verbatim}
+INPUT DECK FOR SINGLE PIN
+\end{verbatim}
+
+Here, the varience of the margins was increased imediately following a spacer grid, as one would expect the grid to create extra turbulence in these regions.  Additionally, the correlation coefficient of the copula model is adjusted depending on the distance to the nearest spacer grid to simulate a decrease in the concordance between surface temperature and surface shear stress present in real CFD data sets following a spacer grid. \\
 
 The synthetic data generation package and documentation is available at \url{https://github.com/wgurecky/ctfPurt.git}.
 

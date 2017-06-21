@@ -66,8 +66,7 @@ If we restrict ourselves to the class of Archimedean copula we only need $\rho_\
 
 A description of the underlying dependence structure is not sufficient to reconstruct the full joint probability density.  An additional model is required to provide the shape of margins conditioned on the location in the reactor and the local thermal hydraulic conditions.  To this end, a gradient boosted quantile regression model is used.
 
-Gradient boosting provides a means to estimate the relative importance of each explanatory variable (covariate).  The 
-It is imparative when choosing a set of exogenous variables that.
+Gradient boosting provides a means to estimate the relative importance of each explanatory variable (covariate) included in the model.
 
 \subsubsection{Quantile Regression}
 
@@ -85,14 +84,17 @@ Where $F_X^{-1}$ is the inverse cumulative distribution.
 
 The quantile loss function is given by equation ().
 \begin{equation}
-\rho_\tau(x) = x(\tau - \mathbb{1}_{(x < 0)})
+\rho_\tau(x) = x(\tau - \mathbb{I}_{(x < 0)})
 \end{equation}
-Where $\mathbb{1}$ is the indicator function.
+Where $\mathbb{I}$ is the indicator function.
 
-The quantile loss function is substituted for the squared-error loss function in the gradient boosting algorithm to regress on a qunatile of interest rather than on the mean.  The result of multiple quantile predictores is shown in figure ().  It is important to mention that the prediced quantiles are \emph{conditioned} on the location in the core.  It is not possible to ask if a given temperature resides above a predicted quantile band [Powell 2014]. Only information about the distribution as a whole can be ascertained from a quantile regression which is adequet for the current application since we are not interested in where individual samples reside but rather we are interested in the shape and spread of the conditional quantile distribution as we move about in the core.
+The quantile loss function is substituted for the squared-error loss function in the gradient boosting algorithm to regress on a qunatile of interest rather than on the mean.  The result of multiple quantile predictores is shown in figure ().  It is important to mention that the model gives conditional quantiles and as such the interpretation of the quantile regression surface sensitivities to changes in the explanatory variable must be carefully made.  The prediced quantiles are conditioned on the location in the core $x_i$, in other words the model provides $Q_T(\tau|x_i)$.  When propogating uncertainties in the exogenous variables to the predicted quantiles it is necissary to compute the sensitivity of each quantile, $\tau_j$ at some location $x_i$ to small purtubations in each of the covariates.
+\begin{equation}
+\beta_{\tau_{ij}} = \frac{\partial Q_T(\tau_j|x_i)}{\partial x_i}
+\end{equation}
 
 A one dimensional slice from the multiple regression is provided in figure ().
 The resulting quantiles are used to construct a step-wise cumulative distribution, which in turn is used to build a histogram of the predicted quantity of interest. \\
 
 Shown in figure (), in place of the stepwise reprentation, a piecewise cubic hermite interpolating polynomial (PHCIP) can be fit to the discrete quantile estimate to generate a differentiable CDF.
-PCHIP interpolation preserves monotinicity of the CDF [].
+It can be shown that PCHIP interpolation preserves monotinicity of the CDF if the provided quantiles are strictly monotone [].  This condition is enforced in the software, and any violation of the monotone restriction would indicate a software bug in the quantile regression code.
