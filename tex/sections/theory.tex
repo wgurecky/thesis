@@ -17,23 +17,58 @@ On a single coarse CTF patch:
 \begin{equation}
     F(\mathbf x) = \underbrace{\mu(\mathbf{x})}_\text{CTF} + \underbrace{\varepsilon(\mathbf{x, \theta})}_\text{CFD Informed} + b(\mathbf{x})
 \end{equation}
- $ \varepsilon(\cdot) $ is treated as a random field.  $\varepsilon(x, \theta)$ is the random component of the spatially vairing field and is a CFD informed model. \\
-$b$ is bias present in the mean prediction between the CTF and CFD solutions ($\mu_{CTF} - \mu_{CFD}$). \\
-The locally averaged quanity $\mu$ is spatially averaged over a CTF patch.
+ $ \varepsilon(\cdot) $ is treated as a random field.  $\varepsilon(x, \theta)$ is the random component of the spatially vairing field and is a CFD informed model.
+$b$ is bias present in the mean prediction between the CTF and CFD solutions ($\mu_{CTF} - \mu_{CFD}$).
+The locally averaged quanity $\mu$ is spatially averaged over a CTF patch. \\
 
-In this approach the the deterministic and random components of the spatial field are modeled seperately.  The deterministic component is supplied by the coarse CTF solution and an model that describes small purtubations from the mean is constructed upon available CFD data sets.
-
-The availability of the deterministic portion of the fields of interest via CTF is a boon the proposed Hi2Low methodology.  Typically, additional modeling descisions must be made to construct an estimator for the average behavior of the output fields.
+In this approach the the deterministic and random components of the spatial field are modeled seperately.  The deterministic component is supplied by the coarse CTF solution.
+The availability of the deterministic portion of the fields of interest via CTF is a boon the proposed Hi2Low methodology.  Typically, additional modeling descisions must be made to construct an estimator for the average behavior of the output fields by a predictor derived by moving average or ordinary least squares regression.  The current methodology is absoved from constructing this predictor.
+It would appear an additional modeling step is required to build a predictor for the bias, $b(\mathbf{x})$, however this discrepency can be rolled into the
+CFD informed model provided CTF solutions are available at precisely the same sample points.
+To construct residual distributions of temperature and turbulent kinetic energy on the rod surface the CTF solution is used to detrend the CFD born surface fields.  This introduces an issue; the resulting residual distributions are not stationary about zero.  Normally this would present
+a serious barrier to the construction of a kriging model, however, we can capture the drift of the residual distribution's via quantile regression.
 
 \subsection{Capturing Dependence: Copula}
 
-\subsection{Modeling the Margins}
+Consider the small patch on a rod's surface shown in figure ().  Treat this patch as a black box in which spatial information is not preserved. Drawing surface samples of the FOI yeilds correlated temperature, turbulent kinetic energy and boundary heat flux samples.  It is likely that a high temperature corresponds to a low turbulent kinetic energy in this patch, for instance.  This dependence structure is clearly seen in figure ().  The behavior is not fully described by a linear relationship; there exists some dispersion in the joint emperical distributions. \\
 
-\subsubsection{Gradient Boosting}
+It would appear that by removing the spatial component of the fields in a patch we have introduced additonal complications by building a joint density function who's shape varies from location to location in the core.  Indeed, this joint density function is non-gaussian and generally ill behaved.  However, by Sklar's theorem this joint distribution can be decomposed into a product of a special function called a copula and univariate probability density functions.  Furthermore, the margins can be modeled indipendently from the copula and later recombined to reconstruct, approximately, the original joint density.  We will show that by restricting our attention to a special class of copula parameterized by a single parameter that we have transformed the original problem of predicting  highly complicated two dimensional spatial fields into a problem of predicting multiple, indipendent one dimensional functions. \\
+
+A simplified two dimensional version of Sklar's theorem is shown in equations () through ().
+Given a joint CDF: $H$, w/ cumulative margins: $F(x)=P[X < x] = \int_{-\infty}^{x}f(t)dt$
+and $F(y)=P[Y < y] = \int_{-\infty}^{y}f(t)dt$
+\begin{equation}
+H(x,y) = C(F(x), F(y))
+\end{equation}
+\begin{equation}
+c(u, v) = \frac{\partial^2 C(u, v)}{\partial u \partial v};\ u=F(x), v=F(y)
+\end{equation}
+Key properties of the copula density function are as follows:
+\begin{itemize}
+\item  Has uniform marginal density distributions \cite{Nelsen2006}.
+\item  Defined on the unit square $[0, 1]^2$ (in the bivariate case)
+\end{itemize}
+Any joint PDF, $h(\cdot)$ can be decomposed as:
+\begin{equation}
+h(x, y) = c(F(x), F(y)|\theta)f(x|\theta_x)f(y|\theta_y)
+\end{equation}
+Where $\theta$ and $\{\theta_{x}, \theta_{y}\}$ are free copula and marginal model parameters respectively.
+
+For the case of Archimedean copula, Kendall's tau, $\rho_\tau$ is
+related to the copula's shape parameter by [ref]:
+\begin{equation}
+\rho_\tau = 1 + 4 \int_0^1 \frac{\varphi(\theta_c,t)}{\varphi'(\theta_c, t)}dt
+\end{equation}
+Where $\varphi(\theta_c, t)$ is the copula's generator function and $\varphi'$ is the first derivative of the generator function with respect to $t$.  An exaustive list of copula generting functions can be found in [ref].
+If we restrict ourselves to the class of Archimedean copula we only need $\rho_\tau$ and the copula type, $\Theta_c$ (gumbel, frank, clayton, ect.) to approximately specify the dependence structure between the temperature and turbulent kinetic energy residual distributions on each patch.
+
+\subsection{Modeling the Margins: Gradient Boosting}
+
+A description of the underlying dependence structure is not sufficient to reconstruct the full joint probability density.  An additional model is required to provide the shape of margins conditioned on the location in the reactor and the local thermal hydraulic conditions.  To this end, a gradient boosted quantile regression model is used.
 
 \subsubsection{Quantile Regression}
 
-The marginal distributions for the temperature and turbulent kinetic energy are shown to be non gaussian in shape in figure ().  The asymitries in the distributions must be predicted accurately by the regression model.  To this end, a non-parametric model for the margins is built by combining several quantile predictors.  Leveraging quantile regressions to decompose single dimensional distributions is explained in depth by Oaxaca (1973).
+The univariate distributions of the temperature and turbulent kinetic energy are shown to be non gaussian in shape in figure ().  The asymitries in the distributions must be predicted accurately by the regression model.  A non-parametric model for the margins is built by combining several quantile predictors.  Leveraging quantile regressions to decompose single dimensional distributions is explained in depth by Oaxaca (1973).
 
 Given a cumulative distribution function (CDF) and a random variable $X$:
 \begin{equation}
@@ -56,4 +91,5 @@ The quantile loss function is substituted for the squared-error loss function in
 A one dimensional slice from the multiple regression is provided in figure ().
 The resulting quantiles are used to construct a step-wise cumulative distribution, which in turn is used to build a histogram of the predicted quantity of interest. \\
 
-Shown in figure (), in place of the stepwise reprentation, a PCHIP regression can be applied to the discrete quantile estimate to generate a differentiable CDF.
+Shown in figure (), in place of the stepwise reprentation, a piecewise cubic hermite interpolating polynomial (PHCIP) can be fit to the discrete quantile estimate to generate a differentiable CDF.
+PCHIP interpolation preserves monotinicity of the CDF [].
