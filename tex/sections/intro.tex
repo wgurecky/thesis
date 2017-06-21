@@ -1,4 +1,6 @@
-CRUD 
+
+
+\section{Overview of Topics}
 
 A literature review of Hi2Low modeling approaches to CFD-informed subchannel
 problems is given in \autoref{chap:lit}.  Several advances in CRUD modeling are
@@ -12,23 +14,24 @@ Additionally a review
 of the gradient boosted algorithm and applications to surrogate model construction
 are provided.
 
-In \autoref{chap:theory}, the overarching Hi2Low pipeline is introduced.  
+In \autoref{chap:theory}, the overarching Hi2Low strategy is introduced.  A brief
+intruduction to Sklar's theorem and gradient boosting is given with additional details
+on these topics provided in \autoref{chap:app}.
 
 Work that has been performed in support of this Hi2Low strategy is reviewed in
 \autoref{chap:work}.  The development of a CFD data extraction tool with
 additional post processing capabilities is provided.  This tool enables the
-comparison of CFD result with CTF results.  Comparisons between CFD and CTF
+comparison of CFD result with subchannel results.  Comparisons between CFD and subchannel
 subchannel results are presented to identify key flow regimes in which the
 coarse subchannel based approach produces erroneous CRUD growth rates.
-
 A demonstration of the copula based methodology to predict CRUD grow rates on a
-single rod provided a single TH state point is also given in
+single rod at a single TH state point is also given in
 \autoref{chap:work}.
 
-Finally, future work is discussed in \autoref{chap:fw} with a detailed plan of
-action laid out to clearly define project goals.
+Finally, future work is discussed in chapter \autoref{chap:fw}.  This section focuses on
+time dependent CRUD simulation strategies and uncertainty quantification and propogation.
 
-\section{Benefit and Novelty}
+\section{CASL Benefit and Novelty}
 
 Accurately predicting CRUD induced power shift (CIPS) requires accurate CRUD
 thickness and boron deposition estimates in all regions of the core.  Core wide
@@ -41,7 +44,14 @@ erosion, namely the local depression in surface temperatures and locally
 increased shear stresses.  CRUD growth is extremely sensitive to the surface
 temperature around the saturation point.  Therefore, growing crud at the bulk
 average predicted TH conditions given by CTF in a coarse axial segment may not
-yield the correct amount of CRUD growth in that region.
+yield the correct amount of CRUD growth in that region.  To overcome this issue
+developing a surrogate model which is informed by CFD or experimental data that
+captures small scale flow effects downsteam of spacer grids is a possible strategy.
+Since experimental data and/or CFD data cannot be generated for every concivable
+combination of thermal hydraulic and gemetric cases present in a reactor, a surrogate
+serves to obtain .  The goal in the construction of a surrogate is to minimize the
+number of CFD or experimental data sets required to drive down uncertainties in
+the prediced quantities to an acceptable level.
 
 To this end a novel method based on the marriage of copula and gradient boosting techniques
 is proposed.  The spatial distributions are not resolved on each CTF patch, rather
@@ -51,23 +61,28 @@ The resultant model produces CRUD estimates that account for the presence of
 hot and cold spots on the rod surface induced by turbulent flow downstream of spacer grids.
 
 Copula are used to resolve the dependence structure underpinning correlated distributions
-of rod surface temperature and TKE.  In this work, Sklar's theom is leveraged
-to decompose multivariate probability densities into into indipendent copula
-and marginal models. This technique is inspired from previous work conducted by
-() in generating spatially dependent covarience models using vine-copula (Delft).
-
-The free parameters within the copula model are prediced using a combination of
+of rod surface temperature and TKE.  In this work, Sklar's theorem is leveraged
+to decompose multivariate probability densities into into independent copula
+and marginal models. The free parameters within the copula model are predicted using a combination of
 supervised regression and classification machine learning techniques. A
 gradient boosted regression tree (GBRT) methodology is proposed to provide the
 required relationships between the copula model parameters and the
 explanatory variables.
 
-\section{CASL Challenge Problems}
+\subsection{CASL Challenge Problems}
 
 CASL selected several problems identified by industry partners as critical
 inadequately understood engineering scale phenomena which would provide financial and
 safety benefits to the nuclear power industry if resolved.  An list of the CASL
-challenge problems is provided in [ref].
+challenge problems is provided in [ref].  The problem of interest in this
+work is the prediction of Chalk River Unidentified Deposit (CRUD) growth rates.
+The growth of CRUD comes with neutronic and thermal hydraulic repercussions.  A
+phenomena known as CRUD Induced Power Shift (CIPS) as been identified as a high
+impact problem by the industry council.  Additionally, the presence of CRUD on the rod
+surface has been shown to exacerbate local oxide penetration rates of some zirconium alloys.
+This is known as CRUD induced local corrosion.
+The proposed work aims to improve predictions of CRUD build up in the core to ultimately improve the
+accuracy and provide uncertainty estimates for key physical indicators of the CIPS and CILC phenomena.
 
 The Virtual Environment for Reactor Applications (VERA) is a key component of
 CASL's technical portfolio.  This meta-package integrates a variety of physics
@@ -77,18 +92,17 @@ capability.  For multi-cycle depletion computations, VERA relies upon MPACT, a
 thermal hydraulics code COBRA-TF (CTF).  An integrated CRUD modeling capability
 is provided by MAMBA to address the CRUD induced power shift challenge problem.
 
-To reduce computation times, the subchannel TH code discretizes the reactor
+To reduce computation times, the subchannel TH code discretized the reactor
 domain into large, centimeter scale finite volumes.  A second order upwinding
 scheme is employed along with the SIMPLE solution algorithm to resolve pressure
-velocity coupling.  This coarse discretization scheme means that sub-centimeter scale
+velocity coupling.  As a consequences of this discretization scheme, sub-centimeter scale
 thermal hydraulic effects of the spacer grids on CRUD are averaged over
 large regions on the fuel rods' surfaces.  Though small scale phenomena are not
 explicitly modeled, they are approximately accounted for in a variety of empirically derived
 closure relations.  In effect, a single constant estimate for the mean thermal
-hydraulic conditions (Temperature, boundary heat flux, and wall shear stress)
-are obtained in each finite volume.
+hydraulic conditions are obtained in each finite volume.
 
-Previous Hi2Low TH focused work in CASL focused on utilizing experimental or CFD
+Previous Hi2Low focused work in CASL focused on utilizing experimental or CFD
 datasets to improve closure models in CTF.  These studies leverage a multitude of
 dimensionality reduction and regression techniques
 to fit a parametric model to the accepted gold-standard empirical data.  This approach
@@ -99,21 +113,13 @@ the previously neglected physics).  Examples of such Hi2Low models are given in
 The traditional approach must be slightly modified to accommodate the CILC and
 CIPS challenge problems.  Here arises the need to retain not only the effect of
 fine-scale physics on the bulk, but also to predict if certain
-temperature or TKE \emph{thresholds} are exceeded in a given (CTF coarse)
+temperature or TKE thresholds are exceeded in a given subchannel
 volume.  Furthermore, for a complete treatment of thermal hydraulic impacts on
-CRUD growth, the scale-bridging model must describe the \emph{frequency
-distribution} of extreem TH events above a given threshold.
+CRUD growth, the scale-bridging model must describe the frequency
+distribution of extreme TH events above a given threshold.
 
-\subsection{CIPS \& CILC Challenge Problems}
-
-Outline of CIPS and CILC challenge problem.  Role of CFD informed subchannel.
-
-The CRUD induced power shift phenomina and CRUD induced local corrosion
-challenge problems.  Currently avalible tools are unable to properly account
-for spacer grid effects on the errosion, in subchannel-scale models.
-
-To redemy this issue, a scale-bridging model is proposed in this work.  A
-Hi2Low model, in the current context 
-
-
+The application of copula and gradient boosted regression and classification
+techniques to the CIPS and CILC Hi2Low challenge problems is a novel within the CASL community.
+At the core of this work is a semi-parametric method to reconstruct multivariate probability density functions via the use of boosted quantile surface regressions to build marginal distributions coupled with a boosted copula model.  To the author's knowledge this technique is not currently present in the literature.
+Of course, the currently proposed work bears some similarities to work by [ref][ref] discussed in section \autoref{chap:lit}.
 
