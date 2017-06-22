@@ -55,19 +55,19 @@ Legend:
         \item (\checkmark) Construct a regression model $G(\cdot)$ (Gradient boosted tree model [GBM]).
         \begin{enumerate}
             \item (\checkmark) Regress copula model parameters, $\bm{\hat\theta}$, on local-average CTF provided inputs.
-            \item (\checkmark) Evaluate regression to recover joint TH distributions on any CDF patch:
+            \item (\checkmark) Evaluate regression to recover joint TH distributions on any CTF patch:
                 $G(CTF\ Patch\ Data) \rightarrow {P(T>t,TKE>tke,...|\bm{\hat\theta})}$
         \end{enumerate}
         %
         \item ($\cdot$) Uncertainty Propagation
         \begin{enumerate}
         	\item ($\cdot$) How many quantiles are required for temperature and TKE margin reconstruction 
-        		- do we have the data required to drive down uncertainty in CRUD predictions to an acceptible level?
+        		- do we have the data required to drive down uncertainty in CRUD predictions to an acceptable level?
             \item ($\cdot$) Estimate uncertainty introduced by the GBRT/Copula model
-            \item ($\cdot$) Propogate uncertainty to ensemble CRUD calculations
+            \item ($\cdot$) Propagate uncertainty to ensemble CRUD calculations
         \end{enumerate}
         %----------------- POST PROPOSAL ------------------%
-        \item (\checkmark-) (\checkmark-) Multi-state point execution
+        \item (\checkmark-) Multi-state point execution
         \begin{enumerate}
             \item (\checkmark-) Implement time stepping scheme
             \item ($\cdot$) Propagate uncertainty through time steps
@@ -76,7 +76,7 @@ Legend:
         \item ($\cdot$) Compute areas of the prediction surface with highest
             sensitivity to changes in input parameters \& develop capability to super sample these regions.
         %
-        \item ($\cdot$) Demonstrate ability to perform dimensionality reduction of the input space via PCA.
+        \item ($\cdot$) Demonstrate ability to perform dimensionality reduction of the input space.
         \item (\checkmark-) Perform CFD informed subchannel based CRUD prediction for a \emph{single pin}.
     \end{enumerate}
 \item \textbf{(\checkmark-) Write proposal document}
