@@ -12,7 +12,7 @@ The axial power distribution is mapped to a CFD surface via 1D linear interpolat
 %\centering
 %\includegraphics[scale=.35]{images/heat_flux_ex.png}
 %\caption{Power profile read from an external HDF5 file applied to the interior surface of the cladding.}
-%\label{heat_flux_ex}
+%\label{fig:heat_flux_ex}
 %\end{figure}
 
 The development of Cicada's HDF5 data export capabilities revealed weakness in the current tools provided by CD-Adpaco for executing C/C++ user code inside STAR-CCM+.  When writing I/O routines in user code it is desirable to leverage the parallel capabilities of the HDF5 library, however, STAR-CCM+ carries an internal dependency on a serial version (v1.8.6) of the HDF5 library.  At the time of this writing, Cicada cannot be linked against a parallel version of the library due to symbol conflicts encountered between the user specified library compiled with parallel capabilities enabled and the serial-only hdf5 library built into STAR-CCM+.

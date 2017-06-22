@@ -1,0 +1,48 @@
+\section{Regression Kriging}
+
+An alternative procedure based on regression kriging (RK) is under consideration for producing esimates and uncertainties of the desired FOI.
+The available literature on the topic is substantial.  Regression kriging is typically introduced in the context of building
+a surrogate model of a spatial field given a limited number of known sample points and a some predictive feature set.
+The steps when constructing a RK model mirrors the currently proposed approach. \\
+
+First the target FOI is decomposed into a deterministic and stocastic component, as in equation ().
+
+Let the spatial coordiantes,$\mathbf{s} = {z, \theta}$,
+where $z$ is the axial position and $\theta$ is the azimuthal coordinate on the rod surface. Let the FOI be denoted as $Z$.
+\begin{equation}
+Z(s) = \mu(s) + \varepsilon(s)
+\end{equation}
+
+The regression kriging method does not directly rely on the
+CTF solutin to provide the deterministic portion of the solution. Instead
+a seperate OLS procedure performed on the sampled CFD data to estimate the deterministic portion of the FOI.
+In this case, the CTF results enter the kriging model as additional covariates in the construction of the regression model.
+
+let $\mathbf{q}$ represent the predictive feature array. In the case of regression kriging, the predictied temperature,
+TKE, and bounday heat flux from CTF are included as covariates.
+In this example we examine case of kriging the surface temperature field.
+\begin{equation}
+$\mathbf{q}$ = {TKE, q'', T}_{CTF}
+\end{equation}
+
+In matrix form, the RK model is given by:
+
+\begin{equation}
+\hat z_\mathtt{RK}(\mathbf{s}_0 ) = \mathbf{q}_\mathbf{0}^\mathbf{T} \cdot \mathbf{\hat \beta}_\mathtt{GLS} + \mathbf{\lambda }_\mathbf{0}^\mathbf{T} \cdot (\mathbf{z}
+- \mathbf{q} \cdot \mathbf{\hat \beta }_\mathtt{GLS} )
+\end{equation}
+
+The OLS regression coefficients are given by:
+
+
+Shown in equation (), the kriging weights at the sample location, $\lambda_0$ are esimated by simple kriging:
+
+
+
+\begin{figure}[hbtp]
+\centering
+\includegraphics[scale=.55]{images/rk_example.png}
+\caption{Regression kriging example.}
+\label{fit:rk}
+\end{figure}
+

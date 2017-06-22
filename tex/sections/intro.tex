@@ -17,7 +17,7 @@ spatial FOI distribution in this work; the role of the CFD solution is to provid
 moments of the about the mean value prediced by CTF.
 This initial decompostion suggest the application kriging techniques since a model
 of the residual distribution of
-the spatial fields is sought.  Indeed, in the same vein as kriging the deterministic portion of the solution is augmented by the
+the spatial fields is sought.  Indeed, in the same vein as kriging, the deterministic portion of the solution is augmented by the
 prediced stochastic component of the model to provide a complete descrption of the target FOIs.
 However, it is shown in this proposal that we cannot blindly apply a kriging model in this way since the
 conditional quantiles of the FOI residual distributions do not follow a gaussian distribution.
@@ -76,7 +76,7 @@ The growth of CRUD comes with neutronic and thermal hydraulic repercussions that
 interest to CASL's industry partners.  
 
 A phenomena known as CRUD Induced Power Shift (CIPS) is caused by the presence of elevated \em{^{10}B} concentrations in the CRUD layer.  Since CRUD is preferentially depositied in the hot regions of the core, this leads to a slight shift in power production towards to bottom of the core.  Predicting the sevarity of the CRUD induced power shift is of particual concern when evaluating the
-thermal margins of the fuel under a given operation or accident condition.  This is especially true for older facilites seaking to uprate power output.
+thermal margins of the fuel under a operating and accident conditions.  The prediction of CIPS is especially important for older facilites seaking to uprate power output.
 Additionally, the presence of CRUD on the rod
 surface has been shown to exacerbate local oxide penetration rates of some zirconium alloys [ref].
 This is known as CRUD induced local corrosion (CILC).  Improvements in CRUD simulation techniques ultimately improve the ability to predict the CIPS and CILC phenomena.
@@ -159,4 +159,6 @@ thickness.  It is challenging to faithfully capture the peaks and valleys in
 rod surface temperature and TKE distribution by traditional interpolation
 techniques since such a model must guard against smearing out the sharp peaks
 present in the spatial distributions.  Developing a predictive CRUD model requires
-dealing with this issue. The proposed method side-steps this problem by
+dealing with this issue. The proposed method addresses this problem by predicting
+the behavior of the tails of the frequency binned FOI, rather than the shape of the
+spatial distributions of the FOI on the rod surface.
