@@ -5,7 +5,7 @@ The available literature on the topic is substantial.  Regression kriging is typ
 a surrogate model of a spatial field given a limited number of known sample points and a some predictive feature set.
 The steps when constructing a RK model mirrors the currently proposed approach. \\
 
-First the target FOI is decomposed into a deterministic and stocastic component, as in equation ().
+First the target FOI is decomposed into a deterministic and stochastic component, as in equation ().
 
 Let the spatial coordiantes,$\mathbf{s} = {z, \theta}$,
 where $z$ is the axial position and $\theta$ is the azimuthal coordinate on the rod surface. Let the FOI be denoted as $Z$.
@@ -18,7 +18,7 @@ CTF solutin to provide the deterministic portion of the solution. Instead
 a seperate OLS procedure performed on the sampled CFD data to estimate the deterministic portion of the FOI.
 In this case, the CTF results enter the kriging model as additional covariates in the construction of the regression model.
 
-let $\mathbf{q}$ represent the predictive feature array. In the case of regression kriging, the predictied temperature,
+let $\mathbf{q}$ represent the predictive feature array. In the case of regression kriging, the predicted temperature,
 TKE, and bounday heat flux from CTF are included as covariates.
 In this example we examine case of kriging the surface temperature field.
 \begin{equation}
@@ -35,9 +35,7 @@ In matrix form, the RK model is given by:
 The OLS regression coefficients are given by:
 
 
-Shown in equation (), the kriging weights at the sample location, $\lambda_0$ are esimated by simple kriging:
-
-
+Shown in equation (), the kriging weights at the sample location, $\lambda_0$ are estimated by simple kriging:
 
 \begin{figure}[hbtp]
 \centering
@@ -45,4 +43,6 @@ Shown in equation (), the kriging weights at the sample location, $\lambda_0$ ar
 \caption{Regression kriging example.}
 \label{fit:rk}
 \end{figure}
+
+RK is not straight forward to apply to the current Hi2Low problem because the available field estimates are very densely populated in space - but are sparse in the feature space of local core conditions. This the inverse situation in which RK performs best. Therefore, building a RK model of the surface fields is left as an avenue for future investigation.
 
