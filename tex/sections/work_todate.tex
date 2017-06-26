@@ -1,3 +1,12 @@
+\section{Software Components}
+
+A suite of software tools has been developed to post process CFD data sets into
+acceptable forms to train supervised machine learning on.  Routines to
+fit copula to empirical data via maximum likelyhood have been written in addition to
+copula sampling routines.  Also, a new gradient boosting toolkit was developed in support of this work.
+Finally, a software package that ties the
+aforementioned technologies together and produces CRUD estimates on a single rod has been authored.
+
 \subsection{Data Extraction from CFD Simulations}
 
 In order to prepair training data sets upon which to construct a Hi2Low model, a small package has been developed to aid in data extraction from STAR-CCM+ CFD simulations.  This was developed as part of the CASL program and is named Cicada. Initially developed in pure C as a demonstrative tool for STAR-CCM+ and CRUD coupling, Cicada's capabilities have evolved to encompass a variety new technologies.  Successful incorporation of the HDF5 library and portions of Trilinos have shown it is possible to leverage powerful C/C++ tools inside STAR-CCM+ user code.  Cicada's I/O capabilities, usability and internal error handling benefited from the inclusion of these third party tools.
@@ -26,8 +35,8 @@ The resultant HDF5 output from Cicada is written in a point wise format.  For ea
 
 A toolkit to overlay custom noise atop a CTF solution was developed to provide a secondary source of training data sets.  The synthetic data generation tool provides training data sets with lower computational cost than equivalent CFD calculations.  Some properties of a true CFD solution field are preserved by the tool, namely that the shape of the marginal and copula distributions change as a function of position and local thermal hydraulic conditions in the core.  The synthetic data is not to be viewed as complete substitute for CFD data since it lacks the ability to capture spatial auto-correlation in the predicted spatial fields that arise naturally from the governing PDEs.  Neighboring points on the rod surface do not exchange any TH information in this tool.  Despite the unphysical nature of the synthetic data, the tool provides a means to verify that known relationships between the explanatory variables and the copula parameters are recovered by the gradient boosted model.  This is possible because the user specifies these relationships as inputs to the surface field sampling routines. \\
 
-A unique blended copula model can be specified in each span providing spatially differentiated, correlated tri-variate $P(temperature,\ tke,\ bhf)$  distributions.
-In order to completelly specify the local TH distrubtions conditioned on space, and local TH conditions, the parameters of the marginal distributions can themselves be made function of space and local averaged TH conditions provided by CTF.  A single pin example is given below: \\
+A unique blended copula model can be specified in each span providing spatially differentiated, correlated tri-variate $P(T,\ TKE,\ q'')$  distributions.
+In order to completely specify the local TH distributions conditioned on space, and local TH conditions, the parameters of the marginal distributions can themselves be made function of space and local averaged TH conditions provided by CTF.  A single pin example is given below: \\
 
 Figure here \\
 
@@ -37,27 +46,27 @@ The input for this dataset is given below:
 INPUT DECK FOR SINGLE PIN
 \end{verbatim}
 
-Here, the varience of the margins was increased imediately following a spacer grid, as one would expect the grid to create extra turbulence in these regions.  Additionally, the correlation coefficient of the copula model is adjusted depending on the distance to the nearest spacer grid to simulate a decrease in the concordance between surface temperature and surface shear stress present in real CFD data sets following a spacer grid. \\
+Here, the variance of the margins was increased immediately following a spacer grid, as one would expect the grid to create extra turbulence in these regions.  Additionally, the correlation coefficient of the copula model is adjusted depending on the distance to the nearest spacer grid to simulate a decrease in the concordance between surface temperature and surface shear stress present in real CFD data sets following a spacer grid. \\
 
-The synthetic data generation package and documentation is available at \url{https://github.com/wgurecky/ctfPurt.git}.
+The synthetic data generation package \emph{ctfPurt} is available at \url{https://github.com/wgurecky/ctfPurt.git}.
 
 \subsection{Gradient Boosting Toolkit}
 
-A gradient boosting library was developed in the python programming language with the aim to provide an easily extensible loss function class, allowing the user to implement arbitrary loss functions in the gradient boosting framework.  Both quantile and least squares loss functions are included.  The package is applicable to both regression and classification problems.  CART tree construction controls are also provided allowing fine grained control of the weak learners.
-The library interface was constructed to be identical to scikit learn's gradient boosting API so that the newly developed boosting algorithms can stand as drop in replacements for those available in scikit learn.
+A gradient boosting library was developed in the python programming language with the aim to provide an easily extensible loss function class, allowing the user to implement arbitrary loss functions in the gradient boosting framework.  As required by the proposed work, both quantile and least squares loss functions are included.  The package is applicable to both regression and classification problems.  CART tree construction controls are also provided allowing fine grained control over the weak learners.
+The library interface was constructed to be similar to Scikit-learn's gradient boosting API so that the newly developed boosting algorithms can stand as drop in replacements for those available in Scikit-learn.
 
-The gradient boosting package and documentation is available at \url{https://github.com/wgurecky/pCRTree.git}.
+The gradient boosting package \emph{pCRTree} is available at \url{https://github.com/wgurecky/pCRTree.git}.
 
 \subsection{Copula Toolkit}
 
-The CDvine toolkit (GPLv3 licensed) is available for the R programming language. This packages does not implement all rotations of copula making it burdensome to handle negative dependence structures out-of-the-box.  Furthermore, the maximum likelihood fitting method included in CDVine does not allow the user to specify sample weights.
+For copula simulation, the CDvine toolkit (GPLv3 licensed) is available for the R programming language. This packages does not implement all rotations of copula making it burdensome to handle negative dependence structures out-of-the-box.  Furthermore, the maximum likelihood fitting method included in CDVine does not allow the user to specify sample weights.
 
 To circumvent these deficiencies and potential license compatibility issues with VERA, a new copula toolkit was developed in python and is BSD3 licensed.
 Careful attention was paid to develop a flexible abstract copula class which enables custom coupla functions to be specified.  Importantly, all copula rotations are supported by default allowing one to model positive and negative dependence structures without duplication of code.
-Connonical vine-copula construction and sampling algorithms are included in this package to handle the decomposition of arbitrary joint density functions of any dimension.
-Copula parameters can be determined by a weighted maximum likelihood fit to empirically supplied data with included sample weights or by specifying a rank correlation coefficent in the case of Archimedean copula.  In the proposed Hi2Low work, both capabilities are leveraged.
+Canonical vine-copula construction and sampling algorithms are included in this package to handle the decomposition of arbitrary joint density functions of any dimension.
+Copula parameters can be determined by a weighted maximum likelihood fit to empirically supplied data with included sample weights or by specifying a rank correlation coefficient in the case of Archimedean copula.  In the proposed Hi2Low work, both capabilities are leveraged.
 
-The copula package and documentation is available at \url{https://github.com/wgurecky/StarVine.git}.
+The \emph{StarVine} copula package and documentation is available at \url{https://github.com/wgurecky/StarVine.git}.
 
 \subsection{Python Interfaces to CRUD Codes}
 
