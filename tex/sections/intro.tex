@@ -173,17 +173,19 @@ of key surface TH quantities that impact CRUD growth.  The resultant model
 retains the ability to account for the presence of hot and cold spots on the rod surface induced by
 turbulent flow downstream of spacer grids when producing CRUD estimates.
 
-CRUD growth is dominated by threshold physics: negligible growth or erosion of
-the CRUD layer occurs until a parameter reaches some threshold value.
-Therefore, it is important to characterize the tails of the
+Since CRUD growth is dominated by threshold physics
+it is important to characterize the tails of the
 frequency-binned-temperature and TKE distributions about the mean.  In other
 words, hot and cold spots present downstream of spacer grids must be accurately
 resolved by the Hi2Low model in order to predict the correct boron
-precipitation and maximum CRUD thickness.  It is challenging to faithfully
-capture the peaks and valleys in rod surface temperature and TKE distribution
+precipitation and maximum CRUD thickness.
+It is challenging to faithfully
+preserve the peaks and valleys in rod surface temperature and TKE distribution
 by traditional interpolation techniques since such a model must guard against
 smearing out the sharp peaks present in the spatial distributions.  Developing
-a predictive CRUD model requires dealing with this issue. The proposed method
+a predictive CRUD model entails overcoming this issue. The proposed method
 addresses this problem by predicting the behavior of the tails of the frequency
 binned FOI rather than the shape of the spatial distributions of the FOI on
-the rod surface.
+the rod surface.  Over a coarse subchannel-scale patch on the rod surface, the
+problem is reduced from predicting a 2D spatial field at CFD-like resolutions to
+predicting the shape of multiple, independent 1D marginal density functions.
