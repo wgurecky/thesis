@@ -1,3 +1,20 @@
 %-----------------------------------------------------------------------------%
 
-TODO
+This proposed technique does not try to provide a detailed spatial distribution
+of the temperature, TKE, and CRUD on the rods' surface, rather the
+statistical approach seeks to provide a detailed frequency distribution
+of these fields.  The end result is model which correctly captures hot and cold
+spot TH conditions that give rise to the largest (and smallest) boron
+precipitation concentrations without precisely knowing where on the rods'
+surface gave rise to the sampled TH conditions.
+
+A large body of future work will focus on constructing an implementation of the gradient boosted regression model
+for predicting copula and the marginal distributions.  A regression model sensitivity study will be performed to search the input space for areas of large second derivatives in the copula and marginal parameter response surfaces.  These areas of quickly changing copula behavior are areas in which an increase in the density of available CFD surface TH data will reduce the local uncertainties in the TH pdfs predicted by the GBM model.  Dimensionality reduction by principal component analysis could yield further reductions in the required number of training data sets. 
+
+A key measure of success for this Hi2Low work with respect to  CRUD predictions
+in the vicinity of spacer grids is the computation time needed to build the
+training data sets upon which a regression model is developed.
+It has yet to be proven that the proposed Copula and GBM based framework outperforms
+either a table-lookup approach or a spatial interpolation approach in which
+spatial CFD information is explicitly preserved in the Hi2Low model.  This assessment
+of computation requirements is a key avenue for future work.

@@ -15,6 +15,5 @@ A key metric of success can be assertained from this study:  The Hi2Low techniqu
 
 Kriging is popular technique used in the construction of surrogate models.  As discused in section \ref{chap:fw}, a regression kriging model is currently under consideration as a means to map high fidelity spatial data the coase CTF mesh. The following is an overview of kriging applied to engineering scale problems.
 
-The technique of Kriging was pioneered by Danie G. Krige[1960] in an effort to model the spatial distribution of gold ore concentrations given sparse, uncertain ore concentration estimates. Since Krigins conception, the technique has propogated through the geostatistics community.
-
-Kriging is related to Gaussian process regression in which the model captures the spatially dependent covariance of a random field.  Typically, Kriging is applied when the input data is sparse [ref].
+The technique of Kriging was pioneered by Danie G. Krige[1960] in his master's thesis in an effort to model the spatial distribution of gold ore concentrations given sparse, uncertain ore concentration estimates. Following kriging's humble beginings, the technique has propogated through the geostatistics community. Typically, Kriging is applied when estimates of a random field are desired in between sparse training data samples [ref].  The technique has since been further explored by the machine learning community under the guise of gaussian process regression.
+Kriging is related to Gaussian process regression since the underlying goal of both approaches is to model the spatially dependent covariance of a random field.  
