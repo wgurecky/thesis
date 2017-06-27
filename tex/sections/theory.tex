@@ -1,32 +1,40 @@
-
-
 \section{Background}
 
-TODO: provide example CTF spatial discritization image.
+A fundamental difference between the CFD and CTF computations is the average size of the mesh cells.  In the azimuthal coordinate, CTF decomposes a single rod surface into four patches.  An example top down view of typical CFD and CTF meshes for a single pin are given in figure \ref{fig:cfd_ctf_mesh}.  Though both codes employ a finite volume spatial discretization CFD can explicitly resolve the flow at much smaller length scales.  Additionally, each code employs a different set of closure models to the underlaying set of coupled energy, mass, and momentum balances.  In practice these differences can lead to large discrepancies in boiling, turbulent mixing, and rod surface temperature predictions between the two codes.
 
-On a given CTF rod surface patch a single value is predicted.  The predicted quantity is an estimate for the average thermal hydraulic conditions over that coarse patch.
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=10cm]{images/cfd_ctf_mesh.png}
+\caption{CFD vs. CTF meshes \cite{salko12}.}
+\label{fig:cfd_ctf_mesh}
+\end{figure}
+
+Shown in figure \ref{fig:model_overview}. On a given CTF rod surface patch a single value is predicted.  The predicted quantity is an estimate for the average thermal hydraulic conditions over that coarse patch.  Consequentially, CTF CRUD predictions may significantly deviate from reality.  Since CRUD growth is highly sensitive to the presence of subcooled boiling on the rod surface; if CTF predicts a rod surface temperature less than the saturation point very little or no CRUD will form - when in reality, a small portion of that rod surface could exist above the saturation point and thus might harbor some CRUD.  Small localized mistakes in CRUD predictions compound throughout the core, leading to poor CIPS estimates. 
 
 On a single coarse CTF patch:
 \begin{figure}[!htbp]
 \centering
-\includegraphics[width=10cm]{images/model_relations.png}
-\label{model_overview}
+\includegraphics[width=12cm]{images/model_relations.png}
+\caption{Differences in CRUD prediction between CFD and CTF models.}
+\label{fig:model_overview}
 \end{figure}
 
 \subsection{Hi2Low Approach}
-\begin{equation}
-    F(\mathbf x) = \underbrace{\mu(\mathbf{x})}_\text{CTF} + \underbrace{\varepsilon(\mathbf{x, \theta})}_\text{CFD Informed} + b(\mathbf{x})
-\end{equation}
- $ \varepsilon(\cdot) $ is treated as a random field.  $\varepsilon(x, \theta)$ is the random component of the spatially vairing field and is a CFD informed model.
-$b$ is bias present in the mean prediction between the CTF and CFD solutions ($\mu_{CTF} - \mu_{CFD}$).
-The locally averaged quanity $\mu$ is spatially averaged over a CTF patch. \\
 
-In this approach the the deterministic and random components of the spatial field are modeled seperately.  The deterministic component is supplied by the coarse CTF solution.
-The availability of the deterministic portion of the fields of interest via CTF is a boon the proposed Hi2Low methodology.  Typically, additional modeling descisions must be made to construct an estimator for the average behavior of the output fields by a predictor derived by moving average or ordinary least squares regression.  The current methodology is absoved from constructing this predictor.
-It would appear an additional modeling step is required to build a predictor for the bias, $b(\mathbf{x})$, however this discrepency can be rolled into the
+In this approach the the deterministic and random components of the spatial field are modeled separately.  The deterministic component is supplied by the coarse CTF solution.
+The availability of the deterministic portion of the fields of interest via CTF is a boon the proposed Hi2Low methodology.  Typically, additional modeling decisions must be made to construct an estimator for the average behavior of the output fields by a predictor derived by moving average or ordinary least squares regression.  The current methodology is absolved from constructing this predictor.
+
+\begin{equation}
+    F(\mathbf x, \mathbf \theta) = \underbrace{\mu(\mathbf{x})}_\text{CTF} + \underbrace{\varepsilon({\mathbf x, \mathbf \theta})}_\text{CFD Informed} + b(\mathbf{x})
+\end{equation}
+$\varepsilon(x, \theta)$ is the random component of the spatially varying field and can be approximated using a CFD informed model.  $\mathbf \theta$ represents free model parameters that must be learned from the available CFD data.
+ The locally averaged quantities, $\mu$, are spatially averaged over a CTF patch.
+$b$ is bias present in the mean prediction between the CTF and CFD solutions ($\mu_{CTF} - \mu_{CFD}$). \\
+
+It would appear an additional regression step is required to build a predictor for the bias, $b(\mathbf{x})$, however this discrepancy can be rolled into the
 CFD informed model provided CTF solutions are available at precisely the same sample points.
-To construct residual distributions of temperature and turbulent kinetic energy on the rod surface the CTF solution is used to detrend the CFD born surface fields.  This introduces an issue; the resulting residual distributions are not stationary about zero.  Normally this would present
-a serious barrier to the construction of a kriging model, however, we can capture the drift of the residual distribution's via quantile regression.
+Residual distributions of temperature and turbulent kinetic energy on the rod surface are computed by using the CTF solution to de-trend the CFD born surface fields.  This introduces an issue; the resulting residual distributions are not stationary about zero.  Normally this would present
+a serious barrier to a blind spatial temperature mapping procedure as careful care to preserving the energy balance on the CTF grid post-mapping would be required.  This issue was partially circumvented in the work by Salko et. al. by using a normalized heat transfer coefficient map rather than a simple temperature map - however since the temperature and heat transfer coefficient are related by $q''=h \delta T$ one cannot simply apply a normalization factor to the CFD heat transfer coefficient spatial field without disregarding the energy balance on the CFD mesh.  However, we can capture the drift of the residual distribution's median via quantile regression techniques.
 
 \subsection{Capturing Dependence: Copula}
 
