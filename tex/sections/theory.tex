@@ -74,7 +74,10 @@ If we restrict ourselves to the class of Archimedean copula we only need $\rho_\
 
 A description of the underlying dependence structure is not sufficient to reconstruct the full joint probability density.  An additional model is required to provide the shape of margins conditioned on the location in the reactor and the local thermal hydraulic conditions.  To this end, a gradient boosted quantile regression model is used.
 
-Gradient boosting provides a means to estimate the relative importance of each explanatory variable (covariate) included in the model.
+When composing the complete gradient boosted model from a sequence CART trees the ability to compute the relative importance of each explanatory variableis provided at no additional computational cost.  Given an input variable set of length $N$; each time an split is made orthogonal to an input axis, the model gain (measured by eq () in case of regression and equation () in case of classification) is recorded and placed in a vector of length $N$.  After the CART tree reaches it's maximum depth, the split gain vector is summed.  After boosting is complete and all tree have been grown, the gain vectors are multiplied by the tree weight $\gamma_i$ and summed over all trees.
+\begin{equation}
+W = g_i
+\end{equation}
 
 \subsubsection{Quantile Regression}
 
