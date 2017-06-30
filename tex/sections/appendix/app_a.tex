@@ -2,32 +2,26 @@
 \section{Copula}
 
 In this section, Sklar's theorem is provided along with examples of copula functions
-and techniques to draw samples from them.  Several definitions are presented
-to define all the requisite notation.
+and techniques to draw samples from them. 
 
-The product rule of probability is shown in equation \ref{eq:prod_prob}.  The comma denotes the conjunction
-``and'' and the bar, $|$, is read ``given''.
-
+The product rule of probability is shown in equation \ref{eq:prod_prob}.  To clarity notation used in this section : The comma denotes the conjunction ``and'' and the bar, $|$, is read ``given''.
 \begin{equation}
-P(x, y) = P(x) \cdot P(y | x)
+P(x, y) = P(x) P(y | x)
 \label{eq:prod_prob}
 \end{equation}
 
-The definition of a marginal distribution is given in equation \ref{eq:marg}.  The marginalization process is analagous to projecting the entire joint density onto a single axis. 
-
-\begin{align*}
-P(x) &= \int P(y) P(x|y) dy \\ P(y) &= \int P(x) P(y|x) dx
+The marginal distribution of a bivariate joint distribution $f(x, y)$ is given by equation \ref{eq:marg}.  The marginalization process is analagous to projecting the entire joint density onto a single axis.
+\begin{equation}
+f(x) = \int f(y) f(x|y) dy
 \label{eq:marg}
-\end{align*}
+\end{equation}
 
 The cumulative density function, $F$ is defined as:
-
 \begin{align*} 
-F &= P[X < x] = \int_{-\infty}^x P(x)dx \\
+F &= \mathbf{P}[X < x] = \int_{-\infty}^x f(x)dx \\
 \end{align*}
 
 A joint $d$ dimensional cumulative distribution is given by equation \ref{eq:joint_cdf}.
-
 \begin{equation}
 H(x_1, ... x_d) = \mathbf P[X_1 \leq x_1, ... X_d \leq x_d]
 \label{eq:joint_cdf}
@@ -36,21 +30,20 @@ Where $X_1, ... X_d$ are random variables.
 
 The process of decomposing a multivariate distribution into univariate marginal
 distributions and an object which describes their conditional dependence was
-formalized by Sklar (1959) \cite{Sklar1959}.  Shown in equation \ref{sklar1},  Sklar's Theorem
+formalized by Sklar (1959) \cite{Sklar1959}.  Shown in equation \ref{eq:sklar1},  Sklar's Theorem
 defines a \emph{copula} cummulative density function, $C$.
 
 \begin{equation}
 C(F_1(x_1), ... F_d(x_d)) = H(x_1, ... x_d)
-\label{sklar1}
+\label{eq:sklar1}
 \end{equation}
-If $F_1, .. F_d$ are continuuous, then $C$ is unique.  Conversely, if $C$ is a copula and $F_1, .. F_d$ are smooth cummulative desntiy functions then the function $H$ is a joint cumulative distribution with margins $F_1, ... F_d$.
+If $F_1, .. F_d$ are continuuous, then $C$ is unique.  Conversely, if $C$ is a copula and $F_1, .. F_d$ are smooth cummulative desntiy functions then the function $H$ is a joint cumulative distribution with margins $F_1, ... F_d$.  A proof is provided in Nelsen's introductory copula text \cite{Nelsen2006}.
 
 Sklar also showed that the joint probability distribution, $f(x_1, ... x_d)$, can be computed from
-constituent marginalized univariate distributions and the \emph{copula} density, $c$.
-
+constituent marginalized univariate distributions and the copula density, $c$.
 \begin{equation}
 f(x_1,\dots x_d)= c(F_1(x_1),\dots F_d(x_d))\cdot f_1(x_1)\cdot\dots\cdot f_d(x_d)
-\label{sklar2}
+\label{eq:sklar2}
 \end{equation}
 
 For brevity, let $u_1, .. u_d$ represent samples from their CDFs as follows:
@@ -68,49 +61,90 @@ The power of Sklar's theorem resides in the ability to construct
 models for the margins separately from a model of the dependence structure.
 When combined, the margins and the copula completely
 specify any multivariate probability density function.
-Compared to rudimentary approaches based on an assumed linear dependence structure,
+Compared to rudimentary approaches based on covariance matrix dependence model,
 a copula based approach can treat skewed dependence structures in which the
-strength of dependence (as measured via a local correlation coefficient) is allowed
-to vary depending on location in the parameter space.
+strength of dependence is allowed to vary depending on location in the parameter space.
 
 \section*{Sampling Copula}
 
 For simplicity, this section demonstrates how to draw correlated samples from bivariate copula.
-Sampling from a bivariate copula is achived by first defining a conditional distirbution fuction and then applying the inverse probability transform.
-Let $h$ represent the conditional distribution of $u_1$ given $\{u_2, ... u_d\}$.  In the two dimensional case $h$ is given by equation \ref{eq:cop_h}:
+Sampling from a bivariate copula is achived by first defining a conditional distirbution function and then applying the inverse probability integral transform.
+Let $h$ represent the conditional distribution of $u_1$ given $\{u_2, ... u_d\}$.  In the two dimensional case $h$ is given by equation \ref{eq:cop_h} \cite{Nelsen2006}:
 
 \begin{equation}
 h(u_1 | u_2) = \frac{\partial C(u_1, u_2)}{\partial u_2}
 \label{eq:cop_h}
 \end{equation}
 
-If the univariate distribution $h$ is smooth and monatonic the inverse is unique.
-To sample from a bivariate copula, first a random vector of length $N$ is drawn from the uniform distribution $\in [0, 1]$:  $\{\mathbf U_2\}$.  For each sample, $u_{2_i}$ in $\{\mathbf U_2\}$ the 1D line search problem given in equation \ref{eq:h_inv_sample} is solved.  This produces a sample vector of length $N$: $\{\mathbf U_1\}$.
+If the distribution $h$ is smooth and monotonic, the inverse $h^{-1}$ exists.  These functions are shown in figures \ref{fig:gauss_h} and \ref{fig:gauss_hinv} for several values of the conditioning variable ($u_2$) and a gaussian copula with a shape parameter $\theta=0.7$.  
+
+\begin{figure}[!htbp]
+\centering
+\begin{minipage}{.45\textwidth}
+  %
+  \includegraphics[width=7cm]{images/t_h_dist.png}
+\caption{The conditional $h$ \\ function vs. value of the \\ conditioning variable $u_2$ \\ for a gaussian copula with $\theta=0.7$.}
+\label{fig:gauss_h}
+\end{minipage}%
+\begin{minipage}{.45\textwidth}
+  %
+  \includegraphics[width=7cm]{images/t_hinv_dist.png}
+\caption{$h^{-1}$ vs. value of the conditioning variable $u_2$ for a gaussian copula with $\theta=0.7$.\\}
+\label{fig:gauss_hinv}
+\end{minipage}
+\end{figure}
+
+Computing the inverse analytically is oftentimes not possible for some classes of copula and therefore, the more general method shown in equation \ref{eq:h_inv_sample} is used.
+A random vector of length $N$ is drawn from the uniform distribution $\in [0, 1]$:  $\{\mathbf U_2\}$.  For each sample, $u_{2_i}$ in $\{\mathbf U_2\}$ the 1D line search problem given in equation \ref{eq:h_inv_sample} is solved.  This produces a sample vector of length $N$: $\{\mathbf U_1\}$.
 
 \begin{equation}
 u_{1_i} = \mathrm{argmin}_{x} \left[ h(x|u_{2_i}) - u_{2_i} \right],\ \mathrm{with}\ 0 < x < 1
 \label{eq:h_inv_sample}
 \end{equation}
 
-The resulting corrolated sample vectors $\{\mathbf U_1, \mathbf U_2\} \in [0,1]^2$ are distributed according to the copula, $c$, and have uniform margins.  An example of random samples drawn from a Gaussian copula are shown in figure ().
+The resulting corrolated sample vectors $\{\mathbf U_1, \mathbf U_2\} \in [0,1]^2$ are distributed according to the copula, $c$, and have uniform margins.  An example of random samples drawn from a Gaussian copula are shown in figure \ref{fig:gauss_samples}.  The smooth Gaussian copula PDF is provided in figure \ref{fig:gauss_pdf}.
+
+\begin{figure}[!htbp]
+\centering
+\begin{minipage}{.45\textwidth}
+  %
+  \includegraphics[width=9.2cm]{images/gauss_copula_pdf.png}
+\caption{Gaussian copula density\\ with $\theta=0.7$.}
+\label{fig:gauss_pdf}
+\end{minipage}%
+\begin{minipage}{.45\textwidth}
+  %
+  \includegraphics[width=7cm]{images/gauss_samples.png}
+\caption{Samples drawn from gaussian copula\\ with $\theta=0.7$.}
+\label{fig:gauss_samples}
+\end{minipage}
+\end{figure}
 
 To apply arbitrary margins we employ, again, the inverse probability transform.  As before, the cummulative marginal densities are given to be $F_1$ and $F_2$.
 Correlated samples are then drawn according to:
 \begin{eqnarray}
-X = & F_1^{-1}(\mathbf U_1) \\
-Y = & F_2^{-1}(\mathbf U_2) \\
+\mathbf X = & F_1^{-1}(\mathbf U_1) \\
+\mathbf Y = & F_2^{-1}(\mathbf U_2)
 \end{eqnarray}
-The samples vectors $\{X, Y\}$ are distributed according to the joint density, $f$.  An example bivariate sample set with exponentially distributed margins and a gaussian copula is shown in figure ().
+The samples vectors $\{\mathbf X, \mathbf Y\}$ are distributed according to the joint density, $f(x,y)$.  An example bivariate sample set with exponentially distributed margins and a gaussian copula is shown in figure \ref{fig:gauss_samples_scaled}.  In the example figure the exponential marginal distributions are given by $f(x)=\lambda e^{-\lambda x}$ with $\lambda=2\mathrm{E-}3$.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=9cm]{images/gauss_samples_scaled.png}
+\caption{Samples drawn from gaussian copula with exponential margins.}
+\label{fig:gauss_samples_scaled}
+\end{figure}
+
 
 \section*{Copula Families}
 
-\subsection*{Elliptic}
+A wide range of copula are available in the literature.  In order to satisfy the definition of a copula several criterion must be met:
+\begin{enumerate}
+\item Must integrate to one on $[0, 1]^n$
+\item Must be 
+\end{enumerate}
 
-Provided an Elliptic copula lines of constant probability density form ellipses.
-
-This family of copula are unsuitable for capturing skewed dependence structures.
-
-\subsection*{Archimedian}
+\subsection*{Archimedian Copula}
 
 Archimedian copula are defined by the relationship.
 
@@ -118,5 +152,3 @@ Where $\psi$ is a monotonically decreasing and convex function.
 
 Archimedian copula are not necessarily symmetric, and therefore allow one to capture
 skewed dependence structures.
-
-\section*{Fitting Copula}
