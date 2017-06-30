@@ -1,21 +1,21 @@
 \section{Background}
 
-A fundamental difference between the CFD and CTF computations is the average size of the mesh cells.  In the azimuthal coordinate, CTF decomposes a single rod surface into four patches.  An example top down view of typical CFD and CTF meshes for a single pin are given in figure \ref{fig:cfd_ctf_mesh}.  Though both codes employ a finite volume spatial discretization CFD can explicitly resolve the flow at much smaller length scales.  Additionally, each code employs a different set of closure models to the underlaying set of coupled energy, mass, and momentum balances.  In practice these differences can lead to large discrepancies in boiling, turbulent mixing, and rod surface temperature predictions between the two codes.
+A fundamental difference between the CFD and CTF computations is the average size of the mesh cells.  In the azimuthal coordinate, CTF decomposes a single rod surface into four patches.  An example top down view of typical CFD and CTF meshes for a single pin are given in figure \ref{fig:cfd_ctf_mesh}.  Though both codes employ a finite volume spatial discretization CFD can resolve the flow at much smaller length scales.  Additionally, each code employs a different set of closure models to the underlaying set of coupled energy, mass, and momentum balances.  In practice these differences can lead to large discrepancies in boiling, turbulent mixing, and rod surface temperature predictions between the two codes.
 
 \begin{figure}[!htbp]
 \centering
 \includegraphics[width=10cm]{images/cfd_ctf_mesh.png}
-\caption{CFD vs. CTF meshes \cite{salko12}.}
+\caption{Top-down view of typical CFD \& CTF meshes for a single pin \cite{salko12}.}
 \label{fig:cfd_ctf_mesh}
 \end{figure}
 
-Shown in figure \ref{fig:model_overview}. On a given CTF rod surface patch a single value is predicted.  The predicted quantity is an estimate for the average thermal hydraulic conditions over that coarse patch.  Consequentially, CTF CRUD predictions may significantly deviate from reality.  Since CRUD growth is highly sensitive to the presence of subcooled boiling on the rod surface; if CTF predicts a rod surface temperature less than the saturation point very little or no CRUD will form - when in reality, a small portion of that rod surface could exist above the saturation point and thus might harbor some CRUD.  Small localized mistakes in CRUD predictions compound throughout the core, leading to poor CIPS estimates. 
+Shown in figure \ref{fig:model_overview}, on a given CTF rod surface patch, a single point estimates for the surface temperature, TKE, and heat flux are predicted.  The predicted CTF quantities are an estimate for the average thermal hydraulic conditions over that coarse patch.   Consequentially, CTF CRUD predictions may significantly deviate from reality.  Since CRUD growth is highly sensitive to the presence of subcooled boiling on the rod surface; if CTF predicts a rod surface temperature less than the saturation point very little or no CRUD will form - when in reality, a small portion of that rod surface could exist above the saturation point and thus harbor CRUD.  Small localized mistakes in CRUD predictions compound throughout the core, leading to poor CIPS estimates. 
 
-On a single coarse CTF patch:
+In the figure $f$ denotes a probability density function whos value can be interpreted as fractional area of the rod surface.  
 \begin{figure}[!htbp]
 \centering
 \includegraphics[width=12cm]{images/model_relations.png}
-\caption{Differences in CRUD prediction between CFD and CTF models.}
+\caption{On a single coarse CTF patch: Differences in CRUD prediction between CFD and CTF models.}
 \label{fig:model_overview}
 \end{figure}
 
@@ -29,11 +29,12 @@ The availability of the deterministic portion of the fields of interest via CTF 
 \end{equation}
 $\varepsilon(x, \theta)$ is the random component of the spatially varying field and can be approximated using a CFD informed model.  $\mathbf \theta$ represents free model parameters that must be learned from the available CFD data.
  The locally averaged quantities, $\mu$, are spatially averaged over a CTF patch.
-$b$ is bias present in the mean prediction between the CTF and CFD solutions ($\mu_{CTF} - \mu_{CFD}$). \\
+$b$ is bias present in the mean prediction between the CTF and CFD solutions ($\mu_{CTF} - \mu_{CFD}$).
 
-It would appear an additional regression step is required to build a predictor for the bias, $b(\mathbf{x})$, however this discrepancy can be rolled into the
-CFD informed model provided CTF solutions are available at precisely the same sample points.
-Residual distributions of temperature and turbulent kinetic energy on the rod surface are computed by using the CTF solution to de-trend the CFD born surface fields.  This introduces an issue; the resulting residual distributions are not stationary about zero.   This issue was partially addressed in the work by Salko et. al. by using a normalized heat transfer coefficient map rather than a simple temperature map; however, since the surface temperature and heat transfer coefficient are non-trivially related in the subcooled boiling regime one cannot simply rescale the CFD heat transfer coefficient spatial field without disregarding the energy balance on the CFD mesh.  Further investigation into the proper treatment of the bias term is required.  It is not possible to respect the energy balance on both the CFD and CTF meshes when constructing a Hi2Low model in the current fashion.  One possible though expensive solution is to tune out the bias between the codes by calibration of closure models.
+It would appear that an additional regression step is required to build a predictor for the bias, $b(\mathbf{x})$; however, the bias term can be rolled into the residual term, $\varepsilon$, resulting in residual distributions that are not stationary about zero.
+Residual distributions of temperature and turbulent kinetic energy on the rod surface are computed by using the CTF solution to de-trend the CFD born surface fields.  As a consequence, upon evaluation, the proposed Hi2Low model drags the mean predicted surface temperature to the CFD value.  This procedure violates the CTF energy balance.  In the future it may be adventageous to target the heat transfer coefficient rather than the raw surface temperature as a predicted Hi2Low model response.
+
+This issue was partially addressed in the work by Salko et. al. by using a normalized heat transfer coefficient map rather than a temperature map; however, since the surface temperature and heat transfer coefficient are non-trivially related in the subcooled boiling regime it is difficult to rescale the HTC field without disregarding the energy balance on the CTF mesh.  Further investigation into the proper treatment of the bias term is required.  It is not possible to respect the energy balance on both the CFD and CTF meshes when constructing a Hi2Low model in the current fashion.  One possible though expensive solution is to tune out the bias between the codes via calibration of closure models.
 
 \subsection{Capturing Dependence: Copula}
 

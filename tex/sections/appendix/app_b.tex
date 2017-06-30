@@ -10,7 +10,8 @@ The relationship between the surface temperature of a internally heated object a
 \label{fig:boiling_curve}
 \end{figure}
 
-The curve can be approximated by equation \ref{eq:boil_h}.
+The curve can be approximated by equation \ref{eq:boil_h}.  Note that surface temperature $T_s$ is equivillent to the wall temperature $T_w$ in the equations which follow.
+The critical heat flux (CHF) is the point at which film boiling begins to dominate and is accompanied by a precipitous drop in the heat transfer and a rise in the surface temperatre.  This condition is known as departure from nucleate boiling (DNB) and must be avoided when operating a PWR.
 
 \begin{equation}
 q''(T_w) = 
@@ -20,7 +21,7 @@ q''(T_w) =
 \end{cases}
 \label{eq:boil_h}
 \end{equation}
-Where $h$ is the single phase convective heat transfer coefficient which is in turn a function of the Nusselt number given in equations \ref{eq:htc} and \ref{eq:db}.  The contribution of nucleate boiling to the heat transfer can be approximated by the Rohsenow model given in \ref{eq:ros}.
+Where $h$ is the single phase convective heat transfer coefficient which is in turn a function of the Nusselt number given in equations \ref{eq:htc} and \ref{eq:db}.  The contribution of nucleate boiling to the heat transfer can be approximated by the Rohsenow model given in \ref{eq:ros} \cite{rohsenow51}.
 
 \begin{equation}
 q''_{nb} = {{\mu }_{L}}{{h}_{fg}}{{\left[ \frac{g\left( {{\rho }_{L}}-{{\rho }_{v}} \right)}{\sigma } \right]}^{{}^{1}\!\!\diagup\!\!{}_{2}\;}}{{\left[ \frac{{{c}_{pL}}\left( {{T}_{w}}-{{T}_{sat}} \right)}{{{C}_{sf}}{{h}_{fg}}Pr_{L}^{n}} \right]}^{3}\;}
