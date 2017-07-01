@@ -3,9 +3,9 @@
 The practice of utilizing CFD and experimental data to improve subchannel flow models is not a new practice.  Though the current Hi2Low strategy is targeted specifically to capture spacer grid effects on CRUD growth, it is in a similar vein to these past CFD informed subchannel efforts.  The following examples of previously conducted Hi2Low work focused on accounting for spacer grid effects on the heat transfer coefficient and on inter channel mixing. 
 
 The CTF subchannel code has a long history of incremental improvements.  An improvement targeted the treatment spacer grid induced cross-flow was devised as part of a PhD dissertation by M. Avramova.
-The approach put forth in this work involved tuning coefficients of auxillerary terms included in the momentum and energy balances implemented in CTF.  These additional terms approximately capture fine scale turbulent mixing effects introduced by the presence of the spacer grid arrays on the bulk flow.  Semi-mechanistic models for the (mixing) coefficients were fit to data supplied by CFD computations.  Substantial improvment from the base model was demonstrated with no additional computational overhead.  The nature of this work required large changes to the CTF source code as the momentum and energy balance equations were modified to accomidate the new spacer grid effects.  
+The approach put forth in this work involved tuning coefficients of auxiliary terms included in the momentum and energy balances implemented in CTF.  These additional terms approximately capture fine scale turbulent mixing effects introduced by the presence of the spacer grid arrays on the bulk flow.  Semi-mechanistic models for the (mixing) coefficients were fit to data supplied by CFD computations.  Substantial improvment from the base model was demonstrated with no additional computational overhead.  The nature of this work required large changes to the CTF source code as the momentum and energy balance equations were modified to accomidate the new spacer grid effects.  
 
-A similar strategy was employed to develop models which capture grid-enchanced heat transfer in CTF.   A function parameterized by vane angle is used as a multiplier map to adjust the heat transfer coefficent to reflect the presence of the spacer grids.  This YHL model is used in CTF to improve departure from nucleate boiling (DNB) predictions.  Due to CTF's coarse spatial discritization, the code cannot explicitly resolve the small scale voticies responsible for the increased heat transfer on the rod surface without these empirical enchancement functions.   
+A similar strategy has been employed to capture grid-enchanced heat transfer in subchannel codes.   A function parameterized by vane angle is used as a multiplier map to adjust the heat transfer coefficent to reflect the presence of the spacer grids.  This YHL model is used in CTF to improve departure from nucleate boiling (DNB) predictions.  Due to CTF's coarse spatial discritization, the code cannot explicitly resolve the small scale voticies responsible for the increased heat transfer on the rod surface without these empirical enchancement functions.   
 
 A recently developed Hi2Low stratagy proposed by Salko et. al [] specifically targets capturing spacer grid effects on CRUD growth.  This work is of particular importance because it represents a direct alternative to the proposed statistically based Hi2Low model for the purposes of enhancing the accuracy of CRUD predictions at the core-wide scale.  The model relies on mapping CFD born spatial distributions of the heat transfer coefficent (HTC) and surface TKE onto an intermediate grid upon which CRUD is grown.  The intermediate grid sits in between the CFD and CTF meshes and it's resolution is tunable.  An illustration of the intermideate grid setup is given in figure ().  In the figure, the tubulent kinetic energy is mapped on to the intermediate grid and is normalized by the CTF TKE prediction before passing the reconstructed TKE distribution to the CRUD simulator as a boundary condition. 
 
@@ -19,13 +19,40 @@ Initial results indicate that the method performs best at lower power levels whe
 Though mapping spatial distributions is straight forward in principal it is difficult to account for all pin configurations in the core since matching CFD and CTF solutions must be avalible in order to perform a simple map.  If corresponding CFD data is unavailabe for some portions of the thermal hydraulic conditions present in the core an interpolation procedure is required.  The effectiveness the interpolation procedure depends on the sensitivity of the spatial heat transfer and shear stress distributions on the rod surface to changes in rod bundle geometry and other auxillery variables such as local power output.  If the spatial distributions are ill behaved as a function of rod orientaion and locally-averaged thermal hydraulic conditions in the core it could become prohibtively expensive to pre-compute the necissary CFD data required to build an interpolant with an acceptible level of uncertainty in the predicted quantites.  In order to quantify this uncertainty, future development of this technique will focus on multi-rod, multi-state point cases.
 A key metric of success can be assertained from this study:  The Hi2Low technique which utilizes the fewest number of CFD runs to drive down uncertainties in the prediced quantites of interest (those which significantly impact CRUD growth) is a suppirior model.
 
-
 \section{CFD vs CTF Comparisons}
 
+Differences between CFD and subchannel predictions must be understood prior to constructing a Hi2Low model for enhancing CRUD preditions.  It is not possible to build an informative scale briding model upon data that is unphysical.  If excessive differences in the bulk flow conditions are predicted between the two codes, it is not useful to extract fine scale detail from the CFD caculations and pull them into CTF models. 
+
+\section{Copula}
+
+Formally introduced by Sklar in 1959 \citep{Sklar1959}, a copula is a function which relates marginal probability distirbutions to a multidimensional joint distribution.  Copula provide a flexible alternative to mutidimensional gaussian based models.  Copula are utilized in this work because of their ability to capure non-gaussian dependence structure between two or more corrolated random variables, for instance temperature and the TKE at a given point on a rod's surface.  
+
+Copula are leveraged in the finance industry to
+predict correlated extreme value risks in credit portfolios
+(\citep{Geidosch2016}).  Copula have received additional attention in financial and mathematics communities since 
+simpler Gaussian based dependence modeling techniques were revealed to make erroneous expected CDO portfolio loss predictions under the market conditions present in the financial crisis of
+2008-2009 (\citep{MacKenzie2013}, \citep{Li2000}).  Despite the widespread adoption of copula models in financial risk assesment community, only recently have copula been applied to flood risk
+models (\cite{Dupuis2007}, \cite{Ganguli2012}), and reliability analysis in nuclear plants
+(\cite{Kelly2007}).  The delayed adoption of the copula in the
+engineering realm is speculated to be due to a substantial increase in computational
+complexity required to construct and evaluate high dimensional copula over
+incumbent Bayesian network and multidimensional gaussain based methods.  
+It is trivial to fit low dimensional copula models to empirical data
+using a maximum likelihood or Markov Chain Monte Carlo approach (\cite{Jouini1996}).
+A method for drawing corrolated samples from a copula is provided in Appendix A.
+
+\section{Gradient Boosting}
+
+Gradient boosting is a supervised machine learning method for classification and regression problems.  
+Gradient boosting is an ensemble technique in which a sequence of weak learners are fit to the training data.  A weighted sum over all the weak learner predictions results in the final ensemble prediction.  Making a predictions from an ensemble of weak learners is analagous to taking a weighted vote from a crowd who each produce marginally better than random results - similar a certain game show's ``lifeline''.  This work primarily used gradient boosted regression trees (GBRT).
 
 \section{Kriging Literature Review}
 
-Kriging is popular technique used to construct surrogate models.  As discused in section \ref{chap:fw}, a regression kriging model is currently under consideration as a means interpolate high fidelity CFD-informed spatial data. The following is an overview of kriging applied to engineering problems.
+Kriging is popular technique used to construct surrogate models.
+This was pioneered by Danie G. Krige in his master's thesis in an effort to model the spatial distribution of ore concentrations given sparse, uncertain estimates \cite{krige51}. Following kriging's introduction, the technique has propogated through the geostatistics community.  Kriging is applicable when estimates of the mean and variance of a random field are desired in between sparse training data samples [ref].  The technique has been further explored by the machine learning community under the guise of gaussian process regression.  Kriging is related to Gaussian process regression since the underlying goal of both approaches is to model the spatial autocorrelation of a random field.  
 
-The technique of Kriging was pioneered by Danie G. Krige in his master's thesis in an effort to model the spatial distribution of gold ore concentrations given sparse, uncertain ore concentration estimates \cite{krige51}. Following kriging's humble beginings, the technique has propogated through the geostatistics community. Typically, Kriging is applied when estimates of a random field are desired in between sparse training data samples [ref].  The technique has since been further explored by the machine learning community under the guise of gaussian process regression.
-Kriging is related to Gaussian process regression since the underlying goal of both approaches is to model the spatial autocorrelation of a random field.  
+Unfortunately the Hi2Low problem under consideration does not align with the typical applications of the technique since the spatial field data is extreemly well resolved by CFD on the rod surface but is very sparse in other auxillery dimensions, such as local power level.  Usually, kriging is applied to the opposite case where the data is known at a sparse spatial resolution but auxillery predictors are known at a higher resolution.  Despite this, as discused in section \ref{chap:fw}, a regression kriging model is currently under consideration as a means interpolate between known samples of CFD spatial data fields.  Here, a brief overview of kriging applied to an engineering problem is provided.
+
+As with any regression technique, RK requires there to be some well behaved correlation between the auxillery variables and the target variable.  For instance, if the local power level rises in the core this should result in a rise in rod surface temperatures.
+
+
