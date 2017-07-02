@@ -19,30 +19,37 @@ A key metric of success can be assertained from this study:  The Hi2Low techniqu
 
 \section{CFD vs CTF Comparisons}
 
-Differences between CFD and subchannel predictions must be understood prior to constructing a Hi2Low model for enhancing CRUD preditions.  It is not possible to build an informative scale briding model upon data that is unphysical.  If excessive differences in the bulk flow conditions are predicted between the two codes, it is not useful to extract fine scale detail from the CFD caculations and pull them into CTF models. 
+Differences between CFD and subchannel predictions must be understood prior to constructing a Hi2Low model for enhancing CRUD preditions.  It is not possible to build an informative scale briding model upon data that is unphysical.  If excessive differences in the bulk flow conditions are predicted between the two codes, it is not useful to extract fine scale flow details from the CFD caculations and pull them into CTF models. 
 
 \section{Copula}
 
-Formally introduced by Sklar in 1959 \citep{Sklar1959}, a copula is a function which relates marginal probability distirbutions to a multidimensional joint distribution.  Copula provide a flexible alternative to mutidimensional gaussian based models.  Copula are utilized in this work because of their ability to capure non-gaussian dependence structure between two or more corrolated random variables, for instance temperature and the TKE at a given point on a rod's surface.  
+Formally introduced by Sklar in 1959 \cite{Sklar1959}, a copula is a function which relates marginal probability distirbutions to a multidimensional joint distribution.  Copula provide a flexible alternative to mutidimensional gaussian based models.  Copula are utilized in this work because of their ability to capure non-gaussian dependence structure between two or more corrolated random variables, for instance temperature and the TKE at a given point on a rod's surface.  
 
 Copula are leveraged in the finance industry to
 predict correlated extreme value risks in credit portfolios
-(\citep{Geidosch2016}).  Copula have received additional attention in financial and mathematics communities since 
+\cite{Geidosch2016}.  Copula have received additional attention in financial and mathematics communities since 
 simpler Gaussian based dependence modeling techniques were revealed to make erroneous expected CDO portfolio loss predictions under the market conditions present in the financial crisis of
-2008-2009 (\citep{MacKenzie2013}, \citep{Li2000}).  Despite the widespread adoption of copula models in financial risk assesment community, only recently have copula been applied to flood risk
-models (\cite{Dupuis2007}, \cite{Ganguli2012}), and reliability analysis in nuclear plants
-(\cite{Kelly2007}).  The delayed adoption of the copula in the
+2008-2009 \cite{MacKenzie2013}, \cite{Li2000}.  Despite the widespread adoption of copula models in financial risk assesment community, only recently have copula been applied to flood risk
+models \cite{Dupuis2007}, \cite{Ganguli2012}, and reliability analysis in nuclear plants
+\cite{Kelly2007}.  The delayed adoption of the copula in the
 engineering realm is speculated to be due to a substantial increase in computational
 complexity required to construct and evaluate high dimensional copula over
 incumbent Bayesian network and multidimensional gaussain based methods.  
 It is trivial to fit low dimensional copula models to empirical data
-using a maximum likelihood or Markov Chain Monte Carlo approach (\cite{Jouini1996}).
+using a maximum likelihood or Markov Chain Monte Carlo approach \cite{Jouini1996}.
 A method for drawing corrolated samples from a copula is provided in Appendix A.
 
 \section{Gradient Boosting}
 
-Gradient boosting is a supervised machine learning method for classification and regression problems.  
-Gradient boosting is an ensemble technique in which a sequence of weak learners are fit to the training data.  A weighted sum over all the weak learner predictions results in the final ensemble prediction.  Making a predictions from an ensemble of weak learners is analagous to taking a weighted vote from a crowd who each produce marginally better than random results - similar a certain game show's ``lifeline''.  This work primarily used gradient boosted regression trees (GBRT).
+Gradient boosting is a supervised machine learning method for classification and regression problems.
+The first gradient booting algorithms were introduced by J. H. Friedman (1999) \cite{friedman2001}.  In his work, Friedman connected the technique to optimization of a cost function by gradient descent.
+Nowadays, gradient boosting is ubiquitous in the machine learning community.  Gradient boosting has found use in applicatoins ranging from ecological modeling \cite{death2007} to webpage ranking problems \cite{Tyree2011}, \cite{chapelle2011}.  Particullarly in the regression setting, gradient boosted trees are higly competitive with random forests and support vector machines \cite{moisen2006}. 
+
+Gradient boosting is an ensemble technique in which a sequence of weak learners are fit to the training data in a stagewise fashion.  Each successive weak learner is specilized to correct the errors made by the previous learners in the ensemble.  A weighted sum over all the weak learner predictions results in the final ensemble prediction.  Making a predictions from an ensemble of weak learners is analagous to taking a weighted vote from a crowd with members each producing marginally better than random results - similar a certain game show's ``ask the audiance lifeline''.  
+
+As in the application of any machine learning technique, care must be taken to minimize overfitting the data.  If unmitigated, outliers can have a massive impact on the predictions make by the trained model.  Regularization techniques developed by Breiman and Friedman known as shrinkage and bagging reduce the importance of outliers on the boosted model \cite{breiman1996}.  In the machine learning context, regularization referes to any technique which adds additional penalizing terms to the model in order to prevent overfitting.  The general idea is related to the use of lagrange multipliers in solving constrained optimization problems.  An introduction to the gradient boosting algorithm is provided in Appendix C.
+
+In this work, gradient boosted descission trees are used for the regression of surface TKE and temperature quantiles and classifiaction of coupla based on local core conditions.   Each descision tree plays the role of a weak learner.  A descission tree take the form of a binary tree.  Each node in the tree represents a partition in the input space that is orthogonal to an explanatory variable axis.  In each split region, a constant predictive value is assigned; typically the mean value is used in a regression setting or the most likely class label in a classification setting.  The descision tree's used in this work are formally known as classification and regression (CART) trees.  A detailed description of CART trees and their application to ecological classification problems is provided by G. Death and K. Fabricious (2000) \cite{death2000}. 
 
 \section{Kriging Literature Review}
 
