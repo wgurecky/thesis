@@ -9,15 +9,14 @@ In order to prepair training data sets upon which to construct a Hi2Low model, a
 Significant steps have been taken to collect and distil CFD-scale CRUD and TH field data sets into useful formats.  To this end, Cicada is accompanied by a powerful suite of post processing tools which simplifies CTF-CFD comparison, statistical model inference, and interoperability with VERA-View, a CASL visualization tool. The core data assimilation capabilities rely heavily on the HDF5 library.  As a result of recent developments, Cicada is capable of exporting CFD field-data and finely resolved MAMBA results directly from a STAR-CCM+ simulation to the HDF5 format for later post processing.  
 
 A HDF5 read capability was implemented in Cicada to allow externally generated power profiles to be applied as a thermal boundary condition in the STAR-CCM+ domain.  This feature enables loose out of memory coupling with a neutronics package. 
+The axial power distribution is mapped to a CFD surface via 1D linear interpolation along the transverse axis.  Power normalization is performed to obtain the correct heat flux magnitude such that the total energy injected into the domain is equivalent to the user specified value.   Figure \ref{fig:heat_flux_ex} displays a power profile obtained from MPACT applied on the interior surface of the cladding in STAR-CCM+.
 
-The axial power distribution is mapped to a CFD surface via 1D linear interpolation along the transverse axis.  Power normalization is performed to obtain the correct heat flux magnitude such that the total energy injected into the domain is equivalent to the user specified value.   Figure \ref{heat_flux_ex} displays a power profile obtained from MPACT applied on the interior surface of the cladding in STAR-CCM+.
-
-%\begin{figure}[hbtp]
-%\centering
-%\includegraphics[scale=.35]{images/heat_flux_ex.png}
-%\caption{Power profile read from an external HDF5 file applied to the interior surface of the cladding.}
-%\label{fig:heat_flux_ex}
-%\end{figure}
+\begin{figure}[hbtp]
+\centering
+\includegraphics[scale=.35]{images/heat_flux_ex.png}
+\caption{Power profile read from an external HDF5 file applied to the interior surface of the cladding.}
+\label{fig:heat_flux_ex}
+\end{figure}
 
 The development of Cicada's HDF5 data export capabilities revealed weakness in the current tools provided by CD-Adpaco for executing C/C++ user code inside STAR-CCM+.  When writing I/O routines in user code it is desirable to leverage the parallel capabilities of the HDF5 library, however, STAR-CCM+ carries an internal dependency on a serial version (v1.8.6) of the HDF5 library.  At the time of this writing, Cicada cannot be linked against a parallel version of the library due to symbol conflicts encountered between the user specified library compiled with parallel capabilities enabled and the serial-only hdf5 library built into STAR-CCM+.
 Collaboration with CD-Adapco targeted at addressing library conflicts could benefit future multiphysics coupling endeavours that leverage STAR's C-API.
