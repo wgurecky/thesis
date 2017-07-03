@@ -15,7 +15,7 @@ Where the first term is accounts for the effect of grid flow restriction and the
 \centering
 \includegraphics[width=8cm]{images/grid_nu_eff.png}
 \caption{Localized heat transfer improvement due the the presence of a spacer grid \cite{salko17}.}
-\label{fig:cfd2ctf_map}
+\label{fig:yao_nu}
 \end{figure}
 
 The relationship between the Nusselt number and heat transfer coefficient is given in Appendix B.
@@ -96,10 +96,7 @@ In this work, gradient boosted descission trees are used for the regression of s
 \section{Kriging Literature Review}
 
 Kriging is popular technique used to construct surrogate models.
-This was pioneered by Danie G. Krige in his master's thesis in an effort to model the spatial distribution of ore concentrations given sparse, uncertain estimates \cite{krige51}. Following kriging's introduction, the technique has propogated through the geostatistics community.  Kriging is applicable when estimates of the mean and variance of a random field are desired in between sparse training data samples [ref].  The technique has been further explored by the machine learning community under the guise of gaussian process regression.  Kriging is related to Gaussian process regression since the underlying goal of both approaches is to model the spatial autocorrelation of a random field.  
+The term kriging was coined by Danie G. Krige in his master's thesis in an effort to model the spatial distribution of ore concentrations given sparse, uncertain estimates \cite{krige51}. Following kriging's introduction, the technique has propogated through the geostatistics community.  Kriging is applicable when estimates of the mean and variance of a random field are desired in between sparse training data samples [ref].  The technique has been further explored by the machine learning community under the guise of gaussian process regression.  Kriging is related to Gaussian process regression since the underlying goal of both approaches is to model the spatial autocorrelation of a random field.  
 
-Unfortunately the Hi2Low problem under consideration does not align with the typical applications of the technique since the spatial field data is extreemly well resolved by CFD on the rod surface but is very sparse in other auxillery dimensions, such as local power level.  Usually, kriging is applied to the opposite case where the data is known at a sparse spatial resolution but auxillery predictors are known at a higher resolution.  Despite this, as discused in section \ref{chap:fw}, a regression kriging model is currently under consideration as a means interpolate between known samples of CFD spatial data fields.  Here, a brief overview of kriging applied to an engineering problem is provided.
-
-As with any regression technique, RK requires there to be some well behaved correlation between the auxillery variables and the target variable.  For instance, if the local power level rises in the core this should result in a rise in rod surface temperatures.
-
+Unfortunately the Hi2Low problem under consideration does not align with the typical applications of the technique since the spatial field data is extreemly well resolved by CFD on the rod surface but is very sparse in other auxillery dimensions, such as local power level.  Usually, kriging is applied to the opposite case where the data is known at a sparse spatial resolution but auxillery predictors are known at a higher resolution.  Despite this, as discused in section \ref{chap:fw}, a regression kriging model is currently under consideration as a means interpolate between known samples of CFD spatial data fields.  
 
