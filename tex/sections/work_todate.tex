@@ -1,6 +1,11 @@
+\section{Results}
+
+To date single pin single, single statepoint results have been produced using the proposed methodology.  Future work remains to incorperatre a time-stepping algorithm into the model. 
+
+
 \section{Software Components}
 
-A suite of software tools has been developed to post process CFD data sets into training data sets for the application of supervised machine learning. 
+A suite of software tools has been developed to post process CFD data sets into training data sets suitable for the application of supervised machine learning.   The prior work also included developing packages for gradient boosting and copula simulation.  Additionally, a package capable of supplying boundary conditions to the CRUD simulation code by drawing sampls from a gradient boosted copula model was developed.
 
 \subsection{Data Extraction from CFD Simulations}
 
@@ -29,24 +34,65 @@ The resultant HDF5 output from Cicada is written in a point wise format.  For ea
 
 A toolkit to overlay custom noise atop a CTF solution was developed to provide a secondary source of training data sets.  The synthetic data generation tool provides training data sets with lower computational cost than equivalent CFD calculations.  Some properties of a true CFD solution field are preserved by the tool, namely that the shape of the marginal and copula distributions change as a function of position and local thermal hydraulic conditions in the core.  The synthetic data is not to be viewed as complete substitute for CFD data since it lacks the ability to capture spatial auto-correlation in the predicted spatial fields that arise naturally from the governing PDEs.  Neighboring points on the rod surface do not exchange any TH information in this tool.  Despite the unphysical nature of the synthetic data, the tool provides a means to verify that known relationships between the explanatory variables and the copula parameters are recovered by the gradient boosted regression model.  This is possible because the user specifies these relationships up-front as inputs to the surface field sampling routines. \\
 
-A unique blended copula model can be specified in each span providing spatially differentiated, correlated tri-variate $P(T,\ TKE,\ q'')$  distributions.
-In order to completely specify the local TH distributions conditioned on space, and local TH conditions, the parameters of the marginal distributions can themselves be made function of space and local averaged TH conditions provided by CTF.  A single pin example is given below: \\
+A unique blended copula model can be specified in each span providing space dependent, correlated tri-variate $f(T,\ TKE,\ q'')$  distributions.
+In order to completely specify the local TH distributions conditioned on space and local TH conditions, the parameters of the marginal distributions can be made function of space and local averaged TH conditions provided by CTF.  
+
+An exerpt of an input to generate a synthetic single pin dataset is given below:
+\tiny
+\begin{lstlisting}[language=XML]
+{
+    "pinID": 1,
+    "chanID": 1,
+    "averageHeatFlux": 1.2e6,
+    "spans": {
+              "0.0": {"model": "lower", "samples": 1000},
+              "2.01": {"model": "upper", "samples": 4000},
+              "2.53": {"model": "upper", "samples": 4000},
+              "2.98": {"model": "upper", "samples": 4000}
+    },
+    "upper": {
+            "0.0": {"copula":  {"family": "gauss", "params": [-0.5], "rot": 0},
+                "tke": {"type": "gauss", "params": [0.001, 0.02]},
+                "temp": {"type": "beta", "params": [5.0, 2.7], "loc": -9.2, "scale": 12.0},
+                "bhf": {"type": "gauss", "params": [0.001, 2.6e4]}
+                },
+            "0.3": {"copula":  {"family": "gauss", "params": [-0.6], "rot": 0},
+                "tke": {"type": "gauss", "params": [0.01, 0.008]},
+                "temp": {"type": "beta", "params": [5.0, 1.7], "loc": -7.0, "scale": 8.0},
+                "bhf": {"type": "gauss", "params": [0.01, 1.1e4]}
+                },
+            "1.0": {"copula":  {"family": "frank", "params": [4.0], "rot": 1},
+                "tke": {"type": "gauss", "params": [0.01, 0.005]},
+                "temp": {"type": "beta", "params": [5.0, 1.5], "loc": -4.0, "scale": 5.0},
+                "bhf": {"type": "gauss", "params": [0.01, 0.9e4]}
+                }
+            },
+    "lower": {
+            "0.0": {"copula":  {"family": "gauss", "params": [-0.6]},
+                "tke": {"type": "gauss", "params": [0.001, 0.0001]},
+                "temp": {"type": "beta", "params": ["5.0*(t)/600.0", 5.0], "loc": -2.0, "scale": 4.0},
+                "bhf": {"type": "gauss", "params": [0.01, 1.0e3]}
+                },
+            "1.0": {"copula":  {"family": "gauss", "params": [-0.6]},
+                "tke": {"type": "gauss", "params": [0.001, 0.0002]},
+                "temp": {"type": "beta", "params": [5.0, 5.0], "loc": -2.0, "scale": 4.0},
+                "bhf": {"type": "gauss", "params": [0.01, 1.0e3]}
+                }
+            }
+}
+\end{lstlisting}
+\normalsize
+
+The corrosponding sampled temperature and TKE distributions for single pin are provided in figures () and (). \\
 
 Figure here \\
 
-The input for this dataset is given below:
-
-\begin{verbatim}
-INPUT DECK FOR SINGLE PIN
-\end{verbatim}
-
-Here, the variance of the margins was increased immediately following a spacer grid, as one would expect the grid to create extra turbulence in these regions.  Additionally, the correlation coefficient of the copula model is adjusted depending on the distance to the nearest spacer grid to simulate a decrease in the concordance between surface temperature and surface shear stress present in real CFD data sets following a spacer grid. \\
-
+The variance of the temperature and TKE margins was increased immediately following a spacer grid since one would expect the grid to create extra turbulence in these regions.  Additionally, the correlation coefficient of the copula model is adjusted depending on the distance to the nearest spacer grid to simulate a decrease in the concordance between surface temperature and surface shear stress present in real CFD data sets following a spacer grid. 
 The synthetic data generation package \emph{ctfPurt} is available at \url{https://github.com/wgurecky/ctfPurt.git}.
 
 \subsection{Gradient Boosting Toolkit}
 
-A gradient boosting library was developed in the python programming language with the aim to provide an easily extensible loss function class, allowing the user to implement arbitrary loss functions in the gradient boosting framework.  As required by the proposed work, both quantile and least squares loss functions are included.  The package is applicable to both regression and classification problems.  CART tree construction controls are also provided allowing fine grained control over the weak learners.
+A gradient boosting library was developed in the python programming language.  This package provides an easily extensible loss function class, allowing the user to implement arbitrary loss functions in the gradient boosting framework.  As required by the proposed work, both quantile and least squares loss functions are included.  The package is applicable to both regression and classification problems.  CART tree construction controls are also provided allowing fine grained control over the weak learners.
 The library interface was constructed to be similar to Scikit-learn's gradient boosting API so that the newly developed boosting algorithms can stand as drop in replacements for those available in Scikit-learn.
 
 The gradient boosting package \emph{pCRTree} is available at \url{https://github.com/wgurecky/pCRTree.git}.
@@ -64,13 +110,13 @@ The \emph{StarVine} copula package and documentation is available at \url{https:
 
 \subsection{Python Interfaces to CRUD Codes}
 
-As part of this work, pythonic interfaces were developed for both the legacy CASL CRUD tool known as MAMBA1D and the state-of-the art CRUD package, Mongoose.  The python wrappers to these Fortran codes facilitate rapid prototyping of Hi2Low procedures which provide boundary conditions to the CRUD codes.  Additionally, the high level interface allows one to quickly orchestrate large CRUD sensitivity studies.
+As part of this work, pythonic interfaces were developed for both the legacy CASL CRUD tool known as MAMBA1D and the state-of-the art CRUD package, Mongoose.  The python wrappers to these Fortran codes facilitate rapid prototyping of Hi2Low procedures which provide boundary conditions to the CRUD codes.  Additionally, the high level interface simplifies the proccess of orchestrating large CRUD sensitivity studies.
 
 The python wrappers are available for download from casl-dev at \url{git@casl-dev:collaboration/MAMBA/pyMAMBA} and \url{git@casl-dev:collaboration/Mongoose/pygoose}.
 
-\subsection{Hi2Low Crud growth library}
+\subsection{Hi2Low Crud Growth Code}
 
-Finally, a package that leverages all the aforementioned tools was developed.  This high level package is the primary focus of this work - though it should be noted this package heavily depends on CRUD simulation, copula construction, and gradient boosting technologies.
+Finally, a package that leverages all the aforementioned tools was developed.  This high level package is the primary user facing result of the proposed work - though it should be noted this package is heavily dependent on CRUD simulation, copula construction, and gradient boosting technologies.
 This package orchestrates the construction and evaluation of GBRTs which provide boundary conditions for the CRUD simulation.
 Currently, single pin, single statepoint simulation is implemented with future work focused on multi pin and multi state point execution.
 

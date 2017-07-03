@@ -3,52 +3,50 @@
 An alternative procedure based on regression kriging (RK) is under consideration for producing esimates and uncertainties of the desired FOI.
 The available literature on the topic is substantial however much of the available resources focuses on kriging geostatistical data.  Regression kriging is typically introduced in the context of building
 a surrogate model of a spatial field given a limited number of known sample points and a some set of predictive features that are known at a resolution greater than or equal to the exogenous variable sample resolution.
-The steps taken to construct a RK model are similar to the currently proposed approach.  However, rather than ignoring the fine details of the spatial fields, the primary focus of an RK model is to capture spatial auto-correlations in the data.   If the ability to predict the full 2D distributions of the FOI are desired, an RK model could yeild the requisite fine scale surface distributions with uncertainty estimates. \\
+The initial steps taken to construct a RK model are similar to the currently proposed approach.  The primary focus of an RK model is to capture spatial auto-correlations in the field data.   If the ability to predict the full 2D distributions of the FOI are desired, an RK model could yeild the requisite fine scale surface distributions with uncertainty estimates. \\
 
-First the target FOI is decomposed into a deterministic and stochastic component, as in equation ().
-
+First the target FOI is decomposed into a deterministic and stochastic component, as in equation \ref{eq:decomp}.
 Let the spatial coordiantes, $\mathbf{s} = \{z, \theta\}$,
-where $z$ is the axial position and $\theta$ is the azimuthal coordinate on the rod surface. Let the FOI be denoted as $Z$.
+where $z$ is the axial position and $\theta$ is the azimuthal coordinate on the rod surface. Let the FOI be denoted as $T$.
 \begin{equation}
-Z(s) = \mu(s) + \varepsilon(s)
+T(\mathbf s) = \mu(\mathbf s) + \varepsilon(\mathbf s)
+\label{eq:decomp}
 \end{equation}
 
 The regression kriging method does not require one to directly employ the
 CTF predictions as the deterministic portion of the solution.   
 Instead
-a seperate OLS procedure performed on the sampled CFD data is used to estimate the deterministic portion of the FOI.
-In this case, the CTF results enter the kriging model as additional covariates in the construction of the regression model.  These covariates serve as predictors of how the auto-correlative behavior of the FOIs change.
+a seperate ordinary least squares (OLS) fit to the sampled CFD data is used to estimate the deterministic portion of the FOI, $ \mu(\mathbf s)$.
+The CTF results enter the kriging model as additional predictive variables.  These variables are refered to as auxillery variables and serve as predictors of spatial auto-correlation.
 It is unclear at this juncture wheather relying on the CFD data to provide the underlying deterministic TH trends  is an acceptible approach since the CFD results have been shown to significantly diverge from
 CTF predictions when subcooled nucleate boiling becomes important.
 
-let $\mathbf{q}$ represent the predictive feature array. In the case of regression kriging, the predicted temperature,
-TKE, and bounday heat flux from CTF are included as covariates.
-In this example we examine case of kriging the surface temperature field.
+The following example examines case of kriging the surface temperature field, $\hat T_\mathtt{RK}$.
+Let $\mathbf{q}$ represent a predictive feature array comprised of the temperature,
+TKE, and bounday heat flux from CTF.
+
 \begin{equation}
 \mathbf{q} = \{TKE, q'', T\}_{CTF}
 \end{equation}
 
-In matrix form, the RK model is given by:
+In matrix form, the RK model evaluated at a point $\mathbf{s}_0 $ on the rod surface is given by equation \ref{eq:rk_eval}:
 
 \begin{equation}
-\hat z_\mathtt{RK}(\mathbf{s}_0 ) = \mathbf{q}_\mathbf{0}^\mathbf{T} \cdot \mathbf{\hat \beta}_\mathtt{GLS} + \mathbf{\lambda }_\mathbf{0}^\mathbf{T} \cdot (\mathbf{z}
-- \mathbf{q} \cdot \mathbf{\hat \beta }_\mathtt{GLS} )
+\hat T_\mathtt{RK}(\mathbf{s}_0 ) = \mathbf{q}_\mathbf{0}^\mathbf{T} \cdot \mathbf{\hat \beta}_\mathtt{OLS} + \mathbf{\lambda }_\mathbf{0}^\mathbf{T} \cdot (\mathbf T_{CFD}
+- \mathbf{q} \cdot \mathbf{\hat \beta }_\mathtt{OLS} )
+\label{eq:rk_eval}
 \end{equation}
-
-The OLS regression coefficients are given by:
-
-
-Shown in equation (), the kriging weights at the sample location, $\mathbf{\lambda_0}$ are estimated by simple kriging:
+Where $\mathbf{q}_\mathbf{0}= \mathbf{q}(\mathbf s_0)$. The kriging weights at the sample location, $\mathbf{\lambda_0}$, are estimated by evaluating a variogram. The variogram must be fit to the CFD data [ref].  The vector ($\mathbf T_{CFD}
+- \mathbf{q} \cdot \mathbf{\hat \beta }_\mathtt{OLS}$) naively includes all available CFD data points, in practice a cut-off distance from the sample location, $\mathbf s_0$, can be specified to drasitcally reduce the amount of information required to construct and evaluate the variogram.
 
 \begin{figure}[hbtp]
 \centering
 \includegraphics[scale=.3]{images/rk_example.png}
-\caption{Regression kriging example.}
+\caption{Regression kriging example [ref].}
 \label{fit:rk}
 \end{figure}
 
 RK is not straight forward to apply to the current Hi2Low problem because the available field estimates are very densely populated in space - but are sparse in the feature space of local core conditions. This is a non-typical situation for the application of RK. Therefore, building a RK model of the surface fields is left as an avenue for future investigation.
-
-It is further complicated because the proposed set of covariates are not smoothly distributed in space.  Without the application of a smoothing pre-processor, these
-fields jump in value when passing over a surface seperating two neighboring CTF control volumes.
+The application of RK is further complicated because the proposed set of auxillery variables are not smoothly distributed in space.  Without the application of a smoothing pre-processor, these
+fields jump in value when passing between CTF control volumes.
 

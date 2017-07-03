@@ -1,19 +1,17 @@
 The goal of this work is to capture small scale flow phenomena downstream of
 spacer grids in COBRA-TF (CTF) \cite{salko12}, a subchannel-resolution reactor
 thermal hydraulic (TH) package, by utilizing higher fidelity results provided
-by Computational Fluid Dynamics (CFD) simulations.  Leveraging data from a high fidelity computation
-to improve the predictions made from a lower fidelity of the same physics is refered to as Hi2Low modeling.  
+by Computational Fluid Dynamics (CFD) simulations.  This technique is refered to as Hi2Low modeling.  
 The information retained from the high
-fidelity CFD calculations will target improving CRUD growth predictions in
-multi physics core simulations due to higher order flow phenomena that is not
+fidelity CFD calculations will target improving Chalk River unidentified deposite (CRUD) predictions in
+multi physics core simulations due to fine scale flow phenomena that are not
 explicitly captured in CTF.  
 Improved treatment of spacer grid
-effects on CRUD growth are required to improve predictions of CRUD induced power shift
-and CRUD induced local corrosion.  These phenomina potentially carry negative economic consequences for
-operating PWRs.
+effects on CRUD growth ultimately improve predictions of CRUD induced power shift
+and CRUD induced local corrosion.  Both of these phenomina potentially carry negative ecconomic consequences for operating PWRs.
 
 This proposal describes the development of a physics-directed, statistically
-based, surrogate model of the small scale flow features that impact Chalk River Unidentified Deposite (CRUD)
+based, surrogate model of the small scale flow features that impact CRUD
 growth.   
 The objective of the surrogate is to provide boundary conditions to the CRUD
 model.  The surface temperature, heat flux and
@@ -24,19 +22,14 @@ of position in the core, local thermal-hydraulic conditions, and perhaps
 more exogenous variables. 
 
 The subchannel code is substantially faster to execute and produces an estimtimate for
-all the relevant TH quanties at a coarse spatial resolution everywhere in the core. 
+all the relevant TH quanties at a coarse spatial resolution everywhere in the core.  The proposed method uses information from both CTF simulations and the comparitively high fidelity CFD solutions.
 The subchannel code provides the mean trends of the 
 FOI spatial distributions in this work.  The role of the CFD solution is to provide
-higher order moments of the about the mean field estimates given by CTF.  This 
-decomposition suggest the application kriging techniques since a model of the
-residual distribution of the spatial fields is sought.  Indeed, in the same
-vein as kriging, the deterministic portion of the solution is augmented by the
-predicted stochastic component of the model to provide a complete description of
-the target FOIs.  However, it is shown in this proposal that we cannot blindly
-apply a kriging model in this way since the conditional quantiles of the FOI
-residual distributions do not follow a Gaussian distribution.  This property of
-the residual distributions of the FOI gives rise to a major challenge in this
-work.
+higher order moments of the about the mean field estimates given by CTF.  
+The solution provided by CTF is augmented by a
+predicted stochastic component of the FOI informed by CFD results to provide a more detailed description of
+the target FOIs than CTF can provide alone.  However, it is shown in this proposal that the conditional TH residual distributions (conditioned on the local core conditions) do not follow a Gaussian distribution.  This property of
+the residual distributions gives rise to a major challenge in this work.
 
 
 \section{Overview of Topics}
@@ -66,7 +59,7 @@ rates.  A demonstration of the proposed method's ability to predict CRUD grow
 rates on a single rod at a single TH state point is also given in
 \autoref{chap:work}.
 
-Finally, future work is discussed in chapter \autoref{chap:fw}.  This section
+Finally, future work is discussed in \autoref{chap:fw}.  This section
 focuses on time dependent CRUD simulation strategies and uncertainty
 quantification and propagation.  The application of a regression kriging
 technique is also discussed as a potential avenue for future Hi2Low efforts
@@ -75,25 +68,27 @@ significant small scale features distributed about a mean prediction.
 
 \subsection{CASL CRUD Challenge Problems}
 
-CASL selected several problems identified by industry partners as critical
-inadequately understood engineering scale phenomena which would provide
+Consortium for the Advanced Simulation of LWRs (CASL) selected several problems identified by industry partners as critical, inadequately understood, engineering scale phenomena which would provide
 financial and safety benefits to the nuclear power industry if resolved.  A
-list of the CASL challenge problems is provided in [ref].  The problem of
+list of challenge problems identified by CASL are provided in [ref].  The problem of
 interest in this work is the prediction of Chalk River Unidentified Deposit
 (CRUD) growth rates.  The growth of CRUD comes with neutronic and thermal
 hydraulic repercussions that are of interest to CASL's industry partners.
-A CRUD simulation code produced by a LANL
-and ORNL collaboration \cite{collins16} under the name MAMBA is leveraged in this work.
+In an effort to simulate the
+effects of CRUD on the power and burnup distribution, a code produced by a LANL
+and ORNL collaboration \cite{collins16} under the name MAMBA was developed.
+This previous code development effort provides a starting point for the currently proposed work.
 
 A phenomena known as CRUD Induced Power Shift (CIPS) is caused by the presence
 of elevated \ce{^{10}B} concentrations in the CRUD layer.  Since CRUD is preferentially
-deposited in the hot regions of the core, this leads to a slight shift in
-power production towards to bottom of the core.  Predicting the severity of the
-CRUD induced power shift is of particular concern when evaluating the thermal
-margins of the fuel under a operating and accident conditions.  The prediction
+deposited on the fuel rods' in hot regions of the core, this leads to a slight shift in
+power production towards to bottom of the core under steady state operation.  Predicting the severity of the
+CRUD induced power shift is paramount when evaluating the burnup over a cycle
+and when computing thermal
+margins of the fuel under both steady operating and accident conditions.  The prediction
 of CIPS is especially important for older facilities seeking to uprate power
 output.  Additionally, the presence of CRUD on the rod surface has been shown
-to exacerbate local oxide penetration rates of some zirconium alloys [ref].
+to exacerbate local oxide penetration rates of some zirconium alloys \cite{adamson07}.
 This is known as CRUD induced local corrosion (CILC).  Improvements in CRUD
 simulation techniques ultimately improve the ability to predict the CIPS and
 CILC phenomena.
@@ -102,12 +97,12 @@ The Virtual Environment for Reactor Applications (VERA) is a key component of
 CASL's technical portfolio.  This meta-package integrates a variety of physics
 packages and multiphysics coupling options to form a robust reactor simulation
 capability.  For multi-cycle depletion computations, VERA relies upon MPACT, a
-2D-1D method of characteristics neutronics package, coupled with a subchannel
-thermal hydraulics code COBRA-TF (CTF).  An integrated CRUD modeling capability
+2D-1D method of characteristics neutronics package, coupled with the subchannel
+thermal hydraulics code, CTF.  An integrated CRUD modeling capability
 is provided by MAMBA to address the CRUD induced power shift challenge problem.
 
 To reduce computation times, the subchannel TH code discretized the reactor
-domain into large, centimeter scale finite volumes. As a consequences of this
+domain into large, centimeter scale finite volumes. As a consequence of this
 discretization scheme, sub-centimeter scale thermal hydraulic effects of the
 spacer grids on CRUD are averaged over large regions on the fuel rods'
 surfaces.  Though small scale phenomena are not explicitly modeled, they are
@@ -137,21 +132,21 @@ extreme TH events above a given threshold.
 Accurately predicting CRUD induced power shift (CIPS) requires accurate CRUD
 thickness and boron deposition estimates in all regions of the core.  Core wide
 phenomena are out of scope for high fidelity CFD-Neutronic-CRUD coupled
-simulations.  Instead, a lower fidelity subchannel-CRUD coupling capability is used to
+simulations.  Instead, the lower fidelity subchannel-CRUD coupling capability is used to
 predict CIPS throughout a cycle.  CTF is not capable of simulating the detailed
 flow patterns downstream spacer grids.  Details in the flow field
 downstream of spacer grids have important consequences for CRUD growth and
-erosion, namely the local depression in surface temperatures and locally
-increased shear stresses.  CRUD growth is extremely sensitive to the surface
+erosion, namely CRUD growth is affected by the local depression in surface temperatures and locally
+increased shear stresses near spacer girds.  CRUD growth rates are extremely sensitive to the rod surface
 temperature around the saturation point.  Therefore, growing crud at the bulk
 average predicted TH conditions given by CTF in a coarse axial segment may not
 yield the correct amount of CRUD growth in that region.  To overcome this issue
 a surrogate model which is informed by CFD or experimental data that captures
-small scale flow effects downstream of spacer grids can provide the requisite
+small scale flow effects downstream of spacer grids is proposed to provide the requisite
 boundary conditions to the CRUD model.  Since experimental data and/or CFD data
 cannot be generated for every conceivable combination of thermal hydraulic and
-geometric cases present in a reactor, a surrogate serves to produce predicted
-quantities in the entire feature space of interest rather than just at known
+geometric cases present in a reactor, the surrogate must produce
+TH field estimates in the entire feature space of interest rather than just at known
 sample points.  The goal in the construction of a surrogate is to minimize the
 number of CFD or experimental data sets required to drive down uncertainties in
 the predicted quantities to an acceptable level.
@@ -170,7 +165,7 @@ Sklar's theorem is leveraged to decompose multivariate probability
 densities of the FOI into into independent copula and marginal models. The free parameters
 within the copula model are predicted using a combination of supervised
 regression and classification machine learning techniques with training data
-sets supplied by a suite of pre-computed CFD results spanning the typical PWR TH
+sets supplied by a suite of pre-computed CFD results spanning a typical PWR TH
 envelop. 
 
 Since CRUD growth is dominated by threshold physics

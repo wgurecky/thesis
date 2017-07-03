@@ -21,24 +21,31 @@ In the figure $f$ denotes a probability density function whos value can be inter
 
 \subsection{Hi2Low Approach}
 
-In this approach the the deterministic and random components of the spatial field are modeled separately.  The deterministic component is supplied by the coarse CTF solution.
-The availability of the deterministic portion of the fields of interest via CTF is a boon the proposed Hi2Low methodology.  Typically, additional modeling decisions must be made to construct an estimator for the average behavior of the output fields by a predictor derived by moving average or ordinary least squares regression.  The current methodology is absolved from constructing this predictor.
+In this approach the FOI are split into deterministic and random components where the coarse CTF solution supplies the former and the CFD results provides the latter.
+The availability of the deterministic portion of the fields of interest via CTF is a boon the proposed Hi2Low methodology.  In a pure regression setting in which only CFD data is availabe, an additional modeling step to construct an estimator for the average behavior of the output fields would be necissary.  This predictor would be derived by moving average or ordinary least squares regression.  However, the current methodology is absolved from constructing this predictor.
 
 \begin{equation}
-    F(\mathbf x, \mathbf \theta) = \underbrace{\mu(\mathbf{x})}_\text{CTF} + \underbrace{\varepsilon({\mathbf x, \mathbf \theta})}_\text{CFD Informed} + b(\mathbf{x})
+    F(\mathbf z, \mathbf q) = \underbrace{\mu(\mathbf{z})}_\text{CTF} + \underbrace{\varepsilon({\mathbf z, \mathbf \theta(\mathbf q)})}_\text{CFD Informed} + b(\mathbf{z})
 \end{equation}
-$\varepsilon(x, \theta)$ is the random component of the spatially varying field and can be approximated using a CFD informed model.  $\mathbf \theta$ represents free model parameters that must be learned from the available CFD data.
- The locally averaged quantities, $\mu$, are spatially averaged over a CTF patch.
-$b$ is bias present in the mean prediction between the CTF and CFD solutions ($\mu_{CTF} - \mu_{CFD}$).
+Where $\mathbf z$ represents the spatial cordinates on the rod surface and $\mathbf q$ are a set of auxillery predictor variables.  In this work $\mathbf q$ are taken to be the surface $T, q''$ and $TKE$ fields supplied by CTF. $\varepsilon(z, \theta(\mathbf q))$ is the random component of the spatially varying field and can be trained using CFD data sets.  $\mathbf \theta(\mathbf q)$ represent copula and marginal model parameters that must be learned from the available CFD data.  These free parameters vary as a function of the auxillery predictors.
+ The quantities, $\mu(z)$, are spatially averaged over a CTF patch.
+$b(z)$ is bias present in the mean predictions between the CTF and CFD solutions ($b(z) = \mu_{CTF}(z) - \mu_{CFD}(z)$).
 
-It would appear that an additional regression step is required to build a predictor for the bias, $b(\mathbf{x})$; however, the bias term can be rolled into the residual term, $\varepsilon$, resulting in residual distributions that are not stationary about zero.
-Residual distributions of temperature and turbulent kinetic energy on the rod surface are computed by using the CTF solution to de-trend the CFD born surface fields.  As a consequence, upon evaluation, the proposed Hi2Low model drags the mean predicted surface temperature to the CFD value.  This procedure violates the CTF energy balance.  In the future it may be adventageous to target the heat transfer coefficient rather than the raw surface temperature as a predicted Hi2Low model response.
+It would appear that an additional regression step is required to build a predictor for $b(\mathbf{z})$; however, the bias term can be rolled into the residual term, $\varepsilon$, resulting in residual distributions that are not stationary about zero.
+Residual distributions of temperature and turbulent kinetic energy on the rod surface are computed by using the CTF solution to de-trend the CFD born surface fields.  As a consequence, upon evaluation, the proposed Hi2Low model drags the mean predicted surface temperature to the CFD value.  Unfortunately, this procedure violates the CTF energy balance.  In the future it may be adventageous to target the heat transfer coefficient rather than the raw surface temperature as a predicted Hi2Low model response.
 
-This issue was partially addressed in the work by Salko et. al. by using a normalized heat transfer coefficient map rather than a temperature map; however, since the surface temperature and heat transfer coefficient are non-trivially related in the subcooled boiling regime it is difficult to rescale the HTC field without disregarding the energy balance on the CTF mesh.  Further investigation into the proper treatment of the bias term is required.  It is not possible to respect the energy balance on both the CFD and CTF meshes when constructing a Hi2Low model in the current fashion.  One possible though expensive solution is to tune out the bias between the codes via calibration of closure models.
+This issue was partially addressed in the work by Salko et. al. by using a normalized heat transfer coefficient map rather than a temperature map; however, since the surface temperature and heat transfer coefficient are non-trivially related in the subcooled boiling regime it is difficult to justify rescaling the HTC field without disregarding the energy balance satisfied on the CFD mesh.  Further investigation into the proper treatment of the bias term is required.  It is not possible to respect the energy balance simultaneously on the CFD and CTF meshes when constructing a Hi2Low model in the current fashion.  One possible though expensive solution is to tune out the bias between the codes via calibration of closure models.
 
 \subsection{Capturing Dependence: Copula}
 
-Consider the small patch on a rod's surface shown in figure ().  This patch is treated as a black box in which spatial information is not preserved. Drawing surface samples of the FOI yeilds a correlated temperature, turbulent kinetic energy and boundary heat flux joint distribution.  It is likely that a high temperature corresponds to a low turbulent kinetic energy in this patch, for instance.  This dependence structure is clearly seen in figure ().  The dependence behavior is not fully described by a linear relationship; there exists some dispersion in the joint emperical distributions.  Furthermore, the nature of the dispersion itself is not necissarily gaussian. \\
+Consider the small patch on a rod's surface shown in figure \ref{fig:ctf_patch_dist}.  This patch is treated as a black box in which spatial information is not preserved. Drawing surface samples from a CFD simulation of the FOI yeilds a correlated temperature, turbulent kinetic energy and boundary heat flux joint distribution.  It is likely that a high temperature corresponds to a low turbulent kinetic energy in this patch, for instance.  This dependence structure is clearly seen in figure \ref{fig:ctf_patch_dist}.  The dependence behavior is not fully described by a linear relationship; there exists some dispersion in the joint emperical distributions.  Furthermore, the nature of the dispersion is not gaussian. \\
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=18cm]{images/ctf_patch_ex3.png}
+\caption{Relationships between surface temperture [K], TKE [$J/kg$], boron mass density $g/cm^2$, and CRUD thickness [microns].}
+\label{fig:ctf_patch_dist}
+\end{figure}
 
 It would appear that by removing the spatial component of the fields in a patch we have introduced additonal complications by building a joint density function who's shape varies from location to location in the core.  Indeed, this joint density function is non-gaussian and generally ill behaved.  However, by Sklar's theorem this joint distribution can be decomposed into a product of a special function called a copula and univariate probability density functions.  Furthermore, the margins can be modeled indipendently from the copula and later recombined to reconstruct, approximately, the original joint density.  By restricting our attention to a special class of copula governed by a single parameter the original problem of predicting $M+2$ dimensional fields is transformed into a problem of predicting multiple, indipendent, $M+1$ dimensional functions.  $M$ is the number of non-spatial exogenous variables. \\
 
@@ -99,13 +106,9 @@ The quantile loss function is given by equation ().
 \end{equation}
 Where $\mathbb{I}$ is the indicator function.
 
-The quantile loss function is substituted for the squared-error loss function in the gradient boosting algorithm to regress on a qunatile of interest rather than on the mean.  The result of multiple quantile predictores is shown in figure ().  It is important to mention that the model gives conditional quantiles and as such the interpretation of the quantile regression surface sensitivities to changes in the explanatory variable must be carefully made.  The prediced quantiles are conditioned on the location in the core $x_i$, in other words the model provides $Q_T(\tau|x_i)$.  When propogating uncertainties in the exogenous variables to the predicted quantiles it is necissary to compute the sensitivity of each quantile, $\tau_j$ at some location $x_i$ to small purtubations in each of the covariates.
-\begin{equation}
-\beta_{\tau_{ij}} = \frac{\partial Q_T(\tau_j|x_i)}{\partial x_i}
-\end{equation}
+The quantile loss function is substituted for the squared-error loss function in the gradient boosting algorithm to regress on a qunatile of interest rather than on the mean.  The result of multiple quantile predictores is shown in figure (). 
 
-A one dimensional slice from the multiple regression is provided in figure ().
-The resulting quantiles are used to construct a step-wise cumulative distribution, which in turn is used to build a histogram of the predicted quantity of interest. \\
-
-Shown in figure (), in place of the stepwise reprentation, a piecewise cubic hermite interpolating polynomial (PHCIP) can be fit to the discrete quantile estimate to generate a differentiable CDF.
-It can be shown that PCHIP interpolation preserves monotinicity of the CDF if the provided quantiles are strictly monotone [].  This condition is enforced in the software, and any violation of the monotone restriction would indicate a software bug in the quantile regression code.
+A one dimensional slice from the quantile regression is provided in figure ().
+The resulting quantiles are used to construct a step-wise cumulative distribution, which in turn is used to build a histogram of the predicted quantity of interest. 
+Shown in figure (), in place of the stepwise reprentation, a piecewise cubic hermite interpolating polynomial (PHCIP) can be fit to the discrete conditional quantile distribution to generate a differentiable CDF.
+It can be shown that PCHIP interpolation preserves monotinicity of the CDF if the provided quantiles are strictly monotone [].  This condition is enforced in the software; any violation of the monotone restriction would indicate a software bug in the quantile regression code.
