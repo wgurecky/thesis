@@ -8,12 +8,12 @@ spot TH conditions that give rise to the largest and smallest boron
 precipitation concentrations without precisely knowing where on the rods'
 surface gave rise to the sampled TH conditions.
 
-A large body of future work will focus on time steping and uncertainty propogation.
-The changing TH conditoins throught a cycle must be accunted for in the simulation of CRUD build up over time.  Furthermore, the feedback between the CRUD layer and the rod surface temperature due to augmentation of the thermal resistance should be accounted for when stepping the simulation forward in time.
+A large body of future work will focus on time steeping and uncertainty propagation.
+The changing TH conditions through a cycle must be accounted for in the simulation of CRUD build up over time.  Furthermore, the feedback between the CRUD layer and the rod surface temperature due to augmentation of the thermal resistance should be accounted for when stepping the simulation forward in time.
 Uncertainties present in the gradient boosted models should be computed and
-propogated into the CRUD results.   Uncertainties are expected to compound in time, thus there exists an incentive to minimize model induced uncertainties.
+propagated into the CRUD results.   Uncertainties are expected to compound in time, thus there exists a strong incentive to minimize model induced uncertainties.
 
-Additionally, an assesment of the regression kriging techniques should be made for this Hi2Low application.  Leveraging this technique for interpolating spatial fields is attractive because it naturally supplies uncertainty estimates for the value of the FOI at all interpolated locations.  However, the issue of sparsely available auxillery variables must be addressed before RK becomes applicable to this work.
+Additionally, an assessment of the regression kriging techniques should be made for this Hi2Low application.  Leveraging this technique for interpolating spatial fields is attractive because it naturally supplies uncertainty estimates for the value of the FOI at all interpolated locations.  However, the issue of sparsely available auxiliary variables must be addressed before RK becomes applicable to this work.
 
 A key measure of success for this Hi2Low work with respect to  CRUD predictions
 in the vicinity of spacer grids is the computation time needed to build the

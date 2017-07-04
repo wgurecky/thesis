@@ -2,8 +2,45 @@
 
 To date single pin single, single state point results have been produced using the proposed methodology.  Future work remains to incorporate a time-stepping algorithm into the model. 
 
-To test the method on a single pin and for a single state, CTF was executed with boundary conditions and the power level shown in table ().  Next, a synthetic CFD data set was generated  from $ctfPurt$ (see \autoref{chap:synth} for details).
-The gradient boosted copula model was then fit to the synthetic single pin CFD data set.  Finally, the model was evaluated on each CTF patch on the pin surface and the CRUD model was executed [in a Monte-Carlo-fashion on each CTF patch with 200 samples/patch] given boundary conditions sampled from the boosted model. The CRUD results were then summed over the rod surface and are presented in table ().
+To test the method on a single pin and for a single state, CTF was executed with boundary conditions and the power level shown in table \ref{tab:ctf_inputs}.  
+
+\begin{table}[h!]
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline 
+Input	& Value	& Unit	\\ \hline
+Average Heat Flux	& 1.2e6	& [W/$\mathrm m^2$]	\\
+Power Profile	& flat	& -	\\
+Cladding Radius	& 0.00475	&[m]	\\
+Rod Height	&3.658	&[m]	\\
+Pin Pitch  & 1.26   & [cm]  \\
+Inlet Flow Rate	& 0.3	&[kg/s]	\\
+Inlet Temperature	&565.8	&[K]	\\
+Pressure	&2250	&[psi]	\\
+\hline
+\end{tabular}
+\caption{Inputs to CTF model for single pin case.}
+\label{tab:ctf_inputs}
+\end{center}
+\end{table}
+
+Given the single pin CTF results, a synthetic CFD data set was generated  from $ctfPurt$ (see \autoref{chap:synth} for details).
+The gradient boosted copula model was then fit to the synthetic single pin CFD data set.  Finally, the regression models were evaluated on each CTF patch on the pin surface and the CRUD model was executed in a Monte-Carlo-fashion on each CTF patch with 200 samples/patch. All CRUD samples were drawn with equal weight $w =A/N$ where $A$ is the patch area, and $N=200$ is the number of samples per patch.  CRUD was grown with fixed TH boundary conditions conditions for $100[days]$ with a CRUD time step size size of $100[s]$. The CRUD results were integrated over the rod surface and are presented in table \ref{tab:crud_res}.
+
+\begin{table}[h!]
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline 
+ QOI  &   CTF	&  CFD (Synthetic)	& Hi2Low Model \\ \hline
+Total Boron Mass [g]& 0.00587	&  0.00496	& 0.00555 \\
+Total CRUD Mass [g]	& 8.788	&  7.155 & 7.710	\\
+\hline
+\end{tabular}
+\caption{Single pin CRUD result summary.}
+\label{tab:crud_res}
+\end{center}
+\end{table}
+The synthetic CFD data was generated at a resolution of $4000$ randomly distributed samples per span.
 
 \begin{figure}[hbtp]
 \centering
@@ -13,6 +50,36 @@ The gradient boosted copula model was then fit to the synthetic single pin CFD d
 \end{figure}
 
 Figure \ref{fig:ktau_plot} demonstrates a combined classification/regression tree evaluation.  Both the copula type and strength of correlation between the temperature and TKE are displayed.  A large negative value for Kendall's tau, $\tau_\rho$, indicates stronger negative dependance between the temperature and TKE. 
+
+\begin{figure}[hbtp]
+\centering
+\includegraphics[width=14cm]{images/b10_model_out.png}
+\caption{Axial distribution of CRUD \ce{^{10}B} density $[g/cm^2]$ after 100[days] with TH boundary conditions supplied by the Hi2Low model. The 68th, 95th, and 99th percentiles are displayed by decreasing color intensity. Baseline CTF result shown in green.}
+\label{fig:b10_model_out}
+\end{figure}
+
+\begin{figure}[hbtp]
+\centering
+\includegraphics[width=14cm]{images/b10_cfd_out.png}
+\caption{Axial distribution of CRUD \ce{^{10}B} density $[g/cm^2]$ after 100[days] from synthetic CFD data. Baseline CTF result shown in green.}
+\label{fig:b10_cfd_out}
+\end{figure}
+
+\begin{figure}[hbtp]
+\centering
+\includegraphics[width=14cm]{images/crud_model_out.png}
+\caption{Axial distribution of CRUD mass density $[g/cm^2]$ after 100[days] with TH boundary conditions supplied by the Hi2Low model. Baseline CTF result shown in green.}
+\label{fig:crud_model_out}
+\end{figure}
+
+\begin{figure}[hbtp]
+\centering
+\includegraphics[width=14cm]{images/crud_cfd_out.png}
+\caption{Axial distribution of CRUD mass density $[g/cm^2]$ after 100[days] from synthetic CFD data. Baseline CTF result shown in green.}
+\label{fig:crud_cfd_out}
+\end{figure}
+
+Figures \ref{fig:b10_model_out} through \ref{fig:crud_cfd_out} show that the Hi2Low model tends to broaden the CRUD mass density distributions provided by the CFD results.  An investigation into the source of these discrepancies is planned.  
 
 \section{Software Components}
 

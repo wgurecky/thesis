@@ -12,9 +12,9 @@ CTF sum boron mass = 0.005871
 CFD (Synthetic-fine [4000 samples/span])
 ----------------------------------
 Expected area [m] = 0.108636
-Total Rod surface area  [m]= 0.108381
-CFD sum crud mass = 7.151985
-CFD sum boron mass = 0.004967
+Total Rod surface area  [m]= 0.108333
+CFD sum crud mass = 7.155409
+CFD sum boron mass = 0.004966
 
 CFD (Synthetic-coarse [1000 samples/span])
 ----------------------------------
