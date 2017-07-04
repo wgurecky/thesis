@@ -54,7 +54,7 @@ The proposed method revolves around tracking the the joint $f(T, TKE, q'')$ dist
 It would appear that by removing the spatial component of the fields in a patch we have introduced additonal complications by building a joint density function who's shape varies from location to location in the core.  Indeed, this joint density function is non-gaussian and generally ill behaved.  However, by Sklar's theorem this joint distribution can be decomposed into a product of a special function called a copula and univariate probability density functions.  Furthermore, the margins can be modeled indipendently from the copula and later recombined to reconstruct, approximately, the original joint density.  By restricting our attention to a special class of copula governed by a single parameter the original problem of predicting $M+2$ dimensional fields is transformed into a problem of predicting multiple, indipendent, $M+1$ dimensional functions.  $M$ is the number of non-spatial exogenous variables. \\
 
 A two dimensional version of Sklar's theorem is shown in equation ().  The multi-dimensional case and additional details are provided in Appendix A.  Let $x$ represent temperature and $y$ be the turbulent kinetic energy.
-Given a joint CDF of these two quantities, $F$, with cumulative temperature and TKE margins: $F(x)=P[X < x] = \int_{-\infty}^{x}f(t)dt$
+Given a joint CDF of these two quantities, $H$, with cumulative temperature and TKE margins: $F(x)=P[X < x] = \int_{-\infty}^{x}f(t)dt$
 and $F(y)=P[Y < y] = \int_{-\infty}^{y}f(t)dt$ Sklar's theorem states \cite{Nelsen2006}:
 \begin{equation}
 H(x,y) = C(F(x), F(y))
@@ -72,15 +72,16 @@ f(x, y) = c(F(x), F(y)|\theta_c)f(x|\theta_x)f(y|\theta_y)
 Where $\theta_c$ and $\{\theta_{x}, \theta_{y}\}$ are free copula and marginal model parameters respectively.
 These parameters govern the shape of the joint distribution.  In a fully parametric approach, these shape parameters would be specified as a function of local core conditions; however, since CFD data gives rise to of complicated distribution shapes, a semi-parametric approach is proposed.  Instead of assuming some distributions - beta, gaussian, ect. - the proposed stratagy is to reconstruct the margins via quantile regression.  In the current work the quantile regressions are built from gradient boosted regression trees (GBRT). 
 
-In addition, a regression model for the copula shape parameter $\theta_c$ is needed, though we will show this can be subsituted for a regression on Kendall's tau.  Similar to the quantile regression stratagy, a gradient boosted regression tree model is proposed for this purpose.  Refer to section [] for details.  Thus the model is not fully non-parametric.
+In addition, a regression model for the copula shape parameter $\theta_c$ is needed, though we will show this can be subsituted for a regression on Kendall's tau.  Similar to the quantile regression stratagy, a gradient boosted regression tree model is proposed for this purpose. Thus the model is not fully non-parametric.
 
 If the quantiles of the margins and the properties of the copula can be specified as a function of local core conditions then the full joint distribution can be recovered on any CTF patch.
 
 In this work, a particular porperty of a a certain class of copula functions is utilized.
 For the case of Archimedean copula, Kendall's tau, $\rho_\tau$ is
-related to the copula's shape parameter by \cite{Nelsen2006}:
+related to the copula's shape parameter by equation \ref{eq:kt} \cite{Nelsen2006}:
 \begin{equation}
 \rho_\tau = 1 + 4 \int_0^1 \frac{\varphi(\theta_c,t)}{\varphi'(\theta_c, t)}dt
+\label{eq:kt}
 \end{equation}
 Where $\varphi(\theta_c, t)$ is the copula's generator function and $\varphi'$ is the first derivative of the generator function with respect to $t$.  An exaustive list of copula generting functions can be found in \cite{Nelsen2006}.
 If we restrict ourselves to the class of Archimedean copula we only need $\rho_\tau$ and the copula type, $\Theta_c$ (gumbel, frank, clayton, ect.) to approximately specify the dependence structure between the temperature and turbulent kinetic energy residual distributions on each patch.  Therefore, the gradient boosted copula model predicts $\rho_\tau$ as a function of local core conditions rather than $\theta_c$.
@@ -89,14 +90,15 @@ If we restrict ourselves to the class of Archimedean copula we only need $\rho_\
 
 A description of the underlying dependence structure is not sufficient to reconstruct the full joint probability density.  An additional model is required to provide the shape of margins conditioned on the location in the reactor and the local thermal hydraulic conditions.  To this end, a gradient boosted quantile regression model is used.
 
-When composing the complete gradient boosted model from a sequence CART trees the ability to compute the relative importance of each explanatory variableis provided at no additional computational cost.  Given an input variable set of length $N$; each time an split is made orthogonal to an input axis, the model gain (measured by eq () in case of regression and equation () in case of classification) is recorded and placed in a vector of length $N$.  After the CART tree reaches it's maximum depth, the split gain vector is summed.  After boosting is complete and all tree have been grown, the gain vectors are multiplied by the tree weight $\gamma_i$ and summed over all trees.
+When composing the gradient boosted model from a sequence CART trees it is possible to estimate the relative importance of each explanatory variable at no additional computational cost.  Given an input variable set of length $N$; each time an split is made orthogonal to an input axis, the model gain (measured by eq () in case of regression and equation () in case of classification) is recorded and placed in a vector of length $N$.  After the CART tree reaches it's maximum user specified depth, the nodes' split gain vectors are summed.  After boosting is complete and all tree have been grown, the tree gain vectors are multiplied by their respective weights, $\gamma_i$, and summed over all trees.
 \begin{equation}
 W = g_i
 \end{equation}
+The end result measures of how often each explantory axis was chosen for splitting weighted by the gain of the splits.
 
 \subsubsection{Quantile Regression}
 
-The univariate distributions of the temperature and turbulent kinetic energy are shown to be non gaussian in shape in figure \ref{fig:ctf_patch_dist}.  The asymitries in these distributions must be accurately preserved by the regression model.  To accomplish this, a non-parametric model for the margins is built by combining several quantile predictors.  Leveraging quantile regressions to reconstruct conditional distributions has been described previously by Oaxaca (1973) [ref].
+The univariate distributions of the temperature and turbulent kinetic energy are shown to be non gaussian in shape in figure \ref{fig:ctf_patch_dist}.  The asymitries in these distributions must be accurately preserved by the regression model.  To accomplish this, a non-parametric model for the margins is built by combining several quantile predictors.  Leveraging quantile regressions to reconstruct conditional distributions has been described previously by Oaxaca (1973) [ref] and Koenker (2005) \cite{koenker05}.
 
 Given a cumulative distribution function (CDF) and a random variable $X$:
 \begin{equation}
@@ -108,12 +110,24 @@ Q_\tau(X) = F_X^{-1}(\tau)
 \label{eq:th_quantile}
 \end{equation}
 
-The quantile loss function is given by equation \ref{eq:qt_loss_a} [ref].
+The quantile loss function is given by equation \ref{eq:qt_loss_a} \cite{koenker05}.
 \begin{equation}
-l_\tau(E) = E \cdot (\tau - \mathbb{I}_{(E < 0)})
+l_\tau(u) = u \cdot (\tau - \mathbb{I}_{(u < 0)})
 \label{eq:qt_loss_a}
 \end{equation}
-Where $\mathbb{I}$ is the indicator function.  The difference bewteen the predicted quantile and the emperical (knwon from data quantile) is $E=\hat Q_\tau - Q_\tau$.
+Where $\mathbb{I}$ is the indicator function and $u=X - \epsilon$.
+Given sample data $\{x_0, ... x_n\}$ (distributed according to $F_X$), the $\tau^{th}$ sample quantile can be computed by minimizing equation \ref{eq:qt_loss_a} wrt. $\epsilon$:
+
+\begin{equation}
+\hat Q_\tau = \mathrm{min}_\epsilon \sum_{i=1}^n l_\tau (x_i - \epsilon)
+\end{equation}
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=6cm]{images/q_loss.png}
+\caption{Quantile loss function.  Reproduced from \cite{koenker05}.}
+\label{fig:ctf_patch_dist}
+\end{figure}
 
 The quantile loss function is substituted for the squared-error loss function in the gradient boosting algorithm to regress on a qunatile of interest rather than on the mean.  
 
