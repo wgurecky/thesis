@@ -3,12 +3,12 @@
 To date single pin single, single state point results have been produced using the proposed methodology.  Future work remains to incorporate a time-stepping algorithm into the model. 
 
 To test the method on a single pin and for a single state, CTF was executed with boundary conditions and the power level shown in table ().  Next, a synthetic CFD data set was generated  from $ctfPurt$ (see \autoref{chap:synth} for details).
-The gradient boosted copula model was then fit to the synthetic single pin CFD data set.  Finally, the model was evaluated on each CTF patch on the pin surface and the CRUD model was executed [in a monte-carlo-fashion on each CTF patch with 200 samples/patch] given boundary conditions sampled from the boosted model. The CRUD results were then summed over the rod surface and are presented in table ().
+The gradient boosted copula model was then fit to the synthetic single pin CFD data set.  Finally, the model was evaluated on each CTF patch on the pin surface and the CRUD model was executed [in a Monte-Carlo-fashion on each CTF patch with 200 samples/patch] given boundary conditions sampled from the boosted model. The CRUD results were then summed over the rod surface and are presented in table ().
 
 \begin{figure}[hbtp]
 \centering
 \includegraphics[width=10cm]{images/ktau_plot.png}
-\caption{Kendall's tau vs. axial position. Output from combined regression and classification tree evaluation. Colored by copula type: Green=Gauss, Blue=Gumble, Red=Frank.}
+\caption{Kendall's tau vs. axial position. Output from combined regression and classification tree evaluation. Colored by copula type: Green=Gauss, Blue=Gumbel, Red=Frank.}
 \label{fig:ktau_plot}
 \end{figure}
 
@@ -16,11 +16,11 @@ Figure \ref{fig:ktau_plot} demonstrates a combined classification/regression tre
 
 \section{Software Components}
 
-A suite of software tools has been developed to post process CFD data sets into training data sets suitable for the application of supervised machine learning.   The prior work also included developing packages for gradient boosting and copula simulation.  Additionally, a package capable of supplying boundary conditions to the CRUD simulation code by drawing sampls from a gradient boosted copula model was developed.
+A suite of software tools has been developed to post process CFD data sets into training data sets suitable for the application of supervised machine learning.   The prior work also included developing packages for gradient boosting and copula simulation.  Additionally, a package capable of supplying boundary conditions to the CRUD simulation code by drawing samples from a gradient boosted copula model was developed.
 
 \subsection{Data Extraction from CFD Simulations}
 
-In order to prepair training data sets upon which to construct a Hi2Low model, a small package has been developed to aid in data extraction from STAR-CCM+ CFD simulations.  This tool was developed as a subpackage of a code called Cicada. Initially developed in pure C as a demonstrative tool for STAR-CCM+ and CRUD coupling, Cicada's capabilities have evolved to encompass a variety new technologies.  Successful incorporation of the HDF5 library and portions of Trilinos have shown it is possible to leverage powerful C/C++ tools inside STAR-CCM+ user code.  Cicada's I/O capabilities, usability and internal error handling benefited from the inclusion of these third party tools.
+In order to prepare training data sets upon which to construct a Hi2Low model, a small package has been developed to aid in data extraction from STAR-CCM+ CFD simulations.  This tool was developed as a sub package of a code called Cicada. Initially developed in pure C as a demonstrative tool for STAR-CCM+ and CRUD coupling, Cicada's capabilities have evolved to encompass a variety new technologies.  Successful incorporation of the HDF5 library and portions of Trilinos have shown it is possible to leverage powerful C/C++ tools inside STAR-CCM+ user code.  Cicada's I/O capabilities, usability and internal error handling benefited from the inclusion of these third party tools.
 
 Significant steps have been taken to collect and distil CFD-scale CRUD and TH field data sets into useful formats.  To this end, Cicada is accompanied by a powerful suite of post processing tools which simplifies CTF-CFD comparison, statistical model inference, and interoperability with VERA-View, a CASL visualization tool. The core data assimilation capabilities rely heavily on the HDF5 library.  As a result of recent developments, Cicada is capable of exporting CFD field-data and finely resolved MAMBA results directly from a STAR-CCM+ simulation to the HDF5 format for later post processing.  
 
@@ -35,7 +35,7 @@ The axial power distribution is mapped to a CFD surface via 1D linear interpolat
 \end{figure}
 
 The development of Cicada's HDF5 data export capabilities revealed weakness in the current tools provided by CD-Adpaco for executing C/C++ user code inside STAR-CCM+.  When writing I/O routines in user code it is desirable to leverage the parallel capabilities of the HDF5 library, however, STAR-CCM+ carries an internal dependency on a serial version (v1.8.6) of the HDF5 library.  At the time of this writing, Cicada cannot be linked against a parallel version of the library due to symbol conflicts encountered between the user specified library compiled with parallel capabilities enabled and the serial-only hdf5 library built into STAR-CCM+.
-Collaboration with CD-Adapco targeted at addressing library conflicts could benefit future multiphysics coupling endeavours that leverage STAR's C-API.
+Collaboration with CD-Adapco targeted at addressing library conflicts could benefit future multiphysics coupling endeavors that leverage STAR's C-API.
 
 STAR-CCM+ is typically executed in a parallel environment in which each MPI processes owns a subset of the CFD domain with overlapping regions for solution transfer.  Care must be observed that data from these overlapping ``halo cells'' are not included in the export.  In a parallel environment field data is first collected on the root MPI process in sequential order before being exported to the HDF5 file.  Consequently, the serial version of the HDF5 library is sufficient for performing data transfer.  The sequential MPI send-receive paradigm guarantees that the ordering of data points is identical for each exported data field: E.g. the data is consistent with respect to global cell index in the output arrays.   
 
@@ -43,7 +43,7 @@ The resultant HDF5 output from Cicada is written in a point wise format.  For ea
 
 \subsubsection*{CFD vs CTF Comparisons}
 
-Differences between CFD and subchannel predictions must be understood prior to constructing a Hi2Low model for enhancing CRUD preditions.  As mentioned previously, tools included in Cicada have facilitated CFD to CTF comparisons.  Figure () illustrates a rod operating at () nominal power.
+Differences between CFD and subchannel predictions must be understood prior to constructing a Hi2Low model for enhancing CRUD predictions.  As mentioned previously, tools included in Cicada have facilitated CFD to CTF comparisons.  Figure () illustrates a rod operating at () nominal power.
 
 TODO: include diff plots
 
@@ -55,7 +55,7 @@ A toolkit to overlay custom noise atop a CTF solution was developed to provide a
 A unique blended copula model can be specified in each span providing space dependent, correlated tri-variate $f(T,\ TKE,\ q'')$  distributions.
 In order to completely specify the local TH distributions conditioned on space and local TH conditions, the parameters of the marginal distributions can be made function of space and local averaged TH conditions provided by CTF.  
 
-An exerpt of an input to generate a synthetic single pin dataset is given below:
+An exerpt of an input to generate a synthetic single pin data set is given below:
 \tiny
 \begin{lstlisting}[language=XML]
 {
@@ -101,9 +101,25 @@ An exerpt of an input to generate a synthetic single pin dataset is given below:
 \end{lstlisting}
 \normalsize
 
-The corrosponding sampled temperature and TKE distributions for single pin are provided in figures () and (). \\
+The corresponding sampled temperature and TKE distributions for single pin are provided in figures \ref{fig:synth_temp} and \ref{fig:synth_tke}. \\
 
-Figure here \\
+\begin{figure}[!htbp]
+\centering
+\begin{minipage}{.45\textwidth}
+  %
+  \includegraphics[width=8cm]{images/pinTempOut.png}
+\caption{Synthetic temperature [K] \\
+         $@4000$ samples/span.}
+\label{fig:synth_temp}
+\end{minipage}%
+\begin{minipage}{.45\textwidth}
+  %
+  \includegraphics[width=8cm]{images/pinTkeOut.png}
+\caption{Synthetic TKE [J/kg] data \\
+         $@4000$ samples/span.}
+\label{fig:synth_tke}
+\end{minipage}
+\end{figure}
 
 The variance of the temperature and TKE margins was increased immediately following a spacer grid since one would expect the grid to create extra turbulence in these regions.  Additionally, the correlation coefficient of the copula model is adjusted depending on the distance to the nearest spacer grid to simulate a decrease in the concordance between surface temperature and surface shear stress present in real CFD data sets following a spacer grid. 
 The synthetic data generation package \emph{ctfPurt} is available at \url{https://github.com/wgurecky/ctfPurt.git}.
@@ -120,7 +136,7 @@ The gradient boosting package \emph{pCRTree} is available at \url{https://github
 For copula simulation, the CDvine toolkit (GPLv3 licensed) is available for the R programming language. This packages does not implement all rotations of copula making it burdensome to handle negative dependence structures out-of-the-box.  Furthermore, the maximum likelihood fitting method included in CDVine does not allow the user to specify sample weights.
 
 To circumvent these deficiencies and potential license compatibility issues with VERA, a new copula toolkit was developed in python and is BSD3 licensed.
-Careful attention was paid to develop a flexible abstract copula class which enables custom coupla functions to be specified.  Importantly, all copula rotations are supported by default allowing one to model positive and negative dependence structures without duplication of code.
+Careful attention was paid to develop a flexible abstract copula class which enables custom copula functions to be specified.  Importantly, all copula rotations are supported by default allowing one to model positive and negative dependence structures without duplication of code.
 Canonical vine-copula construction and sampling algorithms are included in this package to handle the decomposition of arbitrary joint density functions of any dimension.
 Copula parameters can be determined by a weighted maximum likelihood fit to empirically supplied data with included sample weights or by specifying a rank correlation coefficient in the case of Archimedean copula.  In the proposed Hi2Low work, both capabilities are leveraged.
 
@@ -128,7 +144,7 @@ The \emph{StarVine} copula package and documentation is available at \url{https:
 
 \subsection{Python Interfaces to CRUD Codes}
 
-As part of this work, pythonic interfaces were developed for both the legacy CASL CRUD tool known as MAMBA1D and the state-of-the art CRUD package, Mongoose.  The python wrappers to these Fortran codes facilitate rapid prototyping of Hi2Low procedures which provide boundary conditions to the CRUD codes.  Additionally, the high level interface simplifies the proccess of orchestrating large CRUD sensitivity studies.
+As part of this work, python interfaces were developed for both the legacy CASL CRUD tool known as MAMBA1D and the state-of-the art CRUD package, Mongoose.  The python wrappers to these Fortran codes facilitate rapid prototyping of Hi2Low procedures which provide boundary conditions to the CRUD codes.  Additionally, the high level interface simplifies the process of orchestrating large CRUD sensitivity studies.
 
 The python wrappers are available for download from casl-dev at \url{git@casl-dev:collaboration/MAMBA/pyMAMBA} and \url{git@casl-dev:collaboration/Mongoose/pygoose}.
 
@@ -136,6 +152,6 @@ The python wrappers are available for download from casl-dev at \url{git@casl-de
 
 Finally, a package that leverages all the aforementioned tools was developed.  This high level package is the primary user facing result of the proposed work - though it should be noted this package is heavily dependent on CRUD simulation, copula construction, and gradient boosting technologies.
 This package orchestrates the construction and evaluation of GBRTs which provide boundary conditions for the CRUD simulation.
-Currently, single pin, single statepoint simulation is implemented with future work focused on multi pin and multi state point execution.
+Currently, single pin, single state point simulation is implemented with future work focused on multi pin and multi state point execution.
 
 The High2Low crud growth package and documentation is available at \url{https://github.com/wgurecky/crudBoost.git}.
