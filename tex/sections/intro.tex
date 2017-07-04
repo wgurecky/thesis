@@ -35,27 +35,19 @@ the residual distributions gives rise to a major challenge in this work.
 \section{Overview of Topics}
 
 A literature review of Hi2Low modeling approaches to CFD-informed subchannel
-problems is given in \autoref{chap:lit}.  Several advances in CRUD modeling are
-also discussed in \autoref{chap:lit} including a CASL developed high fidelity
-CFD based CRUD tool currently under development.  Techniques for surrogate
-model construction are also reviewed.  Examples of surrogate models developed
-using regression kriging are provided.  These techniques are highly relevant to
-the current Hi2Low problem as these models seek to describe the behavior of
-random fields given a sparse set of inputs.  Additionally a review of the
-gradient boosted algorithm and applications to surrogate model construction are
-provided.
+problems is given in \autoref{chap:lit}.  Advances in CRUD modeling are
+also discussed including a high fidelity
+CFD/CRUD tool currently under development.  
 
 In \autoref{chap:theory}, the overarching Hi2Low strategy is introduced.  A
 brief introduction to Sklar's theorem and gradient boosting is given with
 additional details on these topics provided in \autoref{chap:app}.
 
-Work that has been performed in support of the Hi2Low strategy is reviewed in
-\autoref{chap:work}.  The development of a CFD data extraction tool with
-additional post processing capabilities is provided.  This tool enables the
-comparison of CFD result with subchannel results.  Comparisons between CFD and
-subchannel subchannel results are presented to identify key flow regimes in
-which the coarse subchannel based approach produces erroneous CRUD growth
-rates.  A demonstration of the proposed method's ability to predict CRUD grow
+Work that has been performed to date in support of the proposed Hi2Low strategy is reviewed in
+\autoref{chap:work}.  The description of the software to distill CFD data sets into
+trainig data set is given alongside details of supporting softwares that aid in building
+the complete Hi2Low CRUD model.
+A demonstration of the proposed method's ability to predict CRUD grow
 rates on a single rod at a single TH state point is also given in
 \autoref{chap:work}.
 

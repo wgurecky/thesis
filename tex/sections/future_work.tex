@@ -2,7 +2,7 @@
 
 An alternative procedure based on regression kriging (RK) is under consideration for producing esimates and uncertainties of the desired FOI.
 The available literature on the topic is substantial however much of the available resources focuses on kriging geostatistical data.  Regression kriging is typically introduced in the context of building
-a surrogate model of a spatial field given a limited number of known sample points and a some set of predictive features that are known at a resolution greater than or equal to the exogenous variable sample resolution.
+a surrogate model of a spatial field given a limited number of known sample points and a some set of predictive features that are known at a resolution greater than or equal to the endogenous variable sample resolution.
 The initial steps taken to construct a RK model are similar to the currently proposed approach.  The primary focus of an RK model is to capture spatial auto-correlations in the field data.   If the ability to predict the full 2D distributions of the FOI are desired, an RK model could yeild the requisite fine scale surface distributions with uncertainty estimates. \\
 
 First the target FOI is decomposed into a deterministic and stochastic component, as in equation \ref{eq:decomp}.
@@ -13,31 +13,38 @@ T(\mathbf s) = \mu(\mathbf s) + \varepsilon(\mathbf s)
 \label{eq:decomp}
 \end{equation}
 
-The regression kriging method does not require one to directly employ the
-CTF predictions as the deterministic portion of the solution.   
-Instead
-a seperate ordinary least squares (OLS) fit to the sampled CFD data is used to estimate the deterministic portion of the FOI, $ \mu(\mathbf s)$.
-The CTF results enter the kriging model as additional predictive variables.  These variables are refered to as auxillery variables and serve as predictors of spatial auto-correlation.
-It is unclear at this juncture wheather relying on the CFD data to provide the underlying deterministic TH trends  is an acceptible approach since the CFD results have been shown to significantly diverge from
-CTF predictions when subcooled nucleate boiling becomes important.
+First, the mean field behavior must be estimated by either a least squares fit to the sampled CFD data, or by using the CTF result directly as the mean predictor, as is done in the proposed method. 
+Additionally, the CTF results enter the kriging model as auxillery predictive variables.  These variables serve as predictors of spatial auto-correlation.
 
 The following example examines case of kriging the surface temperature field, $\hat T_\mathtt{RK}$.
 Let $\mathbf{q}$ represent a predictive feature array comprised of the temperature,
-TKE, and bounday heat flux from CTF.
+TKE, and bounday heat flux from CTF.  Also included in this ficticious example, is a parameter $\Delta z$ which represents the axial distance to the nearest upstream spacer grid.
 
 \begin{equation}
-\mathbf{q} = \{TKE, q'', T\}_{CTF}
+\mathbf{q} = \{TKE, q'', T, \Delta z \}_{CTF}
 \end{equation}
 
-In matrix form, the RK model evaluated at a point $\mathbf{s}_0 $ on the rod surface is given by equation \ref{eq:rk_eval}:
+In matrix form, the RK model evaluated at a point $\mathbf{s}_0 $ on the rod surface is given by equation \ref{eq:rk_eval} \cite{Hengl07}:
 
 \begin{equation}
 \hat T_\mathtt{RK}(\mathbf{s}_0 ) = \mathbf{q}_\mathbf{0}^\mathbf{T} \cdot \mathbf{\hat \beta}_\mathtt{OLS} + \mathbf{\lambda }_\mathbf{0}^\mathbf{T} \cdot (\mathbf T_{CFD}
 - \mathbf{q} \cdot \mathbf{\hat \beta }_\mathtt{OLS} )
 \label{eq:rk_eval}
 \end{equation}
-Where $\mathbf{q}_\mathbf{0}= \mathbf{q}(\mathbf s_0)$. The kriging weights at the sample location, $\mathbf{\lambda_0}$, are estimated by evaluating a variogram. The variogram must be fit to the CFD data [ref].  The vector ($\mathbf T_{CFD}
-- \mathbf{q} \cdot \mathbf{\hat \beta }_\mathtt{OLS}$) naively includes all available CFD data points, in practice a cut-off distance from the sample location, $\mathbf s_0$, can be specified to drasitcally reduce the amount of information required to construct and evaluate the variogram.
+Where $\mathbf{q}_\mathbf{0}= \mathbf{q}(\mathbf s_0)$. The kriging weights at the sample location, $\mathbf{\lambda_0}$, are estimated by \ref{eq:simple_krige_weights} with the covariance function: $c(q_i, q_0)= \mathrm{Cov}(\mathbf e(q_i), \mathbf e(q_0))$ where $\mathbf e(\mathbf q) = (\mathbf T_{CFD} - \mathbf{q} \cdot \mathbf{\hat \beta }_\mathtt{OLS}$). 
+\begin{equation}
+\begin{pmatrix}\lambda_{0_1} \\ \vdots \\ \lambda_{0_n} \end{pmatrix}=
+\begin{pmatrix}c(q_1,q_1) & \cdots & c(q_1,q_n) \\
+\vdots & \ddots & \vdots  \\
+c(q_n,q_1) & \cdots & c(q_n,q_n) 
+\end{pmatrix}^{-1}
+\begin{pmatrix}c(q_1,q_0) \\ \vdots \\ c(q_n,q_0) \end{pmatrix}
+\label{eq:simple_krige_weights}
+\end{equation}
+
+The covariences must be estimated from the available CFD data.  
+
+The residual vector, $\mathbf e$, naively includes all available CFD data points, but in practice a cut-off distance from the sample location, $\mathbf s_0$, can be specified to drasitcally reduce the amount of information required to construct and evaluate a covariance model.  This effectively reduces the length of the vectors $\mathbf{\lambda_0}$ and $\mathbf e$.
 
 \begin{figure}[hbtp]
 \centering

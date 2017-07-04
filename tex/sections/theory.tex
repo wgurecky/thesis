@@ -36,9 +36,13 @@ Residual distributions of temperature and turbulent kinetic energy on the rod su
 
 This issue was partially addressed in the work by Salko et. al. by using a normalized heat transfer coefficient map rather than a temperature map; however, since the surface temperature and heat transfer coefficient are non-trivially related in the subcooled boiling regime it is difficult to justify rescaling the HTC field without disregarding the energy balance satisfied on the CFD mesh.  Further investigation into the proper treatment of the bias term is required.  It is not possible to respect the energy balance simultaneously on the CFD and CTF meshes when constructing a Hi2Low model in the current fashion.  One possible though expensive solution is to tune out the bias between the codes via calibration of closure models.
 
+The remainder of the section describes the models used to build the $\varepsilon$ term.
+
 \subsection{Capturing Dependence: Copula}
 
-Consider the small patch on a rod's surface shown in figure \ref{fig:ctf_patch_dist}.  This patch is treated as a black box in which spatial information is not preserved. Drawing surface samples from a CFD simulation of the FOI yeilds a correlated temperature, turbulent kinetic energy and boundary heat flux joint distribution.  It is likely that a high temperature corresponds to a low turbulent kinetic energy in this patch, for instance.  This dependence structure is clearly seen in figure \ref{fig:ctf_patch_dist}.  The dependence behavior is not fully described by a linear relationship; there exists some dispersion in the joint emperical distributions.  Furthermore, the nature of the dispersion is not gaussian. \\
+Consider the small patch on a rod's surface shown in figure \ref{fig:ctf_patch_dist}.  This patch is treated as a black box in which spatial information is not preserved. Drawing surface samples from a CFD simulation of the FOI yeilds a correlated temperature, turbulent kinetic energy and boundary heat flux joint distribution.  It is likely that a high temperature corresponds to a low turbulent kinetic energy in this patch, for instance.  This dependence structure is clearly seen in figure \ref{fig:ctf_patch_dist}.  The dependence behavior is not fully described by a linear relationship; there exists some dispersion in the joint emperical distributions.  Furthermore, the nature of the dispersion is non-gaussian.  
+
+The proposed method revolves around tracking the the joint $f(T, TKE, q'')$ distrubtion given both positinal information - as in where the CTF patch is located relative to a spacer grid - and the local TH core conditions, $\mathbf q$, provided by CTF. \\
 
 \begin{figure}[!htbp]
 \centering
@@ -49,33 +53,37 @@ Consider the small patch on a rod's surface shown in figure \ref{fig:ctf_patch_d
 
 It would appear that by removing the spatial component of the fields in a patch we have introduced additonal complications by building a joint density function who's shape varies from location to location in the core.  Indeed, this joint density function is non-gaussian and generally ill behaved.  However, by Sklar's theorem this joint distribution can be decomposed into a product of a special function called a copula and univariate probability density functions.  Furthermore, the margins can be modeled indipendently from the copula and later recombined to reconstruct, approximately, the original joint density.  By restricting our attention to a special class of copula governed by a single parameter the original problem of predicting $M+2$ dimensional fields is transformed into a problem of predicting multiple, indipendent, $M+1$ dimensional functions.  $M$ is the number of non-spatial exogenous variables. \\
 
-A two dimensional version of Sklar's theorem is shown in equations () through ().
-Given a joint CDF: $H$, w/ cumulative margins: $F(x)=P[X < x] = \int_{-\infty}^{x}f(t)dt$
-and $F(y)=P[Y < y] = \int_{-\infty}^{y}f(t)dt$
+A two dimensional version of Sklar's theorem is shown in equation ().  The multi-dimensional case and additional details are provided in Appendix A.  Let $x$ represent temperature and $y$ be the turbulent kinetic energy.
+Given a joint CDF of these two quantities, $F$, with cumulative temperature and TKE margins: $F(x)=P[X < x] = \int_{-\infty}^{x}f(t)dt$
+and $F(y)=P[Y < y] = \int_{-\infty}^{y}f(t)dt$ Sklar's theorem states \cite{Nelsen2006}:
 \begin{equation}
 H(x,y) = C(F(x), F(y))
 \end{equation}
+Where $C$ is the cumulative distribution of a copula.  The copula density can be computed from equation \ref{eq:cop_density}.
 \begin{equation}
 c(u, v) = \frac{\partial^2 C(u, v)}{\partial u \partial v};\ u=F(x), v=F(y)
+\label{eq:cop_density}
 \end{equation}
-Key properties of the copula density function are as follows:
-\begin{itemize}
-\item  Has uniform marginal density distributions \cite{Nelsen2006}.
-\item  Defined on the unit square $[0, 1]^2$ (in the bivariate case)
-\end{itemize}
-Any joint PDF, $h(\cdot)$ can be decomposed as:
-\begin{equation}
-h(x, y) = c(F(x), F(y)|\theta)f(x|\theta_x)f(y|\theta_y)
-\end{equation}
-Where $\theta$ and $\{\theta_{x}, \theta_{y}\}$ are free copula and marginal model parameters respectively.
 
+It can be shown by that any joint PDF, $f$, can be decomposed as:
+\begin{equation}
+f(x, y) = c(F(x), F(y)|\theta_c)f(x|\theta_x)f(y|\theta_y)
+\end{equation}
+Where $\theta_c$ and $\{\theta_{x}, \theta_{y}\}$ are free copula and marginal model parameters respectively.
+These parameters govern the shape of the joint distribution.  In a fully parametric approach, these shape parameters would be specified as a function of local core conditions; however, since CFD data gives rise to of complicated distribution shapes, a semi-parametric approach is proposed.  Instead of assuming some distributions - beta, gaussian, ect. - the proposed stratagy is to reconstruct the margins via quantile regression.  In the current work the quantile regressions are built from gradient boosted regression trees (GBRT). 
+
+In addition, a regression model for the copula shape parameter $\theta_c$ is needed, though we will show this can be subsituted for a regression on Kendall's tau.  Similar to the quantile regression stratagy, a gradient boosted regression tree model is proposed for this purpose.  Refer to section [] for details.  Thus the model is not fully non-parametric.
+
+If the quantiles of the margins and the properties of the copula can be specified as a function of local core conditions then the full joint distribution can be recovered on any CTF patch.
+
+In this work, a particular porperty of a a certain class of copula functions is utilized.
 For the case of Archimedean copula, Kendall's tau, $\rho_\tau$ is
-related to the copula's shape parameter by [ref]:
+related to the copula's shape parameter by \cite{Nelsen2006}:
 \begin{equation}
 \rho_\tau = 1 + 4 \int_0^1 \frac{\varphi(\theta_c,t)}{\varphi'(\theta_c, t)}dt
 \end{equation}
-Where $\varphi(\theta_c, t)$ is the copula's generator function and $\varphi'$ is the first derivative of the generator function with respect to $t$.  An exaustive list of copula generting functions can be found in [ref].
-If we restrict ourselves to the class of Archimedean copula we only need $\rho_\tau$ and the copula type, $\Theta_c$ (gumbel, frank, clayton, ect.) to approximately specify the dependence structure between the temperature and turbulent kinetic energy residual distributions on each patch.
+Where $\varphi(\theta_c, t)$ is the copula's generator function and $\varphi'$ is the first derivative of the generator function with respect to $t$.  An exaustive list of copula generting functions can be found in \cite{Nelsen2006}.
+If we restrict ourselves to the class of Archimedean copula we only need $\rho_\tau$ and the copula type, $\Theta_c$ (gumbel, frank, clayton, ect.) to approximately specify the dependence structure between the temperature and turbulent kinetic energy residual distributions on each patch.  Therefore, the gradient boosted copula model predicts $\rho_\tau$ as a function of local core conditions rather than $\theta_c$.
 
 \subsection{Modeling the Margins: Gradient Boosting}
 
@@ -88,27 +96,28 @@ W = g_i
 
 \subsubsection{Quantile Regression}
 
-The univariate distributions of the temperature and turbulent kinetic energy are shown to be non gaussian in shape in figure ().  The asymitries in the distributions must be predicted accurately by the regression model.  A non-parametric model for the margins is built by combining several quantile predictors.  Leveraging quantile regressions to decompose single dimensional distributions is explained in depth by Oaxaca (1973).
+The univariate distributions of the temperature and turbulent kinetic energy are shown to be non gaussian in shape in figure \ref{fig:ctf_patch_dist}.  The asymitries in these distributions must be accurately preserved by the regression model.  To accomplish this, a non-parametric model for the margins is built by combining several quantile predictors.  Leveraging quantile regressions to reconstruct conditional distributions has been described previously by Oaxaca (1973) [ref].
 
 Given a cumulative distribution function (CDF) and a random variable $X$:
 \begin{equation}
 F_X(x) = P(X \leq x)
 \end{equation}
-The $\tau^{th}$ quantile $Q$ of $X$ is given by:
+The $\tau^{th}$ quantile $Q_\tau$ of $X$ is given by equation \ref{eq:th_quantile}.  The most well known quantile is the median.
 \begin{equation}
 Q_\tau(X) = F_X^{-1}(\tau)
+\label{eq:th_quantile}
 \end{equation}
-Where $F_X^{-1}$ is the inverse cumulative distribution.
 
-The quantile loss function is given by equation ().
+The quantile loss function is given by equation \ref{eq:qt_loss_a} [ref].
 \begin{equation}
-\rho_\tau(x) = x(\tau - \mathbb{I}_{(x < 0)})
+l_\tau(E) = E \cdot (\tau - \mathbb{I}_{(E < 0)})
+\label{eq:qt_loss_a}
 \end{equation}
-Where $\mathbb{I}$ is the indicator function.
+Where $\mathbb{I}$ is the indicator function.  The difference bewteen the predicted quantile and the emperical (knwon from data quantile) is $E=\hat Q_\tau - Q_\tau$.
 
-The quantile loss function is substituted for the squared-error loss function in the gradient boosting algorithm to regress on a qunatile of interest rather than on the mean.  The result of multiple quantile predictores is shown in figure (). 
+The quantile loss function is substituted for the squared-error loss function in the gradient boosting algorithm to regress on a qunatile of interest rather than on the mean.  
 
 A one dimensional slice from the quantile regression is provided in figure ().
-The resulting quantiles are used to construct a step-wise cumulative distribution, which in turn is used to build a histogram of the predicted quantity of interest. 
-Shown in figure (), in place of the stepwise reprentation, a piecewise cubic hermite interpolating polynomial (PHCIP) can be fit to the discrete conditional quantile distribution to generate a differentiable CDF.
-It can be shown that PCHIP interpolation preserves monotinicity of the CDF if the provided quantiles are strictly monotone [].  This condition is enforced in the software; any violation of the monotone restriction would indicate a software bug in the quantile regression code.
+The resulting quantiles are used to construct a step-wise cumulative distribution, which in turn is used to build a histogram. 
+In place of the stepwise reprentation, a piecewise cubic hermite interpolating polynomial (PHCIP) can be fit to the stepwise conditional quantile distribution to generate a differentiable CDF.
+The PCHIP interpolation preserves monotinicity of the CDF if the provided quantiles are strictly monotone [ref].  This condition is enforced in the software; any violation of the monotone restriction would indicate a software bug in the quantile regression code.
