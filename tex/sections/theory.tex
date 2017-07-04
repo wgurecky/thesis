@@ -73,7 +73,7 @@ f(x, y) = c(F(x), F(y)|\theta_c)f(x|\theta_x)f(y|\theta_y)
 Where $\theta_c$ and $\{\theta_{x}, \theta_{y}\}$ are free copula and marginal model parameters respectively.
 These parameters govern the shape of the joint distribution.  In a fully parametric approach, these shape parameters would be specified as a function of local core conditions; however, since CFD data gives rise to complicated distribution shapes, a semi-parametric approach is proposed.  Instead of assuming some distributions - beta, Gaussian, ect. - the proposed strategy is to reconstruct the margins via quantile regression.  In the current work the quantile regressions are built from gradient boosted regression trees (GBRT). 
 
-In addition, a regression model for the copula shape parameter $\theta_c$ is needed, though we will show this can be substituted for a regression on Kendall's tau.  Similar to the quantile regression strategy, a gradient boosted regression tree model is proposed for this purpose.  Finally, the copula family must also be predicted.  This gives rise to a classification problem in which the copula type that best fits the temperature, TKE dependence structure is predicted based on local core conditions.  Thus the model isn't fully non-parametric.
+In addition, a regression model for the copula shape parameter $\theta_c$ is needed, though we will show this can be substituted for a regression on Kendall's tau.  Similar to the quantile regression strategy, a gradient boosted regression tree model is proposed.  Finally, the copula family must also be predicted.  This gives rise to a classification problem in which the copula type that best fits the temperature, TKE dependence structure is predicted based on local core conditions.  Thus the model isn't fully non-parametric.
 
 If the quantiles of the margins and the properties of the copula can be specified as a function of local core conditions then the full joint distribution can be recovered on any CTF patch.
 
@@ -148,3 +148,29 @@ The PCHIP interpolation preserves monotonicity of the CDF if the provided quanti
 \subsection{Single State Point CRUD Prediction Algorithm}
 
 The following Hi2Low algorithm is used to simulate CRUD at a single state point.
+
+Up front:
+\begin{itemize}
+\item (1) - De-trend CFD temperature, $q''$, and TKE surface fields.	
+\item (2) - Compute residual (CFD-CTF) distribution statistics on each CTF patch.
+	\begin{itemize}
+	\item  Fit trial copula to joint distributions via maximum likelihood. 
+	\item  Obtain empirical $\rho_\tau$ and select the best-fitting copula, as judged by AIC (see Appendix A). 
+	\end{itemize}
+\item (3) - Fit gradient boosted regression/classification models.  Builds a relationship between the local-average CTF TH conditions and copula and margin parameters.
+\end{itemize}
+At run time:
+\begin{itemize}
+\item (4) - Execute a CTF simulation.
+\item (5) - Evaluate the regression model(s) in each CTF patch on the rod surface.
+	\begin{itemize}
+	\item  Obtain copula family, $\theta_c$.
+	\item  Obtain conditional quantiles $\hat Q_\tau(T)$ and $\hat Q_\tau(TKE)$ 
+	\item  Reconstruct $f(T)$, $f(TKE)$ margins.
+	\end{itemize}
+\item (6) - Reconstruct the joint density function, $f(T, TKE, q'')$, from the predicted conditional quantiles, the predicted copula family, $\theta_c$, and $\hat \rho_\tau$.
+\item (7) - Draw $N$ TH samples from the predicted joint $f(T, TKE, q'')$ distribution.  
+\item (8) - Use $N$ TH samples as boundary conditions to $N$ independent CRUD (MAMBA1D) simulations.
+\item (9) - Integrate CRUD results over each CTF patch.
+\item (10) - Pass the integrated patch CRUD results to the CTF grid.
+\end{itemize}

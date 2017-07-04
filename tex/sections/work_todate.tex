@@ -41,6 +41,7 @@ Total CRUD Mass [g]	& 8.788	&  7.155 & 7.710	\\
 \end{center}
 \end{table}
 The synthetic CFD data was generated at a resolution of $4000$ randomly distributed samples per span.
+The temperature quantiles set, $\tau_T = \{0., 0.5, 0.85, 0.9, 0.95, 0.99, 1.\}$ was used in the Hi2Low and the turbulent kinetic energy margins were reconstructed using the following set of quantiles $\tau_{TKE} = \{ 0., 0.01, 0.05, 0.15, 0.3, 0.5, 1.\}$.  No smoothing of the predicted margins by PCHIP interpolation was performed.
 
 \begin{figure}[hbtp]
 \centering
@@ -79,7 +80,7 @@ Figure \ref{fig:ktau_plot} demonstrates a combined classification/regression tre
 \label{fig:crud_cfd_out}
 \end{figure}
 
-Figures \ref{fig:b10_model_out} through \ref{fig:crud_cfd_out} show that the Hi2Low model tends to broaden the CRUD mass density distributions provided by the CFD results.  An investigation into the source of these discrepancies is planned.  
+Figures \ref{fig:b10_model_out} through \ref{fig:crud_cfd_out} show that the Hi2Low model tends to broaden the CRUD mass density distributions provided by the CFD results.  An investigation into the source of these discrepancies is planned.  This investigation will begin with a sensitivity study of the number and spacing of the quantiles used in the Hi2Low method.
 
 \section{Software Components}
 
