@@ -164,13 +164,13 @@ At run time:
 \item (4) - Execute a CTF simulation.
 \item (5) - Evaluate the regression model(s) in each CTF patch on the rod surface.
 	\begin{itemize}
-	\item  Obtain copula family, $\theta_c$.
+	\item  Obtain copula family, $\hat \theta_c$.
 	\item  Obtain conditional quantiles $\hat Q_\tau(T)$ and $\hat Q_\tau(TKE)$ 
 	\item  Reconstruct $f(T)$, $f(TKE)$ margins.
 	\end{itemize}
-\item (6) - Reconstruct the joint density function, $f(T, TKE, q'')$, from the predicted conditional quantiles, the predicted copula family, $\theta_c$, and $\hat \rho_\tau$.
+\item (6) - Reconstruct the joint density function, $f(T, TKE, q'')$, from the predicted conditional quantiles, the predicted copula family, $\hat \theta_c$, and $\hat \rho_\tau$.
 \item (7) - Draw $N$ TH samples from the predicted joint $f(T, TKE, q'')$ distribution.  
 \item (8) - Use $N$ TH samples as boundary conditions to $N$ independent CRUD (MAMBA1D) simulations.
 \item (9) - Integrate CRUD results over each CTF patch.
-\item (10) - Pass the integrated patch CRUD results to the CTF grid.
+\item (10) - Pass the patch-integrated CRUD results to the CTF grid.
 \end{itemize}
