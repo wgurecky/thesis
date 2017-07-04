@@ -1,0 +1,53 @@
+CTF 160x nominal power
+=======================
+
+CTF
+----------------------------------
+total power=
+Expected area [m] = 0.108636
+Total Rod surface area  [m]= 0.108636
+CTF sum crud mass = 8.788075
+CTF sum boron mass = 0.005871
+
+CFD (Synthetic-fine [4000 samples/span])
+----------------------------------
+Expected area [m] = 0.108636
+Total Rod surface area  [m]= 0.108381
+CFD sum crud mass = 7.151985
+CFD sum boron mass = 0.004967
+
+CFD (Synthetic-coarse [1000 samples/span])
+----------------------------------
+Expected area [m] = 0.108636
+Total Rod surface area  [m]= 0.108250
+CFD sum crud mass = 7.107981
+CFD sum boron mass = 0.004940
+
+CrudBoost (Synthetic-fine, samples/patch=50)
+----------------------------------
+
+CrudBoost (Synthetic-fine, samples/patch=200)
+----------------------------------
+pCRTree
+Expected area [m] = 0.108636
+Total Rod surface area  [m]= 0.108636
+Model sum crud mass = 7.868436
+Model sum boron mass = 0.005610
+
+SK-Learn
+Expected area [m] = 0.108636
+Total Rod surface area  [m]= 0.108636
+Model sum crud mass = 7.808096
+Model sum boron mass = 0.005571
+
+
+CrudBoost (Synthetic-coarse, samples/patch=50)
+----------------------------------
+
+CrudBoost (Synthetic-coarse, samples/patch=200)
+----------------------------------
+Expected area [m] = 0.108636
+Total Rod surface area  [m]= 0.108636
+Model sum crud mass = 8.451546
+Model sum boron mass = 0.005905
+

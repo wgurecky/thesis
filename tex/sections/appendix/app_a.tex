@@ -10,7 +10,7 @@ P(x, y) = P(x) P(y | x)
 \label{eq:prod_prob}
 \end{equation}
 
-The marginal distribution of a bivariate joint distribution $f(x, y)$ is given by equation \ref{eq:marg}.  The marginalization process is analagous to projecting the entire joint density onto a single axis.
+The marginal distribution of a bivariate joint distribution $f(x, y)$ is given by equation \ref{eq:marg}.  The marginalization process is analogous to projecting the entire joint density onto a single axis.
 \begin{equation}
 f(x) = \int f(y) f(x|y) dy
 \label{eq:marg}
@@ -28,16 +28,16 @@ H(x_1, ... x_d) = \mathbf P[X_1 \leq x_1, ... X_d \leq x_d]
 \end{equation}
 Where $X_1, ... X_d$ are random variables.
 
-The process of decomposing a multivariate distribution into univariate marginal
+The process of decomposing a multivariate distribution into uni-variate marginal
 distributions and an object which describes their conditional dependence was
 formalized by Sklar (1959) \cite{Sklar1959}.  Shown in equation \ref{eq:sklar1},  Sklar's Theorem
-defines a \emph{copula} cummulative density function, $C$.
+defines a \emph{copula} cumulative density function, $C$.
 
 \begin{equation}
 C(F_1(x_1), ... F_d(x_d)) = H(x_1, ... x_d)
 \label{eq:sklar1}
 \end{equation}
-If $F_1, .. F_d$ are continuuous, then $C$ is unique.  Conversely, if $C$ is a copula and $F_1, .. F_d$ are smooth cummulative desntiy functions then the function $H$ is a joint cumulative distribution with margins $F_1, ... F_d$.  A proof is provided in Nelsen's introductory copula text \cite{Nelsen2006}.
+If $F_1, .. F_d$ are continuous, then $C$ is unique.  Conversely, if $C$ is a copula and $F_1, .. F_d$ are smooth cumulative destiny functions then the function $H$ is a joint cumulative distribution with margins $F_1, ... F_d$.  A proof is provided in Nelsen's introductory copula text \cite{Nelsen2006}.
 
 Sklar also showed that the joint probability distribution, $f(x_1, ... x_d)$, can be computed from
 constituent marginalized univariate distributions and the copula density, $c$.
@@ -68,7 +68,7 @@ strength of dependence is allowed to vary depending on location in the parameter
 \section*{Sampling Copula}
 
 For simplicity, this section demonstrates how to draw correlated samples from bivariate copula.
-Sampling from a bivariate copula is achived by first defining a conditional distirbution function and then applying the inverse probability integral transform.
+Sampling from a bivariate copula is achieved by first defining a conditional distribution function and then applying the inverse probability integral transform.
 Let $h$ represent the conditional distribution of $u_1$ given $\{u_2, ... u_d\}$.  In the two dimensional case $h$ is given by equation \ref{eq:cop_h} \cite{Nelsen2006}:
 
 \begin{equation}
@@ -89,7 +89,7 @@ If the distribution $h$ is smooth and monotonic, the inverse $h^{-1}$ exists.  T
 \begin{minipage}{.45\textwidth}
   %
   \includegraphics[width=7cm]{images/t_hinv_dist.png}
-\caption{$h^{-1}$ vs. value of the conditioning variable $u_2$ for a gaussian copula with $\theta=0.7$.\\}
+\caption{$h^{-1}$ vs. value of the conditioning variable $u_2$ for a Gaussian copula with $\theta=0.7$.\\}
 \label{fig:gauss_hinv}
 \end{minipage}
 \end{figure}
@@ -102,7 +102,7 @@ u_{1_i} = \mathrm{argmin}_{x} \left[ h(x|u_{2_i}) - u_{2_i} \right],\ \mathrm{wi
 \label{eq:h_inv_sample}
 \end{equation}
 
-The resulting corrolated sample vectors $\{\mathbf U_1, \mathbf U_2\} \in [0,1]^2$ are distributed according to the copula, $c$, and have uniform margins.  An example of random samples drawn from a Gaussian copula are shown in figure \ref{fig:gauss_samples}.  The smooth Gaussian copula PDF is provided in figure \ref{fig:gauss_pdf}.
+The resulting correlated sample vectors $\{\mathbf U_1, \mathbf U_2\} \in [0,1]^2$ are distributed according to the copula, $c$, and have uniform margins.  An example of random samples drawn from a Gaussian copula are shown in figure \ref{fig:gauss_samples}.  The smooth Gaussian copula PDF is provided in figure \ref{fig:gauss_pdf}.
 
 \begin{figure}[!htbp]
 \centering
@@ -120,13 +120,13 @@ The resulting corrolated sample vectors $\{\mathbf U_1, \mathbf U_2\} \in [0,1]^
 \end{minipage}
 \end{figure}
 
-To apply arbitrary margins we employ, again, the inverse probability transform.  As before, the cummulative marginal densities are given to be $F_1$ and $F_2$.
+To apply arbitrary margins we employ, again, the inverse probability transform.  As before, the cumulative marginal densities are given to be $F_1$ and $F_2$.
 Correlated samples are then drawn according to:
 \begin{eqnarray}
 \mathbf X = & F_1^{-1}(\mathbf U_1) \\
 \mathbf Y = & F_2^{-1}(\mathbf U_2)
 \end{eqnarray}
-The samples vectors $\{\mathbf X, \mathbf Y\}$ are distributed according to the joint density, $f(x,y)$.  An example bivariate sample set with exponentially distributed margins and a gaussian copula is shown in figure \ref{fig:gauss_samples_scaled}.  In the example figure the exponential marginal distributions are given by $f(x)=\lambda e^{-\lambda x}$ with $\lambda=2\mathrm{E-}3$.
+The samples vectors $\{\mathbf X, \mathbf Y\}$ are distributed according to the joint density, $f(x,y)$.  An example bivariate sample set with exponentially distributed margins and a Gaussian copula is shown in figure \ref{fig:gauss_samples_scaled}.  In the example figure the exponential marginal distributions are given by $f(x)=\lambda e^{-\lambda x}$ with $\lambda=2\mathrm{E-}3$.
 
 \begin{figure}[!htbp]
 \centering
@@ -152,7 +152,7 @@ C(1, 1, ... u, ... 1) = u
 \end{equation}
 \end{enumerate}
 
-Examples of valid copula are given in figure \ref{fig:montage_cop}.  A wide range of skewed dependence structures can be represented by considering only a few copula familes.  Each copula can be rotated to accomidate both positive or negative dependence.
+Examples of valid copula are given in figure \ref{fig:montage_cop}.  A wide range of skewed dependence structures can be represented by considering only a few copula families.  Each copula can be rotated to accommodate both positive or negative dependence.
 
 \begin{figure}[!htbp]
 \centering
@@ -163,28 +163,28 @@ Examples of valid copula are given in figure \ref{fig:montage_cop}.  A wide rang
 
 \subsection*{Fitting Copula}
 
-Fitting copula to empirical data can be carried out by the method of maximum liklihood (ML).  Consider the bivariate case where there are $N$ pairs of empirical ranked data samples $\{w_i, v_i\}$ $\in [0,1]^2$ are known. The likelyhood function for a copula is given by equation \ref{eq:lik}.  For any given sample pair, each term the liklihood function describes how probable it was for that sample originated from the underlaying copula distribution with paramter $\theta$.
+Fitting copula to empirical data can be carried out by the method of maximum likelihood (ML).  Consider the bivariate case where there are $N$ pairs of empirical ranked data samples $\{w_i, v_i\}$ $\in [0,1]^2$ are known. The likelihood function for a copula is given by equation \ref{eq:lik}.  For any given sample pair, each term the likelihood function describes how probable it was for that sample originated from the underlying copula distribution with parameter $\theta$.
 \begin{equation}
 \mathcal{L}= \prod_{i=0}^N c(w_i, v_i|\theta)
 \label{eq:lik}
 \end{equation}
 
 Where $\theta$ is the free copula shape parameter.
-Typically the negative log-likelyhood given by equation \ref{eq:log_lik} is used in place of the raw likelyhood.  
+Typically the negative log-likelihood given by equation \ref{eq:log_lik} is used in place of the raw likelihood.  
 \begin{equation}
 -\mathrm{ln}\mathcal{L}= -\sum_{i=0}^N c(w_i, v_i|\theta)
 \label{eq:log_lik}
 \end{equation}
-To minimize the negative log likelyhood one simply computes the partial derivative with respect to $\theta$ and finds the value $\hat \theta_{ML}$ for which this expression reaches zero.  This can carried out by newtons method.  If the partial derivatives of the copula's negative log likelihood are difficult to compute one can estimate them by finite difference. 
+To minimize the negative log likelihood one simply computes the partial derivative with respect to $\theta$ and finds the value $\hat \theta_{ML}$ for which this expression reaches zero.  This can carried out by newtons method.  If the partial derivatives of the copula's negative log likelihood are difficult to compute one can estimate them by finite difference. 
 
-However one important question to ask is: Which copula family best represents the data?  To answer this question, an arsenal of statistical tests can be applied to select the copula which best fits the data.  Here, we consider two methods:  (1) Comparing Akaiki Information Criterion (AIC) and (2) graphically comparing each fitted copula.  
+However one important question to ask is: Which copula family best represents the data?  To answer this question, an arsenal of statistical tests can be applied to select the copula which best fits the data.  Here, we consider two methods:  (1) Comparing Akaike information criterion (AIC) and (2) graphically comparing each fitted copula.  
 
 The AIC is computed by equation ():
 \begin{equation}
 \mathrm{AIC} = 2k - 2\mathrm{ln}(\mathcal{L})
 \end{equation}
 Where $k$ is the number of free parameters in the model.  The AIC penalizes models with larger numbers of parameters. 
-Automated copula selection is achived by selecting the copula that achives the lowest AIC score.
+Automated copula selection is achieved by selecting the copula that obtains the lowest AIC score.
 
 A graphical method of copula selection was proposed by [ref].  In this method, the 
 \begin{equation}
@@ -206,7 +206,7 @@ K_c =
 \label{fig:kc_fn_compare}
 \end{minipage}
 \end{figure}
-By graphical inspection, the gumbel copula is the best fit to the original data set.
+By graphical inspection, the Gumbel copula is the best fit to the original data set.
 
 \subsection*{Kendall's Tau}
 
@@ -227,10 +227,10 @@ Equation \ref{eq:tauar} relates an Archimedean copula's parameter to $\rho_\tau$
 \end{equation}
 Where $\varphi(t)$ is the copula's generator function and $\varphi'(t)$ is the first derivative of the generator function with respect to $t$. A list of copula generator functions can be found in \cite{Nelsen2006}. 
 
-\subsection*{Archimedean Copula}
+%\subsection*{Archimedean Copula}
 
-Archimedian copula are defined by the relationship.
+%Archimedean copula are defined by the relationship.
 
-Where $\psi$ is a monotonically decreasing and convex function.
+%Where $\psi$ is a monotonically decreasing and convex function.
 
-A simplification can be made when fitting Archimedean copula since there is a one-to-one relationshipt between $\rho_\tau$ and the copula's shape parameter, $\theta$.
+%A simplification can be made when fitting Archimedean copula since there is a one-to-one relationshipt between $\rho_\tau$ and the copula's shape parameter, $\theta$.

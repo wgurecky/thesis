@@ -1,3 +1,7 @@
+\section{Time Stepping}
+
+\section{Uncertainty Propagation}
+
 \section{Regression Kriging}
 
 An alternative procedure based on regression kriging (RK) is under consideration for producing esimates and uncertainties of the desired FOI.
@@ -31,7 +35,7 @@ In matrix form, the RK model evaluated at a point $\mathbf{s}_0 $ on the rod sur
 - \mathbf{q} \cdot \mathbf{\hat \beta }_\mathtt{OLS} )
 \label{eq:rk_eval}
 \end{equation}
-Where $\mathbf{q}_\mathbf{0}= \mathbf{q}(\mathbf s_0)$. The kriging weights at the sample location, $\mathbf{\lambda_0}$, are estimated by \ref{eq:simple_krige_weights} with the covariance function: $c(q_i, q_0)= \mathrm{Cov}(\mathbf e(q_i), \mathbf e(q_0))$ where $\mathbf e(\mathbf q) = (\mathbf T_{CFD} - \mathbf{q} \cdot \mathbf{\hat \beta }_\mathtt{OLS}$). 
+Where $\mathbf{q}_\mathbf{0}= \mathbf{q}(\mathbf s_0)$. The kriging weights at the sample location, $\mathbf{\lambda_0}$, are estimated by \ref{eq:simple_krige_weights} with the covariance function: $c(q_i, q_0)= \mathrm{Cov}(\mathbf e(q_i), \mathbf e(q_0))$ where $\mathbf e = (\mathbf T_{CFD} - \mathbf{q} \cdot \mathbf{\hat \beta }_\mathtt{OLS}$). 
 \begin{equation}
 \begin{pmatrix}\lambda_{0_1} \\ \vdots \\ \lambda_{0_n} \end{pmatrix}=
 \begin{pmatrix}c(q_1,q_1) & \cdots & c(q_1,q_n) \\

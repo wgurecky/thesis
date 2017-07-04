@@ -1,7 +1,18 @@
 \section{Results}
 
-To date single pin single, single statepoint results have been produced using the proposed methodology.  Future work remains to incorperatre a time-stepping algorithm into the model. 
+To date single pin single, single state point results have been produced using the proposed methodology.  Future work remains to incorporate a time-stepping algorithm into the model. 
 
+To test the method on a single pin and for a single state, CTF was executed with boundary conditions and the power level shown in table ().  Next, a synthetic CFD data set was generated  from $ctfPurt$ (see \autoref{chap:synth} for details).
+The gradient boosted copula model was then fit to the synthetic single pin CFD data set.  Finally, the model was evaluated on each CTF patch on the pin surface and the CRUD model was executed [in a monte-carlo-fashion on each CTF patch with 200 samples/patch] given boundary conditions sampled from the boosted model. The CRUD results were then summed over the rod surface and are presented in table ().
+
+\begin{figure}[hbtp]
+\centering
+\includegraphics[width=10cm]{images/ktau_plot.png}
+\caption{Kendall's tau vs. axial position. Output from combined regression and classification tree evaluation. Colored by copula type: Green=Gauss, Blue=Gumble, Red=Frank.}
+\label{fig:ktau_plot}
+\end{figure}
+
+Figure \ref{fig:ktau_plot} demonstrates a combined classification/regression tree evaluation.  Both the copula type and strength of correlation between the temperature and TKE are displayed.  A large negative value for Kendall's tau, $\tau_\rho$, indicates stronger negative dependance between the temperature and TKE. 
 
 \section{Software Components}
 
@@ -37,6 +48,7 @@ Differences between CFD and subchannel predictions must be understood prior to c
 TODO: include diff plots
 
 \subsection{Synthetic Training Data Generation}
+\label{chap:synth}
 
 A toolkit to overlay custom noise atop a CTF solution was developed to provide a secondary source of training data sets.  The synthetic data generation tool provides training data sets with lower computational cost than equivalent CFD calculations.  Some properties of a true CFD solution field are preserved by the tool, namely that the shape of the marginal and copula distributions change as a function of position and local thermal hydraulic conditions in the core.  The synthetic data is not to be viewed as complete substitute for CFD data since it lacks the ability to capture spatial auto-correlation in the predicted spatial fields that arise naturally from the governing PDEs.  Neighboring points on the rod surface do not exchange any TH information in this tool.  Despite the unphysical nature of the synthetic data, the tool provides a means to verify that known relationships between the explanatory variables and the copula parameters are recovered by the gradient boosted regression model.  This is possible because the user specifies these relationships up-front as inputs to the surface field sampling routines. \\
 

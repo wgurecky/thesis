@@ -3,26 +3,26 @@ spacer grids in COBRA-TF (CTF) \cite{salko12}, a subchannel-resolution reactor
 thermal hydraulic (TH) package, by utilizing higher fidelity results provided
 by Computational Fluid Dynamics (CFD) simulations.  This technique is refered to as Hi2Low modeling.  
 The information retained from the high
-fidelity CFD calculations will target improving Chalk River unidentified deposite (CRUD) predictions in
+fidelity CFD calculations will target improving Chalk River unidentified deposit (CRUD) predictions in
 multi physics core simulations due to fine scale flow phenomena that are not
 explicitly captured in CTF.  
 Improved treatment of spacer grid
 effects on CRUD growth ultimately improve predictions of CRUD induced power shift
-and CRUD induced local corrosion.  Both of these phenomina potentially carry negative ecconomic consequences for operating PWRs.
+and CRUD induced local corrosion.  Both of these phenomena potentially carry negative economic consequences for operating PWRs.
 
 This proposal describes the development of a physics-directed, statistically
 based, surrogate model of the small scale flow features that impact CRUD
 growth.   
 The objective of the surrogate is to provide boundary conditions to the CRUD
 model.  The surface temperature, heat flux and
-turbulent kinetic energy - hencforce refered to as the fields of interest (FOI) - govern the growth rate of CRUD on the surface
+turbulent kinetic energy - henceforth referred to as the fields of interest (FOI) - govern the growth rate of CRUD on the surface
 of the rod and the precipitation of boron in the porous crud layer.
 Therefore the surrogate predicts the behavior of the FOI as a function
 of position in the core, local thermal-hydraulic conditions, and perhaps 
 more exogenous variables. 
 
-The subchannel code is substantially faster to execute and produces an estimtimate for
-all the relevant TH quanties at a coarse spatial resolution everywhere in the core.  The proposed method uses information from both CTF simulations and the comparitively high fidelity CFD solutions.
+The subchannel code is substantially faster to execute and produces an estimate for
+all the relevant TH quantities at a coarse spatial resolution everywhere in the core.  The proposed method uses information from both CTF simulations and the comparatively high fidelity CFD solutions.
 The subchannel code provides the mean trends of the 
 FOI spatial distributions in this work.  The role of the CFD solution is to provide
 higher order moments of the about the mean field estimates given by CTF.  
@@ -45,7 +45,7 @@ additional details on these topics provided in \autoref{chap:app}.
 
 Work that has been performed to date in support of the proposed Hi2Low strategy is reviewed in
 \autoref{chap:work}.  The description of the software to distill CFD data sets into
-trainig data set is given alongside details of supporting softwares that aid in building
+training data set is given alongside details of supporting softwares that aid in building
 the complete Hi2Low CRUD model.
 A demonstration of the proposed method's ability to predict CRUD grow
 rates on a single rod at a single TH state point is also given in
@@ -74,10 +74,10 @@ This previous code development effort provides a starting point for the currentl
 A phenomena known as CRUD Induced Power Shift (CIPS) is caused by the presence
 of elevated \ce{^{10}B} concentrations in the CRUD layer.  Since CRUD is preferentially
 deposited on the fuel rods' in hot regions of the core, this leads to a slight shift in
-power production towards to bottom of the core under steady state operation.  Predicting the severity of the
-CRUD induced power shift is paramount when evaluating the burnup over a cycle
-and when computing thermal
-margins of the fuel under both steady operating and accident conditions.  The prediction
+power production towards to bottom of the core under steady state operation.  
+CRUD induced power shift impacts the burnup distribution over a cycle
+and is important to account for when computing thermal
+margins of the fuel.  The prediction
 of CIPS is especially important for older facilities seeking to uprate power
 output.  Additionally, the presence of CRUD on the rod surface has been shown
 to exacerbate local oxide penetration rates of some zirconium alloys \cite{adamson07}.
@@ -103,7 +103,7 @@ relations.  In effect, a single constant estimate for the mean thermal
 hydraulic conditions are obtained in each finite volume.
 
 Previous Hi2Low focused work in CASL focused on utilizing experimental or CFD
-datasets to improve closure models in CTF.  These studies leverage a multitude
+data sets to improve closure models in CTF.  These studies leverage a multitude
 of dimensionality reduction and regression techniques to fit a parametric model
 to the accepted gold-standard empirical data.  This approach is adequate for
 correcting biases in the bulk-average behavior of the flow (due to the
@@ -144,7 +144,7 @@ number of CFD or experimental data sets required to drive down uncertainties in
 the predicted quantities to an acceptable level.
 
 To this end a novel method based on the marriage of copula and gradient
-boosting techniques is proposed.  The proposed work forgos a spatial
+boosting techniques is proposed.  The proposed work forgoes a spatial
 interpolation approach for a statistically driven approach which predicts the
 fractional area of a rod's surface in excess of some critical temperature - but
 not precisely where such maxima occur.  The aim is to simplify the Hi2Low model
@@ -174,5 +174,5 @@ a predictive CRUD model entails overcoming this issue. The proposed method
 addresses this problem by predicting the behavior of the tails of the frequency
 binned FOI rather than the shape of the spatial distributions of the FOI on
 the rod surface.  Over a coarse subchannel-scale patch on the rod surface, the
-problem is transformed from predicting a 2D spatial field parameterized by local core conditions at CFD-like resolutions to
-predicting an suite of multiple, independent, marginal density functions and copula parameters.  The suite of indipendent predictors can be recombined to recover an estimate for the joint temperature and TKE deistribution on the rod surface.
+problem is transformed from predicting a 2D spatial field parametrized by local core conditions at CFD-like resolutions to
+predicting an suite of multiple, independent, marginal density functions and copula parameters.  The suite of independent predictors can be recombined to recover an estimate for the joint temperature and TKE distribution on the rod surface.
