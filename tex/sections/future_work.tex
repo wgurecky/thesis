@@ -1,10 +1,23 @@
 \section{Time Stepping}
 
+TH conditions in the core change as the fuel is burned.  Therefore for any given CTF patch the TH boundary conditions to the CRUD simulator change as a function of time.  These time dependent changes can be accounted for in the buildup of CRUD by applying a time integration strategy.  Moreover, the CRUD layer both acts as a thermal resistor and augments the effective (boiling) heat transfer coefficient on the rod surface due to increasing the availability of vapor nucleation sites.  This is due to CRUD's porous structure.  This CRUD feedback to the TH conditions is depicted in figure ().
+A predictor-corrector time integration strategy, known as Heun's method, is proposed to step the CRUD solution forward in time and to resolve TH-CRUD feedbacks.  However, if the TH-CRUD feedback is weak, a simple forward Euler time integration strategy is sufficient.
+
+The time stepping methodology must account for the fact that CRUD is grown in a Monte-Carlo fashion in each CTF patch under the proposed method.  Surface samples are weighted by their respective areas on the rod surface according to equation () which produces.
+
+\begin{equation}
+\mathrm{\mathbf{C}}_{t+1} = \mathrm{\mathbf{C}}(T_t, TKE_t, q''_t, \mathbf{C}_t)
+\end{equation}
+Where $\mathbf{C}_t$ represents the CRUD state at time $t$.  
+
+
 \section{Uncertainty Propagation}
+
+Future uncertainty quantification (UQ) tasks include estimating the impact of not knowing, precisely, the true shape of the margins or the copula.  These distributions are merely estimated from the available, noisy, CFD data.  Uncertainty in the shape, or more precisely the moments, of these distributions manifests as a broadening of the temperature and TKE margins which in turn propagates to an artificial broadening of the output CRUD distributions.
 
 \section{Regression Kriging}
 
-An alternative procedure based on regression kriging (RK) is under consideration for producing esimates and uncertainties of the desired FOI.
+An alternative procedure based on regression kriging (RK) is under consideration for producing estimates and uncertainties of the desired FOI.
 The available literature on the topic is substantial however much of the available resources focuses on kriging geostatistical data.  Regression kriging is typically introduced in the context of building
 a surrogate model of a spatial field given a limited number of known sample points and a some set of predictive features that are known at a resolution greater than or equal to the endogenous variable sample resolution.
 The initial steps taken to construct a RK model are similar to the currently proposed approach.  The primary focus of an RK model is to capture spatial auto-correlations in the field data.   If the ability to predict the full 2D distributions of the FOI are desired, an RK model could yeild the requisite fine scale surface distributions with uncertainty estimates. \\
@@ -18,11 +31,11 @@ T(\mathbf s) = \mu(\mathbf s) + \varepsilon(\mathbf s)
 \end{equation}
 
 First, the mean field behavior must be estimated by either a least squares fit to the sampled CFD data, or by using the CTF result directly as the mean predictor, as is done in the proposed method. 
-Additionally, the CTF results enter the kriging model as auxillery predictive variables.  These variables serve as predictors of spatial auto-correlation.
+Additionally, the CTF results enter the kriging model as auxiliary predictive variables.  These variables serve as predictors of spatial auto-correlation.
 
 The following example examines case of kriging the surface temperature field, $\hat T_\mathtt{RK}$.
 Let $\mathbf{q}$ represent a predictive feature array comprised of the temperature,
-TKE, and bounday heat flux from CTF.  Also included in this ficticious example, is a parameter $\Delta z$ which represents the axial distance to the nearest upstream spacer grid.
+TKE, and bounday heat flux from CTF.  Also included in this fictitious example, is a parameter $\Delta z$ which represents the axial distance to the nearest upstream spacer grid.
 
 \begin{equation}
 \mathbf{q} = \{TKE, q'', T, \Delta z \}_{CTF}
@@ -46,9 +59,9 @@ c(q_n,q_1) & \cdots & c(q_n,q_n)
 \label{eq:simple_krige_weights}
 \end{equation}
 
-The covariences must be estimated from the available CFD data.  
+The covariances must be estimated from the available CFD data.  
 
-The residual vector, $\mathbf e$, naively includes all available CFD data points, but in practice a cut-off distance from the sample location, $\mathbf s_0$, can be specified to drasitcally reduce the amount of information required to construct and evaluate a covariance model.  This effectively reduces the length of the vectors $\mathbf{\lambda_0}$ and $\mathbf e$.
+The residual vector, $\mathbf e$, naively includes all available CFD data points, but in practice a cut-off distance from the sample location, $\mathbf s_0$, can be specified to drastically reduce the amount of information required to construct and evaluate a covariance model.  This effectively reduces the length of the vectors $\mathbf{\lambda_0}$ and $\mathbf e$.
 
 \begin{figure}[hbtp]
 \centering
@@ -58,6 +71,6 @@ The residual vector, $\mathbf e$, naively includes all available CFD data points
 \end{figure}
 
 RK is not straight forward to apply to the current Hi2Low problem because the available field estimates are very densely populated in space - but are sparse in the feature space of local core conditions. This is a non-typical situation for the application of RK. Therefore, building a RK model of the surface fields is left as an avenue for future investigation.
-The application of RK is further complicated because the proposed set of auxillery variables are not smoothly distributed in space.  Without the application of a smoothing pre-processor, these
+The application of RK is further complicated because the proposed set of auxiliary variables are not smoothly distributed in space.  Without the application of a smoothing pre-processor, these
 fields jump in value when passing between CTF control volumes.
 

@@ -105,15 +105,15 @@ The axial power distribution is mapped to a CFD surface via 1D linear interpolat
 The development of Cicada's HDF5 data export capabilities revealed weakness in the current tools provided by CD-Adpaco for executing C/C++ user code inside STAR-CCM+.  When writing I/O routines in user code it is desirable to leverage the parallel capabilities of the HDF5 library, however, STAR-CCM+ carries an internal dependency on a serial version (v1.8.6) of the HDF5 library.  At the time of this writing, Cicada cannot be linked against a parallel version of the library due to symbol conflicts encountered between the user specified library compiled with parallel capabilities enabled and the serial-only hdf5 library built into STAR-CCM+.
 Collaboration with CD-Adapco targeted at addressing library conflicts could benefit future multiphysics coupling endeavors that leverage STAR's C-API.
 
-STAR-CCM+ is typically executed in a parallel environment in which each MPI processes owns a subset of the CFD domain with overlapping regions for solution transfer.  Care must be observed that data from these overlapping ``halo cells'' are not included in the export.  In a parallel environment field data is first collected on the root MPI process in sequential order before being exported to the HDF5 file.  Consequently, the serial version of the HDF5 library is sufficient for performing data transfer.  The sequential MPI send-receive paradigm guarantees that the ordering of data points is identical for each exported data field: E.g. the data is consistent with respect to global cell index in the output arrays.   
+STAR-CCM+ is typically executed in a parallel environment in which each MPI process owns a subset of the CFD domain with overlapping regions for solution transfer.  Care must be observed that data from these overlapping ``halo cells'' are not included in the export.  In a parallel environment field data is first collected on the root MPI process in sequential order before being exported to the HDF5 file.  Consequently, the serial version of the HDF5 library is sufficient for performing data transfer.  The sequential MPI send-receive paradigm guarantees that the ordering of data points is identical for each exported data field: E.g. the data is consistent with respect to global cell index in the output arrays.   
 
 The resultant HDF5 output from Cicada is written in a point wise format.  For each user specified volumetric or surface region the respective cells' volume or area are exported alongside Cartesian coordinates of the cells' centroid.  Likewise, thermal hydraulic and CRUD fields supported at the cells' centroids are written as desired.  The raw CFD solution data residing in a Cicada HDF5 output file is useful for external multiphysics applications that are compatible with point-cloud data sets.  Additionally, the availability of point cloud data in a high performance format facilitates data analysis outside of the STAR-CCM+ environment.  
 
-\subsubsection*{CFD vs CTF Comparisons}
+%\subsubsection*{CFD vs CTF Comparisons}
 
-Differences between CFD and subchannel predictions must be understood prior to constructing a Hi2Low model for enhancing CRUD predictions.  As mentioned previously, tools included in Cicada have facilitated CFD to CTF comparisons.  Figure () illustrates a rod operating at () nominal power.
+%Differences between CFD and subchannel predictions must be understood prior to constructing a Hi2Low model for enhancing CRUD predictions.  As mentioned previously, tools included in Cicada have facilitated CFD to CTF comparisons.  Figure () illustrates a rod operating at () nominal power.
 
-TODO: include diff plots
+%TODO: include diff plots
 
 \subsection{Synthetic Training Data Generation}
 \label{chap:synth}
