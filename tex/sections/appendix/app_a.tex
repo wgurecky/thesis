@@ -179,16 +179,18 @@ To minimize the negative log likelihood one simply computes the partial derivati
 
 However one important question to ask is: Which copula family best represents the data?  To answer this question, an arsenal of statistical tests can be applied to select the copula which best fits the data.  Here, we consider two methods:  (1) Comparing Akaike information criterion (AIC) and (2) graphically comparing each fitted copula.  
 
-The AIC is computed by equation ():
+The AIC is computed by equation \ref{eq:cop_aic}.
 \begin{equation}
 \mathrm{AIC} = 2k - 2\mathrm{ln}(\mathcal{L})
+\label{eq:cop_aic}
 \end{equation}
 Where $k$ is the number of free parameters in the model.  The AIC penalizes models with larger numbers of parameters. 
 Automated copula selection is achieved by selecting the copula that obtains the lowest AIC score.
 
-A graphical method of copula selection was proposed by [ref].  In this method, the 
+A graphical method of copula selection was proposed by Barbe et. al. (1996) \cite{Barbe1996}.  In this method each trial copula's Kendall's function, $K_c(t)$ is plotted against an empirical estimate of this function, $\hat K_c$.  Given $d$ random variables $\mathbf U=\{U_1, ... U_d\}$ distributed according to some $d$ dimensional copula, $C$, Kendall's function is given by \ref{eq:Kc} \cite{Joe2015}.
 \begin{equation}
-K_c = 
+K_c(t; C) = \mathrm P \left[C(\mathbf U) \leq t; \mathbf{U} \sim\ C\right]
+\label{eq:Kc}
 \end{equation}
 
 \begin{figure}[!htbp]
@@ -206,7 +208,7 @@ K_c =
 \label{fig:kc_fn_compare}
 \end{minipage}
 \end{figure}
-By graphical inspection, the Gumbel copula is the best fit to the original data set.
+For example, by graphical inspection of figure \ref{fig:kc_fn_compare}, the Gumbel copula is the best fit to the original data set.  This visual process can be automated by computing and comparing $||\hat K_c(t) - K_c(t)||$ for each trial copula.
 
 \subsection*{Kendall's Tau}
 
