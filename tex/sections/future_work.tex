@@ -1,14 +1,28 @@
 \section{Time Stepping}
 
-TH conditions in the core change as the fuel is burned.  Therefore for any given CTF patch the TH boundary conditions to the CRUD simulator change as a function of time.  These time dependent changes can be accounted for in the buildup of CRUD by applying a time integration strategy.  Moreover, the CRUD layer both acts as a thermal resistor and augments the effective (boiling) heat transfer coefficient on the rod surface due to increasing the availability of vapor nucleation sites.  This is due to CRUD's porous structure.  This CRUD feedback to the TH conditions is depicted in figure ().
-A predictor-corrector time integration strategy, known as Heun's method, is proposed to step the CRUD solution forward in time and to resolve TH-CRUD feedbacks.  However, if the TH-CRUD feedback is weak, a simple forward Euler time integration strategy is sufficient.
+TH conditions in the core change as the fuel is burned.  Therefore for any given CTF patch the TH boundary conditions to the CRUD simulator change as a function of time.  These time dependent changes can be accounted for in the buildup of CRUD by applying a time integration strategy.  Moreover, the CRUD layer both acts as a thermal resistor and augments the effective (boiling) heat transfer coefficient on the rod surface due to increasing the availability of vapor nucleation sites due to CRUD's porous structure.  This TH-CRUD feedback should be accounted for in an iterative time stepping scheme.
+%A predictor-corrector time integration strategy, known as Heun's method, is proposed to step the CRUD solution forward in time and to resolve TH-CRUD feedbacks.  However, if the TH-CRUD feedback is weak, a simple forward Euler time integration strategy is sufficient.
 
-The time stepping methodology must account for the fact that CRUD is grown in a Monte-Carlo fashion in each CTF patch under the proposed method.  Surface samples are weighted by their respective areas on the rod surface according to equation () which produces.
+The time stepping methodology must account for the fact that CRUD is grown in a Monte-Carlo fashion in each CTF patch, $j$.  Under the proposed method surface samples are weighted by their respective areas on the rod surface according to equation \ref{eq:weighted_crud}.  The aggregated CRUD results are then passed to CTF. The process of growing CRUD on a single patch for a single time step is depicted in figure ().
 
+\begin{eqnarray}
+M_j &= \sum_{i=1}^N w_i m_{i} \\
+B_j &= \sum_{i=1}^N w_i b_{i}
+\label{eq:weighted_crud}
+\end{eqnarray}
+Where $N$ is the number of samples drawn per CTF patch.  The sample weights are given by $w_i = (A_j / N) [m^2]$ , where $A_j$ is the surface area of the CTF patch.  The CRUD mass and boron densities are $m_j[kg/m^2]$ and $b_j [kg/m^2]$ respectively.
+
+Note that the TH samples are drawn without regarud to their spatial position inside the patch.  This presents a challenge when implementing a time stepping scheme.
+
+A possible approach is to use the averaged CRUD result as an inidial condtion for the next CRUD simulation.
+A primary concern with this approach is that the process of averaging the CRUD results between time steps does not preserver hot spot stationarity.  If the location of hot spots (though the magnitude the hot spot temperature may change) are stationary, then TH samples which resulted in a high temperature are likely to stay at a high temperature throughout time.  The averaging process disregaurds this potentially important information.  A future study of the treatment of averaging the CRUD results between time steps should be conducted. 
+
+The CRUD state is updated according to equation \ref{eq:crud_state}
 \begin{equation}
-\mathrm{\mathbf{C}}_{t+1} = \mathrm{\mathbf{C}}(T_t, TKE_t, q''_t, \mathbf{C}_t)
+\mathrm{\mathbf{C}}^i_{t+1} = \mathbf{\Omega}(T_t, TKE_t, q''_t, \mathbf{\bar \Upsilon}_t)
+\label{eq:crud_state}
 \end{equation}
-Where $\mathbf{C}_t$ represents the CRUD state at time $t$.  
+Where $\mathbf{C}_t$ represents the CRUD state at time $t$.  $\mathbf{\Omega}$ represents the CRUD generator function which provides a CRUD result given TH boundary conditions and some initial CRUD state.   Note that the previous CRUD state is included as an initial condition to the CRUD code in order to generate the next CRUD state.
 
 
 \section{Uncertainty Propagation}

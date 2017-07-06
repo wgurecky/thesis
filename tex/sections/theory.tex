@@ -36,7 +36,7 @@ Residual distributions of temperature and turbulent kinetic energy on the rod su
 
 This issue was partially addressed in the work by Salko et. al. by using a normalized heat transfer coefficient map rather than a temperature map; however, since the surface temperature and heat transfer coefficient are non-trivially related in the subcooled boiling regime it is difficult to justify rescaling the HTC field without disregarding the energy balance satisfied on the CFD mesh.  Further investigation into the proper treatment of the bias term is required.  It is not possible to respect the energy balance simultaneously on the CFD and CTF meshes when constructing a Hi2Low model in the current fashion.  One possible though expensive solution is to tune out the bias between the codes via calibration of closure models.
 
-The remainder of the section describes the models used to build the CFD informed ($\varepsilon$) term.
+The remainder of the section describes the models used to build the CFD informed ($\varepsilon(\cdot)$) term.
 
 \subsection{Capturing Dependence: Copula}
 
@@ -85,7 +85,7 @@ related to the copula's shape parameter by equation \ref{eq:kt} \cite{Nelsen2006
 \label{eq:kt}
 \end{equation}
 Where $\varphi(\theta_c, t)$ is the copula's generator function and $\varphi'$ is the first derivative of the generator function with respect to $t$.  An exhaustive list of copula generating functions can be found in \cite{Nelsen2006}.
-If we restrict ourselves to the class of Archimedean copula we only need $\rho_\tau$ and the copula type, $\Theta_c$ (gumbel, frank, clayton, ect.) to approximately specify the dependence structure between the temperature and turbulent kinetic energy residual distributions on each patch.  Therefore, the gradient boosted copula model predicts $\rho_\tau$ as a function of local core conditions rather than $\theta_c$.
+If we restrict ourselves to the class of Archimedean copula we only need $\rho_\tau$ and the copula type, $\Theta_c$, (gumbel, frank, clayton, ect.) to approximately specify the dependence structure between the temperature and turbulent kinetic energy residual distributions on each patch.  Therefore, the gradient boosted model predicts $\rho_\tau$ as a function of local core conditions rather than $\theta_c$.
 
 \subsection{Modeling the Margins: Gradient Boosting}
 
@@ -164,11 +164,11 @@ At run time:
 \item (4) - Execute a CTF simulation.
 \item (5) - Evaluate the regression model(s) in each CTF patch on the rod surface.
 	\begin{itemize}
-	\item  Obtain copula family, $\hat \theta_c$.
+	\item  Obtain copula family, $\hat \Theta_c$.
 	\item  Obtain conditional quantiles $\hat Q_\tau(T)$ and $\hat Q_\tau(TKE)$ 
 	\item  Reconstruct $f(T)$, $f(TKE)$ margins.
 	\end{itemize}
-\item (6) - Reconstruct the joint density function, $f(T, TKE, q'')$, from the predicted conditional quantiles, the predicted copula family, $\hat \theta_c$, and $\hat \rho_\tau$.
+\item (6) - Reconstruct the joint density function, $f(T, TKE, q'')$, from the predicted conditional quantiles, the predicted copula family, $\hat \Theta_c$, and $\hat \rho_\tau$.
 \item (7) - Draw $N$ TH samples from the predicted joint $f(T, TKE, q'')$ distribution.  
 \item (8) - Use $N$ TH samples as boundary conditions to $N$ independent CRUD (MAMBA1D) simulations.
 \item (9) - Integrate CRUD results over each CTF patch.
