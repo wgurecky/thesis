@@ -55,21 +55,21 @@ Initial results indicate that the method performs best at lower power levels whe
 Though mapping and normalizing spatial distributions is straight forward, it is difficult to account for all pin configurations in the core since matching CFD and CTF solutions must be available in order to perform a simple map.  If corresponding CFD data is unavailable for some portions of the thermal hydraulic conditions present in the core an interpolation procedure is required.  The effectiveness the interpolation procedure depends on the sensitivity of the spatial heat transfer and TKE distributions on the rod surface to changes in rod bundle geometry and other auxiliary variables such as local power output.  If the spatial distributions are ill behaved as a function of rod orientation and locally-averaged thermal hydraulic conditions in the core it could become prohibitively expensive to pre-compute the necessary CFD data required to build an interpolate with an acceptable level of uncertainty in the predicted quantities.  In order to quantify this uncertainty, future development of this technique will focus on multi-rod, multi-state point cases.
 A key metric of success can be ascertained from this study:  The Hi2Low technique which utilizes the fewest number of CFD runs to drive down uncertainties in the predicted quantities of interest - those which significantly impact CRUD growth - is a superior model.
 
-\section{CRUD Modeling}
+%\section{CRUD Modeling}
 
-Previous studies have explored CRUD simulation at both the CFD scale and at the macroscopic core scale.  A CFD-CRUD 
-Figure () depecits results from a coupled MAMBA1D and STARCCM+ calculation.    
+%Previous studies have explored CRUD simulation at both the CFD scale and at the macroscopic core scale.  A CFD-CRUD 
+%Figure () depecits results from a coupled MAMBA1D and STARCCM+ calculation.    
 
-An initial CIPS prediction capability has been demonstrated by CASL [ref B. Collins et. al PHYSOR paper].  This study revealed weaknesses in the predictive capability of coupled CTF-MAMBA simulations [refs] (cite MAMBA tuning and boiling issues).
+%An initial CIPS prediction capability has been demonstrated by CASL [ref B. Collins et. al PHYSOR paper].  This study revealed weaknesses in the predictive capability of coupled CTF-MAMBA simulations [refs] (cite MAMBA tuning and boiling issues).
 
-TODO: Cicada description.
+%TODO: Cicada description.
 
-\begin{figure}[!htbp]
-\centering
-\includegraphics[width=16cm]{images/combo_180x.png}
-\caption{CRUD thickness [m], Temperature [K], and TKE [J/kg] output from a coupled CFD-CRUD simulation.}
-\label{fig:cfd2ctf_map}
-\end{figure}
+%\begin{figure}[!htbp]
+%\centering
+%\includegraphics[width=16cm]{images/combo_180x.png}
+%\caption{CRUD thickness [m], Temperature [K], and TKE [J/kg] output from a coupled CFD-CRUD simulation.}
+%\label{fig:cfd2ctf_map}
+%\end{figure}
 
 \section{Copula}
 

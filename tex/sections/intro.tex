@@ -21,15 +21,14 @@ Therefore the surrogate predicts the behavior of the FOI as a function
 of position in the core, local thermal-hydraulic conditions, and perhaps 
 more exogenous variables. 
 
-The subchannel code is substantially faster to execute and produces an estimate for
+The subchannel code is substantially faster to execute than CFD and produces an estimate for
 all the relevant TH quantities at a coarse spatial resolution everywhere in the core.  The proposed method uses information from both CTF simulations and the comparatively high fidelity CFD solutions.
 The subchannel code provides the mean trends of the 
-FOI spatial distributions in this work.  The role of the CFD solution is to provide
+FOI's spatial distributions.  The role of the CFD solution is to provide
 higher order moments of the about the mean field estimates given by CTF.  
-The solution provided by CTF is augmented by a
-predicted stochastic component of the FOI informed by CFD results to provide a more detailed description of
-the target FOIs than CTF can provide alone.  However, it is shown in this proposal that the conditional TH residual distributions (conditioned on the local core conditions) do not follow a Gaussian distribution.  This property of
-the residual distributions gives rise to a major challenge in this work.
+In other words, the solution provided by CTF is augmented by a
+predicted stochastic component of the FOI informed by CFD results to provide a more detailed description of the target FOIs than CTF can provide alone.  
+%However, it is shown in this proposal that the residual distributions do not follow a Gaussian distribution.  This property of the residual distributions gives rise to a major challenge in this work.
 
 
 \section{Overview of Topics}
@@ -44,10 +43,10 @@ brief introduction to Sklar's theorem and gradient boosting is given with
 additional details on these topics provided in \autoref{chap:app}.
 
 Work that has been performed to date in support of the proposed Hi2Low strategy is reviewed in
-\autoref{chap:work}.  The description of the software to distill CFD data sets into
-training data set is given alongside details of supporting packages that aid in building
+\autoref{chap:work}.  The description of software used to distill CFD data sets into
+training data sets is given alongside details of supporting packages that aid in building
 the complete Hi2Low CRUD model.
-A demonstration of the proposed method's ability to predict CRUD grow
+A demonstration of the proposed method's ability to predict CRUD growth
 rates on a single rod at a single TH state point is also given in
 \autoref{chap:work}.
 
@@ -60,7 +59,7 @@ significant small scale features distributed about a mean prediction.
 
 \subsection{CASL CRUD Challenge Problems}
 
-Consortium for the Advanced Simulation of LWRs (CASL) selected several problems identified by industry partners as critical, inadequately understood, engineering scale phenomena which would provide
+The Consortium for the Advanced Simulation of LWRs (CASL) selected several problems identified by industry partners as critical, inadequately understood, engineering scale phenomena which would provide
 financial and safety benefits to the nuclear power industry if resolved \cite{Turinsky15}.
 The problem of
 interest in this work is the prediction of Chalk River Unidentified Deposit
@@ -93,7 +92,7 @@ capability.  For multi-cycle depletion computations, VERA relies upon MPACT, a
 thermal hydraulics code, CTF.  An integrated CRUD modeling capability
 is provided by MAMBA to address the CRUD induced power shift challenge problem.
 
-To reduce computation times, the subchannel TH code discretized the reactor
+To reduce computation times, the subchannel TH code discretizes the reactor
 domain into large, centimeter scale finite volumes. As a consequence of this
 discretization scheme, sub-centimeter scale thermal hydraulic effects of the
 spacer grids on CRUD are averaged over large regions on the fuel rods'
@@ -103,9 +102,7 @@ relations.  In effect, a single constant estimate for the mean thermal
 hydraulic conditions are obtained in each finite volume.
 
 Previous Hi2Low focused work in CASL focused on utilizing experimental or CFD
-data sets to improve closure models in CTF.  These studies leverage a multitude
-of dimensionality reduction and regression techniques to fit a parametric model
-to the accepted gold-standard empirical data.  This approach is adequate for
+data sets to improve heat transfer and turbulent mixing models in CTF.  These studies focused on
 correcting biases in the bulk-average behavior of the flow (due to the
 previously neglected physics).  Examples of such Hi2Low models are given in
 \autoref{chap:lit}.
