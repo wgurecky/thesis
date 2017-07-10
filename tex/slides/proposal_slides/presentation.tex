@@ -145,7 +145,7 @@
 \begin{columns}
 \begin{column}{0.5\textwidth}
    \begin{itemize}
-   \item Salko et. al developed a Hi2Low procedure based on mapping and re-scaling CFD results onto an intermediate reconstruction grid upon which CRUD is grown.
+   \item Salko et. al (2017) developed a Hi2Low procedure based on mapping and re-scaling CFD results onto an intermediate reconstruction grid upon which CRUD is grown.
    \item The single phase heat transfer coefficient (HTC) and TKE surface fields are mapped.
    \item An iterative method is used to converge on the correct pin surface temperature given HTC and the boundary heat flux provided by CTF.
    \end{itemize}
@@ -244,7 +244,6 @@ Where $\theta_c$ and $\theta_{x,y}$ are free copula and marginal model parameter
 \begin{frame}
 \frametitle{Specifying Copula Parameters}
 \begin{itemize}
-\item Must associate each CTF patch with a copula family (categorical response) and Kendall's tau (real-valued).
 \item For the case of Archimedean copula, Kendall's tau, $\rho_\tau$ is
 related to the copula's shape parameter by:
 \[
@@ -252,6 +251,7 @@ related to the copula's shape parameter by:
 \]
 Where $\varphi(\theta_c, t)$ is the copula's generator function and $\varphi'$ is the first derivative of the generator function with respect to $t$.
 \item  If we restrict ourselves to the class of  Archimedean copula we only need $\rho_\tau$ and the copula type, $\Theta_c$ (gumbel, frank, clayton, ect.) to approximately specify the dependence structure between the temperature and turbulent kinetic energy residual distributions in each CTF patch.
+\item Must associate each CTF patch with a copula family (categorical response) and Kendall's tau (real-valued).
 \end{itemize}
 \end{frame}
 
@@ -277,60 +277,29 @@ h_i(x, y) = c(F(x), F(y)|\rho_{\tau_i}) f(x|\theta_{x_i}) f(y|\theta_{y_i})
 
 % =========================================================================== %
 \begin{frame}
-\frametitle{Gradient Boosted Regression Model}
+\frametitle{Non-Parametric Representation of the Margins}
 \begin{itemize}
 \item The proposed method uses a non-parametric representation of the margins.
 \begin{itemize}
-	\item The parametric approach would predict the ``shape'' parameters $\theta_{x,y}(\mathbf{p})$.
-	\item In the non-parametric approach $\theta_x$ takes the form of a vector of conditional quantiles, $\mathbf Q_\tau$.
+	\item In the parametric approach we would predict the ``shape'' parameters $\theta_{x}(\mathbf{p})$.
+	\item In the non-parametric approach $\theta_x$ is replaced by a vector of conditional quantiles, $\mathbf Q_\tau (\mathbf p)$.
 \end{itemize}
-\item  Each conditional quantile $Q_\tau$ is a function of $\mathbf p$. A gradient boosted regression tree is fit to each quantile independently.
+\item  Each conditional quantile (ex: Median of the temperature distribution) is a function of $\mathbf p$. A gradient boosted regression tree is fit to each quantile independently.
 \end{itemize}
 \end{frame}
 
 % =========================================================================== %
-\begin{frame}[shrink=20]
-\frametitle{Gradient Boosting Algorithm}
-
-The generalized gradient boosting algorithm was developed by Friedman (1999).
-
-\begin{algorithm}[H]
-\KwData{ training set $\{(x_i, y_i)\}_{i=1}^n$ a differentiable loss function $L(y, F(x)),$ number of iterations ${{M}}$.
-Initialize model with a constant value:
-$F_0(x) = \underset{\gamma}{\arg\min} \sum_{i=1}^n L(y_i, \gamma).$}
-
-\For{${{m}} = 1$ to ${{M}}$}{
-Compute the pseudo-residuals:
-
-\For{$i=1,\ldots,n $}{
-$r_{im} = -\left[\frac{\partial L(y_i, F(x_i))}{\partial F(x_i)}\right]_{F(x)=F_{m-1}(x)}$
-}
-
-Fit a base learner $h_m(x)$ to pseudo-residuals\;
-
-Compute multiplier $\gamma_m$ :
-$\gamma_m = \underset{\gamma}{\operatorname{arg\,min}} \sum_{i=1}^n L\left(y_i, F_{m-1}(x_i) + \gamma h_m(x_i)\right)$\;
-Update the model:
-$F_m(x) = F_{m-1}(x) + \gamma_m h_m(x).$
-}
-Output $F_M(x).$
-\end{algorithm}
-\end{frame}
-
-% =========================================================================== %
-\begin{frame}[shrink=30]
+\begin{frame}[shrink=25]
 \frametitle{Obtaining the Margins}
 \begin{itemize}
-\item Let $\mathbf Q_{\tau_x} = \{Q(\tau_{x_i}),... Q(\tau_{x_N}) \} $. This is an array of quantiles. $\mathbf Q_{\tau_y}$ is similarly defined.
-\begin{itemize}
-	\item $Q_\tau = F^{-1}(\tau);\ F(y)=P[Y \leq y]$
-	\item $\tau \in [0, 1]$
-\end{itemize}
+\item $Q_\tau = F^{-1}(\tau); $ where $\ F(y)=P[Y \leq y]$ is a CDF.
+\item $\tau \in [0, 1]$
+
 \item The quantile Loss function is given by:
 \[
-l_\tau(u) = u \cdot (\tau - \mathbb{I}_{(u < 0)})
+\rho_\tau(u) = u \cdot (\tau - \mathbb{I}_{(u < 0)});\ u=Y - Q_\tau
 \]
-\item The quantile loss function is utilized as the general loss function, $L$, in the gradient boosting algorithm given previously.  The derivative of the loss function is provided in the image below.
+\item The quantile loss function is utilized as the general loss function, $L$, in the gradient boosting algorithm.  The derivative of the loss function is provided in the image below.
 \end{itemize}
 \begin{figure}
         \centering
@@ -343,6 +312,36 @@ l_\tau(u) = u \cdot (\tau - \mathbb{I}_{(u < 0)})
             \includegraphics[width=6cm]{figs/1d_boosted_regression_quantile_ex.png}
         \end{minipage}
 \end{figure}
+\end{frame}
+
+% =========================================================================== %
+\begin{frame}[shrink=20]
+\frametitle{Gradient Boosting Algorithm}
+
+The generalized gradient boosting algorithm was developed by Friedman (1999).
+Let $y$ be some quantile of interest $Q_{\tau_{y_i}}$.
+\begin{algorithm}[H]
+\KwData{ (1) Training set $\{(p_i, y_i)\}_{i=1}^n$. (2) Differentiable loss function $L(y, F(p))$. (3) Number of iterations ${{M}}$.
+Initialize model with a constant value:
+$F_0(p) = \underset{\gamma}{\arg\min} \sum_{i=1}^n L(y_i, \gamma).$}
+
+\For{${{m}} = 1$ to ${{M}}$}{
+Compute the pseudo-residuals:
+
+\For{$i=1,\ldots,n $}{
+$r_{im} = -\frac{\partial L(y_i, F_{m-1}(p_i))}{\partial F_{m-1}(p_i)}$
+}
+
+Fit a weak learner $h_m(p)$ to pseudo-residuals, $r_{m}$: Training data set is $\{(p_i, r_{im})\}_{i=1}^n$ \;
+
+Compute multiplier $\gamma_m$ :
+$\gamma_m = \underset{\gamma}{\operatorname{arg\,min}} \sum_{i=1}^n L\left(y_i, F_{m-1}(p_i) + \gamma h_m(p_i)\right)$\;
+Update the model:
+$F_m(p) = F_{m-1}(p) + \nu \gamma_m h_m(p).$
+}
+Output $F_M(p).$
+\end{algorithm}
+Where $\nu$ is a tunable constant in $[0, 1]$ called the learning rate.
 \end{frame}
 
 % =========================================================================== %
@@ -409,12 +408,12 @@ The $i^{th}$ CRUD sample drawn from CTF patch, $j$:
         \begin{minipage}{.5\textwidth}
             \centering
             \includegraphics[width=7.5cm]{figs/pinTempOut.png}
-            \caption{Synthetic CFD Temperature distribution vs. axial position.}
+            \caption{Synthetic CFD Temperature $[K]$ distribution vs. axial position.}
         \end{minipage}%
         \begin{minipage}{.5\textwidth}
             \centering
             \includegraphics[width=7.5cm]{figs/pinTkeOut.png}
-            \caption{Synthetic CFD TKE distribution vs. axial position.}
+            \caption{Synthetic CFD TKE  $[J/Kg]$ distribution vs. axial position.}
         \end{minipage}
     \end{figure}
 \end{frame}
@@ -520,15 +519,18 @@ Area weighted average in dark blue.  CTF baseline shown in green.  CRUD result a
 \begin{tabular}{|c|c|c|c|}
 \hline 
  QOI  &   CTF	&  CFD (Synthetic)	& Hi2Low Model \\ \hline
-Total Boron Mass [g]& 0.00587	&  0.00496	& 0.00555 \\
-Total CRUD Mass [g]	& 8.788	&  7.155 & 7.710	\\
+Total Boron Mass [g]& 0.00587	&  0.00496	& 0.00631 \\
+Total CRUD Mass [g]	& 8.788	&  7.155 & 9.042	\\
 \hline
 \end{tabular}
 \caption{Single pin CRUD result summary.}
 \label{tab:crud_res}
 \end{center}
 \end{table}
-CRUD result at 100$[days]$.
+\begin{itemize}
+\item CRUD result at 100$[days]$.  
+\item CFD data detrended using via \emph{moving average}.  In this case the residual CFD$-$CTF distributions are stationary about 0.
+\end{itemize}
 \end{frame}
 
 % =========================================================================== %
@@ -724,12 +726,12 @@ of the temperature, TKE, and CRUD on the rods' surface.
 \end{frame}
 
 % =========================================================================== %
-\begin{frame}
+\begin{frame}[shrink=10]
 \frametitle{Classification and Regression Tree (CART) - Weak Learner}
 Each weak learner in the ensemble is a binary tree that partitions the input space based on "best-first" splits.  
 \begin{itemize}
 \item classification - find the split that minimizes: $-\sum_j\sum_i f_{ij} ln(f_{ij})$, where $f_{ij}$ is the fraction of class label $i$ in the region $j$.
-\item regression - find the split that minimizes: $\sum_j\sum_i(y_i - \hat y_{j})^2$
+\item Least squares regression - find the split that minimizes: $\sum_j\sum_i(y_i - \hat y_{j})^2$
 \end{itemize}
 
 \begin{figure}[!htbp]
@@ -737,6 +739,22 @@ Each weak learner in the ensemble is a binary tree that partitions the input spa
 \includegraphics[width=7cm]{figs/cart.png}
 \label{model_overview}
 \end{figure}
+\end{frame}
+
+% =========================================================================== %
+\begin{frame}
+\frametitle{GBRT - Weak Learners Fit to Pseudo Residuals}
+Weak learners are fit the the pseudo-residuals (derivative of the loss function): 
+\[
+\frac{\partial L(y_i, F(p_i))}{\partial F(p_i)}
+\]
+if $L_i=0.5(y_i-F(p_i))^2$ then $L' = F(p_i)-y_i$.  
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=9cm]{figs/pseudo_resids.png}
+\label{model_overview}
+\end{figure}
+Source: Peter Prettenhofer, PyData (2014).
 \end{frame}
 
 % =========================================================================== %
@@ -751,7 +769,7 @@ Each weak learner in the ensemble is a binary tree that partitions the input spa
 \end{frame}
 
 % =========================================================================== %
-\begin{frame}
+\begin{frame}[shrink=10]
 \frametitle{Overfitting Detection and Prevention}
 \begin{itemize}
 \item Overfitting can be detected by inspecting testing errors as additional weak learners are added to the model.
@@ -762,6 +780,51 @@ Each weak learner in the ensemble is a binary tree that partitions the input spa
 \includegraphics[width=7.5cm]{figs/1d_boosted_regression_err.png}
 \label{model_overview}
 \end{figure}
+\end{frame}
+
+% =========================================================================== %
+\begin{frame}[fragile,shrink=30]
+\frametitle{Input Deck for Synthetic CFD data Gen}
+\begin{verbatim}
+    "pinID": 1,
+    "chanID": 1,
+    "averageHeatFlux": 1.2e6,
+    "spans": {
+              "0.0": {"model": "lower", "samples": 1000},
+              "2.01": {"model": "upper", "samples": 4000},
+              "2.53": {"model": "upper", "samples": 4000},
+              "2.98": {"model": "upper", "samples": 4000}
+    },
+    "upper": {
+            "0.0": {"copula":  {"family": "gauss", "params": [-0.5], "rot": 0},
+                "tke": {"type": "gauss", "params": [0.001, 0.02]},
+                "temp": {"type": "beta", "params": [5.0, 2.7], "loc": -9.2, "scale": 12.0},
+                "bhf": {"type": "gauss", "params": [0.001, 2.6e4]}
+                },
+            "0.3": {"copula":  {"family": "gauss", "params": [-0.6], "rot": 0},
+                "tke": {"type": "gauss", "params": [0.01, 0.008]},
+                "temp": {"type": "beta", "params": [5.0, 1.7], "loc": -7.0, "scale": 8.0},
+                "bhf": {"type": "gauss", "params": [0.01, 1.1e4]}
+                },
+            "1.0": {"copula":  {"family": "frank", "params": [4.0], "rot": 1},
+                "tke": {"type": "gauss", "params": [0.01, 0.005]},
+                "temp": {"type": "beta", "params": [5.0, 1.5], "loc": -4.0, "scale": 5.0},
+                "bhf": {"type": "gauss", "params": [0.01, 0.9e4]}
+                }
+            },
+    "lower": {
+            "0.0": {"copula":  {"family": "gauss", "params": [-0.6]},
+                "tke": {"type": "gauss", "params": [0.001, 0.0001]},
+                "temp": {"type": "beta", "params": ["5.0*(t)/600.0", 5.0], "loc": -2.0, "scale": 4.0},
+                "bhf": {"type": "gauss", "params": [0.01, 1.0e3]}
+                },
+            "1.0": {"copula":  {"family": "gauss", "params": [-0.6]},
+                "tke": {"type": "gauss", "params": [0.001, 0.0002]},
+                "temp": {"type": "beta", "params": [5.0, 5.0], "loc": -2.0, "scale": 4.0},
+                "bhf": {"type": "gauss", "params": [0.01, 1.0e3]}
+                }
+            }
+\end{verbatim}
 \end{frame}
 
 
