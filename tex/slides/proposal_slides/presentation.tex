@@ -163,7 +163,7 @@
 
 % =========================================================================== %
 \begin{frame}
-    \frametitle{Prior Art: Boundary Heat Flux Remapping Hi2Low Procedure}
+    \frametitle{Prior Art: HTC Remapping Hi2Low Procedure}
     \begin{figure}[!htbp]
 \centering
 \begin{minipage}{.5\textwidth}
@@ -490,7 +490,7 @@ CTF baseline shown in green.
         \end{minipage}
     \end{figure}
 $68^{th}, 95^{th}, 98^{th}$ percentiles shown.
-CTF baseline shown in green.
+Area weighted average in dark blue.  CTF baseline shown in green.  CRUD result at 100$[days]$.
 \end{frame}
 
 % =========================================================================== %
@@ -499,8 +499,8 @@ CTF baseline shown in green.
         \centering
         \begin{minipage}{.5\textwidth}
             \centering
-            \includegraphics[width=6cm]{figs/crud_model_out.png}
-            \caption{Hi2Low Crud Mass Density $[g/cm^2]$}
+            \includegraphics[width=6cm]{figs/b10_cfd_out.png}
+            \caption{Sythetic CFD Boron Hideout Mass Density $[g/cm^2]$}
         \end{minipage}%
         \begin{minipage}{.5\textwidth}
             \centering
@@ -511,6 +511,27 @@ CTF baseline shown in green.
 $68^{th}, 95^{th}, 98^{th}$ percentiles shown.
 Area weighted average in dark blue.  CTF baseline shown in green.  CRUD result at 100$[days]$.
 \end{frame}
+
+% =========================================================================== %
+\begin{frame}\frametitle{Single Pin Hi2Low Results}
+    \begin{figure}
+        \centering
+        \begin{minipage}{.5\textwidth}
+            \centering
+            \includegraphics[width=6cm]{figs/crud_cfd_out.png}
+            \caption{Sythetic CFD Hi2Low CRUD Mass Density $[g/cm^2]$}
+        \end{minipage}%
+        \begin{minipage}{.5\textwidth}
+            \centering
+            \includegraphics[width=6cm]{figs/crud_model_out.png}
+            \caption{Hi2Low CRUD Mass Density $[g/cm^2]$}
+        \end{minipage}
+    \end{figure}
+$68^{th}, 95^{th}, 98^{th}$ percentiles shown.
+Area weighted average in dark blue.  CTF baseline shown in green.  CRUD result at 100$[days]$.
+\end{frame}
+
+
 
 % =========================================================================== %
 \begin{frame}\frametitle{Single Pin CTF Results}
@@ -529,7 +550,7 @@ Total CRUD Mass [g]	& 8.788	&  7.155 & 9.042	\\
 \end{table}
 \begin{itemize}
 \item CRUD result at 100$[days]$.  
-\item CFD data detrended using via \emph{moving average}.  In this case the residual CFD$-$CTF distributions are stationary about 0.
+\item CFD data detrended via moving average.  In this case the residual CFD$-$CTF distributions are stationary about 0.
 \end{itemize}
 \end{frame}
 
@@ -545,7 +566,7 @@ Total CRUD Mass [g]	& 8.788	&  7.155 & 9.042	\\
         \begin{minipage}{.5\textwidth}
             \centering
             \includegraphics[width=6cm]{figs/qq_plot_tke_69.png}
-            \caption{Q-Q Plot comparing gradient boosted quantiles vs. original CFD data. $z=2.59[m]$}
+            \caption{Q-Q Plot comparing gradient boosted quantiles vs. synthetic CFD data. $z=2.59[m]$}
         \end{minipage}
     \end{figure}
 Quantiles used in TKE residual reconstruction: $\tau_{TKE}=\{0, 0.01, 0.05, 0.15, 0.3, 0.5, 0.7, 1\}$
@@ -563,7 +584,7 @@ Quantiles used in TKE residual reconstruction: $\tau_{TKE}=\{0, 0.01, 0.05, 0.15
         \begin{minipage}{.5\textwidth}
             \centering
             \includegraphics[width=6cm]{figs/qq_plot_tke_76.png}
-            \caption{Q-Q Plot comparing gradient boosted quantiles vs. original CFD data. $z=2.84[m]$}
+            \caption{Q-Q Plot comparing gradient boosted quantiles vs. synthetic CFD data. $z=2.84[m]$}
         \end{minipage}
     \end{figure}
 Quantiles used in TKE residual reconstruction: $\tau_{TKE}=\{0, 0.01, 0.05, 0.15, 0.3, 0.5, 0.7, 1\}$
@@ -581,7 +602,7 @@ Quantiles used in TKE residual reconstruction: $\tau_{TKE}=\{0, 0.01, 0.05, 0.15
         \begin{minipage}{.5\textwidth}
             \centering
             \includegraphics[width=6cm]{figs/qq_plot_t_69.png}
-            \caption{Q-Q Plot comparing gradient boosted quantiles vs. original CFD data. $z=2.59[m]$}
+            \caption{Q-Q Plot comparing gradient boosted quantiles vs. synthetic CFD data. $z=2.59[m]$}
         \end{minipage}
     \end{figure}
 Quantiles used in temperature residual reconstruction: $\tau_{T}=\{0, 0.1, 0.3, 0.5, 0.7, 0.85, 0.9 0.95, 0.99, 1\}$
@@ -599,7 +620,7 @@ Quantiles used in temperature residual reconstruction: $\tau_{T}=\{0, 0.1, 0.3, 
         \begin{minipage}{.5\textwidth}
             \centering
             \includegraphics[width=6cm]{figs/qq_plot_t_76.png}
-            \caption{Q-Q Plot comparing gradient boosted quantiles vs. original CFD data. $z=2.84[m]$}
+            \caption{Q-Q Plot comparing gradient boosted quantiles vs. synthetic CFD data. $z=2.84[m]$}
         \end{minipage}
     \end{figure}
 Quantiles used in temperature residual reconstruction: $\tau_{T}=\{0, 0.1, 0.3, 0.5, 0.7, 0.85, 0.9 0.95, 0.99, 1\}$
@@ -629,7 +650,7 @@ Quantiles used in temperature residual reconstruction: $\tau_{T}=\{0, 0.1, 0.3, 
 \begin{itemize}
 	\item Grow CRUD at updated TH conditions.
 	\item Account for previous CRUD history, as the CRUD layer provides TH feedback.
-	\item Aggregate the ensemble of CRUD predictions on each CTF patch.  Compute moments of CRUD distribution.
+	\item Aggregate the ensemble of CRUD predictions on each CTF patch.
 	\item Propagate CRUD ensemble prediction errors forward in time.
 \end{itemize}
 \end{itemize}
@@ -650,7 +671,7 @@ Quantiles used in temperature residual reconstruction: $\tau_{T}=\{0, 0.1, 0.3, 
 \begin{itemize}
 \item The proposed technique does not try to provide a detailed spatial distribution
 of the temperature, TKE, and CRUD on the rods' surface.
-\item Statistical approach seeks to predict detailed joint frequency distributions on each CTF patch.
+\item The proposed approach seeks to predict detailed joint frequency distributions on each CTF patch.
 \item Treatment of the bias term is important wrt. Hi2Low CRUD results.
 \item Time stepping scheme must account for the ensemble approach to CRUD growth.
 \item Future work will focus on uncertainty quantification.
