@@ -148,7 +148,7 @@ class Metropolis(McmcSampler):
         kernel = 'Gauss'
         super(Metropolis, self).__init__(log_like_fn, kernel, **kernel_kwargs)
 
-    def _mcmc_run(self, n, theta_0, cov_est=1.0, **kwargs):
+    def _mcmc_run(self, n, theta_0, cov_est=5.0, **kwargs):
         """!
         @brief Run the metropolis algorithm.
         @param cov_est float or np_1darray of anticipated theta variance
@@ -212,3 +212,6 @@ if __name__ == "__main__":
     theta_est, sig_est, chain = my_mcmc.param_est(100)
     print(theta_est)
     print(sig_est)
+    print("Acceptance fraction: %f" % my_mcmc.acceptance_fraction)
+    # vis the chain
+    # vis the parameter estimates
