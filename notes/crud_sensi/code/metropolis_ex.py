@@ -115,7 +115,7 @@ class McmcSampler(object):
         @brief Computes mean an std of sample chain discarding the first n_burn samples.
         @return  mean (np_1darray), std (np_1darray), chain (np_ndarray)
         """
-        chain_slice = self.chain[:n_burn, :]
+        chain_slice = self.chain[n_burn:, :]
         mean_theta = np.mean(chain_slice, axis=0)
         std_theta = np.std(chain_slice.T)
         return mean_theta, std_theta, chain_slice
@@ -126,7 +126,7 @@ class McmcSampler(object):
         @param n int.  number of samples in chain to draw
         @param theta_0 np_1darray of initial guess
         """
-        self._mcmc_run(self, n, theta_0, **kwargs)
+        self._mcmc_run(n, theta_0, **kwargs)
 
     def _mcmc_run(self, *args, **kwarags):
         raise NotImplementedError
@@ -146,23 +146,22 @@ class Metropolis(McmcSampler):
     """
     def __init__(self, log_like_fn, **kernel_kwargs):
         kernel = 'Gauss'
-        super(Metropolis, self).__init__(self, log_like_fn, kernel, kernel_kwargs)
+        super(Metropolis, self).__init__(log_like_fn, kernel, **kernel_kwargs)
 
-    def _mcmc_run(self, n, theta_0, log_like_kwargs={}, cov_est=1.0):
+    def _mcmc_run(self, n, theta_0, cov_est=1.0, **kwargs):
         """!
         @brief Run the metropolis algorithm.
         @param cov_est float or np_1darray of anticipated theta variance
         """
-        import pdb; pdb.set_trace()
-        self._freeze_like_fn(**log_like_kwargs)
+        self._freeze_like_fn(**kwargs)
         # pre alloc storage for solution
         self.n_accepted = 1
         self.n_rejected = 0
         theta_chain = np.zeros((n, np.size(theta_0)))
         self.chain = theta_chain
         theta_chain[0, :] = theta_0
-        self.mcmc_kernel.cov = np.eye((len(theta_0), len(theta_0))) * cov_est
-        for i in range(n):
+        self.mcmc_kernel.cov = np.eye(len(theta_0)) * cov_est
+        for i in range(n - 1):
             theta = theta_chain[i, :]
             # set the gaussian kernel to be centered at current loc
             self.mcmc_kernel.mu = theta
@@ -208,8 +207,8 @@ if __name__ == "__main__":
     # init sampler
     theta_0 = np.array([1.0])
     my_mcmc = Metropolis(log_like_fn)
-    my_mcmc.run_mcmc(200, theta_0)
+    my_mcmc.run_mcmc(500, theta_0, data=[0, 0, 0])
     # view results
-    theta_est, sig_est, chain = my_mcmc.param_est(50)
+    theta_est, sig_est, chain = my_mcmc.param_est(100)
     print(theta_est)
-    print(chain)
+    print(sig_est)
