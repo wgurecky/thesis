@@ -308,7 +308,7 @@ def fit_line():
     y += yerr * np.random.randn(N)
 
     def log_prior(theta):
-        if (-10 < theta[0] < 10) and (-10 < theta[1] < 10):
+        if (-50 < theta[0] < 50) and (-50 < theta[1] < 50):
             return 0.
         else:
             return -np.inf
@@ -317,8 +317,8 @@ def fit_line():
         return theta[0] + theta[1] * x
 
     def log_like_fn(theta, data=y):
-        sigma = yerr
-        log_like = -np.log(np.sum((data - model_fn(theta)) ** 2 / sigma \
+        sigma = 1.0
+        log_like = 1e2 * -np.log(np.sum((data - model_fn(theta)) ** 2 / sigma \
                 - np.log(1./sigma))) + log_prior(theta)
         return log_like
 
@@ -376,5 +376,5 @@ def sample_gauss():
 
 
 if __name__ == "__main__":
-    # fit_line()
-    sample_gauss()
+    fit_line()
+    # sample_gauss()
