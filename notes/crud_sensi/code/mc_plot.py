@@ -15,9 +15,9 @@ def plot_mcmc_chain(samples, labels, savefig, truths):
     n_params = samples.shape[1]
     fig, axes = pl.subplots(n_params, 1, sharex=True, figsize=(8, 9), squeeze=False)
     for i in range(n_params):
-        axes[0, i].plot(samples[:, i].T, color="k", alpha=0.6)
-        axes[0, i].yaxis.set_major_locator(MaxNLocator(5))
-        axes[0, i].axhline(truths[i], color="#888888", lw=2)
-        axes[0, i].set_ylabel(labels[i])
+        axes[i, 0].plot(samples[:, i].T, color="k", alpha=0.6)
+        axes[i, 0].yaxis.set_major_locator(MaxNLocator(5))
+        axes[i, 0].axhline(truths[i], color="#888888", lw=2)
+        axes[i, 0].set_ylabel(labels[i])
     fig.tight_layout(h_pad=0.0)
     fig.savefig(savefig)

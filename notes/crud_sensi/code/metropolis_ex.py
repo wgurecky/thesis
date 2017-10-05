@@ -29,7 +29,7 @@ class GaussianProposal(McmcProposal):
     def __init__(self, mu=None, cov=None):
         """!
         @brief Init
-        @param mu  np_1darray
+        @param mu  np_1darray. centroid of multi-dim gauss
         @param cov np_ndarray. covariance matrix
         """
         self._mu = mu
@@ -41,6 +41,8 @@ class GaussianProposal(McmcProposal):
         @brief fit gaussian proposal to past samples vector
         """
         self._cov = np.cov(past_samples.T)
+        # rescale cov matrix
+        # self._cov /= np.max(np.abs(self._cov))
         if not self._cov.shape:
             self._cov = np.reshape(self._cov, (1, 1))
         print("New proposal cov = %s" % str(self._cov))
@@ -49,9 +51,9 @@ class GaussianProposal(McmcProposal):
         """!
         @brief Sample_proposal distribution
         """
-        mu = self.mu
-        cov = self.cov
-        return np.random.multivariate_normal(mu, cov, size=n_samples)
+        assert self.mu is not None
+        assert self.cov is not None
+        return np.random.multivariate_normal(self.mu, self.cov, size=n_samples)[0]
 
     def prob_ratio(self, like_fn, theta_past, theta_proposed):
         """!
@@ -62,12 +64,13 @@ class GaussianProposal(McmcProposal):
         Where \f$ g() \f$ is the proposal distribution fn
         and \f[ \Pi \f] is the likelyhood function
         """
-        qx = np.linspace(0, 5, 10, endpoint=False)
-        x = np.ones((len(qx), len(theta_past))) * qx
+        assert self.mu is not None
+        assert self.cov is not None
         g_ratio = lambda x_0, x_1: \
             stats.multivariate_normal.pdf(x_0, mean=theta_past, cov=self.cov) / \
             stats.multivariate_normal.pdf(x_1, mean=theta_proposed, cov=self.cov)
         g_r = g_ratio(theta_proposed, theta_past)  # should be 1 in symmetric case
+        assert g_r == 1
         past_likelihood = like_fn(theta_past)
         if past_likelihood <= 0:
             # will result in div by zero error. Dont step here!
@@ -131,7 +134,7 @@ class McmcSampler(object):
         """
         chain_slice = self.chain[n_burn:, :]
         mean_theta = np.mean(chain_slice, axis=0)
-        std_theta = np.std(chain_slice.T)
+        std_theta = np.std(chain_slice, axis=0)
         return mean_theta, std_theta, chain_slice
 
     def run_mcmc(self, n, theta_0, **kwargs):
@@ -194,18 +197,21 @@ def mh_kernel(i, mcmc_sampler, theta_chain):
         mcmc_sampler.like_fn,
         theta,
         theta_prop)))
-    if a_ratio > 1.:
+    if a_ratio >= 1.:
         # accept proposal, it is in area of higher prob density
         theta_chain[i+1, :] = theta_prop
         mcmc_sampler.n_accepted += 1
+        print("Aratio: %f, Atest: %f , Accepted bc Aratio > 1" % (a_ratio, a_test))
     elif a_test < a_ratio:
         # accept proposal, even though it is "worse"
         theta_chain[i+1, :] = theta_prop
         mcmc_sampler.n_accepted += 1
+        print("Aratio: %f, Atest: %f , Accepted by chance" % (a_ratio, a_test))
     else:
         # stay put, reject proposal
         theta_chain[i+1, :] = theta
         mcmc_sampler.n_rejected += 1
+        print("Aratio: %f, Atest: %f , Rejected!" % (a_ratio, a_test))
     return theta_chain
 
 
@@ -261,7 +267,7 @@ class AdaptiveMetropolis(McmcSampler):
         @param lag_mod.  Number of iterations to wait between updates (default == 1)
         """
         adapt = kwargs.get("adapt", 200)
-        lag = kwargs.get("lag", 100)
+        lag = kwargs.get("lag", 1000)
         lag_mod = kwargs.get("lag_mod", 10)
         self._freeze_like_fn(**kwargs)
         # pre alloc storage for solution
@@ -275,8 +281,8 @@ class AdaptiveMetropolis(McmcSampler):
             # M-H Kernel
             mh_kernel(i, self, theta_chain)
             # continuously update the proposal distribution
-            if (lag > adapt):
-                raise RuntimeError("lag must be smaller than adaptation start index")
+            # if (lag > adapt):
+            #    raise RuntimeError("lag must be smaller than adaptation start index")
             if i >= adapt and (i % lag_mod) == 0:
                 print("  Updating proposal cov at sample index = %d" % i)
                 current_chain = theta_chain[:i, :]
@@ -284,8 +290,62 @@ class AdaptiveMetropolis(McmcSampler):
         self.chain = theta_chain
 
 
-if __name__ == "__main__":
-    ## EXAMPLE 1: Sample from a gaussian distribution
+def fit_line():
+    """!
+    @brief Example data from http://dfm.io/emcee/current/user/line/
+    For example/testing only.
+    """
+    # Choose the "true" parameters.
+    m_true = -0.9594
+    b_true = 4.294
+    f_true = 0.534
+    # Generate some synthetic data from the model.
+    N = 50
+    x = np.sort(10 * np.random.rand(N))
+    yerr = 0.1 + 0.5 * np.random.rand(N)
+    y = m_true * x + b_true
+    y += np.abs(f_true * y) * np.random.randn(N)
+    y += yerr * np.random.randn(N)
+
+    def log_prior(theta):
+        if (-10 < theta[0] < 10) and (-10 < theta[1] < 10):
+            return 0.
+        else:
+            return -np.inf
+
+    def model_fn(theta):
+        return theta[0] + theta[1] * x
+
+    def log_like_fn(theta, data=y):
+        sigma = yerr
+        log_like = -np.log(np.sum((data - model_fn(theta)) ** 2 / sigma \
+                - np.log(1./sigma))) + log_prior(theta)
+        return log_like
+
+    # init sampler
+    theta_0 = np.array([4.0, -0.5])
+    my_mcmc = AdaptiveMetropolis(log_like_fn)
+    my_mcmc.run_mcmc(2000, theta_0, data=y, cov_est=np.array([[0.5, -0.7], [-0.7, 0.1]]))
+    # view results
+    theta_est, sig_est, chain = my_mcmc.param_est(400)
+    print("Esimated params: %s" % str(theta_est))
+    print("Estimated params sigma: %s " % str(sig_est))
+    print("Acceptance fraction: %f" % my_mcmc.acceptance_fraction)
+    # vis the parameter estimates
+    mc_plot.plot_mcmc_params(chain,
+            labels=["$y_0$", "m"],
+            savefig='line_mcmc_ex.png',
+            truths=[4.294, -0.9594])
+    # vis the full chain
+    theta_est_, sig_est_, full_chain = my_mcmc.param_est(0)
+    mc_plot.plot_mcmc_chain(full_chain,
+            labels=["$y_0$", "m"],
+            savefig='lin_chain_ex.png',
+            truths=[4.294, -0.9594])
+
+
+def sample_gauss():
+    """! @brief Sample from a gaussian distribution """
     mu_gold, std_dev_gold = 5.0, 0.5
 
     def log_like_fn(theta, data=None):
@@ -305,8 +365,8 @@ if __name__ == "__main__":
     my_mcmc.run_mcmc(1000, theta_0, data=[0, 0, 0], cov_est=5.0)
     # view results
     theta_est, sig_est, chain = my_mcmc.param_est(200)
-    print("Esimated mu: %f" % theta_est)
-    print("Estimated sigma: %f " % sig_est)
+    print("Esimated mu: %s" % str(theta_est))
+    print("Estimated sigma: %s " % str(sig_est))
     print("Acceptance fraction: %f" % my_mcmc.acceptance_fraction)
     # vis the parameter estimates
     mc_plot.plot_mcmc_params(chain, ["$\mu$"], savefig='gauss_mu_mcmc_ex.png', truths=[5.0])
@@ -314,4 +374,7 @@ if __name__ == "__main__":
     theta_est_, sig_est_, full_chain = my_mcmc.param_est(0)
     mc_plot.plot_mcmc_chain(full_chain, ["$\mu$"], savefig='gauss_mu_chain_ex.png', truths=[5.0])
 
-    ## EXAMPLE 2: Fit a line to data
+
+if __name__ == "__main__":
+    # fit_line()
+    sample_gauss()
