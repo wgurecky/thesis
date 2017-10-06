@@ -36,13 +36,15 @@ class GaussianProposal(McmcProposal):
         self._cov = cov
         super(GaussianProposal, self).__init__()
 
-    def update_proposal_cov(self, past_samples):
+    def update_proposal_cov(self, past_samples, rescale=0):
         """!
         @brief fit gaussian proposal to past samples vector
         """
         self._cov = np.cov(past_samples.T)
         # rescale cov matrix
-        # self._cov /= np.max(np.abs(self._cov))
+        if rescale > 0:
+            import pdb; pdb.set_trace()
+            self._cov /= np.max(np.abs(self._cov)) / rescale
         if not self._cov.shape:
             self._cov = np.reshape(self._cov, (1, 1))
         print("New proposal cov = %s" % str(self._cov))
@@ -55,7 +57,7 @@ class GaussianProposal(McmcProposal):
         assert self.cov is not None
         return np.random.multivariate_normal(self.mu, self.cov, size=n_samples)[0]
 
-    def prob_ratio(self, like_fn, theta_past, theta_proposed):
+    def prob_ratio(self, ln_like_fn, theta_past, theta_proposed):
         """!
         @brief evaluate probability ratio:
         \f[
@@ -67,16 +69,13 @@ class GaussianProposal(McmcProposal):
         assert self.mu is not None
         assert self.cov is not None
         g_ratio = lambda x_0, x_1: \
-            stats.multivariate_normal.pdf(x_0, mean=theta_past, cov=self.cov) / \
+            stats.multivariate_normal.pdf(x_0, mean=theta_past, cov=self.cov) - \
             stats.multivariate_normal.pdf(x_1, mean=theta_proposed, cov=self.cov)
         g_r = g_ratio(theta_proposed, theta_past)  # should be 1 in symmetric case
-        assert g_r == 1
-        past_likelihood = like_fn(theta_past)
-        if past_likelihood <= 0:
-            # will result in div by zero error. Dont step here!
-            return 0.0
-        proposed_likelihood = like_fn(theta_proposed)
-        return (proposed_likelihood / past_likelihood) * g_r
+        assert g_r == 0
+        past_likelihood = ln_like_fn(theta_past)
+        proposed_likelihood = ln_like_fn(theta_proposed)
+        return np.exp(proposed_likelihood - past_likelihood + g_r)
 
     @property
     def mu(self):
@@ -118,14 +117,14 @@ class McmcSampler(object):
         self.n_rejected = 0
         self.chain = None
 
-    def _freeze_like_fn(self, **kwargs):
+    def _freeze_ln_like_fn(self, **kwargs):
         """!
         @brief Freezes the likelyhood function.
         the log_like_fn should have signature:
             self.log_like_fn(theta, data=np.array([...]), **kwargs)
             and must return the log likelyhood
         """
-        self.like_fn = lambda theta: np.exp(self.log_like_fn(theta, **kwargs))
+        self._frozen_ln_like_fn = lambda theta: self.log_like_fn(theta, **kwargs)
 
     def param_est(self, n_burn):
         """!
@@ -194,7 +193,7 @@ def mh_kernel(i, mcmc_sampler, theta_chain):
     theta_prop = mcmc_sampler.mcmc_proposal.sample_proposal()
     # compute acceptance ratio
     a_ratio = np.min((1, mcmc_sampler.mcmc_proposal.prob_ratio(
-        mcmc_sampler.like_fn,
+        mcmc_sampler._frozen_ln_like_fn,
         theta,
         theta_prop)))
     if a_ratio >= 1.:
@@ -232,7 +231,7 @@ class Metropolis(McmcSampler):
         @param cov_est float or np_1darray.  Initial guess of anticipated theta variance.
             strongly recommended to specify, but is optional.
         """
-        self._freeze_like_fn(**kwargs)
+        self._freeze_ln_like_fn(**kwargs)
         # pre alloc storage for solution
         self.n_accepted = 1
         self.n_rejected = 0
@@ -266,10 +265,10 @@ class AdaptiveMetropolis(McmcSampler):
         @param lag  int.  Number of previous samples to use for proposal update (default == 100)
         @param lag_mod.  Number of iterations to wait between updates (default == 1)
         """
-        adapt = kwargs.get("adapt", 200)
+        adapt = kwargs.get("adapt", 1000)
         lag = kwargs.get("lag", 1000)
         lag_mod = kwargs.get("lag_mod", 10)
-        self._freeze_like_fn(**kwargs)
+        self._freeze_ln_like_fn(**kwargs)
         # pre alloc storage for solution
         self.n_accepted = 1
         self.n_rejected = 0
@@ -318,16 +317,16 @@ def fit_line():
 
     def log_like_fn(theta, data=y):
         sigma = 1.0
-        log_like = 1e2 * -np.log(np.sum((data - model_fn(theta)) ** 2 / sigma \
-                - np.log(1./sigma))) + log_prior(theta)
+        log_like = -0.5 * (np.sum((data - model_fn(theta)) ** 2 / sigma \
+                - np.log(1./sigma)) + log_prior(theta))
         return log_like
 
     # init sampler
     theta_0 = np.array([4.0, -0.5])
     my_mcmc = AdaptiveMetropolis(log_like_fn)
-    my_mcmc.run_mcmc(2000, theta_0, data=y, cov_est=np.array([[0.5, -0.7], [-0.7, 0.1]]))
+    my_mcmc.run_mcmc(4000, theta_0, data=y, cov_est=np.array([[0.2, -0.3], [-0.3, 0.01]]))
     # view results
-    theta_est, sig_est, chain = my_mcmc.param_est(400)
+    theta_est, sig_est, chain = my_mcmc.param_est(1000)
     print("Esimated params: %s" % str(theta_est))
     print("Estimated params sigma: %s " % str(sig_est))
     print("Acceptance fraction: %f" % my_mcmc.acceptance_fraction)
@@ -361,8 +360,8 @@ def sample_gauss():
 
     # init sampler
     theta_0 = np.array([1.0])
-    my_mcmc = AdaptiveMetropolis(log_like_fn)
-    my_mcmc.run_mcmc(1000, theta_0, data=[0, 0, 0], cov_est=5.0)
+    my_mcmc = Metropolis(log_like_fn)
+    my_mcmc.run_mcmc(4000, theta_0, data=[0, 0, 0], cov_est=1.0)
     # view results
     theta_est, sig_est, chain = my_mcmc.param_est(200)
     print("Esimated mu: %s" % str(theta_est))
@@ -376,5 +375,7 @@ def sample_gauss():
 
 
 if __name__ == "__main__":
+    print("========== SAMPLE GAUSSI ===========")
+    sample_gauss()
+    print("========== FIT LIN MODEL ===========")
     fit_line()
-    # sample_gauss()
