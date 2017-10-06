@@ -181,10 +181,10 @@ To understand how Bayesian inference can be applied to a model calibration probl
 
 Provided two unknown quantities, $\theta = \{C_{B}$, $C_{NiFe}\}$, which we would like to determine:
 \begin{equation}
-f(\theta| E, I)
+\pi(\theta| E, I)
 \label{eq:target}
 \end{equation}
-$f()$ represents a probability density function, specifically, the joint distribution of $\theta$  given some data.  Note that we are after the full posterior distribution of $\theta$ and not just it's maximum likelyhood estimate since we want to provide uncertainty bars on our fitted parameters, after all.  It is unreasonable to think our model will reproduce all the experimental data samples exactly due to 1) noise in the exterimental data 2) biases or missing physics in Mongoose.  Therefore the posterior distribution for $\theta$ will have some non-zero variance.
+$\pi()$ represents a probability density function, specifically, the joint distribution of $\theta$  given some data.  Note that we are after the full posterior distribution of $\theta$ and not just it's maximum likelyhood estimate since we want to provide uncertainty bars on our fitted parameters, after all.  It is unreasonable to think our model will reproduce all the experimental data samples exactly due to 1) noise in the exterimental data 2) biases or missing physics in Mongoose.  Therefore the posterior distribution for $\theta$ will have some non-zero variance.
 
 $E=\{e_0, ... e_N\}$ is a vector of evidence - in our case this will comprised of CRUD thickness, CRUD mass, CRUD boron concentration sum-of-squares error differences between the model predictions and the experimental data sets. $I$ encodes all other prior knowledge and assumptions in the model (i.e. that Mongoose provides a reasonable depiction of CRUD physics).  In the following example, $I$ is dropped from the equations to reduce clutter.
 
@@ -192,16 +192,50 @@ $E=\{e_0, ... e_N\}$ is a vector of evidence - in our case this will comprised o
 
 Bayes theorem provides a way to compute \ref{eq:target}.
 \begin{equation}
-f(\theta| E) = \frac{f(E|\theta)f(\theta)}{f(E)} = \frac{f(E|\theta)f(\theta)}{\int_\theta f(E|\theta) f(\theta)d\theta}
+    \pi(\theta| E) = \frac{\mathcal{L}(E|\theta)f(\theta)}{f(E)} = \frac{\mathcal{L}(E|\theta)f(\theta)}{\int_\theta \mathcal{L}(E|\theta) f(\theta)d\theta}
 \end{equation}
-Where $f(E|\theta)$ is the likelyhood function which encodes the chance of obtaining $E$ given $\theta$ is the ``truth". $f(\theta)$ is the prior which represents our current state of knowlege for the free parameters, and $f(E)$ is the evidence.
+Where $\mathcal{L}(E|\theta)$ is the likelihood function which encodes the chance of obtaining $E$ given $\theta$ is the ``truth". $f(\theta)$ is the prior which represents our current state of knowledge for the free parameters, and $f(E)$ is the evidence.
 Computing $f(E)= \int_\theta f(E|\theta) f(\theta)d\theta$ can be difficult or impossible when $\theta$ becomes large in dimension.
 
 \subsection{Markov Chain Monte Carlo Example}
 
-To get around these issues it is possible to construct a Markov chain which draws samples from the full posterior $f(\theta|E)$ without having to compute $f(E)$.
+The primary challenge when applying Bayes theorem in practice is computing the normalizing constant which requires, sometimes, estimating a high dimensional integral.   To get around this issue of integration, it is possible to construct a Markov chain which draws \emph{samples} from the full posterior $\pi(\theta|E)$ without having to compute $f(E)$.  
 
-TODO: Explain how MCMC is used carry out parameter estimation.
+We begin with introducing the concept of a transition kernel, given in matix form by $K$ in equation \ref{eq:k1}. 
+
+\begin{equation}
+K \mathbf x^{i-1} = \mathbf x^{i}
+\label{eq:k1}
+\end{equation}
+
+Where $x$ is a vector holding the current system state.  In a traditional Markov graph diagram $x$ would hold the values at each node and $K$ defines the transition probabilites between nodes in the graph.  $\mathbf x^{i-1}$ is the previous state and $\mathbf x^{i}$ is the updated state, after applying $K$ once.  To create a Markov chain that is convergent (i.e. $x$ will reach stationarity after repeated application of $K$) we must enforce that $K$ does not introduce any periodicity (aperiodic criteria), and additionally, all nodes in the graph must have a path to all other nodes (irriducable critera). Thus, any arbitrary transition kernel will not suffice.  We will refer to the vector of states, $\{x_0, x_1, ... x_i\}$ as a ``chain".  
+
+To be more precise, let $\mathcal{K} $ be a continuous Markov kernel - synonymous to the discrete transition kernel, $K$.  This is important becasue in theory $x$ is a continuuous random variable destibuted according to $\pi$: $x \sim  \pi(x)$.
+
+$\mathcal K $  is the conditional probiability of $x$ to transitioning to some new configuration, $x'$.  The transition kernel only depends on the current state $x$ and some proposed state $x'$ in $B$, which is the space of allowable configurations.  Some transitions could be forbidden.  
+\begin{equation}
+\mathcal K(x,x') = Pr(x' \in B |x)
+\end{equation}
+
+Next we check to see if the proposed kernel obeys the detailed balance given by equation \ref{eq:detailed_balance}:
+
+\begin{equation}
+\mathcal K(x, x') \pi(x) = \mathcal K(x',x) \pi(x')
+\label{eq:detailed_balance}
+\end{equation}
+Where $x$ is distributed according to $\pi(x)$ and $x'$ is distributed according to $\pi(x')$.  The goal is to find a $\mathcal K$ that results in $x \sim \mathcal K(x',x)$ and  $x' \sim \mathcal K(x,x')$ becuase that makes equation \ref{eq:detailed_balance} true.  This essntially means that the chain must look identical if rolled backwards or forwards. 
+
+In order to perform this check we attempt to enforce certain regularity conditions upon the proposed transition kernel to determine if it results in a stationary distrubtion after repeated application.
+
+This is a very powerful result becuase if the chain obeys detailed balance it is gaurented that the chain will convegre to the target distribution, $\pi()$, in the limit.
+
+Without proof, one such vaild transition kerrnel is the Metropolis-Hastings kernel, given by the following:
+
+\begin{equation}
+K(x|x')
+\end{equation}
+
+Since MCMC supplies samples from $\pi(x)$, we can use those samples to compute approximate statistics of that distrubtion.  When performing parameter estimation the moments of this distribution are desirable.
 
 Synthetic experimental data was generated by running Mongoose and adding a small amount of Gaussian noise.  A total of 50 uncoupled Mongoose simulations - or 50 synthetic CRUD scrapes - were made available for performing the calibration.  The true boron concentration in the coolant was set to a value of 1200 $[ppm]$, and the ``true" NiFe Concentration was set to 2.0 $[ppb]$. Initial values for the unknown parameters were: $C_{B_0} = 1000 [ppm]$ and $C_{NiFe_0} = 2.1$.
 
@@ -241,8 +275,7 @@ Though the python interface it is simple to extract boundary condition data from
     \begin{minipage}{.5\textwidth}
         \centering
         \includegraphics[width=8cm]{figs/tclad.png}
-        \caption{Temperature on rod surface \\
-        [T]. \label{fig:temp}}
+        \caption{Temperature on rod surface [T]. \label{fig:temp}}
     \end{minipage}%
     \begin{minipage}{.5\textwidth}
         \centering
