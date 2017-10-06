@@ -1,0 +1,287 @@
+\documentclass[10pt,a4paper]{report}
+\usepackage[a4paper, total={6.25in, 9in}]{geometry}
+\usepackage{setspace}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{subfig}
+\usepackage{rotating}
+\usepackage{bm}
+\usepackage{graphicx}
+
+\author{William Gurecky}
+\title{CRUD Model Tuning}
+
+\begin{document}
+
+%-----------------------------------------------------------------------------%
+\begin{titlepage}
+	\centering
+	{\scshape\LARGE The University of Texas at Austin \par}
+	\vspace{1cm}
+	{\scshape\Large Nuclear \& Radiation Engineering \par}
+	\vspace{1.5cm}
+	{\huge\bfseries CRUD Model Parameter Tuning and Sensitivity \par}
+	\vspace{2cm}
+	{\Large William L. Gurecky \par}
+	\vfill
+
+	\begin{flushright}
+	Distribute To: \par
+	\bigskip
+        Derek Haas  \\
+	\end{flushright}
+	\vfill
+	{\large \today\par}
+\end{titlepage}
+%-----------------------------------------------------------------------------%
+\pagebreak
+\tableofcontents
+\pagebreak
+
+\section*{Acronyms}
+\begin{tabular}{l l}
+CASL & Consortium for the Advanced Simulation of LWRs \\
+CFD &  Computational Fluid Dynamics \\
+CILC & CRUD Induced Local Corrosion \\
+CIPS & CRUD Induced Power Shift \\
+CRUD & Chalk River Unidentified Deposit \\
+CTF &  Cobra-TF \\
+LS  &  Least Squares \\
+MCMC & Markov Chain Monte Carlo \\
+MLE &  Maximum Likelihood Estimate \\
+TH  & Thermal Hydraulic \\
+\end{tabular}
+
+\section*{Symbols}
+\begin{tabular}{l l}
+t & Time \\
+T & Temperature \\
+k & Turbulent kinetic energy \\
+\end{tabular}
+
+\pagebreak
+\onehalfspacing
+
+%-----------------------------------------------------------------------------%
+\chapter{Introduction}
+
+CASL recently developed a new CRUD simulation code, Mongoose,  that is an amalgamation of a legacy code known as MAMBA3D (which itself was based on prior research) with new ODE solver strategies and improved data internal structures.  This new package will supplant the current CRUD simulation code currently used in the core simulator, VERA-CS.
+
+Before this code can be adopted into a production environment it will be necessary to validate the results against some experimental data, where available.  There are many free model parameters which impact the CRUD solution as provided by Mongoose and therefore these model parameters must be estimated from the available experimental CRUD data.
+
+The first step in model calibration is to carry out a model sensitivity study to identify the parameters which have the largest impact on the CRUD solution.  Additionally, this process allows one to build some intuition for how the model behaves.  The second stage of model calibration is to solve a typical inverse problem:  Given experimental data, find the model parameters which best reproduce the expected results.  One may use Bayesian inference to solve this type of problem.
+
+To facilitate both model sensitivity and calibration studies, a Pythonic interface to Mongoose was developed. Mongoose exposes it's API in both FORTRAN and C.  Mongoose C-bindings were wrapped in thin Cython routines which in turn could be used in Python proper.  Cython provides excellent interoperability with the Numpy linear algebra package and is thus a fantastic choice from both a performance and usability standpoint (Numpy arrays are closer to C-arrays than a traditional Python list objects).  This wrapper largely eliminates the need for out-of-memory coupling to external TH or statistics packages since Mongoose can now be driven directly from a Python, C, or FORTRAN environment.  Before this development, in order to communicate with an external statistics package, Mongoose would have to write CRUD results to ASCII which would in turn be parsed by the external code.  The external code would then pass boundary conditions and parameters back to Mongoose in another ASCII file.  File exchange is abhorrently slow and prone to parsing errors.
+
+\chapter{Model Sensitivity}
+
+The following results demonstrate the ability to perform a factorial or Monte Carlo parameter sweep though the python interface.  A Latin hypercube sampling scheme could also be implemented - however this was not investigated since the runtime of Mongoose is extremely small (space filling by drawing more MC samples is not too expensive).  All results were generated at 50$[days]$ of crud simulation time.  The following results are only demonstrative and are not suitable for publication.
+
+\begin{table}[h!]
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+ Parameter  &   Default Value	&  Units  \\
+ \hline
+ -  &   - &  -  \\ \hline
+\hline
+\end{tabular}
+\caption{Mongoose parameters.}
+\label{tab:crud_res}
+\end{center}
+\end{table}
+
+\begin{verbatim}
+# TUABLE REACTION KINETICS CONSTANTS
+  REAL() :: A_NiFe2O4_out = 100.0_
+  REAL() :: E_NiFe2O4_out = 10.0_
+  REAL() :: A_NiFe2O4_in = 2.5E26_
+  REAL() :: E_NiFe2O4_in = 10.0_
+  REAL() :: ksnb_Fe2O4 = 0.72E-3_
+# CRUD DIFFUSION CONSTANTS
+  REAL() :: D_Ni = 0.719E-5_
+  REAL() :: D_Fe = 0.712E-5_
+  REAL() :: D_BOH3 = 1.07E-5_
+  REAL() :: D_Li = 1.03E-5_
+  REAL() :: D_H2 = 4.8E-5_
+# CRUD CHIMNEY PARAMETERS
+  REAL() :: CRUD_porosity=0.7_
+  REAL() :: CRUD_solid_dens=5.33_
+  REAL() :: chimney_htc=6.7E2_   ! W/cm^2-K
+  REAL() :: chimney_dens=4.8E4_  ! #/cm^2
+  REAL() :: chimney_rad=4.0E-4_! cm
+\end{verbatim}
+
+
+\begin{figure}
+    \centering
+    \begin{minipage}{.5\textwidth}
+        \centering
+        \includegraphics[width=8cm]{figs/tw_vs_bm_jp.png}
+        \caption{Marginal effect of wall temperature on crud boron mass density.}
+    \end{minipage}%
+    \begin{minipage}{.5\textwidth}
+        \centering
+        \includegraphics[width=8cm]{figs/tw_vs_cth_jp.png}
+        \caption{Marginal effect of wall temperature on crud thickness.}
+    \end{minipage}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \begin{minipage}{.5\textwidth}
+        \centering
+        \includegraphics[width=8cm]{figs/cb_vs_bm_jp.png}
+        \caption{Marginal impact of dissolved boron concentration in the coolant vs boron hideout mass density in the crud.}
+    \end{minipage}%
+    \begin{minipage}{.5\textwidth}
+        \centering
+        \includegraphics[width=8cm]{figs/tke_vs_cth_jp.png}
+        \caption{Marginal effect of Turbulent Kinetic energy on crud thickness.}
+    \end{minipage}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \begin{minipage}{.5\textwidth}
+        \centering
+        \includegraphics[width=8cm]{figs/dboh_vs_bm_jp.png}
+        \caption{Marginal impact of $B_3OH$ (boron hydroxide) diffusion constant on crud boron mass density.}
+    \end{minipage}%
+    \begin{minipage}{.5\textwidth}
+        \centering
+        \includegraphics[width=8cm]{figs/cnife_vs_cth_jp.png}
+        \caption{Marginal effect of the concentration of particulate Nickle Ferrite in the coolant on crud thickness.}
+    \end{minipage}
+\end{figure}
+
+It is clearly seen that the impact of the diffusion constants get overwhelmed by the influence of wall temperature and tubrulent kinetic energy.  In order to see the impacts of the diffusion constants on CRUD growth we must fix all other input parameters.
+
+\begin{figure}
+    \centering
+    \begin{minipage}{.5\textwidth}
+        \centering
+        \includegraphics[width=8cm]{figs/dboh_vs_bm_jp_bak.png}
+        \caption{Impact of $B_3OH$ (boron hydroxide) diffusion constant on crud boron mass density with all other TH parameters held fixed.}
+    \end{minipage}%
+    \begin{minipage}{.5\textwidth}
+        \centering
+        \includegraphics[width=8cm]{figs/dni_vs_cm_jp.png}
+        \caption{Effect of Nickle diffisuion constant on crud mass density with all other TH parameters held fixed.}
+    \end{minipage}
+\end{figure}
+
+\chapter{Model Calibration}
+
+To understand how Bayesian inference can be applied to a model calibration problem, consider the following contrived problem:  Given CRUD scrapes from a PWR with unknown coolant chemistry can we find the concentration of dissolved boron and corrosion products in the coolant which gave rise to these CRUD flakes?  We assume that we know quite precisely - the local temperature, power, and coolant velocities at the locations of the experimental CRUD samples. After all, in a laboratory setting one would hope the TH boundary conditions would be precisely measured.  We also assume that for each flake the CRUD constituents and thickness are accurately recorded.  The concentrations of boron and $NiFe$ in the coolant are, however, not known.
+
+Provided two unknown quantities, $\theta = \{C_{B}$, $C_{NiFe}\}$, which we would like to determine:
+\begin{equation}
+f(\theta| E, I)
+\label{eq:target}
+\end{equation}
+$f()$ represents a probability density function, specifically, the joint distribution of $\theta$  given some data.  Note that we are after the full posterior distribution of $\theta$ and not just it's maximum likelyhood estimate since we want to provide uncertainty bars on our fitted parameters, after all.  It is unreasonable to think our model will reproduce all the experimental data samples exactly due to 1) noise in the exterimental data 2) biases or missing physics in Mongoose.  Therefore the posterior distribution for $\theta$ will have some non-zero variance.
+
+$E=\{e_0, ... e_N\}$ is a vector of evidence - in our case this will comprised of CRUD thickness, CRUD mass, CRUD boron concentration sum-of-squares error differences between the model predictions and the experimental data sets. $I$ encodes all other prior knowledge and assumptions in the model (i.e. that Mongoose provides a reasonable depiction of CRUD physics).  In the following example, $I$ is dropped from the equations to reduce clutter.
+
+\emph{[Bayes Theorem] relates the probability that the hypothesis is true given the data..., to the probability that we would have observed the measured data if the hypothesis was true. -- D. Sivia}
+
+Bayes theorem provides a way to compute \ref{eq:target}.
+\begin{equation}
+f(\theta| E) = \frac{f(E|\theta)f(\theta)}{f(E)} = \frac{f(E|\theta)f(\theta)}{\int_\theta f(E|\theta) f(\theta)d\theta}
+\end{equation}
+Where $f(E|\theta)$ is the likelyhood function which encodes the chance of obtaining $E$ given $\theta$ is the ``truth". $f(\theta)$ is the prior which represents our current state of knowlege for the free parameters, and $f(E)$ is the evidence.
+Computing $f(E)= \int_\theta f(E|\theta) f(\theta)d\theta$ can be difficult or impossible when $\theta$ becomes large in dimension.
+
+\subsection{Markov Chain Monte Carlo Example}
+
+To get around these issues it is possible to construct a Markov chain which draws samples from the full posterior $f(\theta|E)$ without having to compute $f(E)$.
+
+TODO: Explain how MCMC is used carry out parameter estimation.
+
+Synthetic experimental data was generated by running Mongoose and adding a small amount of Gaussian noise.  A total of 50 uncoupled Mongoose simulations - or 50 synthetic CRUD scrapes - were made available for performing the calibration.  The true boron concentration in the coolant was set to a value of 1200 $[ppm]$, and the ``true" NiFe Concentration was set to 2.0 $[ppb]$. Initial values for the unknown parameters were: $C_{B_0} = 1000 [ppm]$ and $C_{NiFe_0} = 2.1$.
+
+\begin{figure}
+    \centering
+    \begin{minipage}{.5\textwidth}
+        \centering
+        \includegraphics[width=7cm]{figs/mongoose_mcmc_chain.png}
+        \caption{MCMC Chain Convergence.  \\
+            True values
+        shown as horizontal grey lines. \label{fig:mg_chain}}
+    \end{minipage}%
+    \begin{minipage}{.5\textwidth}
+        \centering
+        \includegraphics[width=8cm]{figs/mongoose_triplot.png}
+        \caption{MCMC parameter posterior estimates. True values shown in blue. First 200 samples were discarded as Burn-in.}
+    \end{minipage}
+\end{figure}
+
+As shown in figure \ref{fig:mg_chain} the MCMC chains converge after about 200 samples.  The number of samples it takes to converge to the target posterior distribution is dependent on the starting initial guesses - however the final estimates for the parameters should not be sensitive the initial guess - this check should be performed in the future.
+
+\subsection{CASL Applications}
+
+The CRUD calibration problem of interest to CASL is one of finding the correct vales of all the parameters given in table () such that Mongoose reproduces the available experimental data.
+We can use the same generic Bayesian inference and MCMC approach to find these unknown parameters of the CRUD model given some experimental evidence.
+
+It should be noted that these sorts of model calibration problems can be solved using global optimization strategies.  MCMC becomes attractive when: 1) Evaluating the cost function gradient is hard: traditional M-H MCMC requires no gradient info. 2) The number of unknowns is "large". 3) Uncertainty bars are desired on the fitted parameters. \footnote{It is possible use the Hessian of the cost function about the minimum in order to estimate the covariance matrix needed to propagate errors from the experimental data to the fitted parameters when using, say, your typical gradient descent optimizer.}
+ 4) Capture correlations between the unknown parameters.  See appendix B on this last point.
+
+
+\chapter{Coupling to External TH}
+
+Though the python interface it is simple to extract boundary condition data from a CFD model as shown in figures \ref{fig:temp} to \ref{fig:tke} and pass them into Mongoose in order to obtain CRUD results on a rod surface.  Only the final 3 spacer grids were included in the CFD model.
+
+\begin{figure}
+    \centering
+    \begin{minipage}{.5\textwidth}
+        \centering
+        \includegraphics[width=8cm]{figs/tclad.png}
+        \caption{Temperature on rod surface \\
+        [T]. \label{fig:temp}}
+    \end{minipage}%
+    \begin{minipage}{.5\textwidth}
+        \centering
+        \includegraphics[width=8cm]{figs/tke.png}
+        \caption{Turbulent Kinetic Energy on rod surface [J/Kg]. \label{fig:tke}}
+    \end{minipage}
+\end{figure}
+CRUD results for the CFD born boundary conditions are seen in figures \ref{fig:cthick} to \ref{fig:bmass}.
+\begin{figure}
+    \centering
+    \begin{minipage}{.5\textwidth}
+        \centering
+        \includegraphics[width=8cm]{figs/cthick.png}
+        \caption{Crud thickness on \\
+        rod surface. \label{fig:cthick}}
+    \end{minipage}%
+    \begin{minipage}{.5\textwidth}
+        \centering
+        \includegraphics[width=8cm]{figs/bmass.png}
+        \caption{Boron mass density distribution on rod surface. \label{fig:bmass}}
+    \end{minipage}
+\end{figure}
+
+
+\chapter{Appendix A: Implementing Metropolis-MCMC in Python}
+
+Other MCMC samplers such as the No-Uturn sampler (NUTS), the affine-invarient parallel MCMC sampler (emcee) are available as python packages.  These samplers vastly out perform the MH algorithm, and therefore, should be used over a simple DIY MCMC implementation for any important application.  Dakota also contains adaptive MCMC samplers like delayed rejection adaptive metropolis-hastings (DRAM) [ref].  These advanced MCMC samplers ultimately require a fewer number of function evaluations compared to MH to achieve a good representation of the posterior distribution, particularly if the posterior is multi-modal.
+
+\chapter{Appendix B: Fitting a Line Using MCMC}
+
+The purpose of this example is to show how MCMC can be used to examine correlations between free model parameters.  Since Bayes theorem and MCMC have already been covered in the previous sections, only the results of the Bayesian inference of the line slope $m$, and line y-intercept, $b$, given some data, $E$, are shown.
+
+\begin{figure}[h]
+\centering
+    \includegraphics[width=8cm]{figs/line_triplot.png}
+    \caption{MCMC parameter posterior estimates for linear model parameters.  \\
+    True values shown in blue.  \label{fig:line_triplot}}
+\end{figure}
+
+For this example data set, it is easy to see that the model slope is negatively correlated with the model y-intercept since a high slope is more likely to result in a low y-intercept (given the data).
+
+\end{document}
