@@ -285,7 +285,7 @@ class AdaptiveMetropolis(McmcSampler):
             # if (lag > adapt):
             #    raise RuntimeError("lag must be smaller than adaptation start index")
             if i >= adapt and (i % lag_mod) == 0:
-                print("  Updating proposal cov at sample index = %d" % i)
+                if verbose: print("  Updating proposal cov at sample index = %d" % i)
                 current_chain = theta_chain[:i, :]
                 self.mcmc_proposal.update_proposal_cov(current_chain[-lag:, :], verbose=verbose)
         self.chain = theta_chain
