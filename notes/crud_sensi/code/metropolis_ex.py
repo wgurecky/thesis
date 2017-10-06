@@ -159,30 +159,28 @@ class McmcSampler(object):
 def mh_kernel(i, mcmc_sampler, theta_chain, verbose=0):
     """!
     @brief Metropolis-Hastings mcmc kernel.
-    Kernel, \f[K\f] maps the pevious chain state to the new chain state:
+    The kernel, \f[ K \f], maps the pevious chain state, \f[ x \f],
+    to the new chain state, \f[ x' \f].  In matrix form:
     \f[
     K x = x'
-    \f]
-    For MH:
-    \f[
-    K(x->x') =
     \f]
     In order for repeated application of an MCMC kernel to converge
     to the correct posterior distribution \f[\Pi()\f],
     it is sufficient but not neccissary to obey detailed balance:
     \f[
-    P(x^i|x^{i-1})P(x^{i}) = P(x^{i-1}|x^{i})P(x^{i-1})
+    K(x^i|x^{i-1})\Pi(x^{i}) = K(x^{i-1}|x^{i})\Pi(x^{i-1})
     \f]
     or
     \f[
     x_i K_{ij} = x_j K_{ji}
     \f]
     This means that a step in the chain is reversible.
-    The goal in MCMC is to find \f[ K \f] that makes the state vector x \f[ x \f]
-    become stationary at the desired probability distribution \f[ \Pi() \f]
+    The goal in MCMC is to find \f[ K \f] that makes the state vector, \f[ x \f]
+    become stationary at the desired distribution \f[ \Pi() \f]
     @param i  int. Current chain index
     @param mcmc_sampler McmcSampler instance
     @param theta_chain  np_ndarray for sample storage
+    @param verbose int or bool. default == 0 (optional)
     """
     theta = theta_chain[i, :]
     # set the gaussian proposal to be centered at current loc
