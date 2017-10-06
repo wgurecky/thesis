@@ -36,18 +36,18 @@ class GaussianProposal(McmcProposal):
         self._cov = cov
         super(GaussianProposal, self).__init__()
 
-    def update_proposal_cov(self, past_samples, rescale=0):
+    def update_proposal_cov(self, past_samples, rescale=0, verbose=0):
         """!
         @brief fit gaussian proposal to past samples vector
         """
         self._cov = np.cov(past_samples.T)
         # rescale cov matrix
         if rescale > 0:
-            import pdb; pdb.set_trace()
             self._cov /= np.max(np.abs(self._cov)) / rescale
         if not self._cov.shape:
             self._cov = np.reshape(self._cov, (1, 1))
-        print("New proposal cov = %s" % str(self._cov))
+        if verbose:
+            print("New proposal cov = %s" % str(self._cov))
 
     def sample_proposal(self, n_samples=1):
         """!
@@ -156,7 +156,7 @@ class McmcSampler(object):
         return self.n_accepted / (self.n_accepted + self.n_rejected)
 
 
-def mh_kernel(i, mcmc_sampler, theta_chain):
+def mh_kernel(i, mcmc_sampler, theta_chain, verbose=0):
     """!
     @brief Metropolis-Hastings mcmc kernel.
     Kernel, \f[K\f] maps the pevious chain state to the new chain state:
@@ -200,17 +200,17 @@ def mh_kernel(i, mcmc_sampler, theta_chain):
         # accept proposal, it is in area of higher prob density
         theta_chain[i+1, :] = theta_prop
         mcmc_sampler.n_accepted += 1
-        print("Aratio: %f, Atest: %f , Accepted bc Aratio > 1" % (a_ratio, a_test))
+        if verbose: print("Aratio: %f, Atest: %f , Accepted bc Aratio > 1" % (a_ratio, a_test))
     elif a_test < a_ratio:
         # accept proposal, even though it is "worse"
         theta_chain[i+1, :] = theta_prop
         mcmc_sampler.n_accepted += 1
-        print("Aratio: %f, Atest: %f , Accepted by chance" % (a_ratio, a_test))
+        if verbose: print("Aratio: %f, Atest: %f , Accepted by chance" % (a_ratio, a_test))
     else:
         # stay put, reject proposal
         theta_chain[i+1, :] = theta
         mcmc_sampler.n_rejected += 1
-        print("Aratio: %f, Atest: %f , Rejected!" % (a_ratio, a_test))
+        if verbose: print("Aratio: %f, Atest: %f , Rejected!" % (a_ratio, a_test))
     return theta_chain
 
 
@@ -231,6 +231,7 @@ class Metropolis(McmcSampler):
         @param cov_est float or np_1darray.  Initial guess of anticipated theta variance.
             strongly recommended to specify, but is optional.
         """
+        verbose = kwargs.get("verbose", 0)
         self._freeze_ln_like_fn(**kwargs)
         # pre alloc storage for solution
         self.n_accepted = 1
@@ -241,7 +242,7 @@ class Metropolis(McmcSampler):
         self.mcmc_proposal.cov = np.eye(len(theta_0)) * cov_est
         for i in range(n - 1):
             # M-H Kernel
-            mh_kernel(i, self, theta_chain)
+            mh_kernel(i, self, theta_chain, verbose=verbose)
         self.chain = theta_chain
 
 
@@ -265,6 +266,7 @@ class AdaptiveMetropolis(McmcSampler):
         @param lag  int.  Number of previous samples to use for proposal update (default == 100)
         @param lag_mod.  Number of iterations to wait between updates (default == 1)
         """
+        verbose = kwargs.get("verbose", 0)
         adapt = kwargs.get("adapt", 1000)
         lag = kwargs.get("lag", 1000)
         lag_mod = kwargs.get("lag_mod", 10)
@@ -278,14 +280,14 @@ class AdaptiveMetropolis(McmcSampler):
         self.mcmc_proposal.cov = np.eye(len(theta_0)) * cov_est
         for i in range(n - 1):
             # M-H Kernel
-            mh_kernel(i, self, theta_chain)
+            mh_kernel(i, self, theta_chain, verbose=verbose)
             # continuously update the proposal distribution
             # if (lag > adapt):
             #    raise RuntimeError("lag must be smaller than adaptation start index")
             if i >= adapt and (i % lag_mod) == 0:
                 print("  Updating proposal cov at sample index = %d" % i)
                 current_chain = theta_chain[:i, :]
-                self.mcmc_proposal.update_proposal_cov(current_chain[-lag:, :])
+                self.mcmc_proposal.update_proposal_cov(current_chain[-lag:, :], verbose=verbose)
         self.chain = theta_chain
 
 
