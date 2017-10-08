@@ -265,9 +265,9 @@ class AdaptiveMetropolis(McmcSampler):
         @param lag_mod.  Number of iterations to wait between updates (default == 1)
         """
         verbose = kwargs.get("verbose", 0)
-        adapt = kwargs.get("adapt", 1000)
+        adapt = kwargs.get("adapt", 100)
         lag = kwargs.get("lag", 1000)
-        lag_mod = kwargs.get("lag_mod", 10)
+        lag_mod = kwargs.get("lag_mod", 100)
         self._freeze_ln_like_fn(**kwargs)
         # pre alloc storage for solution
         self.n_accepted = 1
@@ -295,8 +295,8 @@ def fit_line():
     For example/testing only.
     """
     # Choose the "true" parameters.
-    m_true = -0.9594
     b_true = 4.294
+    m_true = -0.9594
     f_true = 0.534
     # Generate some synthetic data from the model.
     N = 50
@@ -316,31 +316,32 @@ def fit_line():
         return theta[0] + theta[1] * x
 
     def log_like_fn(theta, data=y):
-        sigma = 1.0
+        sigma = yerr ** 2 + np.exp(2.0 * theta[2]) * (model_fn(theta)) ** 2
         log_like = -0.5 * (np.sum((data - model_fn(theta)) ** 2 / sigma \
                 - np.log(1./sigma)) + log_prior(theta))
         return log_like
 
     # init sampler
-    theta_0 = np.array([4.0, -0.5])
+    theta_0 = np.array([4.0, -0.5, np.log(0.45)])
     my_mcmc = AdaptiveMetropolis(log_like_fn)
-    my_mcmc.run_mcmc(4000, theta_0, data=y, cov_est=np.array([[0.2, -0.3], [-0.3, 0.01]]))
+    # my_mcmc.run_mcmc(4000, theta_0, data=y, cov_est=np.array([[0.2, -0.3], [-0.3, 0.01]]))
+    my_mcmc.run_mcmc(10000, theta_0, data=y, cov_est=0.2)
     # view results
-    theta_est, sig_est, chain = my_mcmc.param_est(1000)
+    theta_est, sig_est, chain = my_mcmc.param_est(3000)
     print("Esimated params: %s" % str(theta_est))
     print("Estimated params sigma: %s " % str(sig_est))
     print("Acceptance fraction: %f" % my_mcmc.acceptance_fraction)
     # vis the parameter estimates
     mc_plot.plot_mcmc_params(chain,
-            labels=["$y_0$", "m"],
+            labels=["$y_0$", "m", "lnf"],
             savefig='line_mcmc_ex.png',
-            truths=[4.294, -0.9594])
+            truths=[4.294, -0.9594, np.log(f_true)])
     # vis the full chain
     theta_est_, sig_est_, full_chain = my_mcmc.param_est(0)
     mc_plot.plot_mcmc_chain(full_chain,
-            labels=["$y_0$", "m"],
+            labels=["$y_0$", "m", "lnf"],
             savefig='lin_chain_ex.png',
-            truths=[4.294, -0.9594])
+            truths=[4.294, -0.9594, np.log(f_true)])
 
 
 def sample_gauss():
