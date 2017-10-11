@@ -3,6 +3,7 @@
 \usepackage{setspace}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
+\usepackage{mathtools}
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{listings}
@@ -171,19 +172,19 @@ It is clearly seen that the impact of the diffusion constants get overwhelmed by
     \begin{minipage}{.5\textwidth}
         \centering
         \includegraphics[width=8cm]{figs/dni_vs_cm_jp.png}
-        \caption{Effect of Nickle diffisuion constant on crud mass density with all other TH parameters held fixed.}
+        \caption{Effect of Nickel diffusion constant on crud mass density with all other TH parameters held fixed.}
     \end{minipage}
 \end{figure}
 
 \chapter{Model Calibration}
 
-To understand how Bayesian inference can be applied to a model calibration problem consider the following contrived problem:  Given CRUD scrapes from a PWR with unknown coolant chemistry can we find the concentration of dissolved boron and corrosion products in the coolant which gave rise to these CRUD flakes?  We assume that we know quite precisely - the local temperature, power, and coolant velocities at the locations of the experimental CRUD samples. After all, in a laboratory setting one would hope the TH boundary conditions would be precisely measured.  We also assume that for each flake the CRUD constituents and thickness are accurately recorded.  The concentrations of boron, $C_{B}$, and nickle-ferrite,  $C_{NiFe}$, in the coolant are, however, not known.
+To understand how Bayesian inference can be applied to a model calibration problem consider the following contrived problem:  Given CRUD scrapes from a PWR with unknown coolant chemistry can we find the concentration of dissolved boron and corrosion products in the coolant which gave rise to these CRUD flakes?  We assume that we know quite precisely - the local temperature, power, and coolant velocities at the locations of the experimental CRUD samples. After all, in a laboratory setting one would hope the TH boundary conditions would be precisely measured.  We also assume that for each flake the CRUD constituents and thickness are accurately recorded.  The concentrations of boron, $C_{B}$, and nickel-ferrite,  $C_{NiFe}$, in the coolant are, however, not known.
 
 \begin{equation}
 \pi(\theta| E, I)
 \label{eq:target}
 \end{equation}
-$\pi$ represents a probability density function, specifically, the joint distribution $\theta = \{C_{B}$, $C_{NiFe}\}$ given some data.  Note that we are after the full posterior distribution of $\theta$ and not just it's maximum likelyhood estimate since we want to provide uncertainty bars on our fitted parameters, after all.  It is unreasonable to think our model will reproduce all the experimental data samples exactly due to 1) noise in the exterimental data 2) biases or missing physics in Mongoose.  Therefore the posterior distribution for $\theta$ will have some non-zero variance.
+$\pi$ represents a probability density function, specifically, the joint distribution $\theta = \{C_{B}$, $C_{NiFe}\}$ given some data.  Note that we are after the full posterior distribution of $\theta$ and not just it's maximum likelihood estimate since we want to provide uncertainty bars on our fitted parameters, after all.  It is unreasonable to think our model will reproduce all the experimental data samples exactly due to 1) noise in the experimental data 2) biases or missing physics in Mongoose.  Therefore the posterior distribution for $\theta$ will have some non-zero variance.
 
 $E=\{e_0, ... e_N\}$ is a vector of evidence - in our case this will comprised of CRUD thickness, CRUD mass, CRUD boron concentration sum-of-squares error between the model predictions and the experimental data sets. $I$ encodes all other prior knowledge and assumptions in the model (i.e. that Mongoose provides a reasonable depiction of CRUD physics).  In the following example, $I$ is dropped from the equations to reduce clutter.
 
@@ -196,11 +197,11 @@ Bayes theorem provides a way to compute \ref{eq:target}.
 Where $\mathcal{L}(E|\theta)$ is the likelihood function which encodes the chance of obtaining $E$ given $\theta$ is the ``truth". $f(\theta)$ is the prior which represents our current state of knowledge for the free parameters, and $f(E)$ is the evidence.
 Computing $f(E)= \int_\theta f(E|\theta) f(\theta)d\theta$ can be difficult or impossible when $\theta$ becomes large in dimension.
 
-Let the experimental data be representad by $\mathbf y =\{y_0, y_1... y_N\}$ and let $\Omega(\theta|I)$ be the CRUD model which generages a CRUD result given some choice for the parameters, $\theta$ and some external boundary conditions $I$.
-If we assume the errors to be independant and idendentically distributed as gaussian with $\mathcal N(0, \sigma) $ then we can write down the likelihood of a single result given some value of $\theta$ to be:
+Let the experimental data be represented by $\mathbf y =\{y_0, y_1... y_N\}$ and let $\Omega(\theta|X)$ be the CRUD model which generates a CRUD result given some choice for the parameters, $\theta$ and some external boundary conditions $X$.
+If we assume the errors to be independent and identically distributed as Gaussian with $\mathcal N(0, \sigma) $ then we can write down the likelihood of a single result given some value of $\theta$ to be:
 
 \begin{equation}
-\mathcal L (e_i|\theta) \propto  \frac{1}{\sigma_i}  e^{-\left[ \frac{(y_i - \Omega(\theta))^2}{2\sigma_i^2} \right]} =  \frac{1}{\sigma_i}  e^{-\left[ \frac{e_i}{2\sigma_i^2} \right]}
+\mathcal L (e_i|\theta) \propto  \frac{1}{\sigma_i}  e^{-\left[ \frac{(y_i - \Omega(\theta|x_i))^2}{2\sigma_i^2} \right]} =  \frac{1}{\sigma_i}  e^{-\left[ \frac{e_i}{2\sigma_i^2} \right]}
 \end{equation}
 
 With $e_i = (y_i - \Omega(\theta|x_i))^2$.
@@ -210,65 +211,76 @@ We get the complete likelihood by the product of all possible outcomes:
 \mathcal L (E|\theta) \propto \prod_i \frac{1}{\sigma_i}  e^{-\left[ \frac{e_i}{2\sigma_i^2} \right]}
 \end{equation}
 
-And let $\chi_i^2 = e_i / 2\sigma_i^2$.  The log-likelyhood up to a constant is then:
+And let $\chi_i^2 = e_i / 2\sigma_i^2$.  The log-likelihood up to a constant is then:
 
 \begin{equation}
 ln(\mathcal L (E|\theta)) \propto -  \sum_i \left[ \chi_i^2 + ln(\sigma_i) \right]
 \end{equation}
 As it turns out, when using MCMC to approximate the sample distribution, $\pi$, we only need to know the likelihood function up to a constant.  We will discuss why this is the case in the next section.
 
-The choice of a prior is an important one, but in this case we will use completely non-informative priors on $\theta$.  The discussion of prior distribution choice is left to ref. D.S. Silva.  The prior choice has an influance on the posterior density.  In our case a non-informative (or ``flat") prior ensures that the mean of the target posterior density theoredically coincides with the maximum liklihood estimate of the parameters given the least-squares optimality condition.
+The choice of a prior is an important one, but in this case we will use completely non-informative priors on $\theta$.  The discussion of prior distribution choice is left to ref. D.S. Silva.  The prior choice has an influence on the posterior density.  In our case a non-informative (or ``flat") prior ensures that the mean of the target posterior density theoretically coincides with the maximum likelihood estimate of the parameters given the least-squares optimality condition.
 
 \subsection{Markov Chain Monte Carlo}
 
 The primary challenge when applying Bayes theorem in practice is computing the normalizing constant which requires, sometimes, estimating a high dimensional integral.   To get around this issue of integration, it is possible to construct a Markov chain which draws \emph{samples} from the full posterior $\pi(\theta|E)$ without having to compute $f(E)$.    The goal of MCMC is to construct a Markov chain that is stationary about the target distribution $\pi$.
 
-We begin with introducing the concept of a transition kernel, given in matix form by $K$ in equation \ref{eq:k1}. 
+We begin with introducing the concept of a transition kernel, given in matrix form by $K$ in equation \ref{eq:k1}. 
 
 \begin{equation}
 K \mathbf x^{i-1} = \mathbf x^{i}
 \label{eq:k1}
 \end{equation}
 
-Where $\mathbf x$ is a vector holding the current system state.  In a traditional Markov graph diagram $x$ would hold the values at each node and $K$ defines the transition probabilites between nodes in the graph.  $\mathbf x^{i-1}$ is the previous state and $\mathbf x^{i}$ is the updated state, after applying $K$ once.  To create a Markov chain that is convergent (i.e. $x$ will reach stationarity after repeated application of $K$) we must enforce that $K$ does not introduce any periodicity (aperiodic criteria), and additionally, all nodes in the graph must have a path to all other nodes (irriducable critera).
+Where $\mathbf x$ is a vector holding the current system state.  In a traditional Markov graph diagram $x$ would hold the values at each node and $K$ defines the transition probabilities between nodes in the graph.  $\mathbf x^{i-1}$ is the previous state and $\mathbf x^{i}$ is the updated state, after applying $K$ once.  To create a Markov chain that is convergent (i.e. $x$ will reach stationarity after repeated application of $K$) we must enforce that $K$ does not introduce any periodicity (aperiodic criteria), and additionally, all nodes in the graph must have a path to all other nodes (irreducible criteria).
 
-Let $\mathcal{K} $ be a continuous Markov kernel.  In the cases of interesst $x$ is a continuuous random variable destibuted according to $\pi$.
-
+Let $\mathcal{K} $ be a continuous Markov kernel.  In the cases of interest $x$ is a continuous random variable distributed according to $\pi$.
+The continuous transition kernel's definition is a bit more nuanced than the discrete case since probabilities are assigned over infinitesimal intervals in a probability space (not on points).
+Define $dx'$ to be an infinitesimal interval in $B$ which is the measurable probability space of the future chain state.  The continuous transition kernel is just a function that returns the probability of traveling from our current state $x$ into $B$.
 \begin{equation}
-\mathcal K(x' | x) = Pr(X = x' |X=x)
+    \mathcal K(x, B) = \int_B \mathcal T(x, x')dx'
 \end{equation}
+\begin{equation}
+    \int_{\delta x' \in B} \mathcal T(x \rightarrow x')dx'  = Pr(X = x' |X=x)
+\end{equation}
+Where $\mathcal T(x\rightarrow x')dx'$ is the probability of transitioning from $x$ into interval $dx'$ about $x'$.  $X$ represents a random variable.
+
 In other words, the continuous transition kernel can be though of as a conditional density function.
 Next we check to see if the proposed kernel obeys the detailed balance given by equation \ref{eq:detailed_balance}:
 
 \begin{equation}
-\mathcal K(x| x') \pi(x) = \mathcal K(x'| x) \pi(x')
+\mathcal K(B| x) \pi(x) = \mathcal K(x| B) \pi(x')
 \label{eq:detailed_balance}
 \end{equation}
-This symetry can be interpreted to mean that the chain must look identical if rolled backwards or forwards. 
-If the chain obeys detailed balance and the kernel is aperiodic and irriducible it is gaurented that the chain will convegre to the target distribution, $\pi()$, in the limit [refs].
+This symmetry can be interpreted to mean that the chain must look identical if rolled backwards or forwards.
+If the chain obeys detailed balance and the kernel is aperiodic and irreducible it is guaranteed that the chain will converge to the target distribution, $\pi$, in the limit [refs].
 
-Without proof, one such vaild transition kerrnel is the Metropolis-Hastings kernel, given by the following:
-
+Without proof, one such valid transition kernel is the Metropolis-Hastings (MH) kernel.
 \begin{equation}
-\mathcal K(x|x') = g(x,x')a(x,x')
+    \mathcal K(x, B)=
+    \begin{cases}
+        g(B|x)a(x,B) & x \not \in B \\
+        1 - \int_{x' \in B} g(x'|x)a(x,x')dx' & x \in B
+    \end{cases}
 \label{eq:met_1}
 \end{equation}
-with
+The probability density function, $g(B|x)a(x,B) $, returns the probability of moving to a new state $x'\in B$ given a starting state $x$. Conversely,
+the probability function, $1 - \int_{x' \in B} g(x'| x)a(x,x')$, gives the probability of staying put.
+The MH acceptance probability is given by:
 \begin{equation}
 a(x,x') = min \left( 1, \frac{ \tilde \pi'}{\tilde{\pi}} \frac{g(x,x')}{g(x',x)} \right)
 \label{eq:met_2}
 \end{equation}
-$\tilde \pi \propto \pi$ and $g$ is the so-called proposal distribution.  If $g$ is a symetric distribution then equation \ref{eq:met_2} reduces to:
+Abbreviating $\pi = \pi(x)$ and $\pi' = \pi(x')$. Also, $\pi = \tilde \pi / Z$ and  $\pi' = \tilde \pi' / Z$ with $Z$ being an arbitrary constant so $\tilde \pi \propto \pi$. $g$ is the so-called proposal distribution.  If $g$ is a symmetric distribution then equation \ref{eq:met_2} reduces to:
 \begin{equation}
 a(x,x') = min \left( 1, \frac{ \tilde \pi'}{\tilde{\pi}} \right)
 \end{equation}
-Since $\pi = \tilde \pi / Z$ and  $\pi' = \tilde \pi' / Z$ with $Z$ being an arbitrary constant
+or
 \begin{equation}
 a(x,x') = min \left( 1, \frac{ \tilde \pi' / Z}{\tilde \pi/ Z} \right) =  min \left( 1, \frac{ \pi' }{\pi} \right) 
 \end{equation}
-Therefore when attempting to compute the posterior given by Bayes formula via MCMC we only need to specify the product of the likelihood and prior up to a constant:  $\tilde \pi \propto \mathcal L(E|\theta) f(\theta) $.  The deominator of the Bayes factor cancels out.
+Therefore when attempting to compute the posterior given by Bayes formula via MCMC we only need to specify the product of the likelihood and prior up to a constant:  $\tilde \pi \propto \mathcal L(E|\theta) f(\theta) $.  The denominator of the Bayes factor cancels out.
 
-Plugging in \ref{eq:met_1} into \ref{eq:detailed_balance} gives
+Plugging in the case of \ref{eq:met_1} in which $x' = x$ into \ref{eq:detailed_balance} gives a trivial result of $\pi(x)\mathcal K(x, x) = \pi(x) \mathcal K(x, x)$ meaning we did not move anywhere.  The interesting case occures when $x' \ne x$:
 \begin{equation}
 g(x,x') min \left( 1, \frac{ \pi' }{\pi} \right) \pi = \mathcal K(x'|x)\pi'
 \end{equation}
@@ -276,7 +288,7 @@ distributing $\pi$ into the $min$ gives:
 \begin{equation}
 g(x,x') min \left( \pi, \pi'  \right) = \mathcal K(x'|x)\pi'
 \end{equation}
-Which is what we want because the left hand side is symmetric wrt. the ordering of $x$ and $x'$ because the $min$ does not care which argument comes first and $g$ is symetric by definition.  In other terms; we can write:
+Which is what we want because the left hand side is symmetric wrt. the ordering of $x$ and $x'$ because the $min$ does not care which argument comes first and $g$ is symmetric by definition.  In other terms; we can write:
 \begin{equation}
 g(x,x') min \left( \pi, \pi'  \right) = g(x',x) min \left( \pi', \pi  \right)
 \end{equation}
@@ -285,7 +297,7 @@ Which is a re-statement of detailed balance.
 
 \subsubsection{Example MCMC Results}
 
-Since MCMC supplies samples from $\pi(x)$, we can use those samples to compute approximate statistics of that distrubtion.  When performing parameter estimation the moments of this distribution are desirable.
+Since MCMC supplies samples from $\pi(x)$, we can use those samples to compute approximate statistics of that distribution.  When performing parameter estimation the moments of this distribution are desirable.
 
 Synthetic experimental data was generated by running Mongoose and adding a small amount of Gaussian noise.  A total of 50 uncoupled Mongoose simulations - or 50 synthetic CRUD scrapes - were made available for performing the calibration.  The true boron concentration in the coolant was set to a value of 1200 $[ppm]$, and the ``true" NiFe Concentration was set to 2.0 $[ppb]$. Initial values for the unknown parameters were: $C_{B_0} = 1000 [ppm]$ and $C_{NiFe_0} = 2.1$.
 
