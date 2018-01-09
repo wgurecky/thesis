@@ -28,9 +28,9 @@
 
 
 \title{A Hi2Low Method for Improving\\ CRUD Predictions}
-\subtitle{Using Copula and Gradient Boosted Regression Trees}
+\subtitle{}
 \author{William Gurecky}
-\institute{Haas Research Group Meeting}
+\institute{UT Austin Mechanical Engineering}
 \date{\today}
 
 
@@ -151,7 +151,7 @@ Differences between CTF (subchannel) and CFD meshes for a single pin.
 	\item Instead, track joint probability density $f(T, TKE, q'')$ tallied over coarse CTF patches.
 \end{itemize}
 	\item Predict likelihood of temperatures in excess of saturation occurring in coincidence with low local turbulent kinetic energy.
-	\item Capture the dependence between surface temperature and turbulent kinetic energy.
+	\item Preserve correlations between surface temperature, boundary heat flux and turbulent kinetic energy.
 \end{itemize}
 \end{frame}
 
@@ -259,17 +259,12 @@ Where $\varphi(\theta_c, t)$ is the copula's generator function and $\varphi'$ i
 % =========================================================================== %
 \begin{frame}
 \frametitle{Non-Parametric Representation of the Margins}
-\begin{itemize}
-\item The proposed method uses a non-parametric representation of the margins.
-\begin{itemize}
-	\item In the parametric approach we would predict the ``shape'' parameters $\theta_{x}(\mathbf{p})$.
-	\item In the non-parametric approach $\theta_x$ is replaced by a vector of conditional quantiles, $\mathbf Q_\tau (\mathbf p)$.
-\end{itemize}
-\item  Let $\mathbf p$ represent the local core conditions.
-\item  Each conditional quantile (e.g. Median of the patch localized temperature distribution) is a function of $\mathbf p$.
-\item  The marginal CDFs of temperature, TKE, and boundary heat flux can be approximated with a set of quantiles:
- $ \mathbf Q_\tau = F^{-1}(\tau);\ F(y)=P[Y \leq y] $
-\end{itemize}
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=7cm,angle=90,origin=c]{figs/scanned_cdf.pdf}
+\label{model_overview}
+\end{figure}
+
 \end{frame}
 
 % =========================================================================== %
@@ -299,7 +294,7 @@ The $i^{th}$ CRUD sample drawn from CTF patch, $j$:
 
 % =========================================================================== %
 \begin{frame}
-\frametitle{Time Stepping: Spatially reordering samples on a CTF Patch}
+\frametitle{Time Stepping: Reordering samples on a CTF Patch}
 Two bounding cases to consider:
 \begin{itemize}
 \item Assume: Hot spots on the rod surface remain stationary w.r.t time
@@ -311,7 +306,7 @@ Two bounding cases to consider:
 	\item Randomize samples inside a patch - do not preserve any spatial structure of the temperature distribution.
 	\end{itemize}
 \end{itemize}
-Define a metric $\alpha T_i + \beta TKE_i = m_i$. Let $\alpha=1, \beta=0$. Sort $m_i's$ by highest to lowest with indicies $\{0..., j\}$..  Use sorted indicies to re-order the dependent samples $\{T_i, TKE_i, BHF_i\} \mapsto \{T_j, TKE_j, BHF_j\}$.
+Define a metric $\alpha T_i + \beta TKE_i + \gamma q_i'' = m_i$. Rank $m_i's$ by highest to lowest with and store the ranked indicies.  Use sorted indicies to re-order the samples on the patch.
 \end{frame}
 
 % =========================================================================== %
@@ -330,7 +325,7 @@ Define a metric $\alpha T_i + \beta TKE_i = m_i$. Let $\alpha=1, \beta=0$. Sort 
             \caption{Re-ordered temperature samples}
         \end{minipage}
     \end{figure}
-Both patches share the \emph{same} probability density fuction of Temperture, however, the spatial distibutions are not equal.
+Both patches share the \emph{same} PDF of Temperture, however, the spatial distibutions are not equal.
 \end{frame}
 
 % =========================================================================== %
@@ -341,21 +336,21 @@ Both patches share the \emph{same} probability density fuction of Temperture, ho
         \begin{minipage}{.5\textwidth}
             \centering
             \includegraphics[width=6cm]{figs/new/patch_rand_tke_ex.png}
-            \caption{Randomized temperature samples on a patch.}
+            \caption{Randomized TKE samples on a patch.}
         \end{minipage}%
         \begin{minipage}{.5\textwidth}
             \centering
             \includegraphics[width=6cm]{figs/new/patch_tke_ex.png}
-            \caption{Re-ordered temperature samples}
+            \caption{Re-ordered TKE samples}
         \end{minipage}
     \end{figure}
-Both patches share the \emph{same} probability density fuction of TKE, however, the spatial distibutions are not equal.
+Both patches share the \emph{same} PDF of TKE, however, the spatial distibutions are not equal.
 \end{frame}
 
 % =========================================================================== %
 \begin{frame}
 \frametitle{Time Stepping: Single Pin Results}
-Pin-integrated Boron inside the CRUD as a function of time.  Green: Assumes randomly moving hot spots.  Blue: Assumes stationary hot spots.
+\tiny{Pin-integrated Boron inside the CRUD as a function of time.  Green: Assumes randomly moving hot spots.  Blue: Assumes stationary hot spots.}
 \begin{figure}[!htbp]
 \centering
 \includegraphics[width=8cm]{figs/new/cmpr_pin_totals.png}
@@ -367,203 +362,20 @@ Pin-integrated Boron inside the CRUD as a function of time.  Green: Assumes rand
 % =========================================================================== %
 \section{Results}
 \begin{frame}
-\frametitle{Time Stepping: Single Pin Results $@$ 100 days}
+\frametitle{Single Pin Results $@$ 100 days}
     \begin{figure}
         \centering
         \begin{minipage}{.5\textwidth}
             \centering
             \includegraphics[width=6cm]{figs/new/struct_pin_z_twall.png}
-            \caption{Rod Temperature $[K]$.}
+            \caption{Outiside Clad Temp $[K]$.}
         \end{minipage}%
         \begin{minipage}{.5\textwidth}
             \centering
             \includegraphics[width=6cm]{figs/new/struct_pin_z_bmass.png}
-            \caption{ Boron Hideout Mass Density $[g/cm^2]$}
+            \caption{ Boron Linear Deposition $[g/cm]$}
         \end{minipage}
     \end{figure}
-CRUD result at 100$[days]$.
-\end{frame}
-
-
-% =========================================================================== %
-\begin{frame}\frametitle{TKE Gradient Boosted Quantile Regression Results}
-    \begin{figure}
-        \centering
-        \begin{minipage}{.5\textwidth}
-            \centering
-            \includegraphics[width=6cm]{figs/new/hi2low_pin_temperature_remapped.png}
-            \caption{Temperature distribution at 100 days.}
-        \end{minipage}%
-        \begin{minipage}{.5\textwidth}
-            \centering
-            \includegraphics[width=6cm]{figs/new/hi2low_pin_tke_remapped.png}
-            \caption{TKE at 100 days}
-        \end{minipage}
-    \end{figure}
-Post spatial remapping.
-\end{frame}
-
-% =========================================================================== %
-\begin{frame}\frametitle{TKE Gradient Boosted Quantile Regression Results}
-    \begin{figure}
-        \centering
-        \begin{minipage}{.5\textwidth}
-            \centering
-            \includegraphics[width=6cm]{figs/new/hi2low_pin_bmass_remapped.png}
-            \caption{Boron distribution at 100 days.}
-        \end{minipage}%
-        \begin{minipage}{.5\textwidth}
-            \centering
-            \includegraphics[width=6cm]{figs/new/hi2low_pin_cmass_remapped.png}
-            \caption{Crud mass distribution at 100 days}
-        \end{minipage}
-    \end{figure}
-Post spatial remapping.
-\end{frame}
-
-% =========================================================================== %
-\begin{frame}
-\frametitle{Conclusion}
-\begin{itemize}
-\item The proposed technique does not try to provide a detailed spatial distribution
-of the temperature, TKE, and CRUD on the rods' surface.
-\item The proposed approach seeks to predict detailed joint frequency distributions on each CTF patch.
-\item Time stepping scheme requires an assumption to be made about the spatial distribution of temperture within each patch as a function of time.
-\item Future work will focus on uncertainty quantification.
-\end{itemize}
-\end{frame}
-
-% =========================================================================== %
-\begin{frame}
-\frametitle{Questions?}
-\end{frame}
-
-% =========================================================================== %
-\begin{frame}[shrink=20]
-\frametitle{Generating Synthetic CFD Data}
-\begin{itemize}
-\item Cheaply generates CFD-like data sets with user-provided residual model.
-\item Applies tailored noise on top of CTF result.
-\begin{itemize}
-	\item Complete control over margins and copula. 
-\end{itemize}
-\item Aids in verification of regression model results. 
-\end{itemize}
-\begin{figure}
-        \centering
-        \begin{minipage}{.5\textwidth}
-            \centering
-            \includegraphics[width=7.5cm]{figs/pinTempOut.png}
-            \caption{Synthetic CFD Temperature $[K]$ distribution vs. axial position.}
-        \end{minipage}%
-        \begin{minipage}{.5\textwidth}
-            \centering
-            \includegraphics[width=7.5cm]{figs/pinTkeOut.png}
-            \caption{Synthetic CFD TKE  $[J/Kg]$ distribution vs. axial position.}
-        \end{minipage}
-    \end{figure}
-\end{frame}
-
-% =========================================================================== %
-\begin{frame}[shrink=10]
-\frametitle{Classification and Regression Tree (CART) - Weak Learner}
-Each weak learner in the ensemble is a binary tree that partitions the input space based on "best-first" splits.  
-\begin{itemize}
-\item classification - find the split that minimizes: $-\sum_j\sum_i f_{ij} ln(f_{ij})$, where $f_{ij}$ is the fraction of class label $i$ in the region $j$.
-\item Least squares regression - find the split that minimizes: $\sum_j\sum_i(y_i - \hat y_{j})^2$
-\end{itemize}
-
-\begin{figure}[!htbp]
-\centering
-\includegraphics[width=7cm]{figs/cart.png}
-\label{model_overview}
-\end{figure}
-\end{frame}
-
-% =========================================================================== %
-\begin{frame}
-\frametitle{GBRT - Weak Learners Fit to Pseudo Residuals}
-Weak learners are fit the the pseudo-residuals (derivative of the loss function): 
-\[
-\frac{\partial L(y_i, F(p_i))}{\partial F(p_i)}
-\]
-if $L_i=0.5(y_i-F(p_i))^2$ then $L' = F(p_i)-y_i$.  
-\begin{figure}[!htbp]
-\centering
-\includegraphics[width=9cm]{figs/pseudo_resids.png}
-\label{model_overview}
-\end{figure}
-Source: Peter Prettenhofer, PyData (2014).
-\end{frame}
-
-% =========================================================================== %
-\begin{frame}
-\frametitle{GBRT - Ensemble of weak learners}
-
-\begin{figure}[!htbp]
-\centering
-\includegraphics[width=8.5cm]{figs/1d_boosted_regression_ex.png}
-\label{model_overview}
-\end{figure}
-\end{frame}
-
-% =========================================================================== %
-\begin{frame}[shrink=10]
-\frametitle{Overfitting Detection and Prevention}
-\begin{itemize}
-\item Overfitting can be detected by inspecting testing errors as additional weak learners are added to the model.
-\item Overfitting can be mitigated by sub-sampling with replacement (bagging).
-\end{itemize}
-\begin{figure}[!htbp]
-\centering
-\includegraphics[width=7.5cm]{figs/1d_boosted_regression_err.png}
-\label{model_overview}
-\end{figure}
-\end{frame}
-
-% =========================================================================== %
-\begin{frame}[fragile,shrink=30]
-\frametitle{Input Deck for Synthetic CFD data Gen}
-\begin{verbatim}
-    "pinID": 1,
-    "chanID": 1,
-    "averageHeatFlux": 1.2e6,
-    "spans": {
-              "0.0": {"model": "lower", "samples": 1000},
-              "2.01": {"model": "upper", "samples": 4000},
-              "2.53": {"model": "upper", "samples": 4000},
-              "2.98": {"model": "upper", "samples": 4000}
-    },
-    "upper": {
-            "0.0": {"copula":  {"family": "gauss", "params": [-0.5], "rot": 0},
-                "tke": {"type": "gauss", "params": [0.001, 0.02]},
-                "temp": {"type": "beta", "params": [5.0, 2.7], "loc": -9.2, "scale": 12.0},
-                "bhf": {"type": "gauss", "params": [0.001, 2.6e4]}
-                },
-            "0.3": {"copula":  {"family": "gauss", "params": [-0.6], "rot": 0},
-                "tke": {"type": "gauss", "params": [0.01, 0.008]},
-                "temp": {"type": "beta", "params": [5.0, 1.7], "loc": -7.0, "scale": 8.0},
-                "bhf": {"type": "gauss", "params": [0.01, 1.1e4]}
-                },
-            "1.0": {"copula":  {"family": "frank", "params": [4.0], "rot": 1},
-                "tke": {"type": "gauss", "params": [0.01, 0.005]},
-                "temp": {"type": "beta", "params": [5.0, 1.5], "loc": -4.0, "scale": 5.0},
-                "bhf": {"type": "gauss", "params": [0.01, 0.9e4]}
-                }
-            },
-    "lower": {
-            "0.0": {"copula":  {"family": "gauss", "params": [-0.6]},
-                "tke": {"type": "gauss", "params": [0.001, 0.0001]},
-                "temp": {"type": "beta", "params": ["5.0*(t)/600.0", 5.0], "loc": -2.0, "scale": 4.0},
-                "bhf": {"type": "gauss", "params": [0.01, 1.0e3]}
-                },
-            "1.0": {"copula":  {"family": "gauss", "params": [-0.6]},
-                "tke": {"type": "gauss", "params": [0.001, 0.0002]},
-                "temp": {"type": "beta", "params": [5.0, 5.0], "loc": -2.0, "scale": 4.0},
-                "bhf": {"type": "gauss", "params": [0.01, 1.0e3]}
-                }
-            }
-\end{verbatim}
 \end{frame}
 
 
