@@ -18,10 +18,12 @@
 \usepackage{cancel}
 \usepackage[]{algorithm2e}
 \usepackage{mathtools}
+\usepackage{amsmath}
 \usepackage{pgfgantt}
 \usepackage[version=3]{mhchem} % Package for chemical equation typesetting \ce{}
 \usepackage{siunitx} % Provides the \SI{}{} and \si{}
 \renewcommand{\CancelColor}{\color{utorange}}
+\DeclareMathOperator*{\E}{\mathbb{E}}
 
 %Add bibliography file location for citiation
 \bibliography{example.bib}
@@ -218,6 +220,27 @@ On a single coarse CTF patch:
 \end{frame}
 
 % =========================================================================== %
+\begin{frame}
+Compute the total integrated crud over a CTF patch with area $A$, for a single time step of $\delta t$.
+\begin{itemize}
+	\item Expected total crud over patch : 
+	\begin{eqnarray}
+		A \mu_g\ [grams] = A \E[g(x|\mathbf I, \delta t)] \nonumber \\
+		= A \iiint g(x|\mathbf I, \delta t) h(x|\theta) dx  \nonumber
+	\end{eqnarray}
+	let $\mathbf x= \{T, \tau, q''\}$.
+	$\mathbf I$ represents additional crud parameters, and $\theta$ are distibution parameters.
+	\item Estimate this integral via Monte carlo:
+	\[
+	\E[g(x)] \approx \frac{1}{N} \sum_i^N \frac{g(\mathbf x_i) 
+	h(\mathbf x_i | \theta)}{\tilde h(\mathbf x_i | \tilde \theta)}, \ \mathbf x \sim \tilde h
+	\]
+	Where $\tilde h$ is an importance distribution.  In the case of no importance weighting: $\tilde h = h$
+\end{itemize}
+\end{frame}
+
+
+% =========================================================================== %
 \section{Capturing Dependence between Random Variables}
 \begin{frame}
 \frametitle{Capturing Dependence - Sklar's Theorem}
@@ -240,6 +263,20 @@ Where $\theta_c$ and $\theta_{x,y}$ are free copula and marginal model parameter
 \end{itemize}
 \end{frame}
 
+
+% =========================================================================== %
+\begin{frame}
+\begin{itemize}
+	\item Factor $h$ by Sklar's theorem:
+	\[
+	\E[g(x)] \approx \frac{1}{N} \sum_i^N g(\mathbf x_i)
+	\]
+	\[
+	\mathbf x \sim c\left(F(T), F(\tau), F(q'')|\theta_c\right)f(T|\theta_T)f(\tau|\theta_\tau)f(q''|\theta_{q''})
+	\]
+	\item 
+\end{itemize}
+\end{frame}
 
 % =========================================================================== %
 \begin{frame}
