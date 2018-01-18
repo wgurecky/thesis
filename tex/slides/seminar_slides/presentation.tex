@@ -29,10 +29,9 @@
 \bibliography{example.bib}
 
 
-\title{A Hi2Low Method for Improving\\ CRUD Predictions}
+\title{A CFD-Informed Hi2Low Method for Improving Subchannel Resolution CRUD Predictions}
 \subtitle{}
 \author{William Gurecky}
-\institute{UT Austin Mechanical Engineering}
 \date{\today}
 
 
@@ -140,7 +139,7 @@ Differences between CTF (subchannel) and CFD meshes for a single pin.
     \end{block}
     Treat $\varepsilon$ as a random field.  $\varepsilon(\cdot)$ is a CFD informed model. $\mathbf z$ are spatial coordinates. $\mathbf p$ are a set of auxiliary predictors. \\
     $b$ is bias ($\mu_{CTF} - \mu_{CFD}$) \\
-    $\mu$ are spatially averaged over a CTF patch
+    $\mu$ is piecewise constant over each CTF patch
 \end{frame}
 
 % =========================================================================== %
@@ -204,7 +203,7 @@ Differences between CTF (subchannel) and CFD meshes for a single pin.
 \begin{frame}
 \begin{figure}[!htbp]
 \centering
-\includegraphics[width=10.88cm]{figs/ctf_patch_ex3.png}
+\includegraphics[width=10.88cm]{figs/ctf_patch_ex3_b.png}
 \label{model_overview}
 \end{figure}
 \end{frame}
@@ -214,28 +213,29 @@ Differences between CTF (subchannel) and CFD meshes for a single pin.
 On a single coarse CTF patch:
 \begin{figure}[!htbp]
 \centering
-\includegraphics[width=11cm]{figs/model_relations.png}
+\includegraphics[width=11cm]{figs/model_relations_2.png}
 \label{model_overview}
 \end{figure}
 \end{frame}
 
 % =========================================================================== %
 \begin{frame}
-Compute the total integrated crud over a CTF patch with area $A$, for a single time step of $\delta t$.
+\textbf{Goal:} Compute the total integrated crud over a CTF patch with area $A$, for a single time step of $\delta t$.
 \begin{itemize}
 	\item Expected total crud over patch : 
 	\begin{eqnarray}
-		A \mu_g\ [grams] = A \E[g(x|\mathbf I, \delta t)] \nonumber \\
-		= A \iiint g(x|\mathbf I, \delta t) h(x|\theta) dx  \nonumber
+		A \mu_g\ [grams] = A \E[g(\mathbf x|g_o, \mathbf I, \delta t)] \nonumber \\
+		= A \iiint g(\mathbf x|g_o, \mathbf I, \delta t) h(\mathbf x|\theta) d \mathbf x  \nonumber
 	\end{eqnarray}
-	let $\mathbf x= \{T, \tau, q''\}$.
-	$\mathbf I$ represents additional crud parameters, and $\theta$ are distibution parameters.
+	let $\mathbf x= \{T, k, q''\}$.
+	$\mathbf I$ represents additional crud parameters, $g_o$ is the crud state at the start of the time step and $\theta$ are distibution parameters.
 	\item Estimate this integral via Monte carlo:
 	\[
 	\E[g(x)] \approx \frac{1}{N} \sum_i^N \frac{g(\mathbf x_i) 
 	h(\mathbf x_i | \theta)}{\tilde h(\mathbf x_i | \tilde \theta)}, \ \mathbf x \sim \tilde h
 	\]
-	Where $\tilde h$ is an importance distribution.  In the case of no importance weighting: $\tilde h = h$
+	Where $\tilde h$ is an importance distribution. 
+    \item \textbf{Problem:} $h$ is trivariate and must be accurately predicted on all CTF faces
 \end{itemize}
 \end{frame}
 
@@ -263,21 +263,6 @@ Where $\theta_c$ and $\theta_{x,y}$ are free copula and marginal model parameter
 \end{itemize}
 \end{frame}
 
-
-% =========================================================================== %
-\begin{frame}
-\begin{itemize}
-	\item Factor $h$ by Sklar's theorem:
-	\[
-	\E[g(x)] \approx \frac{1}{N} \sum_i^N g(\mathbf x_i)
-	\]
-	\[
-	\mathbf x \sim c\left(F(T), F(\tau), F(q'')|\theta_c\right)f(T|\theta_T)f(\tau|\theta_\tau)f(q''|\theta_{q''})
-	\]
-	\item 
-\end{itemize}
-\end{frame}
-
 % =========================================================================== %
 \begin{frame}
 \frametitle{Specifying Copula Parameters}
@@ -294,19 +279,69 @@ Where $\varphi(\theta_c, t)$ is the copula's generator function and $\varphi'$ i
 \end{frame}
 
 % =========================================================================== %
-\begin{frame}
-\frametitle{Non-Parametric Representation of the Margins}
-\begin{figure}[!htbp]
-\centering
-\includegraphics[width=7cm,angle=90,origin=c]{figs/scanned_cdf.pdf}
-\label{model_overview}
-\end{figure}
-
+\begin{frame}[shrink=20]
+\frametitle{Computing Sample Quantiles}
+\begin{columns}
+\begin{column}{0.5\textwidth}
+\begin{itemize}
+\item The $\tau^{th}$ quantile is $q_\tau = F^{-1}(\tau); $ where $\ F(t)=P[T \leq t]$ is a CDF.
+\item $\tau \in [0, 1]$
+\item Supply a desired percentile, e.g. $\tau_i = 0.75$.
+To estimate a sample quantile minimize: $\E[\rho_\tau(T - \tau)]$ with $T \sim F$
+\[
+\rho_\tau( u) = \mathbf u \cdot (\tau - \mathbb{I}_{( u < 0)})
+\]
+\begin{equation}
+\left.\begin{aligned}
+\hat q_{\tau_i} &= argmin_{q} \E[\rho(u)];\ \  u = T - q  \\
+\approx & argmin_q  \frac{1}{N} \sum_i^N \rho(u_i); \ u_i = t_i - q \\
+\approx & argmin_q \left[ (1-\tau) \sum_{y \leq q}( t_i - q ) - \tau \sum_{y > q} (t_i - q) \right]
+\end{aligned}\right. \nonumber
+\end{equation}
+\end{itemize}
+\end{column}
+\begin{column}{0.5\textwidth}  %%<--- here
+    \begin{center}
+     \includegraphics[width=0.9\textwidth]{figs/q_loss.png}
+     \end{center}
+\end{column}
+\end{columns}
 \end{frame}
 
 % =========================================================================== %
+\begin{frame}[shrink=20]
+\frametitle{Reconstructing the Margins from Sample Quantiles}
+\begin{columns}
+\begin{column}{0.5\textwidth}
+\begin{itemize}
+\item The $\tau^{th}$ quantile is $q_\tau = F^{-1}(\tau); $ where $\ F(t)=P[T \leq t]$ is a CDF.
+\item $\tau \in [0, 1]$
+\item Supply a desired percentile, e.g. $\tau_i = 0.75$.
+To estimate a sample quantile minimize: $\E[\rho_\tau(T - \tau)]$ with $T \sim F$
+\[
+\rho_\tau( u) = \mathbf u \cdot (\tau - \mathbb{I}_{( u < 0)})
+\]
+\begin{equation}
+\left.\begin{aligned}
+\hat q_{\tau_i} &= argmin_{q} \E[\rho(u)];\ \  u = T - q  \\
+\approx & argmin_q  \frac{1}{N} \sum_i^N \rho(u_i) \\
+\approx & argmin_q \left[ (1-\tau) \sum_{y \leq q}( t_i - q ) - \tau \sum_{y > q} (t_i - q) \right]
+\end{aligned}\right. \nonumber
+\end{equation}
+\end{itemize}
+\end{column}
+\begin{column}{0.5\textwidth}  %%<--- here
+    \begin{center}
+     \includegraphics[width=0.9\textwidth]{figs/margins_cdf_2.png}
+     \end{center}
+\end{column}
+\end{columns}
+\end{frame}
+
+
+% =========================================================================== %
 \begin{frame}
-\frametitle{Single CRUD Step on a CTF Patch}
+\frametitle{Single CTF Patch: CRUD Growth}
 The $i^{th}$ CRUD sample drawn from CTF patch, $j$:
 \begin{figure}[!htbp]
 \centering
@@ -314,7 +349,7 @@ The $i^{th}$ CRUD sample drawn from CTF patch, $j$:
 \label{model_overview}
 \end{figure}
 \begin{itemize}
-\item Samples are drawn with weight $w_i=A_p/N$ where $A_p$ is the CTF patch area and $N$ is the total number of samples/patch.
+\item When importance sampling is not used samples are drawn with weight $w_i=A_p/N$ where $A_p$ is the CTF patch area and $N$ is the total number of samples/patch.
 \item TH boundary conditions are held fixed throughout the duration of the CRUD simulation step with timestep size $\Delta t$.
 \end{itemize}
 \end{frame}
@@ -329,12 +364,42 @@ The $i^{th}$ CRUD sample drawn from CTF patch, $j$:
 \end{figure}
 \end{frame}
 
+\section{Propagating CRUD Through Time}
 % =========================================================================== %
 \begin{frame}
-\frametitle{Time Stepping: Reordering samples on a CTF Patch}
-Two bounding cases to consider:
+\frametitle{Propagating CRUD Through Time:  Flatten-to-Mean Strategy}
 \begin{itemize}
-\item Assume: Hot spots on the rod surface remain stationary w.r.t time
+\item  If $g(\cdot)$ does not depend on the past CRUD history then $g_i^{t+1} = g(x_i| \mu_g^{t}, \delta t) = g( x_i| g_{i}^{t}, \delta t)$.
+\item This leads to the following CRUD propogation scheme:
+\begin{itemize}
+	\item Draw TH samples, $\{x_i, ... x_N\} \sim h$
+	\item Compute the crud distribution over the patch
+	$g_i^{t+1} = g(x_i|\mu_g^t, \delta t)$
+	\item Identify the ``mean crud flake" on the patch: $g^{t+1}_{i^*}$
+	\item Find the boundary conditions which gave rise to $g^{t+1}_{i^*}$, \\\ denote them $x^*$.  Set all boundary condition samples: $x^*_i = x^*, \forall i \in {1, ... N}$
+	\item Rewind the CRUD simulation back to $g^{t}$
+	\item Regrow crud with uniform TH boundary conditions over the patch:  $g_i^{t+1} = g(x^*_i|\mu_g^t, \delta t)$
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+% =========================================================================== %
+\begin{frame}
+\frametitle{Propagating CRUD Through Time}
+\begin{itemize}
+\item  \textbf{Problem:}  The crud growth rate has some dependence on the previous crud history.  
+
+\end{itemize}
+\end{frame}
+
+% =========================================================================== %
+\begin{frame}[shrink=20]
+\frametitle{Re-map samples on a CTF Patch}
+\begin{columns}
+\begin{column}{0.5\textwidth}
+   Two bounding cases to consider:
+\begin{itemize}
+\item Hot spots on the rod surface remain stationary w.r.t time
 	\begin{itemize}
 	\item Re-order samples such that the highest temperature sample always occures in the same location inside a patch.
 	\end{itemize}
@@ -343,12 +408,23 @@ Two bounding cases to consider:
 	\item Randomize samples inside a patch - do not preserve any spatial structure of the temperature distribution.
 	\end{itemize}
 \end{itemize}
-Define a metric $\alpha T_i + \beta TKE_i + \gamma q_i'' = m_i$. Rank $m_i's$ by highest to lowest with and store the ranked indicies.  Use sorted indicies to re-order the samples on the patch.
+Define a metric; for each $\mathcal F_i$ compute:
+\[
+m_i = \alpha T_i + \beta TKE_i + \gamma q_i''
+\]
+Rank $m_i's$ by highest to lowest with and store the ranked indicies.
+\end{column}
+\begin{column}{0.5\textwidth}  %%<--- here
+    \begin{center}
+     \includegraphics[width=0.85\textwidth]{figs/sample_mapping.png}
+     \end{center}
+\end{column}
+\end{columns}
 \end{frame}
 
 % =========================================================================== %
 \begin{frame}
-\frametitle{Time Stepping: Comparing Approaches}
+\frametitle{Re-map samples on a CTF Patch}
     \begin{figure}
         \centering
         \begin{minipage}{.5\textwidth}
@@ -359,7 +435,7 @@ Define a metric $\alpha T_i + \beta TKE_i + \gamma q_i'' = m_i$. Rank $m_i's$ by
         \begin{minipage}{.5\textwidth}
             \centering
             \includegraphics[width=6cm]{figs/new/patch_t_ex.png}
-            \caption{Re-ordered temperature samples}
+            \caption{Re-ordered temperature samples.  $\alpha=1.0; \beta=\gamma=0$}
         \end{minipage}
     \end{figure}
 Both patches share the \emph{same} PDF of Temperture, however, the spatial distibutions are not equal.
@@ -367,7 +443,7 @@ Both patches share the \emph{same} PDF of Temperture, however, the spatial disti
 
 % =========================================================================== %
 \begin{frame}
-\frametitle{Time Stepping: Comparing Approaches}
+\frametitle{Re-map samples on a CTF Patch}
     \begin{figure}
         \centering
         \begin{minipage}{.5\textwidth}
@@ -378,7 +454,7 @@ Both patches share the \emph{same} PDF of Temperture, however, the spatial disti
         \begin{minipage}{.5\textwidth}
             \centering
             \includegraphics[width=6cm]{figs/new/patch_tke_ex.png}
-            \caption{Re-ordered TKE samples}
+            \caption{Re-ordered TKE samples. $\alpha=1.0; \beta=\gamma=0$}
         \end{minipage}
     \end{figure}
 Both patches share the \emph{same} PDF of TKE, however, the spatial distibutions are not equal.

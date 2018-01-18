@@ -201,7 +201,7 @@ Differences between CTF and CFD meshes for a single pin.
 \begin{frame}
 \begin{figure}[!htbp]
 \centering
-\includegraphics[width=10.88cm]{figs/ctf_patch_ex3.png}
+\includegraphics[width=10.88cm]{figs/ctf_patch_ex3_b.png}
 \label{model_overview}
 \end{figure}
 \end{frame}
@@ -289,13 +289,13 @@ h_i(x, y) = c(F(x), F(y)|\rho_{\tau_i}) f(x|\theta_{x_i}) f(y|\theta_{y_i})
 \end{frame}
 
 % =========================================================================== %
-\begin{frame}[shrink=25]
+\begin{frame}[shrink=20]
 \frametitle{Obtaining the Margins}
 \begin{itemize}
 \item $Q_\tau = F^{-1}(\tau); $ where $\ F(y)=P[Y \leq y]$ is a CDF.
 \item $\tau \in [0, 1]$
 
-\item The quantile Loss function is given by:
+\item The quantile loss function is given by:
 \[
 \rho_\tau(u) = u \cdot (\tau - \mathbb{I}_{(u < 0)});\ u=Y - Q_\tau
 \]
@@ -305,11 +305,11 @@ h_i(x, y) = c(F(x), F(y)|\rho_{\tau_i}) f(x|\theta_{x_i}) f(y|\theta_{y_i})
         \centering
         \begin{minipage}{.5\textwidth}
             \centering
-            \includegraphics[width=4cm]{figs/q_loss.png}
+            \includegraphics[width=5cm]{figs/q_loss.png}
         \end{minipage}%
         \begin{minipage}{.5\textwidth}
             \centering
-            \includegraphics[width=6cm]{figs/1d_boosted_regression_quantile_ex.png}
+            \includegraphics[width=10cm]{figs/1d_boosted_regression_quantile_ex.png}
         \end{minipage}
 \end{figure}
 \end{frame}
