@@ -135,7 +135,7 @@ Differences between CTF (subchannel) and CFD meshes for a single pin.
 \begin{frame}
     \frametitle{CFD informed surrogate model to improve CRUD growth}
     \begin{itemize}
-    \item Construct a scale bridging model which utilizes a suite of pre-computed CFD solutions to improve CRUD predictions given on the CTF grid. 
+    \item Construct a scale bridging model which utilizes a suite of precomputed CFD solutions to improve CRUD predictions given on the CTF grid. 
     \item CTF estimates mean TH conditions everywhere in the core at a low spatial resolution.  The surrogate provides higher order moments about the mean.
     \end{itemize}
     \begin{block}{Rod Surface Field}
@@ -234,8 +234,8 @@ On a single coarse CTF patch:
 		= A \iiint g(\mathbf x|g_o, \mathbf I, \delta t) h(\mathbf x|\theta) d \mathbf x  \nonumber
 	\end{eqnarray}
 	let $\mathbf x= \{T, k, q''\}$.
-	$\mathbf I$ represents additional crud parameters, $g_o$ is the crud state at the start of the time step and $\theta$ are distibution parameters.
-	\item Estimate this integral via Monte carlo:
+	$\mathbf I$ represents additional crud parameters, $g_o$ is the crud state at the start of the time step and $\theta$ are distribution parameters.
+	\item Estimate this integral via Monte Carlo:
 	\[
 	\E[g(x)] \approx \frac{1}{N} \sum_i^N \frac{g(\mathbf x_i) 
 	h(\mathbf x_i | \theta)}{\tilde h(\mathbf x_i | \tilde \theta)}, \ \mathbf x \sim \tilde h
@@ -376,7 +376,7 @@ The $i^{th}$ CRUD sample drawn from CTF patch, $j$:
 \frametitle{Propagating CRUD Through Time}
 \begin{itemize}
 \item Utilize single pin, steady state, synthetic CFD data as golden standard boundary conditions.
-\item Run CRUD computations with sythetic CFD data 
+\item Run CRUD computations with synthetic CFD data 
 \item Fit copula and margins to CFD data on each CTF patch 
 \item Run CRUD computation with the fitted model supplying boundary conditions to MAMBA
 \item Compare:
@@ -384,7 +384,7 @@ The $i^{th}$ CRUD sample drawn from CTF patch, $j$:
 \item The predicted total CRUD mass and CRUD boron on the pin as a function of time
 \item Maximum crud thickness as a function of time
 \end{itemize}
-\item Propogate uncertainties in the CRUD fields through time.
+\item Propagate uncertainties in the CRUD fields through time.
 \end{itemize}
 \begin{figure}[!htbp]
 \centering
@@ -399,7 +399,7 @@ The $i^{th}$ CRUD sample drawn from CTF patch, $j$:
 \frametitle{Propagating CRUD Through Time:  Patch Averaging}
 \begin{itemize}
 \item  \textbf{Claim:} If $g(\cdot)$ does not depend on the previous CRUD state then $\E[ g_i^{t+1}] =  \E[ g(x_i| \mu_g^{t}, \delta t)] = \E[ g( x_i| g_{i}^{t}, \delta t)]$.
-\item If true the following CRUD propogation scheme preserves the correct total crud mass over the patch at each time step:
+\item If true the following CRUD propagation scheme preserves the correct total crud mass over the patch at each time step:
 \begin{algorithm}[H]
 \For{$t = 1$ to ${t_{end}}$}{
 	Draw TH samples, $\{x_i, ... x_N\} \sim h$ \;
@@ -444,7 +444,7 @@ The $i^{th}$ CRUD sample drawn from CTF patch, $j$:
 \begin{frame}[shrink=10]
 \frametitle{Propagating CRUD Through Time}
 \begin{itemize}
-\item  \textbf{Problem:}  The crud growth rate depends on the previous crud state.  The patch averageing scheme is unphysical since it does not preserve the correct past CRUD state for each crud flake. 
+\item  \textbf{Problem:}  The crud growth rate depends on the previous crud state.  The patch averaging scheme is unphysical since it does not preserve the correct past CRUD state for each crud flake. 
 \end{itemize}
 \begin{figure}[!htbp]
 \centering
@@ -470,7 +470,7 @@ The $i^{th}$ CRUD sample drawn from CTF patch, $j$:
 \begin{itemize}
 \item Hot spots on the rod surface remain stationary w.r.t time
 	\begin{itemize}
-	\item Re-order samples such that the highest temperature sample always occures in the same location inside a patch.
+	\item Re-order samples such that the highest temperature sample always occurs in the same location inside a patch.
 	\end{itemize}
 \item Converse: Hot spots randomly move about the rod as time goes on
 	\begin{itemize}
@@ -481,7 +481,7 @@ Define a metric; for each $\mathcal F_i$ compute:
 \[
 m_i = \alpha T_i + \beta TKE_i + \gamma q_i''
 \]
-Rank $m_i's$ by highest to lowest with and store the ranked indicies.
+Rank $m_i's$ by highest to lowest with and store the ranked indices.
 \end{column}
 \begin{column}{0.5\textwidth}  %%<--- here
     \begin{center}
@@ -507,7 +507,7 @@ Rank $m_i's$ by highest to lowest with and store the ranked indicies.
             \caption{\centering Re-ordered temperature samples. \\ $\alpha=1.0; \beta=\gamma=0$}
         \end{minipage}
     \end{figure}
-Both patches share the \emph{same} PDF of Temperture, however, the spatial distibutions are not equal.
+Both patches share the \emph{same} PDF of temperature, however, the spatial distributions are not equal.
 \end{frame}
 
 % =========================================================================== %
@@ -526,7 +526,7 @@ Both patches share the \emph{same} PDF of Temperture, however, the spatial disti
             \caption{\centering Re-ordered TKE samples. \\ $\alpha=1.0; \beta=\gamma=0$}
         \end{minipage}
     \end{figure}
-Both patches share the \emph{same} PDF of TKE, however, the spatial distibutions are not equal.
+Both patches share the \emph{same} PDF of TKE, however, the spatial distributions are not equal.
 \end{frame}
 
 % =========================================================================== %
@@ -554,7 +554,7 @@ Pin-integrated Boron inside the CRUD as a function of time.  \\
         \begin{minipage}{.5\textwidth}
             \centering
             \includegraphics[width=6cm]{figs/new/struct_pin_z_twall.png}
-            \caption{Outiside Clad Temp $[K]$.}
+            \caption{Outside Clad Temp $[K]$.}
         \end{minipage}%
         \begin{minipage}{.5\textwidth}
             \centering
@@ -599,7 +599,7 @@ Increase the number of samples per patch.
 	\begin{itemize}
 		\item Remove single CFD training data set and train on the reduced data.
 		\item Make a CRUD prediction at the flow, power and geometric conditions occupied by witheld data set.
-		\item Add the witheld CFD data back to full training set and train the full model.
+		\item Add the withheld CFD data back to full training set and train the full model.
 		\item Make a second CRUD prediction at identical flow, power and geometric conditions.
 		\item Compute CRUD prediction difference.
 		\item Repeat.
@@ -689,7 +689,7 @@ of the temperature, TKE, and CRUD on the rods' surface.
 \item This approach seeks to predict the joint frequency distributions of these fields on each CTF patch.
 \item The CTF surface fields are augmented by a stochastic component informed by CFD.  The augmented boundary conditions are passed to MAMBA.
 \item Time stepping scheme must account for CRUD Markov property.
-\item Current work will focus on implementing a machine learning model for the prediction of copula and margin parameters in cases where CFD is unavialable.
+\item Current work will focus on implementing a machine learning model for the prediction of copula and margin parameters in cases where CFD is unavailable.
 \item Future work will focus on uncertainty quantification.
 \end{itemize}
 \end{frame}
