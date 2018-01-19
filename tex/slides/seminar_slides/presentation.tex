@@ -356,30 +356,58 @@ The $i^{th}$ CRUD sample drawn from CTF patch, $j$:
 
 % =========================================================================== %
 \begin{frame}
-\tiny Single CRUD Step on a CTF Patch: Example Results $@$ 100 [days] simulation time
+\tiny Example Results $@$ 100 [days] simulation time
 \begin{figure}[!htbp]
 \centering
-\includegraphics[width=8cm]{figs/new/patch_scatter.png}
+\includegraphics[width=8.2cm]{figs/new/patch_scatter.png}
 \label{model_overview}
 \end{figure}
 \end{frame}
 
 \section{Propagating CRUD Through Time}
 % =========================================================================== %
-\begin{frame}
-\frametitle{Propagating CRUD Through Time:  Flatten-to-Mean Strategy}
+\begin{frame}[shrink=2]
+\frametitle{Propagating CRUD Through Time}
 \begin{itemize}
-\item  If $g(\cdot)$ does not depend on the past CRUD history then $g_i^{t+1} = g(x_i| \mu_g^{t}, \delta t) = g( x_i| g_{i}^{t}, \delta t)$.
-\item This leads to the following CRUD propogation scheme:
+\item Utilize single pin, steady state, synthetic CFD data as golden standard boundary conditions.
+\item Run CRUD computations with sythetic CFD data and fitted copula model
+\item Compare:
 \begin{itemize}
-	\item Draw TH samples, $\{x_i, ... x_N\} \sim h$
-	\item Compute the crud distribution over the patch
-	$g_i^{t+1} = g(x_i|\mu_g^t, \delta t)$
-	\item Identify the ``mean crud flake" on the patch: $g^{t+1}_{i^*}$
-	\item Find the boundary conditions which gave rise to $g^{t+1}_{i^*}$, \\\ denote them $x^*$.  Set all boundary condition samples: $x^*_i = x^*, \forall i \in {1, ... N}$
-	\item Rewind the CRUD simulation back to $g^{t}$
-	\item Regrow crud with uniform TH boundary conditions over the patch:  $g_i^{t+1} = g(x^*_i|\mu_g^t, \delta t)$
+\item The predicted total CRUD mass and CRUD boron on the pin as a function of time
+\item Maximum crud thickness as a function of time
 \end{itemize}
+\item Propogate uncertainties in the CRUD fields through time.
+\end{itemize}
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=12cm]{figs/crud_time_demo.png}
+\label{model_overview}
+\end{figure}
+\end{frame}
+
+
+% =========================================================================== %
+\begin{frame}[shrink=5]
+\frametitle{Propagating CRUD Through Time:  Flatten-to-Mean}
+\begin{itemize}
+\item  \textbf{Claim:} If $g(\cdot)$ does not depend on the previous CRUD state then $\E[ g_i^{t+1}] =  \E[ g(x_i| \mu_g^{t}, \delta t)] = \E[ g( x_i| g_{i}^{t}, \delta t)]$.
+\item If true the following CRUD propogation scheme preserves the correct total crud mass over the patch at each time step:
+\begin{algorithm}[H]
+\For{$t = 1$ to ${t_{end}}$}{
+	Draw TH samples, $\{x_i, ... x_N\} \sim h$ \;
+	
+	Compute the crud distribution over the patch
+	$g_i^{t+1} = g(x_i|g_i^t=\mu_g^t, \delta t)$ \;
+	
+	Identify the ``mean crud flake" on the patch: $g^{t+1}_{i^*}$ \;
+	
+	Find the boundary conditions which gave rise to $g^{t+1}_{i^*}$, \\\ denote them $x^*$.  Set all boundary condition samples: $x^*_i = x^*, \forall i \in {1, ... N}$ \;
+	
+    Rewind the CRUD simulation back to $g^{t}$ \;
+	
+	Regrow crud with uniform TH boundary conditions over the patch:  $g_i^{t+1} = g(x^*_i|g_i^t, \delta t)$
+}
+\end{algorithm}
 \end{itemize}
 \end{frame}
 
@@ -387,7 +415,7 @@ The $i^{th}$ CRUD sample drawn from CTF patch, $j$:
 \begin{frame}
 \frametitle{Propagating CRUD Through Time}
 \begin{itemize}
-\item  \textbf{Problem:}  The crud growth rate has some dependence on the previous crud history.  
+\item  \textbf{Problem:}  The crud growth rate depends on the previous crud history.  The flatten-to-mean time stepping scheme is unphysical since it does not preserve the correct CRUD history for each crud flake. 
 
 \end{itemize}
 \end{frame}
