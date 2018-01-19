@@ -15,6 +15,7 @@
 %\graphicspath{{./figs/}}
 
 %Enable cancelto in math
+\usepackage{color}
 \usepackage{cancel}
 \usepackage[]{algorithm2e}
 \usepackage{mathtools}
@@ -36,6 +37,11 @@
 
 
 \begin{document}
+\setbeamertemplate{caption}{\raggedright\insertcaption\par}
+\setbeamertemplate{caption}{%
+\begin{beamercolorbox}[wd=.5\paperwidth, sep=.2ex]{block body}\insertcaption%
+\end{beamercolorbox}%
+}
 
 % =========================================================================== %
 \titleframe
@@ -48,7 +54,7 @@
     \begin{itemize}
     \item Preferentially deposited where temperature is high - near or above saturation point - and where local shear stresses on the rod are low.
 	\item CRUD induced local corrosion (CILC).
-    \item CRUD induced power shift (CIPS). In industry known as axial offset anomaly (AOA).
+    \item CRUD induced power shift (CIPS). Also known as axial offset anomaly (AOA).
     \begin{itemize} 
     	\item CRUD and tends to uptake and retain boron from the coolant.
     	\item \ce{Li^+} + \ce{B(OH)_3}   $\rightarrow$ \ce{LiBO_2} + \ce{H^+} + \ce{H_2O} .
@@ -170,7 +176,7 @@ Differences between CTF (subchannel) and CFD meshes for a single pin.
 \begin{column}{0.5\textwidth}  %%<--- here
     \begin{center}
     \begin{figure}
-     \includegraphics[width=5cm]{figs/cfd_ctf_multi_grid.png}
+     \includegraphics[width=6cm]{figs/cfd_ctf_multi_grid.png}
      \caption{TKE remapping procedure.}      
     \end{figure}
      \end{center}
@@ -273,7 +279,7 @@ related to the copula's shape parameter by:
 \rho_\tau = 1 + 4 \int_0^1 \frac{\varphi(\theta_c,t)}{\varphi'(\theta_c, t)}dt
 \]
 Where $\varphi(\theta_c, t)$ is the copula's generator function and $\varphi'$ is the first derivative of the generator function with respect to $t$.
-\item  If we restrict ourselves to the class of  Archimedean copula we only need $\rho_\tau$ and the copula type, $\Theta_c$ (gumbel, frank, clayton, ect.) to approximately specify the dependence structure between the temperature and turbulent kinetic energy residual distributions in each CTF patch.
+\item  If we restrict ourselves to the class of  Archimedean copula we only need $\rho_\tau$ and the copula type, $\Theta_c$ (gumbel, frank, clayton, ect.) to approximately specify the dependence structure between the temperature and turbulent kinetic energy in each CTF patch.
 \item Must associate each CTF patch with a copula family (categorical response) and Kendall's tau (real-valued).
 \end{itemize}
 \end{frame}
@@ -356,7 +362,7 @@ The $i^{th}$ CRUD sample drawn from CTF patch, $j$:
 
 % =========================================================================== %
 \begin{frame}
-\tiny Example Results $@$ 100 [days] simulation time
+\tiny Example Results $@$ 100 [days] simulation time on a single CTF patch (Centroid at $z,\theta=(2.95, 3.14)$). 
 \begin{figure}[!htbp]
 \centering
 \includegraphics[width=8.2cm]{figs/new/patch_scatter.png}
@@ -370,7 +376,9 @@ The $i^{th}$ CRUD sample drawn from CTF patch, $j$:
 \frametitle{Propagating CRUD Through Time}
 \begin{itemize}
 \item Utilize single pin, steady state, synthetic CFD data as golden standard boundary conditions.
-\item Run CRUD computations with sythetic CFD data and fitted copula model
+\item Run CRUD computations with sythetic CFD data 
+\item Fit copula and margins to CFD data on each CTF patch 
+\item Run CRUD computation with the fitted model supplying boundary conditions to MAMBA
 \item Compare:
 \begin{itemize}
 \item The predicted total CRUD mass and CRUD boron on the pin as a function of time
@@ -380,7 +388,7 @@ The $i^{th}$ CRUD sample drawn from CTF patch, $j$:
 \end{itemize}
 \begin{figure}[!htbp]
 \centering
-\includegraphics[width=12cm]{figs/crud_time_demo.png}
+\includegraphics[width=10cm]{figs/crud_time_demo.png}
 \label{model_overview}
 \end{figure}
 \end{frame}
@@ -388,7 +396,7 @@ The $i^{th}$ CRUD sample drawn from CTF patch, $j$:
 
 % =========================================================================== %
 \begin{frame}[shrink=5]
-\frametitle{Propagating CRUD Through Time:  Flatten-to-Mean}
+\frametitle{Propagating CRUD Through Time:  Patch Averaging}
 \begin{itemize}
 \item  \textbf{Claim:} If $g(\cdot)$ does not depend on the previous CRUD state then $\E[ g_i^{t+1}] =  \E[ g(x_i| \mu_g^{t}, \delta t)] = \E[ g( x_i| g_{i}^{t}, \delta t)]$.
 \item If true the following CRUD propogation scheme preserves the correct total crud mass over the patch at each time step:
@@ -412,17 +420,50 @@ The $i^{th}$ CRUD sample drawn from CTF patch, $j$:
 \end{frame}
 
 % =========================================================================== %
-\begin{frame}
-\frametitle{Propagating CRUD Through Time}
+\begin{frame}[shrink=10]
+\frametitle{Propagating CRUD Through Time: Patch Averaging}
+\begin{figure}[!htbp]
+\centering
+\begin{minipage}{.5\textwidth}
+  \includegraphics[width=6.5cm]{figs/avg_method/cmpr_pin_totals.png}
+\caption{Pin integrated CRUD boron \\ as a function of time.} 
+\label{fig:crud_pre_map}
+\end{minipage}%
+\begin{minipage}{.5\textwidth}
+  \includegraphics[width=6.5cm]{figs/avg_method/struct_pin_z_bmass.png}
+\caption{CRUD boron mass distribution at 300[days].}
+\label{fig:crud_post_map}
+\end{minipage}
+\end{figure}
 \begin{itemize}
-\item  \textbf{Problem:}  The crud growth rate depends on the previous crud history.  The flatten-to-mean time stepping scheme is unphysical since it does not preserve the correct CRUD history for each crud flake. 
-
+\item \small For all cases presented the boundary heat flux is flat and fixed at $85.85 W/cm^2$ and assumes the boundary heat flux is uncorrelated with $T$ and $TKE$.  Only the top 3 spacer grids are included.
 \end{itemize}
 \end{frame}
 
 % =========================================================================== %
+\begin{frame}[shrink=10]
+\frametitle{Propagating CRUD Through Time}
+\begin{itemize}
+\item  \textbf{Problem:}  The crud growth rate depends on the previous crud state.  The patch averageing scheme is unphysical since it does not preserve the correct past CRUD state for each crud flake. 
+\end{itemize}
+\begin{figure}[!htbp]
+\centering
+\begin{minipage}{.5\textwidth}
+  \includegraphics[width=5cm]{figs/dboron_dt_tke.png}
+\caption{CRUD growth rate TKE sensitivity vs. Time. $T=620K, q''=100W/cm^2$.} 
+\label{fig:crud_pre_map}
+\end{minipage}%
+\begin{minipage}{.5\textwidth}
+  \includegraphics[width=5cm]{figs/dboron_dt_t.png}
+\caption{CRUD growth rate Temperature sensitivity vs. Time. $T=620K, q''=100W/cm^2$..}
+\label{fig:crud_post_map}
+\end{minipage}
+\end{figure}
+\end{frame}
+
+% =========================================================================== %
 \begin{frame}[shrink=20]
-\frametitle{Re-map samples on a CTF Patch}
+\frametitle{Propagating CRUD Through Time: Patch Remapping}
 \begin{columns}
 \begin{column}{0.5\textwidth}
    Two bounding cases to consider:
@@ -452,18 +493,18 @@ Rank $m_i's$ by highest to lowest with and store the ranked indicies.
 
 % =========================================================================== %
 \begin{frame}
-\frametitle{Re-map samples on a CTF Patch}
+\frametitle{Remap samples on a CTF Patch}
     \begin{figure}
         \centering
         \begin{minipage}{.5\textwidth}
             \centering
             \includegraphics[width=6cm]{figs/new/patch_rand_t_ex.png}
-            \caption{Randomized temperature samples on a patch.}
+            \caption{\centering Randomized temperature \\ samples on a patch.}
         \end{minipage}%
         \begin{minipage}{.5\textwidth}
             \centering
             \includegraphics[width=6cm]{figs/new/patch_t_ex.png}
-            \caption{Re-ordered temperature samples.  $\alpha=1.0; \beta=\gamma=0$}
+            \caption{\centering Re-ordered temperature samples. \\ $\alpha=1.0; \beta=\gamma=0$}
         \end{minipage}
     \end{figure}
 Both patches share the \emph{same} PDF of Temperture, however, the spatial distibutions are not equal.
@@ -477,12 +518,12 @@ Both patches share the \emph{same} PDF of Temperture, however, the spatial disti
         \begin{minipage}{.5\textwidth}
             \centering
             \includegraphics[width=6cm]{figs/new/patch_rand_tke_ex.png}
-            \caption{Randomized TKE samples on a patch.}
+            \caption{\centering Randomized TKE \\  samples on a patch.}
         \end{minipage}%
         \begin{minipage}{.5\textwidth}
             \centering
             \includegraphics[width=6cm]{figs/new/patch_tke_ex.png}
-            \caption{Re-ordered TKE samples. $\alpha=1.0; \beta=\gamma=0$}
+            \caption{\centering Re-ordered TKE samples. \\ $\alpha=1.0; \beta=\gamma=0$}
         \end{minipage}
     \end{figure}
 Both patches share the \emph{same} PDF of TKE, however, the spatial distibutions are not equal.
@@ -491,7 +532,11 @@ Both patches share the \emph{same} PDF of TKE, however, the spatial distibutions
 % =========================================================================== %
 \begin{frame}
 \frametitle{Time Stepping: Single Pin Results}
-\tiny{Pin-integrated Boron inside the CRUD as a function of time.  Green: Assumes randomly moving hot spots.  Blue: Assumes stationary hot spots.}
+\tiny{
+Pin-integrated Boron inside the CRUD as a function of time.  \\ 
+{\color{green} Green: Assumes randomly moving hot spots.} \\
+{\color{blue} Blue: Assumes stationary hot spots ($\alpha=1.0; \beta=\gamma=0$).}
+}
 \begin{figure}[!htbp]
 \centering
 \includegraphics[width=8cm]{figs/new/cmpr_pin_totals.png}
@@ -514,12 +559,328 @@ Both patches share the \emph{same} PDF of TKE, however, the spatial distibutions
         \begin{minipage}{.5\textwidth}
             \centering
             \includegraphics[width=6cm]{figs/new/struct_pin_z_bmass.png}
-            \caption{ Boron Linear Deposition $[g/cm]$}
+            \caption{ CRUD Boron Deposition $[g/cm^2]$}
         \end{minipage}
     \end{figure}
 \end{frame}
 
+% =========================================================================== %
+\begin{frame}
+\frametitle{Residual Distribution of Total CRUD Boron Mass vs Time.}
+Increase the number of samples per patch.
+\end{frame}
+
+% =========================================================================== %
+\begin{frame}
+\frametitle{Time Step Size Sensitivity.}
+\end{frame}
+
+% =========================================================================== %
+\begin{frame}
+\frametitle{Gaussian Copula vs Fitted Copula Models (Clayton/Frank).}
+\end{frame}
+
+% =========================================================================== %
+\section{Future Work}
+\begin{frame}[shrink=10]
+\frametitle{Future Work}
+\begin{itemize}
+\item Predict copula and marginal distributions in cases where no CFD data exists.
+\begin{itemize}
+	\item Implement and validate gradient boosted regression and classification tree models.
+	\begin{itemize}
+		\item Boosted classification model for copula family
+		\item Boosted regression for Kendall's $\tau$
+		\item Quantile regression for margins
+	\end{itemize}
+	\item Enables prediction of copula parameters and margin quantiles given local core conditions from CTF.
+	\item Train on a limited set of CFD results spanning a typical PWR TH envelope.
+	\item Ascertain interpolation error introduced by the trained machine learning model
+	\begin{itemize}
+		\item Remove single CFD training data set and train on the reduced data.
+		\item Make a CRUD prediction at the flow, power and geometric conditions occupied by witheld data set.
+		\item Add the witheld CFD data back to full training set and train the full model.
+		\item Make a second CRUD prediction at identical flow, power and geometric conditions.
+		\item Compute CRUD prediction difference.
+		\item Repeat.
+	\end{itemize}
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+% =========================================================================== %
+\begin{frame}\frametitle{ \small Preliminary Temperature Gradient Boosted Quantile Regression Results}
+Note: The CFD data is detrended using matching CTF fields before regression is performed.
+    \begin{figure}
+        \centering
+        \begin{minipage}{.5\textwidth}
+            \centering
+            \includegraphics[width=6cm]{figs/t_quantile_model_out.png}
+            \caption{Hi2Low predicted temperature \\ residual quantiles $[K]$ vs \\ Axial position $[m]$.}
+        \end{minipage}%
+        \begin{minipage}{.5\textwidth}
+            \centering
+            \includegraphics[width=6cm]{figs/qq_plot_t_69.png}
+            \caption{Q-Q Plot comparing gradient boosted quantiles vs. synthetic CFD data. $z=2.59[m]$}
+        \end{minipage}
+    \end{figure}
+Quantiles used in temperature residual reconstruction: $\tau_{T}=\{0, 0.1, 0.3, 0.5, 0.7, 0.85, 0.9 0.95, 0.99, 1\}$
+\end{frame}
+
+% =========================================================================== %
+\begin{frame}\frametitle{\small Preliminary Temperature Gradient Boosted Quantile Regression Results}
+    \begin{figure}
+        \centering
+        \begin{minipage}{.5\textwidth}
+            \centering
+            \includegraphics[width=6cm]{figs/t_quantile_model_out.png}
+            \caption{Hi2Low predicted temperature \\ residual quantiles $[K]$ vs \\ Axial position $[m]$.}
+        \end{minipage}%
+        \begin{minipage}{.5\textwidth}
+            \centering
+            \includegraphics[width=6cm]{figs/qq_plot_t_76.png}
+            \caption{Q-Q Plot comparing gradient boosted quantiles vs. synthetic CFD data. $z=2.84[m]$}
+        \end{minipage}
+    \end{figure}
+Quantiles used in temperature residual reconstruction: $\tau_{T}=\{0, 0.1, 0.3, 0.5, 0.7, 0.85, 0.9 0.95, 0.99, 1\}$
+\end{frame}
+
+% =========================================================================== %
+\begin{frame}\frametitle{\small Preliminary TKE Gradient Boosted Quantile Regression Results}
+    \begin{figure}
+        \centering
+        \begin{minipage}{.5\textwidth}
+            \centering
+            \includegraphics[width=6cm]{figs/tke_quantile_model_out.png}
+            \caption{Hi2Low predicted TKE residual \\ quantiles $[J/kg]$ vs \\ Axial position $[m]$.}
+        \end{minipage}%
+        \begin{minipage}{.5\textwidth}
+            \centering
+            \includegraphics[width=6cm]{figs/qq_plot_tke_76.png}
+            \caption{Q-Q Plot comparing gradient boosted quantiles vs. synthetic CFD data. $z=2.84[m]$}
+        \end{minipage}
+    \end{figure}
+Quantiles used in TKE residual reconstruction: $\tau_{TKE}=\{0, 0.01, 0.05, 0.15, 0.3, 0.5, 0.7, 1\}$
+\end{frame}
+
+
+% =========================================================================== %
+\begin{frame}\frametitle{\small Preliminary GB Classifier Output combined with GB Kendall's $\tau$ regressor}
+\tiny Copula Parameters as a function of axial position (qtr-symmetric rod)
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=8cm]{figs/ktau_plot.png}
+\label{model_overview}
+\end{figure}
+\begin{itemize}
+\item {\color{red} Red - Frank Copula}
+\item {\color{green} Green - Gaussian Copula}
+\item {\color{blue} Blue - Clayton Copula}
+\end{itemize}
+\end{frame}
+
+
+% =========================================================================== %
+\begin{frame}
+\frametitle{Conclusion}
+\begin{itemize}
+\item The Hi2Low technique does not try to provide a detailed spatial distribution
+of the temperature, TKE, and CRUD on the rods' surface.
+\item This approach seeks to predict the joint frequency distributions of these fields on each CTF patch.
+\item The CTF surface fields are augmented by a stochastic component informed by CFD.  The augmented boundary conditions are passed to MAMBA.
+\item Time stepping scheme must account for CRUD Markov property.
+\item Current work will focus on implementing a machine learning model for the prediction of copula and margin parameters in cases where CFD is unavialable.
+\item Future work will focus on uncertainty quantification.
+\end{itemize}
+\end{frame}
+
+% =========================================================================== %
+\begin{frame}
+\frametitle{Questions?}
+\end{frame}
 
 \lastframe%
+
+% =========================================================================== %
+\setbeamercolor{normal text}{fg=white}
+\begin{frame}
+\frametitle{Appendix}
+\end{frame}
+
+% =========================================================================== %
+\setbeamercolor{background canvas}{bg=white}
+\begin{frame}[shrink=10]
+\frametitle{Classification and Regression Tree (CART) - Weak Learner}
+Each weak learner in the ensemble is a binary tree that partitions the input space based on "best-first" splits.  
+\begin{itemize}
+\item classification - find the split that minimizes: $-\sum_j\sum_i f_{ij} ln(f_{ij})$, where $f_{ij}$ is the fraction of class label $i$ in the region $j$.
+\item Least squares regression - find the split that minimizes: $\sum_j\sum_i(y_i - \hat y_{j})^2$
+\end{itemize}
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=7cm]{figs/cart.png}
+\label{model_overview}
+\end{figure}
+\end{frame}
+
+% =========================================================================== %
+\setbeamercolor{background canvas}{bg=white}
+\begin{frame}[shrink=20]
+\frametitle{Gradient Boosting Algorithm}
+
+The generalized gradient boosting algorithm was developed by Friedman (1999).
+Let $y$ be some quantile of interest $Q_{\tau_{y_i}}$.
+\begin{algorithm}[H]
+\KwData{ (1) Training set $\{(p_i, y_i)\}_{i=1}^n$. (2) Differentiable loss function $L(y, F(p))$. (3) Number of iterations ${{M}}$.
+Initialize model with a constant value:
+$F_0(p) = \underset{\gamma}{\arg\min} \sum_{i=1}^n L(y_i, \gamma).$}
+
+\For{${{m}} = 1$ to ${{M}}$}{
+Compute the pseudo-residuals:
+
+\For{$i=1,\ldots,n $}{
+$r_{im} = -\frac{\partial L(y_i, F_{m-1}(p_i))}{\partial F_{m-1}(p_i)}$
+}
+
+Fit a weak learner $h_m(p)$ to pseudo-residuals, $r_{m}$: Training data set is $\{(p_i, r_{im})\}_{i=1}^n$ \;
+
+Compute multiplier $\gamma_m$ :
+$\gamma_m = \underset{\gamma}{\operatorname{arg\,min}} \sum_{i=1}^n L\left(y_i, F_{m-1}(p_i) + \gamma h_m(p_i)\right)$\;
+Update the model:
+$F_m(p) = F_{m-1}(p) + \nu \gamma_m h_m(p).$
+}
+Output $F_M(p).$
+\end{algorithm}
+Where $\nu$ is a tunable constant in $[0, 1]$ called the learning rate.
+\end{frame}
+
+% =========================================================================== %
+\setbeamercolor{background canvas}{bg=white}
+\begin{frame}
+\frametitle{GBRT - Weak Learners Fit to Pseudo Residuals}
+Weak learners are fit the the pseudo-residuals (derivative of the loss function): 
+\[
+\frac{\partial L(y_i, F(p_i))}{\partial F(p_i)}
+\]
+if $L_i=0.5(y_i-F(p_i))^2$ then $L' = F(p_i)-y_i$.  
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=9cm]{figs/pseudo_resids.png}
+\label{model_overview}
+\end{figure}
+Source: Peter Prettenhofer, PyData (2014).
+\end{frame}
+
+% =========================================================================== %
+\setbeamercolor{background canvas}{bg=white}
+\begin{frame}
+\frametitle{GBRT - Ensemble of weak learners}
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=8.5cm]{figs/1d_boosted_regression_ex.png}
+\label{model_overview}
+\end{figure}
+\end{frame}
+
+% =========================================================================== %
+\setbeamercolor{background canvas}{bg=white}
+\begin{frame}[shrink=10]
+\frametitle{Overfitting Detection and Prevention}
+\begin{itemize}
+\item Overfitting can be detected by inspecting testing errors as additional weak learners are added to the model.
+\item Overfitting can be mitigated by sub-sampling with replacement.  This is known as bagging.  The influance of outliers is mitigated by bagging.
+\end{itemize}
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=7.5cm]{figs/1d_boosted_regression_err.png}
+\label{model_overview}
+\end{figure}
+\end{frame}
+
+% =========================================================================== %
+\setbeamercolor{background canvas}{bg=white}
+\begin{frame}[fragile,shrink=30]
+\frametitle{Input Deck for Synthetic CFD data Gen}
+\begin{verbatim}
+    "pinID": 1,
+    "chanID": 1,
+    "averageHeatFlux": 1.2e6,
+    "spans": {
+              "0.0": {"model": "lower", "samples": 1000},
+              "2.01": {"model": "upper", "samples": 4000},
+              "2.53": {"model": "upper", "samples": 4000},
+              "2.98": {"model": "upper", "samples": 4000}
+    },
+    "upper": {
+            "0.0": {"copula":  {"family": "gauss", "params": [-0.5], "rot": 0},
+                "tke": {"type": "gauss", "params": [0.001, 0.02]},
+                "temp": {"type": "beta", "params": [5.0, 2.7], "loc": -9.2, "scale": 12.0},
+                "bhf": {"type": "gauss", "params": [0.001, 2.6e4]}
+                },
+            "0.3": {"copula":  {"family": "clayton", "params": [0.6], "rot": 1},
+                "tke": {"type": "gauss", "params": [0.01, 0.008]},
+                "temp": {"type": "beta", "params": [5.0, 1.7], "loc": -7.0, "scale": 8.0},
+                "bhf": {"type": "gauss", "params": [0.01, 1.1e4]}
+                },
+            "1.0": {"copula":  {"family": "frank", "params": [4.0], "rot": 1},
+                "tke": {"type": "gauss", "params": [0.01, 0.005]},
+                "temp": {"type": "beta", "params": [5.0, 1.5], "loc": -4.0, "scale": 5.0},
+                "bhf": {"type": "gauss", "params": [0.01, 0.9e4]}
+                }
+            },
+    "lower": {
+            "0.0": {"copula":  {"family": "gauss", "params": [-0.6]},
+                "tke": {"type": "gauss", "params": [0.001, 0.0001]},
+                "temp": {"type": "beta", "params": ["5.0*(t)/600.0", 5.0], "loc": -2.0, "scale": 4.0},
+                "bhf": {"type": "gauss", "params": [0.01, 1.0e3]}
+                },
+            "1.0": {"copula":  {"family": "gauss", "params": [-0.6]},
+                "tke": {"type": "gauss", "params": [0.001, 0.0002]},
+                "temp": {"type": "beta", "params": [5.0, 5.0], "loc": -2.0, "scale": 4.0},
+                "bhf": {"type": "gauss", "params": [0.01, 1.0e3]}
+                }
+            }
+\end{verbatim}
+\end{frame}
+
+% =========================================================================== %
+\begin{frame}[shrink=20]
+\frametitle{Generating Synthetic CFD Data}
+\begin{itemize}
+\item Cheaply generates CFD-like data sets with user-provided residual model.
+\item Applies tailored noise on top of CTF result.
+\begin{itemize}
+	\item Complete control over margins and copula. 
+	\item Simplest case is gaussian noise: $F(z) = \mu_{CTF}(z) + \epsilon(z), \ \epsilon \sim G(\mu(z), \Sigma(z))$
+\end{itemize}
+\item Aids in verification of regression model results. 
+\end{itemize}
+\begin{figure}
+        \centering
+        \begin{minipage}{.5\textwidth}
+            \centering
+            \includegraphics[width=7.5cm]{figs/pinTempOut.png}
+            \caption{Synthetic CFD Temperature $[K]$ distribution vs. axial position.}
+        \end{minipage}%
+        \begin{minipage}{.5\textwidth}
+            \centering
+            \includegraphics[width=7.5cm]{figs/pinTkeOut.png}
+            \caption{Synthetic CFD TKE  $[J/Kg]$ distribution vs. axial position.}
+        \end{minipage}
+    \end{figure}
+\end{frame}
+
+% =========================================================================== %
+\setbeamercolor{background canvas}{bg=white}
+\begin{frame}
+\frametitle{Copula Density Functions}
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=10cm]{figs/montage_copula_pdf.png}
+\label{model_overview}
+\end{figure}
+\end{frame}
 
 \end{document}
