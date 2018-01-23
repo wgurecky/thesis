@@ -512,7 +512,7 @@ Both patches share the \emph{same} PDF of temperature, however, the spatial dist
 
 % =========================================================================== %
 \begin{frame}
-\frametitle{Re-map samples on a CTF Patch}
+\frametitle{Remap samples on a CTF Patch}
     \begin{figure}
         \centering
         \begin{minipage}{.5\textwidth}
@@ -531,7 +531,7 @@ Both patches share the \emph{same} PDF of TKE, however, the spatial distribution
 
 % =========================================================================== %
 \begin{frame}
-\frametitle{Time Stepping: Single Pin Results}
+\frametitle{Mapping strategy comparison: Single pin results}
 \tiny{
 Pin-integrated Boron inside the CRUD as a function of time.  \\ 
 {\color{green} Green: Assumes randomly moving hot spots.} \\
@@ -548,37 +548,61 @@ Pin-integrated Boron inside the CRUD as a function of time.  \\
 % =========================================================================== %
 \section{Results}
 \begin{frame}
-\frametitle{Single Pin Results $@$ 100 days}
+\frametitle{Single Pin Results $@$ 300 days}
     \begin{figure}
         \centering
         \begin{minipage}{.5\textwidth}
             \centering
-            \includegraphics[width=6cm]{figs/new/struct_pin_z_twall.png}
-            \caption{Outside Clad Temp $[K]$.}
+            \includegraphics[width=6cm]{figs/map_method/cmpr_pin_totals.png}
+            \caption{Totoal rod CRUD boron vs. time.}
         \end{minipage}%
         \begin{minipage}{.5\textwidth}
             \centering
-            \includegraphics[width=6cm]{figs/new/struct_pin_z_bmass.png}
+            \includegraphics[width=6cm]{figs/map_method/struct_pin_z_bmass.png}
             \caption{ CRUD Boron Deposition $[g/cm^2]$}
         \end{minipage}
     \end{figure}
+Approximately optimal remapping coefficients: $\alpha=0.4, \beta=0.6, \gamma=0$.  
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Single Pin Results $@$ 300 days}
+    \begin{figure}
+        \centering
+        \begin{minipage}{.5\textwidth}
+            \centering
+            \includegraphics[width=6cm]{figs/map_method/cmpr_pin_totals.png}
+            \caption{Totoal rod CRUD boron vs. time.}
+        \end{minipage}%
+        \begin{minipage}{.5\textwidth}
+            \centering
+            \includegraphics[width=6cm]{figs/map_method/struct_pin_z_cmass.png}
+            \caption{ CRUD mass Deposition $[g/cm^2]$}
+        \end{minipage}
+    \end{figure}
+Approximately optimal remapping coefficients: $\alpha=0.4, \beta=0.6, \gamma=0$.  
 \end{frame}
 
 % =========================================================================== %
 \begin{frame}
-\frametitle{Residual Distribution of Total CRUD Boron Mass vs Time.}
-Increase the number of samples per patch.
+\frametitle{Single Pin Results $@$ 300 days}
+    \begin{figure}
+        \centering
+        \begin{minipage}{.5\textwidth}
+            \centering
+            \includegraphics[width=6cm]{figs/map_method/struct_pin_z_twall.png}
+            \caption{Axial cladding outter \\ surface temperature distribution [K].}
+        \end{minipage}%
+        \begin{minipage}{.5\textwidth}
+            \centering
+            \includegraphics[width=6cm]{figs/map_method/struct_pin_z_tke.png}
+            \caption{ Axial cladding outter \\ surface TKE distribution [J/kg]}
+        \end{minipage}
+    \end{figure}
+Approximately optimal remapping coefficients: $\alpha=0.4, \beta=0.6, \gamma=0$.  
 \end{frame}
 
-% =========================================================================== %
-\begin{frame}
-\frametitle{Time Step Size Sensitivity.}
-\end{frame}
-
-% =========================================================================== %
-\begin{frame}
-\frametitle{Gaussian Copula vs Fitted Copula Models (Clayton/Frank).}
-\end{frame}
 
 % =========================================================================== %
 \section{Future Work}
