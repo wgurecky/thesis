@@ -1,0 +1,303 @@
+\documentclass{anstrans}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\title{A CFD-Informed Hi2Low Method for Improving Subchannel Resolution CRUD Predictions}
+\author{William Gurecky$^{*}$, Derek Haas$^{*}$, Robert Salko$^{\dagger}$}
+
+\institute{
+$^{*}$The University of Texas at Austin
+\and
+$^{\dagger}$Oak Ridge National Laboratory, P.O.\ Box 2008,
+Oak Ridge, TN
+}
+
+\email{william.gurecky@utexas.edu}
+
+%%%% packages and definitions (optional)
+\usepackage{graphicx} % allows inclusion of graphics
+\usepackage{booktabs} % nice rules (thick lines) for tables
+\usepackage{microtype} % improves typography for PDF
+\usepackage{acronym}
+\usepackage{bm}
+\usepackage{multicol}
+
+\newcommand{\SN}{S$_N$}
+\renewcommand{\vec}[1]{\bm{#1}} %vector is bold italic
+\newcommand{\vd}{\bm{\cdot}} % slightly bold vector dot
+\newcommand{\grad}{\vec{\nabla}} % gradient
+\newcommand{\ud}{\mathop{}\!\mathrm{d}} % upright derivative symbol
+\DeclareMathOperator*{\E}{\mathbb{E}}
+
+\begin{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+
+This work describes the development of a physics-directed, statistically based,
+scale bridging model of the small scale flow features that impact CRUD growth immediately downstream of spacer grids. The objective of the scale bridging
+is to provide CFD-informed TH boundary conditions to the CRUD model, MAMBA, withen the context of a subchannel TH code, CTF \cite{salko12}.  MAMBA is a CRUD simulation code produced by a LANL and ORNL collaboration \cite{collins16}. 
+The outer cladding surface temperature, heat
+flux and turbulent kinetic energy, henceforth referred to as the Fields of Interest (FOI),
+govern the growth rate of CRUD on the surface of the rod and the
+precipitation of boron in the porous crud layer. Therefore the hi2low model predicts the behavior of the
+FOI as a function of position in the core and local thermal-hydraulic conditions.  Here, hi2low is synonymous with scale bridging: Hi2Low refers to the practice of leveraging high fidelity computations that resolve the phenomena of interest at small length scales to improve lower resolution, faster executing models.  In this work, we impose an additional stipulation that the flow of information is uni-directional from the high fidelity to the low fidelity model without feedback between the disparate length scale models.  This is implied since the high fidelity CFD computations are performed up-front in an uncoupled manner with the subchannel computations.
+
+The subchannel code is substantially faster to execute than CFD
+and produces an estimate for all the relevant TH quantities at a coarse spatial resolution everywhere in
+the core. The role of the CFD solution is to provide higher order moments of the about the mean field estimates
+given by CTF. In other words, the solution provided by CTF is augmented by a predicted stochastic
+component of the FOI informed by CFD results to provide a more detailed description of the target
+FOIs than CTF can provide alone. To this end, a novel method based on the marriage of copula and
+gradient boosting techniques is described. The model forgoes a spatial mesh-to-mesh mapping approach
+for a statistically driven approach which predicts the fractional area of a rod surface in excess of some
+critical temperature but not precisely where such maxima occur on the rod surface.
+Centrally, the resultant model retains the ability to account for the presence
+of hot and cold spots on the rod surface induced by turbulent flow downstream of spacer grids when
+producing CRUD estimates. Sklar's theorem is leveraged to decompose multivariate probability densities
+of the FOI into independent copula and marginal models. The free parameters within the copula model
+are predicted using a combination of supervised regression and classification machine learning techniques
+with training data sets supplied by a suite of pre-computed CFD results spanning a typical PWR TH
+envelop.  
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Method} 
+When comparing converged flow solutions predicted by CFD and CTF for identical rod-bundle geometries it is
+not guaranteed that the two codes will yeild locally identical mean estimates for the FOI at all locations in the core due to differences in closure models, meshing schemes, and discretization strategies [ref].  Consider the temperature field on the rod surface, $\text T$, shown in figure \ref{fig:cfd_v_ctf} and in equation \ref{eq1}.  Let $\mathbf s$ be the azimuthal and axial location on the rod surface $\mathbf s = \{z, \theta\}$.
+
+\begin{eqnarray}
+&\text T(\mathbf s) = \mu_{CFD}(\mathbf s) + \varepsilon_{\text T}({\mathbf s}) \\ \nonumber
+&= \underbrace{\mu_{CTF}(\mathbf{s})}_\text{CTF} + \underbrace{\varepsilon_{\text T}(\mathbf s)+ b(\mathbf{s})}_\text{CFD Informed} 
+\label{eq1}
+\end{eqnarray}
+
+Where the local bias, $b(\mathbf s) = \mu_{CFD}(\mathbf s) - \mu_{CTF}(\mathbf s)$, is piecewise constant on the CTF grid.  The required surface and volume integrals are performed on the subchannel grid.  
+
+\begin{equation}
+\mu_{\text T}^{(j)} = \frac{1}{A_s^{(j)}} \iint_{s^{(j)}} \text T d\mathbf s
+\end{equation}  Where $A^{(j)}$ is the area of the $j^{th}$ CTF face on the rod surface.
+
+\begin{figure}[h]
+  \includegraphics[width=8cm]{figs/drawings/cfd_v_ctf_fields.png}
+  \caption{    CFD vs. CTF fields.  The CTF axial grid is denoted by dashed black vertical lines.  CFD result is in red, CTF result is in black.}
+  \label{fig:cfd_v_ctf}
+\end{figure}
+
+This approach parallels a technique known as regression kriging [ref].  The primary difference between a standard kriging model and this Hi2Low approach is in the treatment of the stochastic component of the FOI.  Here, we neglect spatial auto-correlation in the FOI inside each CTF face.  Instead, the dependence structure between the temperature, surface turbulent kinetic energy and boundary heat flux is predicted on each CTF face.   
+
+Withen a given CTF face, $j$ with surface $s^{(j)}$, we treat the stochastic component of the FOI as a random variables: $T=\varepsilon^{(j)}_{\text T} \sim F_T$,  $ K=\varepsilon^{(j)}_k \sim F_k$, and $Q=\varepsilon^{(j)}_{q''} \sim F_{q''}$.  The joint distribution $H(T^{(j)}, K^{(j)}, Q^{(j)})$ is of particular interest. $H$ denotes a joint cdf where $h(\cdot)$ denotes the joint pdf. $F(\cdot)$ denotes a marginal cdf and $f(\cdot)$ denotes a marginal pdf.
+
+\begin{figure}[h]
+  \includegraphics[width=8cm]{../../tex/slides/seminar_slides/figs/model_relations_2.png}
+    \caption{   Differences between a CFD and CTF CRUD prediction on a single CTF face.}
+  \label{fig:cfd_v_ctf}
+\end{figure}
+
+On each CTF patch the total integrated amount of CRUD must be computed.  In a given time step $\delta t$ the expected total crud over a patch is given by equation \ref{eq:expected_crud}.
+
+\begin{eqnarray}
+	A \mu_g\ [grams] = A \E[g(\mathbf X|g_o, \mathbf I, \delta t)] \nonumber \\
+	= A \iiint g(\mathbf X|g_o, \mathbf I, \delta t) h(\mathbf X|\theta) d \mathbf X
+	\label{eq:expected_crud}
+\end{eqnarray}
+let $\mathbf X= \{T, k, q''\}$. $\mathbf I$ represents additional crud parameters, $g_o$ is the crud state at the start of the time step and $\theta$ are distribution parameters.
+The above integral may be estimated via Monte Carlo shown in equation \ref{eq:mc_expected_crud}.
+
+\begin{equation}
+	\E[g(\mathbf X)] \approx \frac{1}{N} \sum_i^N \frac{g(\mathbf X_i) 
+	h(\mathbf X_i | \theta)}{\tilde h(\mathbf X_i | \tilde \theta)}, \ \mathbf X \sim \tilde H
+	\label{eq:mc_expected_crud}
+\end{equation}
+Where $\tilde{h}$ is an importance density distribution.
+
+Sklar's theorem is invoked in order to build the joint cfd of temperature, TKE, and boundary heat flux on a CTF face from component marginal densities and a copula, $C(\cdot)$ [ref].  
+
+\begin{equation}
+H = C(u,v,w)
+\end{equation}
+Where $u=F_T(t),\ v=F_K(k),\ w=F_Q(q'')$. The copula density function is defined by equation ().
+\begin{equation}
+c = \frac{C(u,v,w)}{\partial u \partial u \partial w}
+\end{equation}
+By Sklar's theorem the joint density may be written as a product of the copula density and the marginal densities:
+
+\begin{equation}
+h(T, K, Q)= c(u, v, w)f_T f_K f_Q
+\end{equation}
+Finnally we make a simplifying assumption that the boundary heat flux is uncorrelated with the surface temperature and the surface turbulent kinetic energy.  Though this a potential incacuracy, the relative percent change of the boundary heat flux field over a CTF face is extremely small compared to the relative changes in temperature between locations within a since CTF face.  It is hypothesized that since CRUD growth rates are more sensitive to purtibations in temperature compared to surface heat flux, this assumption does not influene the CRUD estimate significantly on the patch.
+
+By invoking this assumption in addition to a further decomposition of the copula into pair copula constructions we obtain the following model for the full joint density.
+
+\begin{equation}
+h = c(u,v) f_T f_K f_Q 
+\end{equation}
+
+
+The spatial distributions of temperature and turbulent kinetic energy (TKE) on the pins'
+surface have been shown to exhibit intricate shapes, particularly downstream of
+spacer grids, and are generally not consistent in topology from pin to pin in the
+core \cite{manera16}, \cite{walter16}.  Figure \ref{fig:combo_180x} depicts
+the surface temperature, turbulent kinetic energy, and CRUD thickness on a single
+pin's surface as predicted by a coupled MAMBA/STAR-CCM+ simulation \cite{slattery16}.
+
+\begin{figure*}[h]
+  \includegraphics[width=\textwidth]{combo_180x.png}
+  \caption{
+    CRUD thickness $[m]$, TKE $[J/kg]$, and surface temperature $[K]$
+    distributions provided by STAR-CCM+. A uniform heat flux of $1.102e6 [W/m^2]$
+    was applied to the outer rod surface in this case.  Inlet mass flow rate and
+    temperature were set at $0.3[kg/s]$ and $565.86[K]$ respectively \cite{slattery16}.}
+    \label{fig:combo_180x}
+\end{figure*}
+
+
+CRUD growth is dominated by threshold physics [ref], therefore it is
+important to characterize the tails of the joint temperature and
+TKE distribution at every location on the rods' surface.  In other words, hot and cold spots
+present downstream of spacer grids must be accurately resolved by the Hi2Low model
+in order to predict the maximum CRUD
+thickness and boron precipitation within the CRUD layer.  
+
+It is challenging to faithfully capture the peaks and valleys in
+rod surface temperature and TKE distribution by traditional interpolation
+techniques since such a model must guard against smearing out the sharp peaks
+present in the spatial distributions.  
+In the present method we forgo a spatial shape function mapping strategy
+for a statistically driven approach which predicts the fractional
+area of a rod's surface in excess of some critical temperature - but not
+precicely where such maxima occur.
+In this case the Reynolds-averaged temperature,
+TKE, and boundary heat flux on the surface of the fuel pin(s) are treated
+as random fields.  These fields may be tallied over coarse patches on a rod surface corrosponding
+to a CTF pin surface patch.
+
+The multivariate dependence structure, or relationship between surface temperature, surface
+turbulent kinetic energy,
+and boundary heat flux can be seen in figures \ref{fig:lower_seg} and
+\ref{fig:upper_seg}.  In the figures, the residuals about the sample mean in
+the surface patch are plotted.  The true values can be recovered given mean TH
+quantities.
+
+\begin{figure}[h]
+  \includegraphics[width=9cm]{lower_span.png}
+  \caption{    Residual boundary heat flux $(\mu=1.102e6)$ $[W/m^2]$ , TKE $(\mu=0.2302)$ $[J/kg]$, and surface temperature
+    $(\mu=619.96)$ $[K]$ distributions.  Tallied over $z\in[2.59,2.67][m]$ on a single pin
+    surface. The nearest upstream grid mixing vanes are centered at $2.53[cm]$.}
+    \label{fig:lower_seg}
+\end{figure}
+
+\begin{figure}[h]
+  \includegraphics[width=9cm]{upper_span.png}
+  \caption{    Residual boundary heat flux $(\mu=1.102e6)$ $[W/m^2]$, TKE $(\mu=0.2025)$ $[J/kg]$, and surface temperature
+    $(\mu=620.14)$ $[K]$ distributions.  Tallied over $z\in[2.67,2.74][m]$ on a single pin surface.
+  }
+    \label{fig:upper_seg}
+\end{figure}
+
+For any given subset of a rod's surface, this multivariate dependence structure is likely to
+be non-Gaussian. Therefore, a covariance matrix consisting of linear correlation coefficients is not sufficient
+to describe the relationship between each of the three TH fields on a rod's
+surface.  Instead, a flexible multi-dependence modeling approach leveraging
+vine copula is under consideration to capture arbitrary, multivariate
+dependence structures.  A python package to optimally fit and sample from vine
+copula is currently under development.  A parametric vine model is a nested
+tree-like object with nodes representing univariate marginal distributions and
+edges corresponding to copula.  A copula is a probability density function
+defined on the unit square $[1, 1]^2$ which represents the ratio between the true
+joint probability density to the joint density corresponding to independence between
+all variables \cite{joe2015}.
+
+In the proposed framework, the copula parameters are described as functions of
+local area or volume averaged TH conditions and location on the rod. If
+one traverses axially down a rod's surface the shape of the multivariate
+distributions change, and thus, the copula parameters change.  The overall Hi2Lo
+ model can be understood as a function describing how the copula
+behave as a function of the previously mentioned explanatory variables.  The
+construction of such a function is a regression problem.
+
+At runtime,
+a core wide CTF simulation is performed. At each location in the CTF mesh corresponding to
+a rod surface patch centroid, the set of mean TH quantities ($\{ \bar T, \bar \tau, \bar q \}$) along with the axial location $z$,
+are provided as inputs to the regression model. The vine's copula
+parameters can be inferred from the regression model before samples are drawn from the vine.
+Samples drawn from the vine are used as inputs to a
+one-dimensional version of MAMBA-3D to grow CRUD at the sampled TH
+conditions.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{CFD Data Distillation}
+Raw CFD rod-surface field data acquired at a wide variety of operating conditions must be post processed to
+make it suitable for use as training data.  The raw pointwise data fields from a CFD computation
+are spatially binned in accordance with the target coarse CTF mesh.  Volume and surface integrals are then computed
+to obtain volume and surface averaged TH quantities that are qualitatively equivalent to the CTF results.
+Next, residual temperature, TKE, and boundary heat flux frequency distributions can be computed about the mean values.  Each CFD surface sample is weighted by the area represented on the rod surface.
+The residual distributions are desired since the mean TH values are
+supplied by CTF at runtime.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Regression Model} At a given axial location on a rod's surface, by Sklar's Theorem, the relationship between the surface residual temperature, $T$, rod-surface TKE, $\tau$, and boundary heat flux, $q$, frequency distributions can be expressed as a product of a trivariate copula and the corresponding marginal distributions.
+The trivariate probability density function of these TH fields is represented by $h(T, \tau, q)$.
+The marginal probability density distributions are defined in Equation (\ref{Margins}).
+
+\begin{eqnarray}
+f(T) =&  \iint f(T|\tau, q) f(\tau)f(q) d\tau dq  \nonumber \\
+ f(\tau) =& \iint f(\tau | T, q) f(T)f(q) dT dq  \nonumber \\
+  f(q) =& \iint f(q| T, \tau) f(\tau)f(T) dT d\tau
+  \label{Margins}
+  \end{eqnarray}
+The cumulative density functions are denoted by $F(T),\ F(\tau)$ and $F(q)$ respectively. The complete trivariate model
+probability density function is given in Equation (\ref{copula_model}), which includes free model parameters $\bm \theta = \{\theta_c, \theta_t, \theta_{\tau}, \theta_q\}$.
+
+\begin{eqnarray}
+ h(T, \tau, q''|\bm \theta) = c(F(T), F(\tau), F(q)\ |\ \theta_c) \cdot & \nonumber \\
+f(T|\theta_t) \cdot f(\tau|\theta_{\tau}) \cdot f(q|\theta_q)
+\label{copula_model}
+\end{eqnarray}
+Where $c(\cdot)$ is the probability density function of the copula. 
+
+Sklar's Theorem enables one to construct a model for each marginal distribution independently from the copula.  This simplifies the regression procedure by allowing each regressor to predict a single output quantity at a time, for instance $\theta_c$ can be predicted apart from $\theta_q$.  In other words, the choice of copula can be made independently of the marginal model.
+
+An ensemble machine learning technique known as the gradient tree boosting method
+ (GBM) is proposed to regress copula and the margin parameters on the
+local-average TH conditions and axial position relative to the nearest spacer grid.  The
+response variable set consist of smooth and categorical data.  The copula
+family (e.g. Gumbel, Frank, Gauss, ect.) is a categorical response, where the probability
+densities for each TH field are real valued and smooth.  GBM is attractive in this scenario since
+it is applicable to both regression and
+classification problems \cite{friedman2002}. Let the trained gradient boosted tree ensemble be represented by $G(\cdot)$. 
+The model parameters, $\bm \theta$, consist of the copula family, the rank correlation coefficients between each constituent co-dependent variable, and parameters governing the shape of each marginal distribution.  Shown in Equation (\ref{GBM_sample}), at a CTF surface patch, $i$, each free model parameter must be provided by evaluating the GBM model.
+
+\begin{eqnarray}
+\hat {\bm \theta_i} \leftarrow G(\bar T_i, \bar \tau_i, \bar q_i, z_i) 
+\label{GBM_sample}
+\end{eqnarray}
+
+At runtime of the Hi2Low model, the $1^{st}$ raw moment - or mean - of each TH field of interest, is provided by the CTF simulation.  The higher moments of the surface TH frequency distributions  are recovered by inserting the predicted parameters into the model density function given in Equation (\ref{copula_model}) and drawing samples from the model.  The region of the probability density function residing above the saturation temperature can be super-sampled via a particle splitting approach.  This sampling procedure is analogous to integrating the pdf by Monte Carlo methods, however in this case the resulting TH samples are provided as boundary conditions to MAMBA.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusions and Future Work}
+
+This proposed technique does not try to provide a detailed spatial distribution
+of the temperature, TKE, and CRUD on the rods' surface, rather the
+statistical approach seeks to provide a detailed frequency distribution
+of these fields.  The end result is model which correctly captures hot and cold
+spot TH conditions that give rise to the largest (and smallest) boron
+precipitation concentrations without precisely knowing where on the rods'
+surface gave rise to the sampled TH conditions.
+
+A large body of future work will focus on constructing an implementation of the gradient boosted regression model
+for predicting copula and the marginal distributions.  A regression model sensitivity study will be performed to search the input space for areas of large second derivatives in the copula and marginal parameter response surfaces.  These areas of quickly changing copula behavior are areas in which an increase in the density of available CFD surface TH data will reduce the local uncertainties in the TH pdfs predicted by the GBM model.  Dimensionality reduction by principal component analysis could yield further reductions in the required number of training data sets. 
+
+A key measure of success for this Hi2Low work with respect to  CRUD predictions
+in the vicinity of spacer grids is the computation time needed to build the
+training data sets upon which a regression model is developed.
+It has yet to be proven that the proposed Copula and GBM based framework outperforms
+either a table-lookup approach or a spatial interpolation approach in which
+spatial CFD information is explicitly preserved in the Hi2Low model.  This assessment
+of computation requirements is a key avenue for future work.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Acknowledgments} This work was performed in support of the
+Consortium for Advanced Simulation of LWRs (CASL), a U.S. Department of Energy innovation hub.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\bibliographystyle{ans} \bibliography{bibliography} \end{document}
+
