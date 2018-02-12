@@ -5,7 +5,7 @@
 from __future__ import print_function
 import sys
 sys.path.append('../.')
-from src.pygoose import PyGoose
+from pygoose import PyGoose
 import numpy as np
 from six import iteritems
 from mpi4py import MPI
@@ -137,10 +137,33 @@ def state_generator(bdict, cdict, sampler_type='mc'):
     b_flat_states = np.array([state.flatten() for state in b_states])
     return b_flat_states, c_flat_states
 
+def pre_grow_crud(my_goose, build_in_time, twall_size, twall=625., tke=0.04, bhf=120.):
+    """!
+    @brief Builds in CRUD untill target thickness is reached.
+    @return pygoose instance with built-in CRUD
+    """
+    # setup fixed arrays
+    my_goose.set_boundary_data(Twall=np.ones(twall_size) * twall,
+                               Tke=np.ones(twall_size) * tke,
+                               Tcoolant=np.ones(twall_size) * 600.,
+                               Bhf=np.ones(twall_size) * bhf)
+    my_goose.step(build_in_time)
+    my_goose.set_restart_point()
+    import pdb; pdb.set_trace()
+    """
+    converged = False
+    while not converged:
+        my_goose.step(1.0)
+        crud_results = my_goose.get_crud_pin_solution()
+        cthick = crud_results[:, :, 0]
+        if cthick.flatten()[0] >= target_cthick:
+            converged = True
+    """
+    return my_goose
 
 def mongoose_sweeper(bdict, cdict, my_goose, dt,
                      h5file_handle=None, kinetics_params={},
-                     verbose=0, sampler_type='mc'):
+                     verbose=0, sampler_type='mc', build_in_time=None):
     """!
     @brief Generates results from parameter sweep
     @param bdict dictionary of TH boundary conditions
@@ -152,6 +175,7 @@ def mongoose_sweeper(bdict, cdict, my_goose, dt,
     @param kinetics_params dictionary of kinetics parameters
     @param sampler_type  str.  either 'mc' or 'factorial'
     @param verbose  Bool or int.  If true print case progress.
+    @param target_cthick  float.  Crud to build-in before sweeping
     @yeild result matrix
     """
     if h5file_handle != None:
@@ -183,6 +207,8 @@ def mongoose_sweeper(bdict, cdict, my_goose, dt,
             'VH2': cool_chem[cdict['VH2']['id']],
             }
         my_goose.set_coolant_data(**cool_chem_settings)
+        if build_in_time:
+            my_goose = pre_grow_crud(my_goose, build_in_time, np.size(t_wall))
         my_goose.set_boundary_data(Twall=t_wall, Tcoolant=t_cool, Bhf=bhf_wall, Tke=tke_wall)
         # set diffusion/kinetics for sensitivity study
         try:
@@ -198,6 +224,8 @@ def mongoose_sweeper(bdict, cdict, my_goose, dt,
             cool_chem_settings.update(kinetics_params)
             my_goose.set_coolant_data(**cool_chem_settings)
         # step time
+        # my_goose.set_dongoose_option('tstep_size', 0.1)
+        # my_goose.set_dongoose_option('ODE_tstep_size', 0.1)
         my_goose.step(dt)
         # get crud solution
         crud_results = my_goose.get_crud_pin_solution()
@@ -255,10 +283,24 @@ def run_sweep(h5file_handle, dt=50.):
 def run_temperature_sweep(h5file_handle, dt):
     my_goose = PyGoose(1)
     # TH boundary conds
+    """
     bdict = {'twall': {'bounds':[610., 625.], 'n':100, 'id': 0},
-             'tke':   {'bounds':[0.08, 0.08], 'n':1, 'id': 1},
+             'tke':   {'bounds':[0.04, 0.04], 'n':1, 'id': 1},
              'tcool': {'bounds':[585, 585.], 'n':1, 'id': 2},
              'bhf': {'bounds':[100, 100], 'n':1, 'id': 3},
+            }
+    """
+    """
+    bdict = {'twall': {'bounds':[620., 620.], 'n':1, 'id': 0},
+             'tke':   {'bounds':[0.001, 0.08], 'n':100, 'id': 1},
+             'tcool': {'bounds':[585, 585.], 'n':1, 'id': 2},
+             'bhf': {'bounds':[100, 100], 'n':1, 'id': 3},
+            }
+    """
+    bdict = {'twall': {'bounds':[620., 620.], 'n':1, 'id': 0},
+             'tke':   {'bounds':[0.05, 0.05], 'n':1, 'id': 1},
+             'tcool': {'bounds':[585, 585.], 'n':1, 'id': 2},
+             'bhf': {'bounds':[80, 120], 'n':100, 'id': 3},
             }
     # coolant chem & kinetics
     cdict = {'T': {'bounds':[585, 585.], 'n':1, 'id':0},
@@ -277,9 +319,9 @@ def run_temperature_sweep(h5file_handle, dt):
 
 
 def main():
-    time_step_size_list = [0.5, 1., 5., 10., 30., 50., 100., 200.]
+    time_step_size_list = np.array([100., 200., 300., 400., 500.,])
     for i, dt in enumerate(time_step_size_list):
-        h5f = open_file("pygoose_sweep_" + str(dt) + ".h5", mode="w", title="Sweep")
+        h5f = open_file("pygoose_sweep_bhf" + str(dt) + ".h5", mode="w", title="Sweep")
         run_temperature_sweep(h5f, dt)
         h5f.close()
 
