@@ -137,15 +137,15 @@ core \cite{manera16}, \cite{walter16}.  Figure \ref{fig:combo_180x} depicts
 the surface temperature, turbulent kinetic energy, and CRUD thickness on a single
 pin's surface as predicted by a coupled MAMBA/STAR-CCM+ simulation \cite{slattery16}.
 
-\begin{figure*}[h]
-  \includegraphics[width=\textwidth]{combo_180x.png}
-  \caption{
-    CRUD thickness $[m]$, TKE $[J/kg]$, and surface temperature $[K]$
-    distributions provided by STAR-CCM+. A uniform heat flux of $1.102e6 [W/m^2]$
-    was applied to the outer rod surface in this case.  Inlet mass flow rate and
-    temperature were set at $0.3[kg/s]$ and $565.86[K]$ respectively \cite{slattery16}.}
-    \label{fig:combo_180x}
-\end{figure*}
+%\begin{figure*}[h]
+%  \includegraphics[width=\textwidth]{combo_180x.png}
+%  \caption{
+%    CRUD thickness $[m]$, TKE $[J/kg]$, and surface temperature $[K]$
+%    distributions provided by STAR-CCM+. A uniform heat flux of $1.102e6 [W/m^2]$
+%    was applied to the outer rod surface in this case.  Inlet mass flow rate and
+%    temperature were set at $0.3[kg/s]$ and $565.86[K]$ respectively \cite{slattery16}.}
+%    \label{fig:combo_180x}
+%\end{figure*}
 
 
 CRUD growth is dominated by threshold physics [ref], therefore it is
@@ -175,21 +175,21 @@ and boundary heat flux can be seen in figures \ref{fig:lower_seg} and
 the surface patch are plotted.  The true values can be recovered given mean TH
 quantities.
 
-\begin{figure}[h]
-  \includegraphics[width=9cm]{lower_span.png}
-  \caption{    Residual boundary heat flux $(\mu=1.102e6)$ $[W/m^2]$ , TKE $(\mu=0.2302)$ $[J/kg]$, and surface temperature
-    $(\mu=619.96)$ $[K]$ distributions.  Tallied over $z\in[2.59,2.67][m]$ on a single pin
-    surface. The nearest upstream grid mixing vanes are centered at $2.53[cm]$.}
-    \label{fig:lower_seg}
-\end{figure}
-
-\begin{figure}[h]
-  \includegraphics[width=9cm]{upper_span.png}
-  \caption{    Residual boundary heat flux $(\mu=1.102e6)$ $[W/m^2]$, TKE $(\mu=0.2025)$ $[J/kg]$, and surface temperature
-    $(\mu=620.14)$ $[K]$ distributions.  Tallied over $z\in[2.67,2.74][m]$ on a single pin surface.
-  }
-    \label{fig:upper_seg}
-\end{figure}
+%\begin{figure}[h]
+%  \includegraphics[width=9cm]{lower_span.png}
+%  \caption{    Residual boundary heat flux $(\mu=1.102e6)$ $[W/m^2]$ , TKE $(\mu=0.2302)$ $[J/kg]$, and surface temperature
+%    $(\mu=619.96)$ $[K]$ distributions.  Tallied over $z\in[2.59,2.67][m]$ on a single pin
+%    surface. The nearest upstream grid mixing vanes are centered at $2.53[cm]$.}
+%    \label{fig:lower_seg}
+%\end{figure}
+%
+%\begin{figure}[h]
+%  \includegraphics[width=9cm]{upper_span.png}
+%  \caption{    Residual boundary heat flux $(\mu=1.102e6)$ $[W/m^2]$, TKE $(\mu=0.2025)$ $[J/kg]$, and surface temperature
+%    $(\mu=620.14)$ $[K]$ distributions.  Tallied over $z\in[2.67,2.74][m]$ on a single pin surface.
+%  }
+%    \label{fig:upper_seg}
+%\end{figure}
 
 For any given subset of a rod's surface, this multivariate dependence structure is likely to
 be non-Gaussian. Therefore, a covariance matrix consisting of linear correlation coefficients is not sufficient
