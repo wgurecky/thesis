@@ -1,6 +1,15 @@
+\section{Background}
 
 \begin{itemize}
-    \item (\checkmark) Significance & Novelty.
+	\item What is CRUD?  What is CILC?
+	\item How is CRUD typically modeled?
+	\item Where do current models fall short?
+\end{itemize}
+
+\section{Significant and Novelty}
+
+\begin{itemize}
+    \item (\checkmark) Significance \& Novelty.
     \item (\checkmark) Introduce the overarching strategy.
 \end{itemize}
 
@@ -14,24 +23,37 @@ This work could be summarized as a series of steps (algorithm) estimate the foll
 	= A \iiint g(\mathbf X|g_o, \mathbf I, \delta t) h(\mathbf X|\theta) d \mathbf X
 	\label{eq:expected_crud}
 \end{eqnarray}
-let $\mathbf X= \{T, k, q''\}$. $\mathbf I$ represents additional crud parameters, $g_o$ is the crud state at the start of the time step and $\theta$ are distribution parameters.  The goal is to predict what $h(\cdot)$ is in every CTF face.  $g(\cdot)$, the crud model, is common to all ctf faces.
+let $\mathbf X= \{T, k, q''\}$. $\mathbf I$ represents additional known crud parameters, $g_o$ is the crud state at the start of the time step and $\theta$ are distribution parameters.  The goal is to predict what $h(\cdot)$ is in every CTF face.  $g(\cdot)$, the crud model, is common to all ctf faces.
 
 To compute the total crud/boron in each ctf face:
-Regression of $\theta$ given local core conditions $\rightarrow$ Reconstruction of $\h(\theta)$ $\rightarrow$ Sampling of $g(x)$ where $x \sim h(\theta)$.
+\\
 
-In addition to improving the expected value prediction of CRUD on each CTF patch, the model provides the capability to estimate the likelihood of extreme value events (i.e. $Pr(g(x) > g^*)$, the thickest crud deposits) on the rod surface.  This would be impossible to quantify with CTF/MAMBA alone.
+\begin{algorithm}[H]
+\KwData{(1) Pre-process training set $\theta(\mathbf p)$.  (2) Train model $\theta \leftarrow M(\mathbf p ; \gamma)$:  $ argmin_\gamma ||M(\mathbf p; \gamma) - \theta(\mathbf p)|| $}
+
+\For{CTF face, $i$}{
+Evaluate ML model $\hat \theta_i \leftarrow M(\mathbf p_{i})$ \;
+Reconstruct $\hat h_i(x|\hat \theta)$ \;
+Draw samples $\mathbf X \sim \hat h_i$ \;
+Evaluate \ref{eq:expected_crud} via Monte Carlo approximation \;
+}
+\end{algorithm}
+Where $\gamma$ are free parameters in the ML model.
+\bigskip
+
+In addition to improving the expected value prediction of CRUD on each CTF patch vs the CTF standalone case, the model provides the capability to estimate the likelihood of extreme value events (i.e. $Pr(g(x) > g^*)$, the thickest crud deposits) on the rod surface.  This would be impossible to quantify with CTF/MAMBA alone.
 
 By capturing the action of local hot and cold spots on the crud deposition rate the method accounts for more physics when making predictions of the total integrated boron mass in the CRUD layer.  This results in an improvement in CIPS predictions since the total quantity of boron in the crud layer is of principle importance.  Additionally the ability to estimate the likelihood of extreme crud buildup enables the hi2lo methods developed in this work as a crud induced local corrosion (CILC) scoping tool.  It is envisioned that such a tool will identify potential CILC "hot spots" where a significant amount of cladding is consumed by oxide ingress, resulting in potential fuel failure.
 
 
-\subsection{CIPS Challenge problem}
+\section{CIPS Challenge problem}
 
 \begin{itemize}
     \item (\checkmark) Provide a background of CIPS.  Importance of CIPS:  Fuel ramifications, licensing, impact on TH limits, ect...
 \end{itemize}
 
 
-\subsection{Hi2lo Definition}
+\section{Hi2lo Definition}
 
 \begin{itemize}
     \item (\checkmark) Provide a background of CIPS.  Importance of CIPS:  Fuel ramifications, licensing, impact on TH limits, ect...
