@@ -1,0 +1,97 @@
+\documentclass[12pt,a4paper]{report}
+\usepackage[a4paper, total={6.25in, 9in}]{geometry}
+\usepackage{setspace}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{subfig}
+\usepackage{pgfgantt}
+\usepackage{rotating}
+\usepackage{bm}
+\usepackage{bbm}
+\usepackage{lipsum}
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage[version=3]{mhchem} % Package for chemical equation typesetting \ce{}
+\usepackage{siunitx} % Provides the \SI{}{} and \si{}
+\usepackage[normalem]{ulem}  % stike-through by \sout{}
+
+
+%===========================CUSTOM CMDS=======================================%
+\DeclareMathOperator*{\E}{\mathbb{E}}
+
+\author{William Gurecky}
+\title{CFD Informed Subchannel}
+
+\begin{document}
+
+%=================================TITLE=======================================%
+%-----------------------------------------------------------------------------%
+\input{./sections/title.tex}
+
+\input{./sections/ack.tex}
+
+\input{./sections/abstract.tex}
+
+%-----------------------------------------------------------------------------%
+\input{./sections/acryn.tex}
+
+%=================================BODY========================================%
+\onehalfspacing
+%-----------------------------------------------------------------------------%
+\chapter{Introduction}
+\label{chap:intro}
+\input{./sections/intro.tex}
+
+%-----------------------------------------------------------------------------%
+\chapter{Literature Review}
+\label{chap:lit}
+\input{./sections/lit_review.tex}
+
+%-----------------------------------------------------------------------------%
+\chapter{Theory}
+\label{chap:theory}
+\input{./sections/theory.tex}
+
+%-----------------------------------------------------------------------------%
+\chapter{Method Applications}
+\label{chap:work}
+\input{./sections/method_app_synth.tex}
+\input{./sections/method_app_cfd.tex}
+
+%-----------------------------------------------------------------------------%
+\chapter{Constructing the Hi2Lo Map by Gradient Boosting}
+\label{chap:fw}
+\input{./sections/method_app_ml.tex}
+
+%-----------------------------------------------------------------------------%
+\chapter{Conclusion}
+\label{chap:conc}
+\input{./sections/conclusion.tex}
+
+%-----------------------------------------------------------------------------%
+\input{./sections/gantt.tex}
+
+%-----------------------------------------------------------------------------%
+\input{./sections/references.tex}
+
+%=================================APPX========================================%
+%-----------------------------------------------------------------------------%
+\chapter{Appendix A}
+\label{chap:app}
+\input{./sections/appendix/app_a.tex}
+
+\chapter{Appendix B}
+\label{chap:app_b}
+\input{./sections/appendix/app_b.tex}
+
+\chapter{Appendix C}
+\label{chap:app_b}
+\input{./sections/appendix/app_c.tex}
+
+
+\end{document}

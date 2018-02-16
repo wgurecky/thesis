@@ -1,0 +1,49 @@
+
+\begin{itemize}
+    \item (\checkmark) Significance & Novelty.
+    \item (\checkmark) Introduce the overarching strategy.
+\end{itemize}
+
+Highlight novel approach to hi2lo modeling:  We do not predict the fine scale flow/temperature field on the pin surface, rather, this approach estimates the joint T, TKE, BHF probability density on each CTF face.  The goal is retain the minimum amount of information required to get CRUD correct on each CTF face.  The amount of CRUD deposition downstream of spacer grids is influenced by the presence of hot and cold spots present due to the turbulent flow induced by mixing vanes.  CRUD is highly sensitive to the rod surface temperature, particularly around the saturation point, and therefore it is important to account for these small scale flow features when providing boundary conditions to MAMBA.
+
+The goal is to estimate the expected crud on each CTF patch given by equation \ref{eq:expected_crud}.
+This work could be summarized as a series of steps (algorithm) estimate the following integral on each CTF face:
+
+\begin{eqnarray}
+        total\ crud\ [grams] = A \mu_g\ = A \E[g(\mathbf X|g_o, \mathbf I, \delta t)] \nonumber \\
+	= A \iiint g(\mathbf X|g_o, \mathbf I, \delta t) h(\mathbf X|\theta) d \mathbf X
+	\label{eq:expected_crud}
+\end{eqnarray}
+let $\mathbf X= \{T, k, q''\}$. $\mathbf I$ represents additional crud parameters, $g_o$ is the crud state at the start of the time step and $\theta$ are distribution parameters.  The goal is to predict what $h(\cdot)$ is in every CTF face.  $g(\cdot)$, the crud model, is common to all ctf faces.
+
+To compute the total crud/boron in each ctf face:
+Regression of $\theta$ given local core conditions $\rightarrow$ Reconstruction of $\h(\theta)$ $\rightarrow$ Sampling of $g(x)$ where $x \sim h(\theta)$.
+
+In addition to improving the expected value prediction of CRUD on each CTF patch, the model provides the capability to estimate the likelihood of extreme value events (i.e. $Pr(g(x) > g^*)$, the thickest crud deposits) on the rod surface.  This would be impossible to quantify with CTF/MAMBA alone.
+
+By capturing the action of local hot and cold spots on the crud deposition rate the method accounts for more physics when making predictions of the total integrated boron mass in the CRUD layer.  This results in an improvement in CIPS predictions since the total quantity of boron in the crud layer is of principle importance.  Additionally the ability to estimate the likelihood of extreme crud buildup enables the hi2lo methods developed in this work as a crud induced local corrosion (CILC) scoping tool.  It is envisioned that such a tool will identify potential CILC "hot spots" where a significant amount of cladding is consumed by oxide ingress, resulting in potential fuel failure.
+
+
+\subsection{CIPS Challenge problem}
+
+\begin{itemize}
+    \item (\checkmark) Provide a background of CIPS.  Importance of CIPS:  Fuel ramifications, licensing, impact on TH limits, ect...
+\end{itemize}
+
+
+\subsection{Hi2lo Definition}
+
+\begin{itemize}
+    \item (\checkmark) Provide a background of CIPS.  Importance of CIPS:  Fuel ramifications, licensing, impact on TH limits, ect...
+\end{itemize}
+
+Hi2lo, or High to Low modeling, implies that a source of high fidelity gold standard data produced by an expensive to evaluate physics model is used to upscale and augment a low fidelity model of the same physics.
+Furthermore, this mapping must be possible even in the case where matching high and low fidelity results do not exist (i.e. both models are run at the same boundary conditions).
+
+This mapping (upscaling and augmentation) must possible given any CTF pin at any operating condition - even when only a relatively small number of high fidelity results are available.
+
+We assume that the flow of information is uni-directional: from the high fidelity data to the low fidelity model.  No feedback between the disparate scale models is included.
+
+Generally, a surrogate model replaces expensive to evaluate physics with a math model that preserves some aspects of the physics.  It is oftentimes the goal to make the surrogate quickly executing relative to the original model. Therefore, the hi2Lo approach is analogous to a surrogate construction since the ultimate goal is to replace CFD with a model that captures the action of high fidelity CFD resolved flow phenomena on CRUD growth without having to run the CFD model outright.
+
+
