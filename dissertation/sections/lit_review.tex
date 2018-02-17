@@ -1,9 +1,51 @@
 \begin{itemize}
     \item (\checkmark) M. Avramova.  CFD informed grid mixing coefficients in CTF.  This work leveraged CFD results to improve the momentum balance (grid mixing models) in CTF. \cite{avramova2007}
     \item (\checkmark) B. Salko et. al. cfd spatial remapping procedure for hi2lo model for CILC/CIPS screening. \cite{salko17}
+    
+    Convective HTC remap:
+    \begin{equation}
+    	m_h = \frac{Nu_{cfd}}{Nu_{ctf}} = \frac{h_{cfd} L_{cfd} k_{ctf} }{h_{ctf}k_{cfd} L_{ctf}} = \frac{h_{cfd}}{h_{ctf}} = \frac{q_{cfd}(T-T_\infty)_{ctf}}{q_{ctf}(T-T_\infty)_{cfd}} \approx \frac{(T-T_\infty)_{ctf}}{(T-T_\infty)_{cfd}}  
+    \end{equation}
+    Apply HTC remap:
+    \begin{equation}
+    	\hat h_{l} = m_h h_{ctf}
+    \end{equation}
+    $\hat h_l$ is the hi2lo remapped convective heat transfer coefficient.  In CTF the wall heat transfer is split between phases:
+    \begin{equation}
+    q'' = q''_{conv} + q''_{boil} = (h_l)(T-T_{\infty}) + q''_{boil}(T)
+    \end{equation}
+    In order to compute augmented hi2lo surface temperatures
+    several fixed point iterations are required to converge upon the correct surface temperature, $\hat T_s$ due to the nonlinearity introduce in the surface boiling heat flux term.
+    
+    \begin{algorithm}[H]
+    Guess $T^{i=0}_s=T_0$.  Maximum number, $N$ iterations.
+    
+\For{i in range($N$)}{
+Evaluate effective multiphase CTF HTC: $h_{eff} = h_{{ctf}}(T^i_{s}, \hat h_l, q'')$ \;
+Compute new hi2lo surface temperatures: $T_{s} = \frac{q''}{h_{eff}} + T_\infty$ \;
+Under relax  $T^{i+1}_{s} = \omega T_{s} + (1 - \omega) T^{i}_{s} ;\ \omega < 1.$ \;
+Break if:  $|T^{i+1}_s - T^i_s| < tol$ \;
+}
+Return: $\hat T_s = T^{i+1}_s$
+\end{algorithm}
+    Where $h_{ctf}(\cdot)$ is a callable CTF function that returns and effective multiphase HTC, $h_{eff}$.
+    
+    TKE remap:
+    \begin{equation}
+       m_{k} = \frac{k_{cfd}}{k_{ctf}}
+    \end{equation}
+    Apply TKE remap:
+       \begin{equation}
+       \hat k = m_k k_{ctf}
+       \end{equation}
+     Grow crud using augmented temperature and tke surface fields and compute average crud results over the CTF face:
+     \begin{equation}
+     \mu_g = \frac{1}{N} \sum_i^N g(\hat T_s, \hat k, q'')
+     \end{equation}
+    
     \item (\checkmark) S. Yao.  Emperical model of heat transfer coefficient downstream of spacer grids. \cite{yao82}
     \item (\checkmark) T. Hengal. Regression Kriging application to soil composition prediction as function of elevation, distance to river, ect. \cite{Hengl07}
-    \item ($\cdot$) Boosted regression and classification applications. \cite{moisen2006}, \cite{friedman2002}
+    \item (\checkmark) Boosted regression and classification applications. \cite{moisen2006}, \cite{friedman2002}
     \item ($\cdot$) Other hi2lo approaches?
 \end{itemize}
 

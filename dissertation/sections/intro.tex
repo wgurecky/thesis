@@ -1,9 +1,17 @@
 \section{Background}
 
 \begin{itemize}
-	\item What is CRUD?  What is CILC?
-	\item How is CRUD typically modeled?
-	\item Where do current models fall short?
+	\item (\checkmark) What is CRUD?  What is CIPS? 
+		\begin{itemize}
+		\item CRUD is deposits of primary loop corrosion products on the outer cladding surface.  NiFe2O4 and many other constituents, Ni-B-O and Fe-B-O compounds, also some LiBOH. [ref mamba theory manual - is this possible since it might be export controlled?].  CRUD  typically forms where temperatures are high and where sub cooled boiling occurs on the rod surface.
+		\item Shift in power to bottom of core due to Boron trapped in the CRUD layer.
+		\end{itemize}
+	\item (\checkmark) How is CRUD typically modeled?  At the core wide scale, typically TH boundary conditions are supplied by subchannel or coarser [refs].  Some CFD/CRUD work has been conducted that predicted striping patterns, or high variations in azimuthal crud growth, downstream of spacer grids.  The aparse experimental crud scrape data also shows high azimuthal variation downstream spacer grids.
+	\item (\checkmark) Where do current models fall short?  
+	\begin{itemize}
+		\item Incorrect boundary conditions: Handing incorrect boundary conditions to the crud model will never produce the correct crud unless a fudge factor is applied to counteract the effects of bad BCs.  This is most severe downstream of spacer grids in situations where a subchannel code cannot resolve fine scale flow features that influence crud growth.  This work tries to address this problem by improving the accuracy of the boundary conditions handed to the crud model by leveraging a suite of pre-computed CFD results.
+		\item Known missing physics in the crud model: missing Ni oxide, incorrect pore fill kinetics, incorrect crud model parameters (chimney heat transfer, Arrhenius rate constants, species diffusion constants.) These must be fixed via experiment and model calibration which is beyond the scope of this work.
+	\end{itemize}
 \end{itemize}
 
 \section{Significant and Novelty}
@@ -14,34 +22,6 @@
 \end{itemize}
 
 Highlight novel approach to hi2lo modeling:  We do not predict the fine scale flow/temperature field on the pin surface, rather, this approach estimates the joint T, TKE, BHF probability density on each CTF face.  The goal is retain the minimum amount of information required to get CRUD correct on each CTF face.  The amount of CRUD deposition downstream of spacer grids is influenced by the presence of hot and cold spots present due to the turbulent flow induced by mixing vanes.  CRUD is highly sensitive to the rod surface temperature, particularly around the saturation point, and therefore it is important to account for these small scale flow features when providing boundary conditions to MAMBA.
-
-The goal is to estimate the expected crud on each CTF patch given by equation \ref{eq:expected_crud}.
-This work could be summarized as a series of steps (algorithm) estimate the following integral on each CTF face:
-
-\begin{eqnarray}
-        total\ crud\ [grams] = A \mu_g\ = A \E[g(\mathbf X|g_o, \mathbf I, \delta t)] \nonumber \\
-	= A \iiint g(\mathbf X|g_o, \mathbf I, \delta t) h(\mathbf X|\theta) d \mathbf X
-	\label{eq:expected_crud}
-\end{eqnarray}
-let $\mathbf X= \{T, k, q''\}$. $\mathbf I$ represents additional known crud parameters, $g_o$ is the crud state at the start of the time step and $\theta$ are distribution parameters.  The goal is to predict what $h(\cdot)$ is in every CTF face.  $g(\cdot)$, the crud model, is common to all ctf faces.
-
-To compute the total crud/boron in each ctf face:
-\\
-
-\begin{algorithm}[H]
-\KwData{(1) Pre-process training set $\theta(\mathbf p)$.  (2) Train model $\theta \leftarrow M(\mathbf p ; \gamma)$:  $ argmin_\gamma ||M(\mathbf p; \gamma) - \theta(\mathbf p)|| $}
-
-\For{CTF face, $i$}{
-Evaluate ML model $\hat \theta_i \leftarrow M(\mathbf p_{i})$ \;
-Reconstruct $\hat h_i(x|\hat \theta)$ \;
-Draw samples $\mathbf X \sim \hat h_i$ \;
-Evaluate \ref{eq:expected_crud} via Monte Carlo approximation \;
-}
-\end{algorithm}
-Where $\gamma$ are free parameters in the ML model.
-\bigskip
-
-In addition to improving the expected value prediction of CRUD on each CTF patch vs the CTF standalone case, the model provides the capability to estimate the likelihood of extreme value events (i.e. $Pr(g(x) > g^*)$, the thickest crud deposits) on the rod surface.  This would be impossible to quantify with CTF/MAMBA alone.
 
 By capturing the action of local hot and cold spots on the crud deposition rate the method accounts for more physics when making predictions of the total integrated boron mass in the CRUD layer.  This results in an improvement in CIPS predictions since the total quantity of boron in the crud layer is of principle importance.  Additionally the ability to estimate the likelihood of extreme crud buildup enables the hi2lo methods developed in this work as a crud induced local corrosion (CILC) scoping tool.  It is envisioned that such a tool will identify potential CILC "hot spots" where a significant amount of cladding is consumed by oxide ingress, resulting in potential fuel failure.
 
@@ -56,7 +36,7 @@ By capturing the action of local hot and cold spots on the crud deposition rate 
 \section{Hi2lo Definition}
 
 \begin{itemize}
-    \item (\checkmark) Provide a background of CIPS.  Importance of CIPS:  Fuel ramifications, licensing, impact on TH limits, ect...
+    \item (\checkmark) Provide a background on Hi2Lo.
 \end{itemize}
 
 Hi2lo, or High to Low modeling, implies that a source of high fidelity gold standard data produced by an expensive to evaluate physics model is used to upscale and augment a low fidelity model of the same physics.

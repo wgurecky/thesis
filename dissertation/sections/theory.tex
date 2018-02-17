@@ -1,0 +1,99 @@
+\section{Model Approach}
+
+\begin{itemize}
+	\item (\checkmark) Model overview.
+\end{itemize}
+
+The goal is to estimate the expected crud on each CTF patch given by equation \ref{eq:expected_crud}.
+This work could be summarized as a series of steps (algorithm) estimate the following integral on each CTF face:
+
+\begin{eqnarray}
+        total\ crud\ [grams] = A \mu_g\ = A \E[g(\mathbf X|g_o, \mathbf I, \delta t)] \nonumber \\
+	= A \iiint g(\mathbf X|g_o, \mathbf I, \delta t) h(\mathbf X|\theta) d \mathbf X
+	\label{eq:expected_crud}
+\end{eqnarray}
+let $\mathbf X= \{T, k, q''\}$. $\mathbf I$ represents additional known crud parameters, $g_o$ is the crud state at the start of the time step and $\theta$ are distribution parameters.  The goal is to predict what $h(\cdot)$ is in every CTF face.  $g(\cdot)$, the crud model, is common to all ctf faces.
+
+To compute the total crud/boron in each ctf face:
+\\
+
+\begin{algorithm}[H]
+\KwData{(1) Pre-process training set $\theta(\mathbf p)$.  (2) Train model $\theta \leftarrow M(\mathbf p ; \gamma)$:  $ argmin_\gamma ||M(\mathbf p; \gamma) - \theta(\mathbf p)|| $}
+
+\For{CTF face, $i$}{
+Evaluate ML model $\hat \theta_i \leftarrow M(\mathbf p_{i})$ \;
+Reconstruct $\hat h_i(x|\hat \theta)$ \;
+Draw samples $\mathbf X \sim \hat h_i$ \;
+Evaluate \ref{eq:expected_crud} via Monte Carlo approximation \;
+}
+\end{algorithm}
+Where $\gamma$ are free parameters in the ML model.
+\bigskip
+
+In addition to improving the expected value prediction of CRUD on each CTF patch vs the CTF standalone case, the model provides the capability to estimate the likelihood of extreme value events (i.e. $Pr(g(x) > g^*)$, the thickest crud deposits) on the rod surface.  This would be impossible to quantify with CTF/MAMBA alone.
+
+
+\section{Construction of the Hi2lo Map}
+
+\subsection{Capturing Dependence Between Random Variables}
+\begin{itemize}
+	\item (\checkmark) Sklar's theorem.
+	\item (\checkmark) Assumptions: 
+	\begin{itemize}
+		\item Capture Temperature and TKE dependence structure.
+		\item Assume 1) Temperature is uncorrelated with BHF.  2) TKE is uncorrelated with BHF.
+		\item Justify 1) showing actual CFD data. 2) Relative variations in BHF are very small over a CTF face $(+/- 5\%)$.  3) Sensitivity of CRUD to BHF is small relative to sensitivity of CRUD to surface temperature.
+	\end{itemize}
+	\item (\checkmark) Show fallout of these assumptions on hi2lo model.
+	\begin{equation}
+		h(T, k, q'') = f_T f_k, f_{q''} \prod_c c_i(u_i, v_i)
+	\end{equation}
+	Where each bivariate copula model in $\prod c_i $ is known as a pair copula construction.  When decomposed into bivariate copula as shown, the entire multivariate dependence model is known as a vine copula.
+	
+	Applying the aforementioned assumptions results in: $c(u_T, u_{q''}) = 1$ and $c(u_{k}, u_{q''}) = 1$ so that the simplified joint density is given by:
+	\begin{equation}
+		h(T, k, q'') \approx  f_T f_k, f_{q''} c(u_{T}, v_{k})  \cdot 1 \cdot 1
+    \end{equation}	 
+\end{itemize}
+
+
+\subsection{Sample Quantiles}
+
+\begin{itemize}
+	\item (\checkmark) Compute sample quantiles.
+	\item (\checkmark) Building a cumulative density function from sample quantiles.  
+	\begin{itemize}
+	   \item Peicewise linear CDF leads to histogram PDF.
+	   \item PCHIP spline CDF preserves monotonicity of CDF and results in a smooth PDF. \cite{Fritsch80}
+	\end{itemize}
+	\item (\checkmark) Sampling from a known CDF.  Inverse transform sampling works in all cases encountered in this work and is trivial to implement.
+	\item (\checkmark-) Show that the order statistics are distributed according to a Gaussian distribution.  
+	\item (\checkmark-) Show that  sample quantiles also follow a Gaussian distribution.  This directly follows from the distribution of the order statistics.
+	\item ($\cdot$) Show the impact of the uncertainty in where the sample quantiles fall given CFD data on crud growth.  The reconstructed CDFs which comprise the hi2lo mapping are essentially fuzzy which means the temperature, TKE, and BHF distributions are artificially smeared out (artificially high densities in the tails).
+\end{itemize}
+
+\subsection{Monte Carlo CRUD Estimation}
+
+\begin{itemize}
+	\item (\checkmark-) Show importance sampling scheme to estimate \ref{eq:expected_crud}.
+	\begin{equation}
+	\E(g(x)) \approx \frac{1}{N} \sum_i^N g(x_i) \frac{h(x_i)}{\tilde h(x_i)}, \ x \sim \tilde{h}
+	\end{equation}
+	\item (\checkmark-) Show examples of $g(x)$, $h(x)$ and $\tilde h(x)$ on a single CTF face.
+	\item (\xmark) \sout{Find optimal proposal density distribution, $\tilde{h^*}$.}
+\end{itemize}
+
+
+\subsection{Propagating CRUD Through Time}
+\subsubsection{Hot Spot Stationarity}
+\begin{itemize}
+	\item (\checkmark) Elucidate why we need for a spatial remapping scheme.
+	\item (\checkmark) Detail how this mapping is produced.
+\end{itemize}
+
+\subsection{Smearing Over Azimuth}
+
+\begin{itemize}
+	\item ($\cdot$) Smear the CFD data and CTF results over all azimuthal angles.  This will increase the number of CFD samples used for the hi2lo mapping construction by a factor of four, and therefore decrease the uncertainty in the sample quantiles by a factor of 2.  See section on the theoretical distribution of sample quantiles (the sample quantile distributions follow 1/sqrt(N) behavior).
+	\item ($\cdot$) Since the primary goal of this method is to predict CIPS, it is possible neglect azimuthal variation entirely and focus solely on the axial variation.  In this case, for any given pin, each CTF face at a fixed axial level will all get the same crud thickness and crud boron from the hi2lo model.
+\end{itemize}
