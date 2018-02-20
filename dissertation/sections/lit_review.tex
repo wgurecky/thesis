@@ -9,7 +9,7 @@
 \end{equation}
 Where the first term is accounts for the effect of grid flow restriction and the second term represents the contribution of vane induced swirl on the heat transfer.
 
-    \item (\checkmark) B. Salko et. al. cfd spatial remapping procedure for hi2lo model for CILC/CIPS screening. \cite{salko17}
+    \item (\checkmark) B. Salko et al. developed a CFD-Informed hi2lo spatial remapping procedure for CILC/CIPS screening. \cite{salko17}
     Similar to Yao apporach.  Additionally developed a TKE remap.
     The multiplier maps capture the ratio of the CFD predicted HTC and TKE surface distributions to the same surface distributions on a bare rod with no spacer grids present.
     Convective HTC remap:
@@ -66,32 +66,45 @@ Where the first term is accounts for the effect of grid flow restriction and the
 \begin{equation}
         \tau_w \propto \sqrt{\frac{\rho \mu u_\infty^3}{x}}
 \end{equation}
-        and the wall shear stress is proportional to the near-wall TKE:
+where $x$ is the distance from the leading edge, $\rho$ is the fluid density and $\mu$ is the fluid viscosity.
+        The wall shear stress is proportional to the near-wall TKE:
         \begin{equation}
         k \propto \tau_w
         \end{equation}
+    $k^{l}$ represents the TKE surface distribution at low inlet flow rate conditions and
+    $k^{h}$ represents the TKE surface distribution at high inlet flow rate conditions.
+    A larger free stream velocity, $u_{h\infty}$, will scale up the rod surface shear stress field:
+     \begin{eqnarray}
+         \mathb
+         & k^h_{cfd} = k^{l}_{cfd}C_{cfd}(x) u_{h\infty}^{3/2} \nonumber \\
+         & k^h_0 = k^l_0 C_0(x) u_{h\infty}^{3/2}
+     \end{eqnarray}
+     A key assumption is made: $C_{cfd}(x) / C_0(x) \approx 1$.  This assumption is required if a hi2lo map developed at low flow conditions is to be applied to high flow conditions.
+    \begin{align*}
+        \mathbf m_k^h & = \frac{k^{l}_{cfd}C(x) u_{h\infty}^{3/2}}{k^l_0 C(x) u_{h\infty}^{3/2}}  \nonumber \\
+                      & \approx \frac{k^l_{cfd}}{k^l_0} \\
+                      & \approx \mathbf m_k
+     \end{align*}
+     Where the scaling function $C(x)$ carries units of $[m/s]^{2/3}$.
+     The multiplier map is approximately invariant with respect to the free stream velocity.
 
-    A larger free stream velocity will scale up the rod surface shear stress field in the bare rod and in the gridded rod case:
+     \item An additive model is constructed by computing the difference between gridded and bare cases.
+     In an additive mapping model the difference between the detailed CFD full gridded TKE field and the bare rod TKE field, $(k_{cfd} - k_0)$, is scaled by a factor that depends on the bulk flow rate:
 
-    \begin{equation}
-        \mathbf m_k^* = \frac{k^{l}_{cfd}C(x) u_{\infty}^{3/2}}{k^l_0 C(x) u_{\infty}^{3/2}} \approx \frac{k_{cfd}}{k_0}
-     \end{equation}
-     Where the scaling function $C(x)$ carries units of $[m/s]^{2/3}$.  $k^{l}$ represents the TKE surface distribution at low inlet flow rate conditions.
-     The multiplier map is invariant with respect to the magnitude of the free stream velocity.
-
-     If an additive model were applied we would have:
      \begin{equation}
-     \mathbf m_k^\dagger = (k^l_{cfd} - k^l_0)\cdot(C(x) u_{\infty}^{3/2})
+     \mathbf m_k^\dagger = (k^l_{cfd} - k^l_0)\cdot(C(x) u_{h\infty}^{3/2})
      \end{equation}
-     and after applying the additive model:
      \begin{equation}
      \hat k^\dagger = k_{ctf} + \mathbf m_k^\dagger(u_\infty)
      \end{equation}
      In the additive model case, each term carries units of $[J/Kg]$, and the augmenting map, $\mathbf m_k^\dagger$, is dependent on the free stream velocity, $u_\infty$.  Therefore an additive model would require that a multiplier map for each inlet condition of interest to be constructed.
 
-    Some simplifications are made:  For a given assembly, the multiplier maps have been shown to have a high span to span repeatability.
+     \item The claim is not strictly true: The multiplier maps carry some dependence on the inlet flow conditions.  An increase in flow rate changes the shape and extent of the wake region downstream of spacer grids which impacts the rod surface temperature and TKE fields.
 
-    A significant limitation of the muliplier map procedure is the multiplier map may not be transferable to other assemblies in the core.
+     \item Some simplifications are made:  For a given assembly, the multiplier maps have been shown to have a high span to span repeatability.  Therefore, a representative map is derived from a single span in a fully developed flow field.  This representative map is then applied to all other spans in the model.
+
+     \item The multiplier map may not be transferable to other assemblies in the core due to geometric effects including the orientation of neighboring assemblies and TH/neutronics feedbacks.  This represents a limitation to the spatial mapping procedure as unique maps must be generated for different assemblies in the core.
+
     \item (\checkmark) T. Hengal. Regression Kriging application to soil composition prediction as function of elevation, distance to river, ect. \cite{Hengl07}
     \item (\checkmark) Boosted regression and classification applications. \cite{moisen2006}, \cite{friedman2002}
     \item ($\cdot$) Other hi2lo approaches?
