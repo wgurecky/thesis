@@ -1,7 +1,19 @@
+%! TEX root = ../dissertation_gurecky.tex
+
 \section{Model Approach}
 
 \begin{itemize}
 	\item (\checkmark) Model overview.
+    \item CTF estimates mean TH conditions everywhere in the core at a low spatial resolution.  The surrogate provides higher order moments about the mean.
+    \begin{equation}
+    F(\mathbf z) = \underbrace{\mu(\mathbf{z})}_\text{CTF} + \underbrace{\varepsilon({\mathbf p(\mathbf z)})}_\text{CFD Informed} + b(\mathbf{z})
+    \end{equation}
+    
+    Treat $\varepsilon$ as a random field.  $\varepsilon(\cdot)$ is a CFD informed model. $\mathbf z$ are spatial coordinates. $\mathbf p$ are a set of auxiliary predictors. \\
+    $b$ is bias ($\mu_{CTF} - \mu_{CFD}$) \\
+    $\mu$ is piecewise constant over each CTF patch
+    
+    \item Note this is a additive model where Salko constructed a multiplicative model.
 \end{itemize}
 
 The goal is to estimate the expected crud on each CTF patch given by equation \ref{eq:expected_crud}.
@@ -48,9 +60,9 @@ In addition to improving the expected value prediction of CRUD on each CTF patch
 	\begin{equation}
 		h(T, k, q'') = f_T f_k, f_{q''} \prod_c c_i(u_i, v_i)
 	\end{equation}
-	Where each bivariate copula model in $\prod c_i $ is known as a pair copula construction.  When decomposed into bivariate copula as shown, the entire multivariate dependence model is known as a vine copula.
+	Where each bivariate copula model in $\prod c_i $ is known as a pair copula construction. 
 	
-	Applying the aforementioned assumptions results in: $c(u_T, u_{q''}) = 1$ and $c(u_{k}, u_{q''}) = 1$ so that the simplified joint density is given by:
+	Applying the aforementioned assumptions results in: $c(u_T, u_{q''}) = 1$ and $c(u_{k}, u_{q''}) = 1$. The simplified joint density is given by:
 	\begin{equation}
 		h(T, k, q'') \approx  f_T f_k, f_{q''} c(u_{T}, v_{k})  \cdot 1 \cdot 1
     \end{equation}	 
@@ -75,7 +87,7 @@ In addition to improving the expected value prediction of CRUD on each CTF patch
 \subsection{Monte Carlo CRUD Estimation}
 
 \begin{itemize}
-	\item (\checkmark-) Show importance sampling scheme to estimate \ref{eq:expected_crud}.
+	\item (\checkmark-) Show importance sampling scheme to estimate \ref{eq:expected_crud}.  (Move to Appendix?)
 	\begin{equation}
 	\E(g(x)) \approx \frac{1}{N} \sum_i^N g(x_i) \frac{h(x_i)}{\tilde h(x_i)}, \ x \sim \tilde{h}
 	\end{equation}
@@ -87,7 +99,7 @@ In addition to improving the expected value prediction of CRUD on each CTF patch
 \subsection{Propagating CRUD Through Time}
 \subsubsection{Hot Spot Stationarity}
 \begin{itemize}
-	\item (\checkmark) Elucidate why we need for a spatial remapping scheme.
+	\item (\checkmark) Elucidate why we need a spatial remapping scheme.
 	\item (\checkmark) Detail how this mapping is produced.
 \end{itemize}
 

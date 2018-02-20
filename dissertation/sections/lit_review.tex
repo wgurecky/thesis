@@ -1,51 +1,55 @@
+%! TEX root = ../dissertation_gurecky.tex
+
 \begin{itemize}
     \item (\checkmark) M. Avramova.  CFD informed grid mixing coefficients in CTF.  This work leveraged CFD results to improve the momentum balance (grid mixing models) in CTF. \cite{avramova2007}
-    \item (\checkmark) S. Yao.  Emperical model of heat transfer coefficient downstream of spacer grids. \cite{yao82}
-    An empirical relationship between the Nusselt number ratio and the vane angle, $\phi$, blockage ratio $\epsilon$, dimensionless distance from the grid, $x/D$, and fraction of flow area impeded by the vanes, $A$, was developed by S. C. Yao et. al (1982) [ref].
+    \item (\checkmark) S. Yao.  Empirical model of heat transfer coefficient downstream of spacer grids. \cite{yao82}
+    An empirical relationship between the Nusselt number ratio and the vane angle, $\phi$, blockage ratio $\epsilon$, dimensionless distance from the grid, $x/D$, and fraction of flow area impeded by the vanes, $A$, was developed by S. C. Yao et al. (1982) [ref].
 \begin{equation}
 \frac{Nu}{Nu_0}  = \left[ 1 + 5.55 \epsilon^2 e^{-0.13(x/D)}\right] + \left[ 1 + A^2\mathrm{tan}^2\phi e^{-0.034(x/D)} \right]
 \end{equation}
 Where the first term is accounts for the effect of grid flow restriction and the second term represents the contribution of vane induced swirl on the heat transfer.
-    
+
     \item (\checkmark) B. Salko et. al. cfd spatial remapping procedure for hi2lo model for CILC/CIPS screening. \cite{salko17}
     Similar to Yao apporach.  Additionally developed a TKE remap.
-    
+    The multiplier maps capture the ratio of the CFD predicted HTC and TKE surface distributions to the same surface distributions on a bare rod with no spacer grids present.
     Convective HTC remap:
     \begin{equation}
-    	\mathbf m_h = \frac{(Nu)_{cfd}}{(Nu)_{ctf}} = \frac{h_{cfd} L_{cfd} k_{ctf} }{h_{ctf}k_{cfd} L_{ctf}} 
+        \mathbf m_h = \frac{(Nu)_{cfd}}{(Nu)_{0}} = \frac{h_{cfd} L_{cfd} k_{0} }{h_{0}k_{cfd} L_{0}}
     \end{equation}
     Where $Nu$ is the nusselt number.  Assuming equal length scales and thermal conductivities:
     \begin{equation}
-    	\mathbf m_h = \frac{h_{cfd}}{h_{ctf}} = \frac{q_{cfd}(T-T_\infty)_{ctf}}{q_{ctf}(T-T_\infty)_{cfd}}
+        \mathbf m_h = \frac{h_{cfd}}{h_{0}} = \frac{q_{cfd}(T-T_\infty)_{0}}{q_{0}(T-T_\infty)_{cfd}}
     \end{equation}
+    It is important to note that a uniform heat flux is used in both the bare and full rod case so that $q_{cfd}/q_0 =1 $.
     Apply HTC remap:
     \begin{equation}
-    	\hat h_{l} = \mathbf m_h h_{ctf}
+        \hat h_{l} = \mathbf m_h h_{ctf}
     \end{equation}
     $\hat h_l$ is the hi2lo remapped convective heat transfer coefficient.  In CTF the wall heat transfer is split between phases:
     \begin{equation}
-    	q'' = q''_{conv} + q''_{boil} = (h_l)(T-T_{\infty}) + q''_{boil}(T)
+        q'' = q''_{conv} + q''_{boil} = (\hat h_l)(T-T_{\infty}) + q''_{boil}(T)
     \end{equation}
     In order to compute augmented hi2lo surface temperatures
     several iterations are required to converge upon the correct surface temperature, $\hat T_s$ due to the surface boiling term.
-    
+
     \begin{algorithm}[H]
     Guess $T^{i=0}_s=T_0$.  Maximum number, $N$ iterations.
-    
-	\For{i in range($N$):}{
-	Evaluate effective multiphase CTF HTC: $h_{eff} = h_{{ctf}}(T^i_{s}, \hat h_l, q'')$ \;
-	Compute new hi2lo surface temperatures: $T_{s} = \frac{q''}{h_{eff}} + T_\infty$ \;
-	Under relax  $T^{i+1}_{s} = \omega T_{s} + (1 - \omega) T^{i}_{s} ;\ \omega < 1.$ \;
-	\textbf{break if}:  $|T^{i+1}_s - T^i_s| < tol$ \;
-	}
-	\textbf{return}: $\hat T_s = T^{i+1}_s$
-	\end{algorithm}
+
+        \For{i in range($N$):}{
+        Evaluate effective multiphase CTF HTC: $h_{eff} = h_{{ctf}}(T^i_{s}, \hat h_l, q'')$ \;
+        Compute new hi2lo surface temperatures: $T_{s} = \frac{q''}{h_{eff}} + T_\infty$ \;
+        Under relax  $T^{i+1}_{s} = \omega T_{s} + (1 - \omega) T^{i}_{s} ;\ \omega < 1.$ \;
+        \textbf{break if}:  $|T^{i+1}_s - T^i_s| < tol$ \;
+        }
+        \textbf{return}: $\hat T_s = T^{i+1}_s$
+        \end{algorithm}
     Where $h_{ctf}(\cdot)$ is a callable CTF function that returns and effective multiphase HTC, $h_{eff}$.
-    
+
     TKE remap:
     \begin{equation}
-       \mathbf m_{k} = \frac{k_{cfd}}{k_{ctf}}
+       \mathbf m_{k} = \frac{k_{cfd}}{k_{0}}
     \end{equation}
+    Where $k_0$ is the TKE distribution for a bare rod without spacer grids.
     Apply TKE remap:
        \begin{equation}
        \hat k = \mathbf m_k k_{ctf}
@@ -55,6 +59,39 @@ Where the first term is accounts for the effect of grid flow restriction and the
      \mu_g = \frac{1}{A} \sum_i^N g(\hat T_{s_i}, \hat k_i, q''_i) a_i
      \end{equation}
     Where $A$ is the area of the CTF face and $a_i$ is the area of each cell face on the CRUD coupling mesh.
+
+    \textbf{Claim:} The multiplier maps are insensitive flow rate.  An additive model is sensitive to the inlet flow conditions.
+
+    The Blasius boundary layer solution for laminar over a flat plate flow shows that the surface shear stress is proportional to $u_\infty^{3/2}$:
+\begin{equation}
+        \tau_w \propto \sqrt{\frac{\rho \mu u_\infty^3}{x}}
+\end{equation}
+        and the wall shear stress is proportional to the near-wall TKE:
+        \begin{equation}
+        k \propto \tau_w
+        \end{equation}
+
+    A larger free stream velocity will scale up the rod surface shear stress field in the bare rod and in the gridded rod case:
+
+    \begin{equation}
+        \mathbf m_k^* = \frac{k^{l}_{cfd}C(x) u_{\infty}^{3/2}}{k^l_0 C(x) u_{\infty}^{3/2}} \approx \frac{k_{cfd}}{k_0}
+     \end{equation}
+     Where the scaling function $C(x)$ carries units of $[m/s]^{2/3}$.  $k^{l}$ represents the TKE surface distribution at low inlet flow rate conditions.
+     The multiplier map is invariant with respect to the magnitude of the free stream velocity.
+
+     If an additive model were applied we would have:
+     \begin{equation}
+     \mathbf m_k^\dagger = (k^l_{cfd} - k^l_0)\cdot(C(x) u_{\infty}^{3/2})
+     \end{equation}
+     and after applying the additive model:
+     \begin{equation}
+     \hat k^\dagger = k_{ctf} + \mathbf m_k^\dagger(u_\infty)
+     \end{equation}
+     In the additive model case, each term carries units of $[J/Kg]$, and the augmenting map, $\mathbf m_k^\dagger$, is dependent on the free stream velocity, $u_\infty$.  Therefore an additive model would require that a multiplier map for each inlet condition of interest to be constructed.
+
+    Some simplifications are made:  For a given assembly, the multiplier maps have been shown to have a high span to span repeatability.
+
+    A significant limitation of the muliplier map procedure is the multiplier map may not be transferable to other assemblies in the core.
     \item (\checkmark) T. Hengal. Regression Kriging application to soil composition prediction as function of elevation, distance to river, ect. \cite{Hengl07}
     \item (\checkmark) Boosted regression and classification applications. \cite{moisen2006}, \cite{friedman2002}
     \item ($\cdot$) Other hi2lo approaches?
