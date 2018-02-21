@@ -1,0 +1,100 @@
+\documentclass[12pt,a4paper]{report}
+\usepackage[a4paper, total={6.25in, 9in}]{geometry}
+\usepackage{setspace}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{subfig}
+\usepackage{pgfgantt}
+\usepackage{rotating}
+\usepackage{bm}
+\usepackage{bbm}
+\usepackage{lipsum}
+\usepackage{pifont}
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage[]{algorithm2e}
+\usepackage[version=3]{mhchem} % Package for chemical equation typesetting \ce{}
+\usepackage{siunitx} % Provides the \SI{}{} and \si{}
+\usepackage[normalem]{ulem}  % stike-through by \sout{}
+
+
+%===========================CUSTOM CMDS=======================================%
+\DeclareMathOperator*{\E}{\mathbb{E}}
+\newcommand{\xmark}{\ding{55}}%
+
+\author{William Gurecky}
+\title{CFD Informed Subchannel}
+
+\begin{document}
+
+%=================================TITLE=======================================%
+%-----------------------------------------------------------------------------%
+\input{./outline_sections/title.tex}
+
+\input{./outline_sections/ack.tex}
+
+\input{./outline_sections/abstract.tex}
+
+%-----------------------------------------------------------------------------%
+\input{./outline_sections/acryn.tex}
+
+%=================================BODY========================================%
+\onehalfspacing
+%-----------------------------------------------------------------------------%
+\chapter{Introduction}
+\label{chap:intro}
+\input{./outline_sections/intro.tex}
+
+%-----------------------------------------------------------------------------%
+\chapter{Literature Review}
+\label{chap:lit}
+\input{./outline_sections/lit_review.tex}
+
+%-----------------------------------------------------------------------------%
+\chapter{Theory}
+\label{chap:theory}
+\input{./outline_sections/theory.tex}
+
+%-----------------------------------------------------------------------------%
+\chapter{Method Exploration Under Synthetic Data Source}
+\label{chap:work}
+\input{./outline_sections/method_app_synth.tex}
+\input{./outline_sections/method_app_cfd.tex}
+
+%-----------------------------------------------------------------------------%
+\chapter{Model Performance Under CFD Data Source}
+\label{chap:fw}
+\input{./outline_sections/method_app_ml.tex}
+
+%-----------------------------------------------------------------------------%
+\chapter{Conclusion}
+\label{chap:conc}
+\input{./outline_sections/conclusion.tex}
+
+%-----------------------------------------------------------------------------%
+\input{./outline_sections/gantt.tex}
+
+%-----------------------------------------------------------------------------%
+\input{./outline_sections/references.tex}
+
+%=================================APPX========================================%
+%-----------------------------------------------------------------------------%
+\chapter{Appendix A}
+\label{chap:app}
+\input{./outline_sections/appendix/app_a.tex}
+
+\chapter{Appendix B}
+\label{chap:app_b}
+\input{./outline_sections/appendix/app_b.tex}
+
+\chapter{Appendix C}
+\label{chap:app_b}
+\input{./outline_sections/appendix/app_c.tex}
+
+
+\end{document}
