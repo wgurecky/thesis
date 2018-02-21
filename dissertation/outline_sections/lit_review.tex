@@ -1,4 +1,4 @@
-%! TEX root = ../dissertation_gurecky.tex
+%! TEX root = ../outline.tex
 
 \begin{itemize}
     \item (\checkmark) M. Avramova.  CFD informed grid mixing coefficients in CTF.  This work leveraged CFD results to improve the momentum balance (grid mixing models) in CTF. \cite{avramova2007}
@@ -29,14 +29,13 @@ Where the first term is accounts for the effect of grid flow restriction and the
     \begin{equation}
         q'' = q''_{conv} + q''_{boil} = (\hat h_l)(T-T_{\infty}) + q''_{boil}(T)
     \end{equation}
-    In order to compute augmented hi2lo surface temperatures
-    several iterations are required to converge upon the correct surface temperature, $\hat T_s$ due to the surface boiling term.
+    Fixed point iterations were required to converge upon the correct surface temperature, $\hat T_s$ due to the surface boiling term.
 
     \begin{algorithm}[H]
     Guess $T^{i=0}_s=T_0$.  Maximum number, $N$ iterations.
 
         \For{i in range($N$):}{
-        Evaluate effective multiphase CTF HTC: $h_{eff} = h_{{ctf}}(T^i_{s}, \hat h_l, q'')$ \;
+        Compute effective multiphase CTF HTC: $h_{eff} = h_{{ctf}}(T^i_{s}, \hat h_l, q'')$ \;
         Compute new hi2lo surface temperatures: $T_{s} = \frac{q''}{h_{eff}} + T_\infty$ \;
         Under relax  $T^{i+1}_{s} = \omega T_{s} + (1 - \omega) T^{i}_{s} ;\ \omega < 1.$ \;
         \textbf{break if}:  $|T^{i+1}_s - T^i_s| < tol$ \;
@@ -72,10 +71,12 @@ Where the first term is accounts for the effect of grid flow restriction and the
         \alpha & = \frac{\dot m_i - \dot m_i^l }{\dot m_i^h - \dot m_i^l}
     \end{align*}
     Where $\dot m_i$ is the inlet mass flow rate.  The superscript, $(\cdot)^l$, represents low flow conditions and $(\cdot)^h$ represent high flow conditions.
-
-     \item Some simplifications are made:  For a given assembly, the multiplier maps have been shown to have a high span to span repeatability.  Therefore, a representative map is derived from a single span in a fully developed flow field.  This representative map is then applied to all other spans in the model.
-
+     \item Some simplifications are made:  For a given standalone assembly the multiplier maps exhibited a high span to span repeatability.  A representative map was derived from a single span in a fully developed flow field.  This representative map is then applied to all other spans in the model.
+     \item Despite high span to span repeatability, areas of over or under prediction by ($\pm 3[K]$)  are present in the post-hi2lo temperature profiles.  This detracts from the CILC predictive power of theis hi2lo method since CILC is likely to occur at outlying hot spots.  It is difficult to predict the magnitude and location of hot spots on the rod surface.
+     \item The problem may recast in terms of CILC risk.  Rather than attempting to predict how much and where CILC will occur, one may ask: What is the expected fraction of the rod surface that exceeds some critical temperature?
      \item The multiplier map may not be transferable to other assemblies in the core due to geometric effects including the orientation of neighboring assemblies and TH/neutronics feedbacks.  This represents a limitation to the spatial mapping procedure as unique maps must be generated for different assemblies in the core.
+     \item In cases with significant subcooled boiling the average wall superheat predicted by CFD and CTF do not agree.  This could be due to a mis-calibration of the boiling models employed in CFD or in CTF.
+        The multiplier map did not perform well under these scenarios since the topology of the multiplier map is sensitive to the presence of subcooled boiling on the surface of the rod.
     \end{itemize}
     \item (\checkmark) T. Hengal. Regression Kriging application to soil composition prediction as function of elevation, distance to river, ect. \cite{Hengl07}
     \item (\checkmark) Boosted regression and classification applications. \cite{moisen2006}, \cite{friedman2002}

@@ -1,1 +1,38 @@
-%! TEX root = ../dissertation_gurecky.tex
+%! TEX root = ../outline.tex
+
+\section{Predicting Value-Over-Threshold Probabilities}
+
+\begin{itemize}
+    \item (\checkmark-) The sampled temperatures may be tallied over each CTF face to estimate the fractional area that exceeds some threshold temperature.
+    The proability of exceeding a threshold temperture can be obtained by integrating the PDF:
+    \begin{equation}
+        p_e &= Pr(T > T^*) = 1 - \int_0^{T^*} f_T dT \\
+    \end{equation}
+    Let $Q_p$ denote the quantile associated with the threshold probability, $p_e$.
+
+    The quantile corresponding to $p_e$ is distributed according to:
+    \begin{align}
+        Q_p &\sim \mathcal N \left( F_T^{-1}(p), \sigma_{Q_p} \right) \\
+        \sigma_{Q_p} &= \frac{p(1 - p)}{n[f_T(F_T^{-1}(p))]^2}
+    \end{align}
+    The standard deviation of the exceedance probability estimate can be found by standard propagation of uncertainty principles:
+    \begin{align}
+        \sigma_p = \sqrt{\left(\frac{\partial p_e}{\partial Q_p} \right)^2 \cdot \sigma_{Q_p}^2}
+    \end{align}
+    Where
+    \begin{align}
+    \frac{\partial p_e}{\partial Q_p} &= \frac{\partial}{\partial Q_p} \left( 1 - \int_0^{Q_p} f_T dT \right) \\
+    &= \frac{\partial}{\partial Q_p} \left( -F_T(Q_p) + F_T(0) \right) \\
+    &= -f_T(Q_p)
+    \end{align}
+    Where $F_T^{-1}$ is the inverse CDF function and $f_T$ is the probability density function of temperature on the patch.
+    This dictates that estimates of extreme upper tail integrals carry large uncertainties.
+    \item The distribution for $p_e$ can be obtained by a change of variables, since $p_e$ and $Q_p$ are related by:
+    \begin{equation}
+     Q_p = F_T^{-1}(1 - p_e)
+    \end{equation}
+    Where $F_T^{-1}$ is the inverse CDF.  $p_e$ is distributed according to:
+    \begin{align}
+        f_{p_e} = f_{Q_p} \left( F_T^{-1}(1-p_e), \sigma_{Q_p}(p_e) \right) \cdot \abs{ \frac{\partial}{\partial p_e} F^{-1}(1-p_e) }
+    \end{align}
+\end{itemize}
