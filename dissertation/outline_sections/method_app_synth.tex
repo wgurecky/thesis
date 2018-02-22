@@ -1,38 +1,69 @@
 %! TEX root = ../outline.tex
 
-\section{Predicting Value-Over-Threshold Probabilities}
+
+\section{Generating Synthetic Data}
 
 \begin{itemize}
-    \item (\checkmark-) The sampled temperatures may be tallied over each CTF face to estimate the fractional area that exceeds some threshold temperature.
-    The proability of exceeding a threshold temperture can be obtained by integrating the PDF:
-    \begin{equation}
-        p_e &= Pr(T > T^*) = 1 - \int_0^{T^*} f_T dT \\
-    \end{equation}
-    Let $Q_p$ denote the quantile associated with the threshold probability, $p_e$.
+    \item (\checkmark) Describe the synthetic data generation tool developed to test the hi2lo procedure.
+        \begin{itemize}
+            \item The synthetic data generation tool follows the additive model paradigm.  A CTF result for any
+                given pin and flow condition, is augmented by a user controlled noise function $\tilde \varepsilon(z, \tilde \theta)$
+                and potentially a user set bias, $\tilde b(z)$ where $z$ is the axial position along the rod. 
+                $\tilde \theta$ represents user specified distribution parameters.
+                \begin{equation}
+                    T(z) = \mu_{ctf}(z) + \tilde \varepsilon (z, \tilde \theta) + \tilde b(z)
+                \end{equation}
+        \end{itemize}
+    \item (\checkmark) Show original CTF solution with added synthetic noise.
+    \item \textbf{Note}: The synthetic CFD data generation tool does not capture spatial auto-correlation of the surface fields.  It does not reflect
+        the physics of fluid flow.
+\end{itemize}
 
-    The quantile corresponding to $p_e$ is distributed according to:
-    \begin{align}
-        Q_p &\sim \mathcal N \left( F_T^{-1}(p), \sigma_{Q_p} \right) \\
-        \sigma_{Q_p} &= \frac{p(1 - p)}{n[f_T(F_T^{-1}(p))]^2}
-    \end{align}
-    The standard deviation of the exceedance probability estimate can be found by standard propagation of uncertainty principles:
-    \begin{align}
-        \sigma_p = \sqrt{\left(\frac{\partial p_e}{\partial Q_p} \right)^2 \cdot \sigma_{Q_p}^2}
-    \end{align}
-    Where
-    \begin{align}
-    \frac{\partial p_e}{\partial Q_p} &= \frac{\partial}{\partial Q_p} \left( 1 - \int_0^{Q_p} f_T dT \right) \\
-    &= \frac{\partial}{\partial Q_p} \left( -F_T(Q_p) + F_T(0) \right) \\
-    &= -f_T(Q_p)
-    \end{align}
-    Where $F_T^{-1}$ is the inverse CDF function and $f_T$ is the probability density function of temperature on the patch.
-    This dictates that estimates of extreme upper tail integrals carry large uncertainties.
-    \item The distribution for $p_e$ can be obtained by a change of variables, since $p_e$ and $Q_p$ are related by:
-    \begin{equation}
-     Q_p = F_T^{-1}(1 - p_e)
-    \end{equation}
-    Where $F_T^{-1}$ is the inverse CDF.  $p_e$ is distributed according to:
-    \begin{align}
-        f_{p_e} = f_{Q_p} \left( F_T^{-1}(1-p_e), \sigma_{Q_p}(p_e) \right) \cdot \abs{ \frac{\partial}{\partial p_e} F^{-1}(1-p_e) }
-    \end{align}
+\section{Single CTF Face Comparisons}
+\begin{itemize}
+    \item (\checkmark) Compare CTF vs Synthetic CFD vs Hi2Lo Reconstructed CRUD results on a single CTF face.
+    \item (\checkmark) Show sensitivity of integrated crud mass and boron to the following tunable parameters.  Also show impact on uncertainty in these integrated results to:
+        \begin{itemize}
+            \item (\checkmark) The number of samples drawn per patch
+            \item (\checkmark) Gaussian copula vs. best fit copula approach.
+            \item (\checkmark) Number of quantiles used in the reconstruction of margins
+        \end{itemize}
+\end{itemize}
+
+\section{Single Pin Comparisons}
+
+\begin{itemize}
+    \item (\checkmark) Compare CTF vs Synthetic CFD vs Hi2Lo Reconstructed CRUD results for a full pin for fixed TH conditions.
+    \item (\checkmark) Show sensitivity of integrated crud mass and boron to the following.  Also show impact on uncertainty in these integrated results to:
+        \begin{itemize}
+            \item (\checkmark) Increase the number of samples drawn per patch
+            \item (\checkmark) Force Gaussian copula vs. best fit copula approach.
+        \end{itemize}
+    \item (\checkmark) Show difference between Hi2Lo vs CTF predicted fractional surface area above a threshold ($T_{sat}$).  Clearly, the CTF result
+        is unable to capture small scale effects of the mixing vanes on the surface temperature distribution.
+\end{itemize}
+
+\subsection{Single Pin with Time Stepping}
+
+\subsubsection{Spatial Remapping Results}
+\begin{itemize}
+    \item (\checkmark) Show influence of hot spot stationarity assumptions on crud growth.
+\end{itemize}
+
+\begin{itemize}
+    \item (\checkmark) Show total integrated crud mass and crud boron as a function of time.
+    \item (\checkmark) Show sensitivity of integrated crud mass and boron to the following.  Also show impact on uncertainty in these integrated results to:
+        \begin{itemize}
+            \item (\checkmark) Increase the number of samples drawn per patch.
+            \item (\checkmark) Force Gaussian copula vs. best fit copula approach.
+            \item (\checkmark) Increasing number of re-sampling time steps.
+                We can re-sample from the joint $h(T, k, q'')$ distribution many times per TH state point.
+                This reduces variance in the total integrated boron and crud mass quantities.
+        \end{itemize}
+\end{itemize}
+
+Section Takeaways:
+\begin{itemize}
+    \item Increasing the number of samples per patch decreases variance in total crud and total preciptated boron esitmates.
+    \item Increasing the number of re-sampling steps reduces uncertainty.
 \end{itemize}

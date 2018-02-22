@@ -20,7 +20,7 @@ Where the first term is accounts for the effect of grid flow restriction and the
     \begin{equation}
         \mathbf m_h = \frac{h_{cfd}}{h_{0}} = \frac{q_{cfd}(T-T_\infty)_{0}}{q_{0}(T-T_\infty)_{cfd}}
     \end{equation}
-    It is important to note that a uniform heat flux is used in both the bare and full rod case so that $q_{cfd}/q_0 =1 $.
+    Note that a uniform heat flux is used in both the bare and full rod case so that $q_{cfd}/q_0 =1 $.
     Apply HTC remap:
     \begin{equation}
         \hat h_{l} = \mathbf m_h h_{ctf}
@@ -72,10 +72,12 @@ Where the first term is accounts for the effect of grid flow restriction and the
     \end{align*}
     Where $\dot m_i$ is the inlet mass flow rate.  The superscript, $(\cdot)^l$, represents low flow conditions and $(\cdot)^h$ represent high flow conditions.
      \item Some simplifications are made:  For a given standalone assembly the multiplier maps exhibited a high span to span repeatability.  A representative map was derived from a single span in a fully developed flow field.  This representative map is then applied to all other spans in the model.
-     \item Despite high span to span repeatability, areas of over or under prediction by ($\pm 3[K]$)  are present in the post-hi2lo temperature profiles.  This detracts from the CILC predictive power of theis hi2lo method since CILC is likely to occur at outlying hot spots.  It is difficult to predict the magnitude and location of hot spots on the rod surface.
-     \item The problem may recast in terms of CILC risk.  Rather than attempting to predict how much and where CILC will occur, one may ask: What is the expected fraction of the rod surface that exceeds some critical temperature?
+     \item Despite high span to span repeatability, areas of over or under prediction by ($\pm 3[K]$)  are present in the post-hi2lo temperature profiles.  This detracts from the CILC predictive power of the spatial map based hi2lo method since CILC is likely to occur at outlying hot spots.  It is difficult to predict the magnitude and location of hot spots on the rod surface.
+     \item The problem may be recast in terms of CILC risk.  Rather than attempting to predict precisely how much and where CILC will occur, one may ask: 
+         What is the expected fraction of the rod surface that is conducive to CILC failure?  Or:
+         What is the expected fraction of the rod surface that exceeds some critical temperature?
      \item The multiplier map may not be transferable to other assemblies in the core due to geometric effects including the orientation of neighboring assemblies and TH/neutronics feedbacks.  This represents a limitation to the spatial mapping procedure as unique maps must be generated for different assemblies in the core.
-     \item In cases with significant subcooled boiling the average wall superheat predicted by CFD and CTF do not agree.  This could be due to a mis-calibration of the boiling models employed in CFD or in CTF.
+     \item In cases with significant subcooled boiling the average wall superheat predicted by CFD and CTF do not agree.
         The multiplier map did not perform well under these scenarios since the topology of the multiplier map is sensitive to the presence of subcooled boiling on the surface of the rod.
     \end{itemize}
     \item (\checkmark) T. Hengal. Regression Kriging application to soil composition prediction as function of elevation, distance to river, ect. \cite{Hengl07}

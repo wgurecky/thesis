@@ -32,9 +32,9 @@ This work could be summarized as a series of steps (algorithm) estimate the foll
         = A \iiint g(\mathbf X|g_o, \mathbf I, \delta t) h(\mathbf X|\theta) d \mathbf X
         \label{eq:expected_crud}
 \end{eqnarray}
-let $\mathbf X= \{T, k, q''\}$ denote a random vector of temperature, TKE, and BHF. $\mathbf I$ represents additional known crud parameters, $g_o$ is the crud state at the start of the time step and $\theta$ are distribution parameters.  The goal is to predict what $h(\cdot)$ is in every CTF face.  The CRUD model, $g(\cdot)$, is common to all ctf faces.
+let $\mathbf X= \{T, k, q''\}$ denote a random vector of temperature, TKE, and BHF. $\mathbf I$ represents additional known crud parameters, $g_o$ is the crud state at the start of the time step and $\theta$ are distribution parameters.  The goal is to predict $\theta$, thereby specifying $h(\mathbf X|\hat \theta)$, in every CTF face.  The CRUD model, $g(\cdot)$, is common to all CTF faces.
 
-To compute the total crud/boron in each ctf face:
+To compute the total crud/boron in each CTF face:
 \\
 
 \begin{algorithm}[H]
@@ -107,7 +107,7 @@ A significant challenge is computing an estimate for $Var(\mathcal P_f) = \E(\ma
 
 
 \subsection{Propagating CRUD Through Time}
-\subsubsection{Hot Spot Stationarity}
+\subsection{Hot Spot Stationarity}
 \begin{itemize}
         \item (\checkmark) Elucidate why we need a spatial remapping scheme.
         \item (\checkmark) Detail how this mapping is produced.
@@ -118,4 +118,41 @@ A significant challenge is computing an estimate for $Var(\mathcal P_f) = \E(\ma
 \begin{itemize}
         \item ($\cdot$) Smear the CFD data and CTF results over all azimuthal angles.  This will increase the number of CFD samples used for the hi2lo mapping construction by a factor of four, and therefore decrease the uncertainty in the sample quantiles by a factor of 2.  See section on the theoretical distribution of sample quantiles (the sample quantile distributions follow 1/sqrt(N) behavior).
         \item ($\cdot$) Since the primary goal of this method is to predict CIPS, it is possible neglect azimuthal variation entirely and focus solely on the axial variation.  In this case, for any given pin, each CTF face at a fixed axial level will all get the same crud thickness and crud boron from the hi2lo model.
+\end{itemize}
+
+\section{Predicting Value-Over-Threshold Probabilities}
+
+\begin{itemize}
+    \item (\checkmark-) The sampled temperatures may be tallied over each CTF face to estimate the fractional area that exceeds some threshold temperature.
+    The proability of exceeding a threshold temperture can be obtained by integrating the PDF:
+    \begin{equation}
+        p_e &= Pr(T > T^*) = 1 - \int_0^{T^*} f_T dT \\
+    \end{equation}
+    Let $Q_p$ denote the quantile associated with the threshold probability, $p_e$.
+
+    The quantile corresponding to $p_e$ is distributed according to:
+    \begin{align}
+        Q_p &\sim \mathcal N \left( F_T^{-1}(p), \sigma_{Q_p} \right) \\
+        \sigma_{Q_p} &= \frac{p(1 - p)}{n[f_T(F_T^{-1}(p))]^2}
+    \end{align}
+    The standard deviation of the exceedance probability estimate can be found by standard propagation of uncertainty principles:
+    \begin{align}
+        \sigma_p = \sqrt{\left(\frac{\partial p_e}{\partial Q_p} \right)^2 \cdot \sigma_{Q_p}^2}
+    \end{align}
+    Where
+    \begin{align}
+    \frac{\partial p_e}{\partial Q_p} &= \frac{\partial}{\partial Q_p} \left( 1 - \int_0^{Q_p} f_T dT \right) \\
+    &= \frac{\partial}{\partial Q_p} \left( -F_T(Q_p) + F_T(0) \right) \\
+    &= -f_T(Q_p)
+    \end{align}
+    Where $F_T^{-1}$ is the inverse CDF function and $f_T$ is the probability density function of temperature on the patch.
+    This dictates that estimates of extreme upper tail integrals carry large uncertainties.
+    \item The distribution for $p_e$ can be obtained by a change of variables, since $p_e$ and $Q_p$ are related by:
+    \begin{equation}
+     Q_p = F_T^{-1}(1 - p_e)
+    \end{equation}
+    Where $F_T^{-1}$ is the inverse CDF.  $p_e$ is distributed according to:
+    \begin{align}
+        f_{p_e} = f_{Q_p} \left( F_T^{-1}(1-p_e), \sigma_{Q_p}(p_e) \right) \cdot \abs{ \frac{\partial}{\partial p_e} F^{-1}(1-p_e) }
+    \end{align}
 \end{itemize}
