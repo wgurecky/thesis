@@ -1,14 +1,14 @@
 %! TEX root = ../outline.tex
 
-
 \section{Generating Synthetic Data}
 
 \begin{itemize}
     \item (\checkmark) Describe the synthetic data generation tool developed to test the hi2lo procedure.
         \begin{itemize}
-            \item The synthetic data generation tool follows the additive model paradigm.  A CTF result for any
-                given pin and flow condition, is augmented by a user controlled noise function $\tilde \varepsilon(z, \tilde \theta)$
-                and potentially a user set bias, $\tilde b(z)$ where $z$ is the axial position along the rod. 
+            \item CTF results are augmented by user controlled noise distributed according to
+                $\tilde \varepsilon(z, \tilde \theta)$
+                and potentially shifted by a user set bias,
+                $\tilde b(z)$ where $z$ is the axial position along the rod.
                 $\tilde \theta$ represents user specified distribution parameters.
                 \begin{equation}
                     T(z) = \mu_{ctf}(z) + \tilde \varepsilon (z, \tilde \theta) + \tilde b(z)
