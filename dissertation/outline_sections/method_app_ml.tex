@@ -28,7 +28,7 @@
 
 \begin{itemize}
     \item ($\cdot$) Show temperature and TKE Q-Q plots elucidating bias introduced by the machine learning model at a variety of axial positions and local core conditions.
-    \item (\xmark) \sout{Compute quantile uncertainty estimates asscociated with predicted quantiles provided by the trained ML model} (Unsure if feasible)
+    \item (\xmark) \sout{Compute quantile uncertainty estimates associated with predicted quantiles provided by the trained ML model} (Unsure if feasible. Future work)
     \item (\xmark) \sout{Propagate ML model-induced quantile uncertainties} (Future work)
 \end{itemize}
 
@@ -38,14 +38,15 @@
     \item ($\cdot$)  Show ML predicted copula vs CFD truth.  Compute the classification error rate.
 \end{itemize}
 
-\subsubsection{Multi State Point 5x5 Results}
+\subsection{Multi State Point 5x5 Results}
 
 \begin{itemize}
-    \item ($\cdot$) Step a 5x5 assebly forward in time using hi2lo model with the trained ML model supplying quantiles and copula.
+    \item ($\cdot$) Step a 5x5 assembly forward in time using hi2lo model with the trained ML model supplying quantiles and copula.
+    \item ($\cdot$) Report hi2lo model results under:
     \begin{itemize}
-        \item ($\cdot$) Test ramp up and ramp down in power.
-        \item ($\cdot$) Test change in power shapes.
-        \item ($\cdot$) Test change in flow rate.
+        \item ($\cdot$) Changes in power shapes.
+        \item ($\cdot$) Changes in total rod power.
+        \item ($\cdot$) Changes in flow rate.
     \end{itemize}
 
 \end{itemize}

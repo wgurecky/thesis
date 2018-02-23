@@ -5,7 +5,7 @@
 \begin{itemize}
         \item (\checkmark) What is CRUD?  What is CIPS?
                 \begin{itemize}
-                \item CRUD is deposits of primary loop corrosion products on the outer cladding surface.  NiFe2O4 and many other constituents, Ni-B-O and Fe-B-O compounds, also some LiBOH. [ref mamba theory manual - is this possible since it might be export controlled?].  CRUD  typically forms where temperatures are high and where sub cooled boiling occurs on the rod surface.
+                    \item CRUD is deposits of primary loop corrosion products on the outer cladding surface.  \ce{NiFe_2O_4} and other constituents, Ni-B-O and Fe-B-O compounds, also some LiBOH. [ref mamba theory manual - is this possible since it might be export controlled?].  CRUD  typically forms where temperatures are high and where sub cooled boiling occurs on the rod surface.
                 \item Shift in power to bottom of core due to Boron trapped in the CRUD layer.
                 \end{itemize}
         \item (\checkmark) How is CRUD typically modeled?  At the core wide scale, typically TH boundary conditions are supplied by subchannel or coarser [refs].  Some CFD/CRUD work has been conducted that predicted striping patterns, or high variations in azimuthal crud growth, downstream of spacer grids.  The aparse experimental crud scrape data also shows high azimuthal variation downstream spacer grids.
@@ -41,13 +41,13 @@ By capturing the action of local hot and cold spots on the crud deposition rate 
     \item (\checkmark) Provide a background on Hi2Lo.
 \end{itemize}
 
-Hi2lo, or High to Low modeling, implies that a source of high fidelity gold standard data produced by an expensive to evaluate physics model is used to upscale and augment a low fidelity model of the same physics.
-Furthermore, this mapping must be possible even in the case where matching high and low fidelity results do not exist (i.e. both models are run at the same boundary conditions).
+Hi2lo, or High to Low modeling, describes when a source of high fidelity gold standard data produced by an expensive to evaluate physics model is used to upscale and augment a low fidelity model of the same physics.
+Furthermore, this mapping must be possible even in the case where matching high and low fidelity results do not exist (i.e. the hi fidelity and low fidelity models are not always provided the same boundary conditions).
 
-This mapping (upscaling and augmentation) must possible given any CTF pin at any operating condition - even when only a relatively small number of high fidelity results are available.
+This mapping must possible given any CTF pin at any operating condition - even when only a relatively small number of high fidelity results are available.
 
 We assume that the flow of information is uni-directional: from the high fidelity data to the low fidelity model.  No feedback between the disparate scale models is included.
 
-Generally, a surrogate model replaces expensive to evaluate physics with a math model that preserves some aspects of the physics.  It is oftentimes the goal to make the surrogate quickly executing relative to the original model. Therefore, the hi2Lo approach is analogous to a surrogate construction since the ultimate goal is to replace CFD with a model that captures the action of high fidelity CFD resolved flow phenomena on CRUD growth without having to run the CFD model outright.
+Generally, a surrogate model replaces expensive to evaluate physics with a math model that preserves some aspects of the physics.  It is oftentimes the goal to make the surrogate cheep to execute relative to the original model. Therefore, the hi2lo approach is analogous to a surrogate construction since the ultimate goal is to replace CFD with a model that captures the action of high fidelity CFD resolved flow phenomena on CRUD growth without having to run the CFD model outright.
 
 

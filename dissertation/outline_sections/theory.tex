@@ -6,11 +6,11 @@
         \item (\checkmark) Model overview.
     \item CTF estimates mean TH conditions everywhere in the core at a low spatial resolution.  The surrogate provides higher order moments about the mean.
     \begin{equation}
-    \mathbf S(\mathbf z) = \underbrace{ \bm \mu(\mathbf{z})}_\text{CTF} + 
+    \mathbf S(\mathbf z) = \underbrace{ \bm \mu(\mathbf{z})}_\text{CTF} +
     \underbrace{\varepsilon({\theta (\bm p(\mathbf z))})}_\text{CFD Informed} + \bm b(\mathbf{z})
     \end{equation}
     \begin{itemize}
-        \item $\mathbf S$ is a three component vector field representing the cladding surface temperture, turbulent kinetic energy and boundary heat flux.
+        \item $\mathbf S$ is a three component vector field representing the cladding surface temperature, turbulent kinetic energy and boundary heat flux.
         \item $\mathbf z$ are spatial coordinates. $\mathbf p$ are a set of auxiliary predictors.  Auxiliary predictors are covariates that describe local core conditions and may be geometric or thermal hydraulic in nature.
         \item $\varepsilon$ is a random three-component vector field with components: $\{\varepsilon_T, \varepsilon_k, \varepsilon_{q''}\}$.
         \item $\varepsilon({\theta (\bm p(\mathbf z))})$ is a CFD informed model with $\theta$ representing free model parameters which must be fit to CFD data.
@@ -136,14 +136,14 @@ A significant challenge is computing an estimate for $Var(\mathcal P_f) = \E(\ma
 
 \begin{itemize}
         \item ($\cdot$) Smear the CFD data and CTF results over all azimuthal angles.  This will increase the number of CFD samples used for the hi2lo mapping construction by a factor of four, and therefore decrease the uncertainty in the sample quantiles by a factor of 2.  See section on the theoretical distribution of sample quantiles (the sample quantile distributions follow 1/sqrt(N) behavior).
-        \item ($\cdot$) Since the primary goal of this method is to predict CIPS, it is possible neglect azimuthal variation entirely and focus solely on the axial variation.  In this case, for any given pin, each CTF face at a fixed axial level will all get the same crud thickness and crud boron from the hi2lo model.
+        \item ($\cdot$) Since the primary goal of this method is to predict CIPS, it is possible neglect azimuthal variation entirely and focus solely on axial variation.  In this case, for any given pin, each CTF face at a fixed axial level will all get the same crud thickness and crud boron from the hi2lo model.
 \end{itemize}
 
 \section{Probability of Exceeding a Threshold}
 
 \begin{itemize}
     \item (\checkmark-) The sampled temperatures may be tallied over each CTF face to estimate the fractional area that exceeds some threshold temperature.
-    The proability of exceeding a threshold temperture can be obtained by integrating the PDF:
+    The proability of exceeding a threshold temperature can be obtained by integrating the PDF:
     \begin{equation}
         p_e &= Pr(T > T^*) = 1 - \int_0^{T^*} f_T dT \\
     \end{equation}

@@ -6,17 +6,17 @@ Positive outcomes:
 
 \begin{itemize}
 	\item  Ability to produce a hi2lo mapping in the case of missing CFD data at the desired TH state.
-                This was accomplished by evaulating a trained machine learning model at the desired TH state.
+                This was accomplished by evaluating a trained machine learning model at the desired TH state.
 	\item  Propagates more physics into the computation of crud on each CTF face vs. base CTF/MAMBA estimates.
 	\item  Straight forward to propagate hi2lo-model-induced uncertainties though time due to Monte Carlo nature.
-	\item  Enables extreme value event frequency estimation, although, these estimates were shown to have massive uncertainty.
+	\item  Enables extreme value event frequency estimation, although, these estimates were shown to have large uncertainty.
 \end{itemize}
 
-\noindent Model deficiencies:  
+\noindent Model deficiencies:
 
 \begin{itemize}
 	\item  Not trivial to incorporate CRUD/TH feedback into the hi2lo model.  The hi2lo mapping must be modified to depend on the current crud state.  This CRUD/TH feedback was presently misssed in the current implementation.
-	\item  Extreme upper and lower sample quantiles (upper and lower tail integrals) are plagued by high variance which diminishes the applicability of this method to CILC.  
+	\item  Extreme upper and lower sample quantiles (upper and lower tail integrals) are plagued by high variance which diminishes the applicability of this method to CILC.
         \item Violates the CTF energy balance by shifting the surface temperature distributions towards the CFD result.  See future work.
 \end{itemize}
 
@@ -30,5 +30,4 @@ Positive outcomes:
 	\item Suggested alternate solution:  Create a MAMBA coarse code forked from MAMBA ``fine'' with additional fudge factors in place to correct crud growth rates near spacer grids.  Tune MAMBA coarse + CTF to achieve the same integrated crud results as MAMBA ``fine'' + CFD.  Where the current work pursued a boundary condition fixup approach, this proposed alternate strategy is a crud result fixup.   This strategy would not be applicable to CILC.
         \item Explore producing a heat transfer coefficient (HTC) map rather than directly predicting the temperature distribution.  This is due to energy balance consistency concerns.  Under the current strategy the CTF energy balance is disobeyed because the mean surface temperatures are shifted to the CFD value in cases where the $\mu_{cfd}-\mu_{ctf}$ bias is nonzero.  Using a HTC augmentation map would ensure that the energy balance computed by CTF is obeyed.
 	\item There is no free lunch here.  The inconsistent approach of CFD and CTF (different meshing scheme, closure models, methods, ect.) will inevitably lead to mismatches in mean surface temperature predictions between the two codes.
-	
 \end{itemize}
