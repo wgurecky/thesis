@@ -64,7 +64,7 @@ Legend:
         \begin{enumerate}
         	\item ($\cdot$) How many quantiles are required for temperature and TKE margin reconstruction
                                 - do we have the data required to drive down uncertainty in CRUD predictions to an acceptable level?
-            \item ($\cdot$) Estimate uncertainty introduced by the GBRT/Copula model
+                \item (\xmark) \sout{Estimate uncertainty introduced by the GBRT/Copula model}
             \item (\xmark) \sout{Propagate uncertainty to ensemble CRUD calculations}
         \end{enumerate}
         %----------------- POST PROPOSAL ------------------%
@@ -92,7 +92,7 @@ Legend:
 \item \textbf{(\checkmark-) Methods analysis and improvement}
     \begin{enumerate}
         \item (\checkmark) Perform Large scale CFD runs to inform finalized scale-bridging model.  (this was done by Bob Salko et. al for a 5x5 case)
-        \item ($\cdot$) Tune regression algorithm's (GBM) hyperparameters
+        \item ($\cdot$) Tune regression algorithm's hyperparameters
         \item ($\cdot$) Validate CFD informed subchannel CRUD results against plant data (IF AVAILABLE).
     \end{enumerate}
 \item \textbf{(\checkmark-) Final model construction and demonstration}
@@ -100,9 +100,8 @@ Legend:
         \item (\xmark) \sout{Demonstrate CFD informed subchannel model on a full-height, single assembly problem.}
         \item ($\cdot$) Propose how to extend this model to multi-pin, assembly scale cases.  Identify why this problem is
                         particularly messy and difficult.  This is a feature engineering problem.  Each pin, each CTF face must be
-                        uniquely identified in the core.  Essentially every CTF face in the assembly must have an associated unique
-                        set of features that identify it.
-        \item ($\cdot$) Assess CILC/CIPS prediction improvements vs. base model (no CFD informed TH).
+                        uniquely identified in the core.
+        \item ($\cdot$) Assess CILC/CIPS prediction improvements vs. base CTF/MAMBA model.
     \end{enumerate}
 \item \textbf{(\checkmark-) Write Dissertation}
 \end{enumerate}

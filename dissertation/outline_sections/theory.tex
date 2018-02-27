@@ -44,7 +44,7 @@ Shifting this distribution by a constant vector $\bm c=\bm b + \bm \mu_{ctf}$, r
 
 
 The goal is to estimate the expected crud on each CTF patch given by equation \ref{eq:expected_crud}.
-This work could be summarized as a series of steps (algorithm) estimate the following integral on each CTF face:
+This work could be summarized as an algorithm to estimate the following integral on each CTF face:
 
 \begin{eqnarray}
         total\ crud\ [grams] = A \mu_g\ = A \E[g(\mathbf X|g_o, \mathbf I, \delta t)] \nonumber \\
@@ -100,9 +100,21 @@ A significant challenge is computing an estimate for $Var(\mathcal P_f) = \E(\ma
 
 \subsection{Sample Quantiles}
 
+\subsubsection{Non Parametric Representations of Univariate Distributions}
+
 \begin{itemize}
-        \item (\checkmark) Compute sample quantiles.
-        \item (\checkmark) Building a cumulative density function from sample quantiles.
+    \item (\checkmark-) Introduce non-parametric representation of univariate distributions through sample quantiles.
+    \item ($\cdot$) Explain typical alternatives and why they are not suitable:
+        \begin{itemize}
+            \item Compute sample moments.  Use method of moments to fit a model to sample moments.
+            \item Compute sample cumulants.  Use sample cumulants to build an Edgeworth series.
+            \item Do cumulants or traditional moments behave in a predictable manner as a function of local core conditions?  Do the quantiles behave in a predictable manner?
+        \end{itemize}
+\end{itemize}
+
+\begin{itemize}
+        \item (\checkmark) Detail how to compute sample quantiles.
+        \item (\checkmark) Show reconstruction of the CDF from sample quantiles.
         \begin{itemize}
            \item Peicewise linear CDF leads to histogram PDF.
            \item PCHIP spline CDF preserves monotonicity of CDF and results in a smooth PDF. \cite{Fritsch80}
@@ -128,14 +140,14 @@ A significant challenge is computing an estimate for $Var(\mathcal P_f) = \E(\ma
 \subsection{Propagating CRUD Through Time}
 \subsection{Hot Spot Stationarity}
 \begin{itemize}
-        \item (\checkmark) Elucidate why we need a spatial remapping scheme.
-        \item (\checkmark) Detail how this mapping is produced.
+        \item (\checkmark) Elucidate why we need a spatial remapping scheme. As time progresses it is likely that hot spots on the rod surface will stay stationary since the hot spot locations are predominately governed by geometric factors.  Note this applies to the time-averaged fields.
+        \item (\checkmark) Detail how this mapping is produced:  This is a mapping between from a sample space to euclidean space on the rod surface.  This process requires that we can compute some multivariate order statistics by first performing weighted sum of three component random variables to generate a new univariate random variable for which traditional order statistics are available.
 \end{itemize}
 
 \subsection{Smearing Over Azimuth}
 
 \begin{itemize}
-        \item ($\cdot$) Smear the CFD data and CTF results over all azimuthal angles.  This will increase the number of CFD samples used for the hi2lo mapping construction by a factor of four, and therefore decrease the uncertainty in the sample quantiles by a factor of 2.  See section on the theoretical distribution of sample quantiles (the sample quantile distributions follow 1/sqrt(N) behavior).
+        \item ($\cdot$) Smear the CFD data and CTF results over all azimuthal angles.  This will increase the number of CFD samples used for the hi2lo mapping construction by a factor of four, and therefore decrease the uncertainty in the sample quantiles by a factor of 2.  See section on the theoretical distribution of sample quantiles.  The sample quantiles follow $1/\sqrt N$ behavior.
         \item ($\cdot$) Since the primary goal of this method is to predict CIPS, it is possible neglect azimuthal variation entirely and focus solely on axial variation.  In this case, for any given pin, each CTF face at a fixed axial level will all get the same crud thickness and crud boron from the hi2lo model.
 \end{itemize}
 
@@ -162,8 +174,8 @@ A significant challenge is computing an estimate for $Var(\mathcal P_f) = \E(\ma
     \end{align}
     Where
     \begin{align}
-    \frac{\partial p_e}{\partial q_p} &= \frac{\partial}{\partial q_p} \left( 1 - \int_0^{q_p} f_T dT \right) \\
-    &= \frac{\partial}{\partial q_p} \left( -F_T(q_p) + F_T(0) \right) \\
+    \frac{\partial p_e}{\partial q_p} &= \frac{\partial}{\partial q_p} \left( 1 - \int_0^{q_p} f_T dT \right) \nonumber \\
+    &= \frac{\partial}{\partial q_p} \left( -F_T(q_p) + F_T(0) \right) \nonumber \\
     &= -f_T(q_p)
     \end{align}
     This dictates that estimates of extreme upper tail integrals carry large relative uncertainties.

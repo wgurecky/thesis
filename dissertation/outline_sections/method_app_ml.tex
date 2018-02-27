@@ -36,13 +36,14 @@
 
 \begin{itemize}
     \item ($\cdot$)  Show ML predicted copula vs CFD truth.  Compute the classification error rate.
+        Summarize with a confusion matrix.
 \end{itemize}
 
 \subsection{Multi State Point 5x5 Results}
 
 \begin{itemize}
-    \item ($\cdot$) Step a 5x5 assembly forward in time using hi2lo model with the trained ML model supplying quantiles and copula.
-    \item ($\cdot$) Report hi2lo model results under:
+    \item ($\cdot$) Step a 5x5 assembly forward in time using pre-computed ctf-mpact results as input to the hi2lo model with the trained ML model supplying quantiles and copula.
+    \item ($\cdot$) Report hi2lo crud model results under:
     \begin{itemize}
         \item ($\cdot$) Changes in power shapes.
         \item ($\cdot$) Changes in total rod power.
