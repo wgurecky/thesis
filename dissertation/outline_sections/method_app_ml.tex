@@ -39,6 +39,18 @@
         Summarize with a confusion matrix.
 \end{itemize}
 
+
+\subsection{Cross Validation}
+
+An estimate of the interpolation error incurred when evaluating the trained models at unknown CFD states can be made by performing a leave one out cross validation study.
+In this procedure, a single CFD/CTF pin pair is removed from the database and then the model is retrained on remaining data.  Following this retraining, a crud prediction is made 
+at the missing pin's TH conditions.  The crud results are compared against crud results generated using the full training data set.  This process is repeated by
+removing .  The differences are summarized and averaged to obtain a measure of model's predictive performance when applied to TH conditions that reside in the TH training envelope.
+
+Note that this cross validation technique only ascertains interpolation errors within the TH envelope enclosed by the original full training set.  In other words, interpolation error
+estimates cannot be extrapolated to core conditions that lay outside of the training set.  For a robust interpolation error analysis, a much larger training data set is required
+that spans essentially all possible TH conditions encountered in an operational PWR.
+
 \subsection{Multi State Point 5x5 Results}
 
 \begin{itemize}

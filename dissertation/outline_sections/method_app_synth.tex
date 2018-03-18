@@ -7,19 +7,25 @@ The
 \begin{itemize}
     \item (\checkmark) Describe the synthetic data generation tool developed to test the hi2lo procedure.
         \begin{itemize}
-            \item CTF results are augmented by user controlled noise distributed according to
-                $\tilde \varepsilon(z, \tilde \theta)$
-                and potentially shifted by a user set bias,
-                $\tilde b(z)$ where $z$ is the axial position along the rod.
-                $\tilde \theta$ represents user specified distribution parameters.
-                \begin{equation}
-                    T(z) = \mu_{ctf}(z) + \tilde \varepsilon (z, \tilde \theta) + \tilde b(z)
-                \end{equation}
         \end{itemize}
     \item (\checkmark) Show original CTF solution with added synthetic noise.
     \item \textbf{Note}: The synthetic CFD data generation tool does not capture spatial auto-correlation of the surface fields.  It does not reflect
         the physics of fluid flow.
 \end{itemize}
+
+A synthetic data generation tool was developed to provide a testing data source to the copula and margin reconstruction routines.  The copula family, rank corellation coefficient and marginal distibutions are specified as a function of axial location and local TH conditions supplied by CTF.
+
+To generate synthetic data, CTF results are augmented by user controlled noise distributed according to
+    $\tilde \varepsilon(z, \tilde \theta)$
+    and potentially shifted by a user set bias,
+    $\tilde b(z)$ where $z$ is the axial position along the rod.
+    $\tilde \theta$ represents user specified distribution parameters.
+    \begin{equation}
+        T(z) = \mu_{ctf}(z) + \tilde \varepsilon (z, \tilde \theta) + \tilde b(z)
+    \end{equation}
+
+
+The availability of synthetic data alleviates the need to generate comparatively expensive CFD results to test the hi2lo strategy.  Some aspects of CFD field are preserved, including expected biases between CFD and CTF results that arise due to discrepancies in wall heat transfer closure models, among other differences [ref], additionally turbulent dispersion of the temperature and surface shear distributions around spacer grids are specified.  Accounting for spatial auto-correlation in the surface fields was not purssued since the hi2lo procedures do not seek to preserve fine scale spatial features.  Any spatial autocorrelation present within a CTF face is lost.  The synthetic data is not a direct replacement to CFD data but serves as data source for integration testing.
 
 \section{Single CTF Face Comparisons}
 \begin{itemize}
