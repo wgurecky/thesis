@@ -1,3 +1,10 @@
+*.png
+*.jpg
+*.bbl
+*.blg
+*.txt
+*.svg
+*.zip
 *.pyc
 *.o
 *.pdf
