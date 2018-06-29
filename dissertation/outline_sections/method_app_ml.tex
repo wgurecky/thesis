@@ -1,0 +1,65 @@
+%! TEX root = ../outline.tex
+
+\section{Machine Learning Model Trained on CFD Data Source}
+
+\begin{itemize}
+    \item (\checkmark-) Harvesting CFD data for training. Explain the pre-processing pipeline.
+    \item ($\cdot$) Why use gradient boosted regression trees vs some other ML technique?
+\end{itemize}
+
+\subsection{Introduction Gradient Boosted Regression Trees}
+\begin{itemize}
+    \item (\checkmark-) Explain a classification and regression tree (CART).  (Move to theory or appendix?)
+    \item (\checkmark-) Explain gradient boosting.  (Move to theory or appendix?)
+\end{itemize}
+
+\subsection{Feature Engineering}
+\begin{itemize}
+    \item ($\cdot$) Select a predictive variable set that can describe the behavior of the conditional quantiles and copula everywhere in the assembly.
+    \item ($\cdot$) Justify choice of predictive variables.
+    \item ($\cdot$) Perform parameter culling via first-pass Gradient boosting. (Maybe move to future work). Critical for multi-pin cases where it is
+        important to different between each pin in the core.  For instance: what makes an edge pin special?  Can we predict the impact of neighboring
+        guide tubes on the crud growth rate?
+    \item ($\cdot$) Perform principle component analysis on the remaining predictive variables. (Maybe move to future work.)
+
+\end{itemize}
+
+\subsection{Training the Quantile Regressors}
+
+\begin{itemize}
+    \item ($\cdot$) Show temperature and TKE Q-Q plots elucidating bias introduced by the machine learning model at a variety of axial positions and local core conditions.
+    \item (\xmark) \sout{Compute quantile uncertainty estimates associated with predicted quantiles provided by the trained ML model} (Unsure if feasible. Future work)
+    \item (\xmark) \sout{Propagate ML model-induced quantile uncertainties} (Future work)
+\end{itemize}
+
+\subsection{Training the Copula Classifier}
+
+\begin{itemize}
+    \item ($\cdot$)  Show ML predicted copula vs CFD truth.  Compute the classification error rate.
+        Summarize with a confusion matrix.
+\end{itemize}
+
+
+\subsection{Cross Validation}
+
+An estimate of the interpolation error incurred when evaluating the trained models at unknown CFD states can be made by performing a leave one out cross validation study.
+In this procedure, a single CFD/CTF pin pair is removed from the database and then the model is retrained on remaining data.  Following this retraining, a crud prediction is made 
+at the missing pin's TH conditions.  The crud results are compared against crud results generated using the full training data set.  This process is repeated by
+removing .  The differences are summarized and averaged to obtain a measure of model's predictive performance when applied to TH conditions that reside in the TH training envelope.
+
+Note that this cross validation technique only ascertains interpolation errors within the TH envelope enclosed by the original full training set.  In other words, interpolation error
+estimates cannot be extrapolated to core conditions that lay outside of the training set.  For a robust interpolation error analysis, a much larger training data set is required
+that spans essentially all possible TH conditions encountered in an operational PWR.
+
+\subsection{Multi State Point 5x5 Results}
+
+\begin{itemize}
+    \item ($\cdot$) Step a 5x5 assembly forward in time using pre-computed ctf-mpact results as input to the hi2lo model with the trained ML model supplying quantiles and copula.
+    \item ($\cdot$) Report hi2lo crud model results under:
+    \begin{itemize}
+        \item ($\cdot$) Changes in power shapes.
+        \item ($\cdot$) Changes in total rod power.
+        \item ($\cdot$) Changes in flow rate.
+    \end{itemize}
+
+\end{itemize}

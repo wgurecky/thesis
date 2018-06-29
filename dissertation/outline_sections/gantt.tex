@@ -1,0 +1,173 @@
+%! TEX root = ../outline.tex
+
+%-----------------------------------------------------------------------------%
+\pagebreak
+\section*{Project Schedule}
+
+Legend:
+\begin{itemize}
+    \item {\color{blue} Blue text: New task (added post-proposal).}
+    \item (\checkmark)  Complete
+    \item (\checkmark-)  Underway but incomplete
+    \item ($\cdot$)  Not started
+    \item (\xmark)  \sout{Not started.  Will not do.}
+\end{itemize}
+\bigskip
+
+\begin{enumerate}
+\item \textbf{(\checkmark) Literature review.}
+\item \textbf{(\checkmark) Develop CFD-CRUD tools for training data generation and extraction.}
+          Platform used to generate datasets that are
+          required to inform a scale-bridging model.
+    \begin{enumerate}
+        \item (\checkmark) Create CFD data extraction and post processing utilities.
+        \item (\checkmark) Develop STAR-CCM+ plugin to extract cladding surface and volumetric TH quantities from a CFD computation.
+        \item (\checkmark) Compute the required volume and surface integrals to
+              distill finely resolved CFD datasets into subchannel-like results.
+    \end{enumerate}
+\item \textbf{(\checkmark) Demonstrate differences between CFD and Subchannel predictions.}
+    \begin{enumerate}
+        \item (\checkmark) Compute differences between volume/surface averaged CFD quantities and subchannel predictions.
+        \item (\checkmark) Identify deficiencies in subchannel predictions wrt. CRUD growth and CILC.
+    \end{enumerate}
+\item \textbf{(\checkmark) Investigate CRUD model sensitives.}
+    \begin{enumerate}
+        \item (\checkmark) Identify CRUD (MAMBA) sensitivities to TH boundary conditions
+        \item (\checkmark) Produce correlation coefficients and scatter plot depictions of the relationship(s) between input
+              and output of the CRUD model.
+          \item (\checkmark) Identify TH conditions under which CFD scale CRUD predictions diverge from subchannel-CRUD results.
+    \end{enumerate}
+%
+\item \textbf{(\checkmark) Methods implementation and demonstration}
+    \begin{enumerate}
+        \item (\checkmark) De-trend pointwise CFD datasets \& compute residual distributions.
+        \begin{enumerate}
+            \item (\checkmark) Moving averaged approach (assumes CTF and CFD will agree on the mean)
+            \item (\checkmark) CTF mean approach (requires CTF runs at identical CFD sample points)
+        \end{enumerate}
+        %
+        \item (\checkmark) Create a tool to generate synthetic CFD-like training data sets to facilitate
+            testing of the regression tools.
+        \begin{enumerate}
+            \item (\checkmark) Develop flexible dependence modeling package capable of capturing skewed covariance behavior (Copula).
+            \item (\xmark) \sout{Develop Kriging model to capture spatial auto-correlation (may not be necessary?)}
+        \end{enumerate}
+        %
+        \item (\checkmark) Construct a regression model $M(\cdot)$ (Gradient boosted tree model [GBM]).
+        \begin{enumerate}
+            \item (\checkmark) Regress copula model parameters, $\bm{\hat\theta}$, on local-average CTF provided inputs.
+            \item (\checkmark) Evaluate regression to recover joint TH distributions on any CTF patch:
+                $M(CTF\ Patch\ Data) \rightarrow {P(T>t,TKE>tke,...|\bm{\hat\theta})}$
+        \end{enumerate}
+        %
+        \item ($\cdot$) Error Estimation
+        \begin{enumerate}
+        	\item ($\cdot$) How many quantiles are required for temperature and TKE margin reconstruction
+                                - do we have the data required to drive down uncertainty in CRUD predictions to an acceptable level?
+                \item (\xmark) \sout{Estimate uncertainty introduced by the GBRT/Copula model}
+            \item (\xmark) \sout{Propagate uncertainty to ensemble CRUD calculations}
+        \end{enumerate}
+        %----------------- POST PROPOSAL ------------------%
+        \item (\checkmark-) Multi-state point execution
+        \begin{enumerate}
+            \item (\checkmark) Implement time stepping scheme.  Support ability to change the power profile/flow conditions at each time step.
+            \item (\checkmark-) Implement ability to propagate uncertainty through time steps.
+            \begin{itemize}
+                \item (\checkmark) Account for sampling-induced uncertainty and demonstrate how these errors compound over time.
+                \item ($\cdot$) {\color{blue} Account for uncertainty in CFD sample quantiles. The sample quantiles are known
+                                    to be distributed according to a Gaussian distribution.  It is possible to propagate
+                                    this uncertainty through the model.}
+            \end{itemize}
+        \item ($\cdot$) {\color{blue} Detail how this hi2lo strategy fits into a multi-physics framework with TH/Neutronic/CRUD feedbacks.}
+        %
+        \end{enumerate}
+        % -------------------------------------------------%
+        \item (\xmark) \sout{Compute areas of the prediction surface with highest
+                             sensitivity to changes in input parameters \& develop capability to super sample these regions.}
+        %
+        \item (\xmark) \sout{Demonstrate ability to perform dimensionality reduction of the input space.}
+        \item (\checkmark-) Perform CFD informed subchannel based CRUD prediction for a \emph{single pin}.
+    \end{enumerate}
+\item \textbf{(\checkmark) Write proposal document}
+\item \textbf{(\checkmark-) Methods analysis and improvement}
+    \begin{enumerate}
+        \item (\checkmark) Perform Large scale CFD runs to inform finalized scale-bridging model.  (this was done by Bob Salko et. al for a 5x5 case)
+        \item ($\cdot$) Tune regression algorithm's hyperparameters
+        \item ($\cdot$) Validate CFD informed subchannel CRUD results against plant data (IF AVAILABLE).
+    \end{enumerate}
+\item \textbf{(\checkmark-) Final model construction and demonstration}
+    \begin{enumerate}
+        \item (\xmark) \sout{Demonstrate CFD informed subchannel model on a full-height, single assembly problem.}
+        \item ($\cdot$) Propose how to extend this model to multi-pin, assembly scale cases.  Identify why this problem is
+                        particularly messy and difficult.  This is a feature engineering problem.  Each pin, each CTF face must be
+                        uniquely identified in the core.
+        \item ($\cdot$) Assess CILC/CIPS prediction improvements vs. base CTF/MAMBA model.
+    \end{enumerate}
+\item \textbf{(\checkmark-) Write Dissertation}
+\end{enumerate}
+
+\begin{sidewaysfigure}
+%---------------------------     YEAR ONE        ------------------------------%
+\begin{ganttchart}[
+        inline,
+        x unit=1.5cm,
+        y unit title =0.8cm,
+        y unit chart=0.8cm,
+        hgrid,
+        vgrid,
+        time slot format=isodate,
+        compress calendar
+    ]{2016-06-01}{2017-07-30}
+    \gantttitlecalendar*[compress calendar, time slot format=isodate]{2016-06-01}{2017-07-30}{year, month=shortname} \\
+    \gantttitlelist{1,...,14}{1} \\
+%%%%%%% Phase 1
+\ganttgroup{Proposal Era}{2016-06-01}{2017-06-30} \\  %elem0
+\ganttbar{Lit. Review}{2016-06-01}{2016-11-01} \\  %elem1
+\ganttbar{CFD Post Proc. Dev.}{2016-06-01}{2016-08-20} \\  %elem2
+\ganttlinkedbar{CTF vs CFD}{2016-08-20}{2016-10-30} \ganttnewline  %elem3
+\ganttbar{MAMBA Sensitivity}{2016-08-01}{2016-09-30} \ganttnewline  %elem4
+\ganttbar{Copula Model Dev.}{2016-10-01}{2017-01-10}  \\  %elem5
+\ganttbar{Synthetic Data Gen}{2016-12-01}{2017-01-30} \\  %elem6
+\ganttlinkedbar{GBRT Model Dev.}{2016-12-01}{2017-03-30}  \\  %elem7
+\ganttlinkedbar{Link Models w/ CRUD Sim.}{2017-03-01}{2017-06-30}  \\  %elem8
+\ganttbar{Write Proposal}{2017-04-01}{2017-06-30}  %elem9
+\ganttmilestone{Proposal}{2017-06-30} \ganttnewline  %elem10
+%%%%%%%% Extra Task Linkages
+\ganttlink[link mid=0.2]{elem2}{elem4}
+\end{ganttchart}
+%-----------------------------------------------------------------------------%
+\end{sidewaysfigure}
+
+\begin{sidewaysfigure}
+%---------------------------     YEAR TWO       ------------------------------%
+\begin{ganttchart}[
+        inline,
+        x unit= 1.7cm,
+        y unit title =0.8cm,
+        y unit chart=0.8cm,
+        hgrid,
+        vgrid,
+        time slot format=isodate,
+        compress calendar
+    ]{2017-06-01}{2018-05-01}
+    \gantttitlecalendar*[compress calendar, time slot format=isodate]{2017-06-01}{2018-05-01}{year, month=shortname} \\
+    \gantttitlelist{13,...,24}{1} \\
+%%%%%%% Phase 2
+\ganttbar{ }{2017-06-01}{2017-06-30}  %elem0
+\ganttmilestone{Proposal}{2017-06-30} \ganttnewline  %elem1
+\ganttgroup{Dissertation Era}{2017-07-1}{2018-05-01} \\  %elem2
+\ganttbar{Time Stepping}{2017-07-01}{2018-01-30} \ganttnewline  %elem3
+\ganttlinkedbar{Uncert. Prop}{2017-12-01}{2018-02-28} \ganttnewline  %elem4
+\ganttbar{Methods Refinement}{2017-08-01}{2018-02-28} \ganttnewline  %elem5
+\ganttbar{Final CFD Runs}{2018-01-01}{2018-02-28} \ganttnewline  %elem6
+\ganttbar{Write Dissertation}{2018-01-01}{2018-04-01}  %elem7
+\ganttmilestone{Defense}{2018-4-01} \ganttnewline  %elem8
+\ganttlinkedbar{Final Revisions}{2018-04-15}{2018-05-01}  \ganttnewline  %elem9
+\ganttmilestone{Project Conclusion}{2018-05-01} \ganttnewline  %elem10
+%%%%%%%% Extra Task Linkages
+\end{ganttchart}
+%-----------------------------------------------------------------------------%
+\end{sidewaysfigure}
+
+
+\pagebreak

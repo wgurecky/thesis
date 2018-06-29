@@ -1,3 +1,5 @@
+*.pyc
+*.o
 *.pdf
 *.aux
 *.log
@@ -7,3 +9,10 @@
 *.fdb
 *.out
 *.gz
+*.nav
+*.xml
+*.bcm
+*.vrb
+*.snm
+*.bcf
+*.eps
