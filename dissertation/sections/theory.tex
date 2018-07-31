@@ -52,7 +52,7 @@ Where $\gamma$ are free parameters in the ML model.
 
 In addition to improving the expected value prediction of CRUD on each CTF patch vs the CTF standalone case, the model provides the capability to estimate the likelihood of extreme value events (i.e. $\mathcal P_f \propto Pr(g(x) > g^*)$, where $g^*$ is some critical crud thickness and $\mathcal P_f$ is a cladding failure probability) on the rod surface.  This would be impossible to quantify with CTF/MAMBA alone.
 
-A significant challenge is computing an estimate for $Var(\mathcal P_f) = \E(\mathcal P_f - \E(\mathcal P_f))^2$.
+A significant challenge is computing an estimate for $Var(\mathcal P_f) = \E[(\mathcal P_f - \E(\mathcal P_f))^2]$.
 
 
 \section{Construction of the Hi2lo Map}
