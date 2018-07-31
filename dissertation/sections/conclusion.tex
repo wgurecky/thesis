@@ -19,16 +19,19 @@ Positive outcomes:
 \section{Future Work}
 
 \begin{itemize}
-	\item  Investigate multi-pin, full core cases.
+	\item  Investigate multi-state, many assembly cases.
 	\begin{itemize}
 		\item Requires extensive feature engineering in order to remain predictive under a wide variety of pin orientations and local core conditions.
 	\end{itemize}
-	\item Suggested alternate solution:  Create a MAMBA coarse code forked from MAMBA ``fine'' with additional fudge factors in place to correct crud growth rates near spacer grids.  Tune MAMBA coarse + CTF to achieve the same integrated crud results as MAMBA ``fine'' + CFD.  Where the current work pursued a boundary condition fixup approach, this proposed alternate strategy is a crud result fixup.   This strategy would not be applicable to CILC.
-	\item Explore producing a heat transfer coefficient (HTC) map rather than directly going for the temperature residual distribution.  This is due to energy balance consistency concerns.  Under the current strategy the CTF energy balance is disobeyed because the mean surface temperatures are shifted to the CFD value in cases where the $CFD-CTF$ bias is nonzero.  Using a HTC augmentation map would ensure that the energy balance computed by CTF is obeyed.  CFD computes the HTC from law of the wall approximations: $h(T_s) = \frac{\rho_f(y_c) C_{pf}(y_c){u^*}}{T^{+}(y^{+}(y_c))}$ [ref star user manual].  
-	\begin{equation}
-	q'' = h(T_s)(T_s - T_\infty)
-	\end{equation}
-	First, the left hand side of this equation is fixed (provided by MPACT).  If $h(T)$ is specified by the hi2lo model and $q''$ is known, one can compute $T_s$ which satisfies the energy balance.  On the other hand, if one specified $T_s$, the right hand may not be equal to the original MPACT provided $q''$ unless the functional form for $h$ is modified or $T_\infty$ is adjusted.  
-	\item There is no free lunch here.  The inconsistent approach of CFD and CTF (different meshing scheme, closure models, function approximation methods, ect.) will inevitably lead to mismatches in mean surface temperature predictions between the two codes.
+		
+	\item Use parametric marginal models in place of the predicted piecewise conditional quantile function.  This would include identifying some class of distribution which accurately models the temperature and TKE variation on a CTF patch.
+	
+	\item Explore generating a heat transfer coefficient (HTC) map rather than predicting the temperature residual distribution.  This is avenue for future work is motivated by energy balance consistency concerns.  Under the current strategy the CTF energy balance is disobeyed because the mean surface temperatures are shifted to the CFD value in cases where the $CFD-CTF$ bias is nonzero.  In this scinario the Hi2lo model acts as a replacement for the Dittus-Boelter empirical heat transfer coefficient relation in CTF.
+	
+	\item Investigate using a spectral decomposition of the temperature and turbulent kinetic energy on each patch.  The machine learning problem becomes one of predicting the spectra in each CTF face as a function of local core conditions.  One could take advantage of the periodicity in the temperature and TKE surface fields as one traverses the rod in a spiral pattern.  These temperature and TKE spectra can be regarded as an isomorphism of the  joint distribution of temperature and TKE on the rod surface.
+	
+	\item Extend Hi2Lo model to quantify CILC risk.  Derive a CILC risk metric from the Hi2Lo crud result.
+	
+		\item Investigate including additional fudge factors in MAMBA crud kinetics to correct crud growth rates near spacer grids.  Tune fudge factors such that MAMBA + CTF to achieve the same integrated crud results as MAMBA ``fine'' + CFD for all entire relevant TH envelope.  This type of problem can be attacked using a standard Bayesian calibration technique.   This strategy would introduce introduce.  If the MAMBA CRUD kinetics change, the tuned fudge factors would need to be regenerated.
 	
 \end{itemize}
