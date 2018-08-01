@@ -6,26 +6,44 @@
         \item (\checkmark) Model overview.
     \item CTF estimates mean TH conditions everywhere in the core at a low spatial resolution.  The surrogate provides higher order moments about the mean.
     \begin{equation}
-    F(\mathbf z) = \underbrace{\mu(\mathbf{z})}_\text{CTF} + \underbrace{\varepsilon({\mathbf p(\mathbf z)})}_\text{CFD Informed} + b(\mathbf{z})
+    \mathbf S(\mathbf z) = \underbrace{ \bm \mu(\mathbf{z})}_\text{CTF} +
+    \underbrace{\varepsilon({\theta (\bm p(\mathbf z))})}_\text{CFD Informed} + \bm b(\mathbf{z})
     \end{equation}
-
     \begin{itemize}
-        \item Treat $\varepsilon$ as a random field.  $\varepsilon(\cdot)$ is a CFD informed model. $\mathbf z$ are spatial coordinates. $\mathbf p$ are a set of auxiliary predictors.  Auxiliary predictors are covariates that describe local core conditions and may be geometric or thermal hydraulic in nature.
-        \item $b$ is bias ($\mu_{CTF} - \mu_{CFD}$)
-        \item Field averages, $\mu$, are piecewise constant over each CTF patch
+        \item $\mathbf S$ is a three component vector field representing the cladding surface temperature, turbulent kinetic energy and boundary heat flux.
+        \item $\mathbf z$ are spatial coordinates. $\mathbf p$ are a set of auxiliary predictors.  Auxiliary predictors are covariates that describe local core conditions and may be geometric or thermal hydraulic in nature.
+        \item $\varepsilon$ is a random three-component vector field with components: $\{\varepsilon_T, \varepsilon_k, \varepsilon_{q''}\}$.
+        \item $\varepsilon({\theta (\bm p(\mathbf z))})$ is a CFD informed model with $\theta$ representing free model parameters which must be fit to CFD data.
+        \item $\bm b$ is bias ($\bm \mu_{CTF} - \bm \mu_{CFD}$)
+        \item Field averages, $\bm \mu$, are piecewise constant over each CTF patch
         \item Note this is a additive model where Salko constructed a multiplicative model.
     \end{itemize}
 \end{itemize}
 
-Consider the case where the CFD results are normally distributed about the CTF results such that $\varepsilon \sim \mathcal N(0, \mathbf \theta(\mathbf p))$, where $\mathbf \theta(\mathbf p) = \mathbf \Sigma(\mathbf p)$ is a covariance matrix that depends on local core conditions.
+Consider the case where the CFD results are normally distributed about the CTF results such that $\varepsilon \sim \mathcal N(0, \mathbf \theta(\mathbf p))$, where $\mathbf \theta(\mathbf p) = \bm \Sigma(\mathbf p)$ is a covariance matrix that depends on local core conditions.
 
-Shifting this distribution by a constant $c=b + \mu_{ctf}$, results in a new distribution denoted $h$:
-\begin{equation}
-    h = \mathcal N(c, \mathbf \theta(\mathbf p))
-\end{equation}
+Shifting this distribution by a constant vector $\bm c=\bm b + \bm \mu_{ctf}$, results in a new distribution denoted:
+\begin{align}
+    \left. h \right|_{\bm p} & = \mathcal N(\bm c, \bm \Sigma(\mathbf p)) \nonumber \\
+    & = \left.
+        \mathcal N \left(
+        \begin{pmatrix}
+            c_T \\
+            c_k \\
+            c_{q''}
+        \end{pmatrix}
+    ,
+        \begin{pmatrix}
+            \sigma_{T} \sigma_{T} & \sigma_{T} \sigma_{k} & \sigma_{T} \sigma_{q''} \\
+            \sigma_{k} \sigma_{T} & \sigma_{k} \sigma_{k} & \sigma_{k} \sigma_{q''} \\
+            \sigma_{q''} \sigma_{T} & \sigma_{q''} \sigma_{k} & \sigma_{q''} \sigma_{q''}
+        \end{pmatrix}
+    \right)
+    \right|_{\mathbf p}
+\end{align}
+
 
 The goal is to estimate the expected crud on each CTF patch given by equation \ref{eq:expected_crud}.
-This work could be summarized as a series of steps (algorithm) estimate the following integral on each CTF face:
 
 \begin{eqnarray}
         total\ crud\ [grams] = A \mu_g\ = A \E[g(\mathbf X|g_o, \mathbf I, \delta t)] \nonumber \\
@@ -34,7 +52,7 @@ This work could be summarized as a series of steps (algorithm) estimate the foll
 \end{eqnarray}
 let $\mathbf X= \{T, k, q''\}$ denote a random vector of temperature, TKE, and BHF. $\mathbf I$ represents additional known crud parameters, $g_o$ is the crud state at the start of the time step and $\theta$ are distribution parameters.  The goal is to predict what $h(\cdot)$ is in every CTF face.  The CRUD model, $g(\cdot)$, is common to all ctf faces.
 
-To compute the total crud/boron in each ctf face:
+To compute the total crud/boron in each CTF face:
 \\
 
 \begin{algorithm}[H]
@@ -81,11 +99,23 @@ A significant challenge is computing an estimate for $Var(\mathcal P_f) = \E(\ma
 
 \subsection{Sample Quantiles}
 
+\subsubsection{Non Parametric Representations of Univariate Distributions}
+
+\begin{itemize}
+    \item (\checkmark-) Introduce non-parametric representation of univariate distributions through sample quantiles.
+    \item ($\cdot$) Explain typical alternatives and why they are not suitable:
+        \begin{itemize}
+            \item Compute sample moments.  Use method of moments to fit a model to sample moments.
+            \item Compute sample cumulants.  Use sample cumulants to build an Edgeworth series.
+            \item Do cumulants or traditional moments behave in a predictable manner as a function of local core conditions?  Do the quantiles behave in a predictable manner?
+        \end{itemize}
+\end{itemize}
+
 \begin{itemize}
         \item (\checkmark) Compute sample quantiles.
         \item (\checkmark) Building a cumulative density function from sample quantiles.
         \begin{itemize}
-           \item Peicewise linear CDF leads to histogram PDF.
+           \item Piecewise linear CDF leads to histogram PDF.
            \item PCHIP spline CDF preserves monotonicity of CDF and results in a smooth PDF. \cite{Fritsch80}
         \end{itemize}
         \item (\checkmark) Sampling from a known CDF via inverse transform sampling.
