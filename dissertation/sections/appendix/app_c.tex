@@ -1,6 +1,5 @@
 %! TEX root = ../dissertation_gurecky.tex
 
-
 \subsection{Gradient Boosted Regression Trees}
 
 \begin{itemize}
@@ -8,3 +7,43 @@
     \item (\checkmark) Define a classification and regression tree (CART).  We use CART tree stumps in the current work.
     \item (\checkmark) Demonstrate gradient boosted quantile regression.
 \end{itemize}
+
+
+\begin{figure}[H]%
+    \centering
+    \subfloat[]{{\includegraphics[width=0.45\linewidth]{figs/grad_boost/1d_boosted_regression_quantile_ex_0_5} }}%
+    \qquad
+    \subfloat[]{{\includegraphics[width=0.45\linewidth]{figs/grad_boost/1d_boosted_regression_quantile_ex_0_9} }}%
+    \qquad
+    \subfloat[]{{\includegraphics[width=0.45\linewidth]{figs/grad_boost/1d_boosted_regression_quantile_ex_0_75} }}%
+    \qquad
+    \subfloat[]{{\includegraphics[width=0.45\linewidth]{figs/grad_boost/1d_boosted_regression_quantile_ex_0_95} }}%
+    \qquad
+    \caption[]{Gradient boosted quantile regression residual summary.}%
+    \label{fig:gb1}%
+\end{figure}
+
+\begin{figure}[H]%
+    \centering
+    \subfloat[]{{\includegraphics[width=0.45\linewidth]{figs/grad_boost/1d_boosted_regression_quantile_resid_0_5} }}%
+    \qquad
+    \subfloat[]{{\includegraphics[width=0.45\linewidth]{figs/grad_boost/1d_boosted_regression_quantile_resid_0_9} }}%
+    \qquad
+    \subfloat[]{{\includegraphics[width=0.45\linewidth]{figs/grad_boost/1d_boosted_regression_quantile_resid_0_75} }}%
+    \qquad
+    \subfloat[]{{\includegraphics[width=0.45\linewidth]{figs/grad_boost/1d_boosted_regression_quantile_resid_0_95} }}%
+    \qquad
+    \caption[]{Gradient boosted quantile regression residual summary.}%
+    \label{fig:gb2}%
+\end{figure}
+
+
+
+\begin{figure}[H]%
+    \centering
+    \subfloat[Class predictions.]{{\includegraphics[width=0.45\linewidth]{figs/grad_boost/dblgauss_boosted_classify_ex} }}%
+    \qquad
+    \subfloat[Blue class probability.]{{\includegraphics[width=0.45\linewidth]{figs/grad_boost/dblgauss_boosted_classify_probs} }}%
+    \caption[]{Gradient boosted classifier example.}%
+    \label{fig:gb3}%
+\end{figure}

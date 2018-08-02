@@ -13,16 +13,66 @@
 A synthetic data generation tool was developed to provide a testing data source to the copula and margin reconstruction routines.  The copula family, rank corellation coefficient and marginal distibutions are specified as a function of axial location and local TH conditions supplied by CTF.
 
 To generate synthetic data, CTF results are augmented by user controlled noise distributed according to
-$\tilde \varepsilon(z, \tilde \theta)$
+$ \varepsilon(z, \theta)$
 and potentially shifted by a user set bias,
-$\tilde b(z)$ where $z$ is the axial position along the rod.
-$\tilde \theta$ represents user specified distribution parameters.
+$ b(z)$ where $z$ is the axial position along the rod.
+$\theta$ represents user specified distribution parameters.
 \begin{equation}
-T(z) = \mu_{ctf}(z) + \tilde \varepsilon (z, \tilde \theta) + \tilde b(z)
+T(z) = \mu_{ctf}(z) + \varepsilon (z; \theta) +  b(z)
 \end{equation}
 
 
 The availability of synthetic data alleviates the need to generate comparatively expensive CFD results to test the hi2lo strategy.  Some aspects of CFD field are preserved, including expected biases between CFD and CTF results that arise due to discrepancies in wall heat transfer closure models, among other differences [ref], additionally turbulent dispersion of the temperature and surface shear distributions around spacer grids are specified.  Accounting for spatial auto-correlation in the surface fields was not pursued since the hi2lo procedures do not seek to preserve fine scale spatial features.  Any spatial autocorrelation present within a CTF face is lost.  The synthetic data is not a direct replacement to CFD data but serves as data source for integration testing.
+
+\subsection{Single Pin Synthetic Data Set}
+
+The original baseline CTF results are shown in figure ().
+
+\begin{figure}[H]%
+    \centering
+    \subfloat[Axial CTF cladding surface temperature result.]{{\includegraphics[width=0.45\linewidth]{figs/synth/ctf_asm0_z_twall} }}%
+    \qquad
+    \subfloat[2D rod map of CTF result.]{{\includegraphics[width=0.45\linewidth]{figs/synth/ctf_pin_h5_temperature} }}%
+    \caption[Single pin CTF baseline temperature result.  160\% nominal power conditions.]{Single pin CTF baseline temperature result.  160\% nominal power conditions.}%
+    \label{fig:ctf_twall_aug}%
+\end{figure}
+
+\begin{figure}[H]%
+    \centering
+    \subfloat[Axial CTF cladding surface TKE result.]{{\includegraphics[width=0.45\linewidth]{figs/synth/ctf_asm0_z_tke} }}%
+    \qquad
+    \subfloat[2D rod map of CTF result.]{{\includegraphics[width=0.45\linewidth]{figs/synth/ctf_pin_h5_tke} }}%
+    \caption[Single pin CTF baseline TKE result.  160\% nominal power conditions.]{Single pin CTF baseline TKE result.  160\% nominal power conditions.}%
+    \label{fig:ctf_twall_aug}%
+\end{figure}
+
+
+The boundary heat flux was assumed to be constant at $85.86 [W/cm^2]$ which corresponds to approximately 160\% nominal PWR power conditions.
+
+Next synthetic noise was generated according to:
+
+Finally the original CTF result was augmented with the synthetically generated noise.
+
+
+\begin{figure}[H]%
+    \centering
+    \subfloat[Spatial axial augmented CTF result.]{{\includegraphics[width=0.45\linewidth]{figs/synth/pinH5TempOut} }}%
+    \qquad
+    \subfloat[2D rod map of sythetically augmented CTF result.]{{\includegraphics[width=0.45\linewidth]{figs/synth/cfd_pin_temperature} }}%
+    \caption[Augmented CFD result.]{Augmented CTF temperature result.}%
+    \label{fig:ctf_twall_aug}%
+\end{figure}
+
+\begin{figure}[H]%
+    \centering
+    \subfloat[Spatial axial augmented CTF result.]{{\includegraphics[width=0.45\linewidth]{figs/synth/pinH5TkeOut} }}%
+    \qquad
+    \subfloat[2D rod map of sythetically augmented CTF result.]{{\includegraphics[width=0.45\linewidth]{figs/synth/cfd_pin_tke} }}%
+    \caption[Augmented CFD TKE result.]{Augmented CTF TKE result.}%
+    \label{fig:ctf_twall_aug}%
+\end{figure}
+
+
 
 \section{Single CTF Face Comparisons}
 \begin{itemize}
@@ -35,7 +85,92 @@ The availability of synthetic data alleviates the need to generate comparatively
 	\end{itemize}
 \end{itemize}
 
+\subsubsection{Importance Sampling}
+
+To obtain estimates for the efficiency gain offered by importance sampling to compute \ref{eq:expected_crud}, a singe patch was studied under synthetic TH data.
+
+The choice of importance distribution is informed by the crud response.  To compute the integral \ref{eq:expected_crud} efficiently it is favorable to sample the TH distribution in regions which result in crud and .  The importance distribution is shown in figure ().  
+
+\begin{figure}[H]%
+    \centering
+    \subfloat[Crud boron deposition sensitivity to temperature with TKE held fixed at $0.05 J/kg$]{{\includegraphics[width=0.45\linewidth]{../proposal/slides/seminar_slides/figs/dboron_dt_t} }}%
+    \qquad
+    \subfloat[Crud boron deposition sensitivity to TKE with temperature held fixed at $620 K$]{{\includegraphics[width=0.45\linewidth]{../proposal/slides/seminar_slides/figs/dboron_dt_tke} }}%
+    \caption[]{Crud marginal response to varying temperature and TKE.}%
+    \label{fig:crud_sensi1}%
+\end{figure}
+
+\begin{figure}[H]%
+    \centering
+    \subfloat[Crud boron deposition sensitivity with $q''=80 W/cm^2$.]{{\includegraphics[width=0.45\linewidth]{figs/crud/crud_t_tke_boron_response_80} }}%
+    \qquad
+    \subfloat[Crud boron deposition sensitivity $q''=120 W/cm^2$.]{{\includegraphics[width=0.45\linewidth]{figs/crud/crud_t_tke_boron_response_120} }}%
+    \caption[]{Crud boron response to varying temperature and TKE.}%
+    \label{fig:crud_sensi2}%
+\end{figure}
+
+\begin{figure}[H]%
+    \centering
+    \subfloat[Crud mass deposition sensitivity$q''=80 W/cm^2$.]{{\includegraphics[width=0.45\linewidth]{figs/crud/crud_t_tke_mass_response_bhf_80} }}%
+    \qquad
+    \subfloat[Crud mass deposition sensitivity $q''=120 W/cm^2$.]{{\includegraphics[width=0.45\linewidth]{figs/crud/crud_t_tke_mass_response_bhf_120} }}%
+    \caption[]{Crud mass response to varying temperature and TKE.}%
+    \label{fig:crud_sensi3}%
+\end{figure}
+
+
+The optimal importance distribution depends on the crud response surface and the TH probability density function.  Though an unique optimal importance distribution can be theoretically found [ref], the minimization problems required are not solved in this work and are left as an avenue for future investigation.
+Although the optimal importance distribution is forgone, a locally adaptive approach was pursued in this work based on a distribution mixing approach.  With a known crud TH response surface existing in only $R^3$ it is feasible to design a near-optimal importance distribution by hand.
+
+\begin{equation}
+Q(\tilde{p}) = \sum_i^m a_{qi} Q_i(\tilde{p})
+\end{equation}
+Where $Q_i$ are the quantile functions as $a_{qi}$ are the weights.
+
+Beta distributions with proscribed parameters are used in mixture with the original density functions to produce a proposal density distribution for each patch.  The mixture weights may also be adjusted.  This approach yields extensive flexibility of proposal density for both the temperature and TKE marginal distributions.  Shown in figure \ref{fig:imp_sample2} the proposal
+
+
+\begin{figure}[H]%
+    \centering
+    \subfloat[Crud boron deposition rate.]{{\includegraphics[width=0.45\linewidth]{figs/imp_patch/bmass_sample_violin} }}%
+    \qquad
+    \subfloat[Crud mass deposition rate.]{{\includegraphics[width=0.45\linewidth]{figs/imp_patch/cmass_sample_violin} }}%
+    \caption[]{Importance sampling trial results.}%
+    \label{fig:imp_sample1}%
+\end{figure}
+
+\begin{figure}[H]%
+    \centering
+    \subfloat[Temperature distributions.]{{\includegraphics[width=0.45\linewidth]{figs/imp_patch/temperature_importance_marginal_compare} }}%
+    \qquad
+    \subfloat[TKE distributions.]{{\includegraphics[width=0.45\linewidth]{figs/imp_patch/tke_importance_marginal_compare} }}%
+    \caption[]{Proposal vs. original marginal distributions.}%
+    \label{fig:imp_sample2}%
+\end{figure}
+
+Although it is possible to specify a custom proposal copula density, for this work the original copula density distribution is adopted to construct the multivariate proposal density distribution.  This leads to the cancellation of the copula density in the computation of the importance weights.  With this assumption in place the sample weights can be computed efficiently using an independence assumption.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\linewidth]{figs/imp_patch/importance_t_tke_bmass_scatter}
+    \caption[Importance sampled single patch crud result.]{Importance sampled single patch crud result.}
+    \label{fig:importancettkebmassscatter}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\linewidth]{figs/imp_patch/original_t_tke_bmass_scatter}
+    \caption[Standard Monte Carlo sampled patch crud result.]{Standard Monte Carlo sampled patch crud result.}
+    \label{fig:originalttkebmassscatter}
+\end{figure}
+
+The importance sampling efficiency is estimated by computing the variance ratio:  $\frac{\sigma^2_{MC}}{\sigma^2_{I}}$.  For the case studied, the application of importance sampling reduced the crud mass and boron mass sample variance by a factor of 2.
+
+The improvement in performance can be attributed to expending a larger proportion of sample in the upper tail of the temperature distribution as this is a region which strongly contributes to crud growth.
+
+
 \section{Single Pin Comparisons}
+
 
 \begin{itemize}
 	\item (\checkmark) Compare CTF vs Synthetic CFD vs Hi2Lo Reconstructed CRUD results for a full pin for fixed TH conditions.
@@ -47,6 +182,45 @@ The availability of synthetic data alleviates the need to generate comparatively
 	\item (\checkmark) Show difference between Hi2Lo vs CTF predicted fractional surface area above a threshold ($T_{sat}$).  Clearly, the CTF result
 	is unable to capture small scale effects of the mixing vanes on the surface temperature distribution.
 \end{itemize}
+
+\begin{figure}[H]%
+    \centering
+    \subfloat[CTF predicted fractional area of each CTF face above the saturation point.]{{\includegraphics[width=0.45\linewidth]{figs/synth/hi2lo/ctf_pin_t_threshold} }}%
+    \qquad
+    \subfloat[Hi2lo predicted fractional area of each CTF face above the saturation point.]{{\includegraphics[width=0.45\linewidth]{figs/synth/hi2lo/hi2lo_pin_t_threshold} }}%
+    \caption[]{Fraction area above the saturation point prediction comparison for the synthetic data set.}%
+    \label{fig:imp_sample1}%
+\end{figure}
+
+\begin{figure}[H]%
+    \centering
+    \subfloat[Hi2lo patch cladding wall temperature spatial distrubtion]{{\includegraphics[width=0.45\linewidth]{figs/synth/hi2lo/hi2lo_patch_t} }}%
+    \qquad
+    \subfloat[Hi2lo patch TKE spatial distrubtion.]{{\includegraphics[width=0.45\linewidth]{figs/synth/hi2lo/hi2lo_patch_tke} }}%
+    \caption[]{Single hi2lo patch sample reordering demonstration.}%
+    \label{fig:imp_sample1}%
+\end{figure}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{figs/synth/hi2lo/hi2lo_pin_cmass}
+    \caption{}
+    \label{fig:hi2lopincmass}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{figs/synth/hi2lo/hi2lo_pin_t}
+    \caption{}
+    \label{fig:hi2lopint}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{figs/synth/hi2lo/hi2lo_pin_tke}
+    \caption{}
+    \label{fig:hi2lopintke}
+\end{figure}
+
 
 \subsection{Single Pin with Time Stepping}
 
@@ -69,6 +243,8 @@ The availability of synthetic data alleviates the need to generate comparatively
 
 Section Takeaways:
 \begin{itemize}
-	\item Increasing the number of samples per patch decreases variance in total crud and total preciptated boron esitmates.
-	\item Increasing the number of re-sampling steps reduces uncertainty.
+	\item Increasing the number of samples per patch decreases variance in total crud and total precipitated boron estimates.
+	\item Increasing the number of re-sampling steps per VERA state point reduces variance in the final integrated crud results.
+    \item After drawing samples from the predicted TH distribution a reordering of the samples on the rod surface is necessary to preserve hot spot stationarity.  This is required for an optimal time marching sampling strategy.
+    \item Importance sampling was shown to reduce the variance in the integrated crud results.
 \end{itemize}

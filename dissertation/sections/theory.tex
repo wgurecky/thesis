@@ -111,6 +111,42 @@ A significant challenge is computing an estimate for $Var(\mathcal P_f) = \E[(\m
         \end{itemize}
 \end{itemize}
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.3\linewidth]{../proposal/slides/seminar_slides/figs/margins_cdf_2}
+    \caption[CDF from quantiles.]{Piecewise linear CDF interpolated from a set of quantiles.}
+    \label{fig:marginscdf2}
+\end{figure}
+
+
+The $\tau^{th}$ quantile is $q_\tau = F^{-1}(\tau); $ where $\ F(t)=P[T \leq t]$.
+$\tau \in [0, 1]$
+
+The quantile loss function is given by equation \ref{eq:qloss_fn}.
+\begin{equation}
+\rho_\tau( u) = \mathbf u \cdot (\tau - \mathbb{I}_{( u < 0)})
+\label{eq:qloss_fn}
+\end{equation}
+Where $\mathbb{I}$ is the indicator function which returns 1 if the argument is true and 0 otherwise.
+In order to estimate a sample quantile given the empirical CDF $F$, minimize: $\E[\rho_\tau(T - q_\tau)]$ where $T$ is a random variable distributed according to $F$.
+\begin{equation}
+            \left.\begin{aligned}
+            \hat q_{\tau_i} &= argmin_{q} \E[\rho(u)];\ \  u = T - q  \\
+            \approx & argmin_q  \frac{1}{N} \sum_i^N \rho(u_i); \ u_i = t_i - q \\
+            \approx & argmin_q \left[ (1-\tau) \sum_{y \leq q}( t_i - q ) - \tau \sum_{y > q} (t_i - q) \right]
+            \end{aligned}\right.
+\end{equation}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\linewidth]{../proposal/slides/seminar_slides/figs/q_loss}
+    \caption[Quantile loss function.]{Quantile loss function.}
+    \label{fig:qloss}
+\end{figure}
+
+
+
 \begin{itemize}
         \item (\checkmark) Compute sample quantiles.
         \item (\checkmark) Building a cumulative density function from sample quantiles.
@@ -121,8 +157,152 @@ A significant challenge is computing an estimate for $Var(\mathcal P_f) = \E[(\m
         \item (\checkmark) Sampling from a known CDF via inverse transform sampling.
         \item (\checkmark-) Show that the order statistics are distributed according to a Gaussian distribution.
         \item (\checkmark-) Show that sample quantiles also follow a Gaussian distribution.  This directly follows from the distribution of the order statistics.
+            The sample quantiles are distributed normally according to equation \ref{eq:theory_qdist}.
+        \begin{eqnarray}
+        q_p &\sim \mathcal N \left( F_T^{-1}(p), \sigma^2_{q_p} \right) \\
+        \sigma^2_{q_p} &= \frac{p(1 - p)}{n[f_T(F_T^{-1}(p))]^2} \nonumber
+        \label{eq:theory_qdist}
+        \end{eqnarray}
+        
+        
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{figs/quantile_theory/q_beta_residual}
+    \caption{}
+    \label{fig:qbetaresidual}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{figs/quantile_theory/q_beta_residual_conditional_0_1}
+    \caption{}
+    \label{fig:qbetaresidualconditional01}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{figs/quantile_theory/q_beta_residual_conditional_0_5}
+    \caption{}
+    \label{fig:qbetaresidualconditional05}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{figs/quantile_theory/q_beta_residual_conditional_0_9}
+    \caption{}
+    \label{fig:qbetaresidualconditional09}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{figs/quantile_theory/q_gauss_residual}
+    \caption{}
+    \label{fig:qgaussresidual}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{figs/quantile_theory/q_gauss_residual_conditional_0_1}
+    \caption{}
+    \label{fig:qgaussresidualconditional01}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{figs/quantile_theory/q_gauss_residual_conditional_0_5}
+    \caption{}
+    \label{fig:qgaussresidualconditional05}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{figs/quantile_theory/q_gauss_residual_conditional_0_9}
+    \caption{}
+    \label{fig:qgaussresidualconditional09}
+\end{figure}
+
         \item ($\cdot$) Show the impact of the uncertainty in where the sample quantiles fall given CFD data on crud growth.  The reconstructed CDFs which comprise the hi2lo mapping are essentially fuzzy which means the temperature, TKE, and BHF distributions are artificially smeared out (artificially high densities in the tails).
 \end{itemize}
+
+\begin{itemize}
+    \item (\checkmark-) The sampled temperatures may be tallied over each CTF face to estimate the fractional area that exceeds some threshold temperature.
+    The probability of exceeding a threshold temperature is shown in equation \ref{eq:pr_thresh}.
+    
+    \begin{equation}
+    p_e = Pr(T > T^*) = 1 - \int_0^{T^*} f_T dT
+    \label{eq:pr_thresh}
+    \end{equation}
+    
+    Let $q_p = F_T^{-1}(1 - p_e)$
+    denote the quantile associated with the threshold probability, $p_e$.
+    $F_T^{-1}$ is the inverse CDF function and $f_T$ is the probability density function of temperature on the patch.
+    
+    The sample quantile corresponding to $p_e$ is distributed according to:
+
+   \begin{eqnarray}
+    q_p &\sim \mathcal N \left( F_T^{-1}(p), \sigma^2_{q_p} \right) \\
+    \sigma^2_{q_p} &= \frac{p(1 - p)}{n[f_T(F_T^{-1}(p))]^2}
+    \end{eqnarray}
+    
+    The variance of upper tail probability mass estimate can be found by standard propagation of uncertainty principles:
+   \begin{equation}
+    \sigma_p^2 = \left(\frac{\partial p_e}{\partial q_p} \right)^2 \cdot \sigma_{q_p}^2
+    \end{equation}
+    
+    Where
+   \begin{eqnarray}
+    \frac{\partial p_e}{\partial q_p} &= \frac{\partial}{\partial q_p} \left( 1 - \int_0^{q_p} f_T dT \right) \nonumber \\
+    &= \frac{\partial}{\partial q_p} \left( -F_T(q_p) + F_T(0) \right) \nonumber \\
+    &= -f_T(q_p)
+    \end{eqnarray}
+    
+    This dictates that estimates of extreme upper tail integrals carry large relative uncertainties.
+    \item The distribution for $p_e$ can be obtained by a change of variables, since $p_e$ and $q_p$ are related by:
+    \begin{equation}
+    q_p = F_T^{-1}(1 - p_e)
+    \end{equation}
+    
+    Where $F_T^{-1}$ is the inverse CDF.  $p_e$ is distributed according to:
+    
+    \begin{equation}
+    f_{p_e} = f_{q_p} \left( F_T^{-1}(1-p_e), \sigma_{q_p}(p_e) \right) \cdot \left|{ \frac{\partial}{\partial p_e} F^{-1}(1-p_e) } \right|
+    \end{equation}
+    
+\end{itemize}
+
+
+\subsection{Introduction Gradient Boosted Regression Trees}
+\begin{itemize}
+    \item (\checkmark-) Explain a classification and regression tree (CART).  (Move to appendix?)
+    \item (\checkmark-) Explain gradient boosting.  (Move to appendix?)
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{../proposal/slides/seminar_slides/figs/cart}
+    \caption[Regression tree stump.]{Regression tree stump comparing a fit of depth 1 and 2.}
+    \label{fig:cart}
+\end{figure}
+
+The generalized gradient boosting algorithm was developed by Friedman (1999).
+
+\begin{algorithm}[H]
+    \KwData{ (1) Training set $\{(p_i, y_i)\}_{i=1}^n$. (2) Differentiable loss function $L(y, F(p))$. (3) Number of iterations ${{M}}$.
+        Initialize model with a constant value:
+        $F_0(p) = \underset{\gamma}{\arg\min} \sum_{i=1}^n L(y_i, \gamma).$}
+    
+    \For{${{m}} = 1$ to ${{M}}$}{
+        Compute the pseudo-residuals:
+        
+        \For{$i=1,\ldots,n $}{
+            $r_{im} = -\frac{\partial L(y_i, F_{m-1}(p_i))}{\partial F_{m-1}(p_i)}$
+        }
+        
+        Fit a weak learner $h_m(p)$ to pseudo-residuals, $r_{m}$: Training data set is $\{(p_i, r_{im})\}_{i=1}^n$ \;
+        
+        Compute multiplier $\gamma_m$ :
+        $\gamma_m = \underset{\gamma}{\operatorname{arg\,min}} \sum_{i=1}^n L\left(y_i, F_{m-1}(p_i) + \gamma h_m(p_i)\right)$\;
+        Update the model:
+        $F_m(p) = F_{m-1}(p) + \nu \gamma_m h_m(p).$
+    }
+    Output $F_M(p).$
+\end{algorithm}
+Where $\nu$ is a tunable constant in $[0, 1]$ called the learning rate.
+
 
 \subsection{Monte Carlo CRUD Estimation}
 
@@ -134,6 +314,7 @@ A significant challenge is computing an estimate for $Var(\mathcal P_f) = \E[(\m
         \item (\checkmark-) Show examples of $g(x)$, $h(x)$ and $\tilde h(x)$ on a single CTF face.
         \item (\xmark) \sout{Find optimal proposal density distribution, $\tilde{h^*}$.}
 \end{itemize}
+
 
 
 \subsection{Propagating CRUD Through Time}
