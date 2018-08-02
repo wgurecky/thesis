@@ -1,1 +1,74 @@
 %! TEX root = ../dissertation_gurecky.tex
+
+
+\section{Generating Synthetic Data}
+
+\begin{itemize}
+	\item (\checkmark) Describe the synthetic data generation tool developed to test the hi2lo procedure.
+	\item (\checkmark) Show original CTF solution with added synthetic noise.
+	\item \textbf{Note}: The synthetic CFD data generation tool does not capture spatial auto-correlation of the surface fields.  It does not reflect
+	the physics of fluid flow.
+\end{itemize}
+
+A synthetic data generation tool was developed to provide a testing data source to the copula and margin reconstruction routines.  The copula family, rank corellation coefficient and marginal distibutions are specified as a function of axial location and local TH conditions supplied by CTF.
+
+To generate synthetic data, CTF results are augmented by user controlled noise distributed according to
+$\tilde \varepsilon(z, \tilde \theta)$
+and potentially shifted by a user set bias,
+$\tilde b(z)$ where $z$ is the axial position along the rod.
+$\tilde \theta$ represents user specified distribution parameters.
+\begin{equation}
+T(z) = \mu_{ctf}(z) + \tilde \varepsilon (z, \tilde \theta) + \tilde b(z)
+\end{equation}
+
+
+The availability of synthetic data alleviates the need to generate comparatively expensive CFD results to test the hi2lo strategy.  Some aspects of CFD field are preserved, including expected biases between CFD and CTF results that arise due to discrepancies in wall heat transfer closure models, among other differences [ref], additionally turbulent dispersion of the temperature and surface shear distributions around spacer grids are specified.  Accounting for spatial auto-correlation in the surface fields was not pursued since the hi2lo procedures do not seek to preserve fine scale spatial features.  Any spatial autocorrelation present within a CTF face is lost.  The synthetic data is not a direct replacement to CFD data but serves as data source for integration testing.
+
+\section{Single CTF Face Comparisons}
+\begin{itemize}
+	\item (\checkmark) Compare CTF vs Synthetic CFD vs Hi2Lo Reconstructed CRUD results on a single CTF face.
+	\item (\checkmark) Show sensitivity of integrated crud mass and boron to the following tunable parameters.  Also show impact on uncertainty in these integrated results to:
+	\begin{itemize}
+		\item (\checkmark) The number of samples drawn per patch
+		\item (\checkmark) Gaussian copula vs. best fit copula approach.
+		\item (\checkmark) Number of quantiles used in the reconstruction of margins
+	\end{itemize}
+\end{itemize}
+
+\section{Single Pin Comparisons}
+
+\begin{itemize}
+	\item (\checkmark) Compare CTF vs Synthetic CFD vs Hi2Lo Reconstructed CRUD results for a full pin for fixed TH conditions.
+	\item (\checkmark) Show sensitivity of integrated crud mass and boron to the following.  Also show impact on uncertainty in these integrated results to:
+	\begin{itemize}
+		\item (\checkmark) Increase the number of samples drawn per patch
+		\item (\checkmark) Force Gaussian copula vs. best fit copula approach.
+	\end{itemize}
+	\item (\checkmark) Show difference between Hi2Lo vs CTF predicted fractional surface area above a threshold ($T_{sat}$).  Clearly, the CTF result
+	is unable to capture small scale effects of the mixing vanes on the surface temperature distribution.
+\end{itemize}
+
+\subsection{Single Pin with Time Stepping}
+
+\subsubsection{Spatial Remapping Results}
+\begin{itemize}
+	\item (\checkmark) Show influence of hot spot stationarity assumptions on crud growth.
+\end{itemize}
+
+\begin{itemize}
+	\item (\checkmark) Show total integrated crud mass and crud boron as a function of time.
+	\item (\checkmark) Show sensitivity of integrated crud mass and boron to the following.  Also show impact on uncertainty in these integrated results to:
+	\begin{itemize}
+		\item (\checkmark) Increase the number of samples drawn per patch.
+		\item (\checkmark) Force Gaussian copula vs. best fit copula approach.
+		\item (\checkmark) Increasing number of re-sampling time steps.
+		We can re-sample from the joint $h(T, k, q'')$ distribution many times per TH state point.
+		This reduces variance in the total integrated boron and crud mass quantities.
+	\end{itemize}
+\end{itemize}
+
+Section Takeaways:
+\begin{itemize}
+	\item Increasing the number of samples per patch decreases variance in total crud and total preciptated boron esitmates.
+	\item Increasing the number of re-sampling steps reduces uncertainty.
+\end{itemize}

@@ -1,1 +1,103 @@
 %! TEX root = ../dissertation_gurecky.tex
+
+\section{Machine Learning Model Trained on CFD Data Source}
+
+\begin{itemize}
+	\item (\checkmark-) Harvesting CFD data for training. Explain the pre-processing pipeline.
+	\item ($\cdot$) Why use gradient boosted regression trees vs some other ML technique?
+\end{itemize}
+
+\subsection{Introduction Gradient Boosted Regression Trees}
+\begin{itemize}
+	\item (\checkmark-) Explain a classification and regression tree (CART).  (Move to theory or appendix?)
+	\item (\checkmark-) Explain gradient boosting.  (Move to theory or appendix?)
+    
+    
+\end{itemize}
+
+\subsection{Feature Engineering}
+\begin{itemize}
+	\item ($\cdot$) Select a predictive variable set that can describe the behavior of the conditional quantiles and copula everywhere in the assembly.
+   
+\begin{table}[h]
+    \begin{center}
+    \caption[Included features.]{Features included in the gradient boosted models.}
+\begin{tabular}[h]{|l | l | l |}
+    \hline
+    Symbol & Feature & Unit \\
+    \hline
+    $T$ & Bulk Temperature  &  $[K]$ \\
+    $q''$ & Local heat flux & $[W/m^2]$ \\
+    $u_z$ & Bulk Z Velocity &  $[m/s]$ \\
+    $\tau_z$ & Shear Stress &  $[N/m^2]$ \\
+    $z_g$ & Position relative to Nearest Spacer Grid & $[m]$ \\
+    $N_g$ & Nearest upstream spacer grid ID & $[]$ \\
+    \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+The predictive variable were selected based on two criteria:  availability and orthogonality.  A predictive variable must be made available by VERA or must be computable from CTF results alone.  This must be true since when evaluating the hi2lo model, the inputs to the hi2lo model must come from either previously stored information or information made available by CTF at runtime.  At this juncture, this criteria precludes using information such as geometric orientation of a given spacer grid since it is not possible to extract or infer this information from the CTF output.
+It is not useful to include multiple variables which are co-linear therefore the bulk fluid density was not included in the predictive variable set as it only strongly depends on the local temperature in PWR. Likewise the local static pressure was not used as a predictive variable.  The exclusion of this TH information is primarily done for computational saving when training the boosted models.  It should be noted that gradient boosting is particularly resilient to co-linear variables in the feature set.  Their inclusion will not necessarily reduce the model's ability to generalize to unseen data.
+
+	\item ($\cdot$) Justify choice of predictive variables.
+	\item ($\cdot$) Perform parameter culling via first-pass Gradient boosting. (Maybe move to future work). Critical for multi-pin cases where it is
+	important to different between each pin in the core.  For instance: what makes an edge pin special?  Can we predict the impact of neighboring
+	guide tubes on the crud growth rate?
+	\item ($\cdot$) Perform principle component analysis on the remaining predictive variables. (Maybe move to future work.)
+	
+\end{itemize}
+
+\subsection{Training the Quantile Regressors}
+
+\begin{itemize}
+	\item ($\cdot$) Show temperature and TKE Q-Q plots elucidating bias introduced by the machine learning model at a variety of axial positions and local core conditions.
+	\item (\xmark) \sout{Compute quantile uncertainty estimates associated with predicted quantiles provided by the trained ML model} (Unsure if feasible. Future work)
+	\item (\xmark) \sout{Propagate ML model-induced quantile uncertainties} (Future work)
+\end{itemize}
+
+\subsection{Training the Copula Classifier}
+
+\begin{itemize}
+	\item ($\cdot$)  Show ML predicted copula vs CFD truth.  Compute the classification error rate.
+	Summarize with a confusion matrix.
+\end{itemize}
+
+
+Shown in figure (), the copula classifier struggles to predict the correct copula class given the local TH state and axial core position.  As indicated in figure (), the behavior of the copula as a function of axial rod position are erratic and inconsistent from pin to pin.  Introducing other TH exogenous variables in addition to the axial position did not increase the classification score significantly.  We can conclude that the copula are not well described by local core condition and axial position.  It remains as future work to investigate if including additional geometric pin and grid attributes could improve the classification results.  Additional software infrastructure would be required to both write geometric pin and grid features from CTF and to utilize the geometric features in the current model.
+
+On average the classifier predicts an incorrect result more often than not.  This poor performance leads to the question:  What is the consequence of assuming a particular copula class for all CTF surfaces in lieu of poor quality copula class predictions?  First a single patch can selected to study the influence of a particular copula selection while retaining the same marginal distributions on the crud result.  The choice of copula is shown to have a small but statistically significant influence on the integrated crud and crud boron result in a particular CTF patch.  A larger scale study was also carried out.
+
+Substituting the gradient boosted copula classifier with a constant copula assumption on the assembly scale is shown in figure ().  A cancellation of error effect from patch to patch is hypothesized to explain the close agreement in the crud preconditions made over the entire assembly.
+
+
+\subsection{Cross Validation}
+
+An estimate of the interpolation error incurred when evaluating the trained models at unknown CFD states can be made by performing a leave one out cross validation study.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.3\linewidth]{figs/drawings/5x5_loo}
+    \caption[Example pin layout for leave-one-out cross validation procedure.]{Example pin layout for leave-one-out cross validation procedure.  The gradient boosted models are trained on CFD and CTF data extracted from the blue pins.  Crud predictions are made on the missing pin.}
+    \label{fig:5x5loo}
+\end{figure}
+
+
+As depicted in figure \ref{fig:5x5loo}, in this procedure a single CFD/CTF pin pair is removed from the database and then the model is retrained on remaining data.  Following this retraining, a crud prediction is made 
+at the missing pin's TH conditions.  The crud results are compared against crud results generated using the full training data set.  This process is repeated by sequentially for each pin in the 5x5 set.  The differences are summarized and averaged to obtain a measure of model's predictive performance when applied to TH conditions that reside in the TH training envelope.
+
+This cross validation technique only ascertains interpolation errors within the TH envelope enclosed by the original full training set.  The resulting interpolation error estimates cannot be extrapolated to core conditions that lay outside of the training set.  For a robust interpolation error analysis, a much larger training data set is required
+that spans essentially all possible TH conditions encountered in an operational PWR.  This will require large scale CFD runs and is left as a avenue for future uncertainty quantification work.
+
+\subsection{Multi State Point 5x5 Results}
+
+\begin{itemize}
+	\item ($\cdot$) Step a 5x5 assembly forward in time using pre-computed ctf-mpact results as input to the hi2lo model with the trained ML model supplying quantiles and copula.
+	\item ($\cdot$) Report hi2lo crud model results under:
+	\begin{itemize}
+		\item ($\cdot$) Changes in power shapes.
+		\item ($\cdot$) Changes in total rod power.
+		\item ($\cdot$) Changes in flow rate.
+	\end{itemize}
+	
+\end{itemize}

@@ -2,6 +2,36 @@
 
 \begin{itemize}
     \item (\checkmark) M. Avramova.  CFD informed grid mixing coefficients in CTF.  This work leveraged CFD results to improve the momentum balance (grid mixing models) in CTF. \cite{avramova2007}
+    
+    \begin{itemize}
+    	
+    	\item The lateral momentum equations implemented in CTF are as follows:
+    	\begin{align}
+    	& \frac{\partial }{\partial t}(\alpha_l \rho_l \mathbf U_l)
+    	+ \nabla \cdot (\alpha_l \rho_l \mathbf U_l \mathbf U_l) \nonumber \\
+    	&= \alpha_l \rho_l \mathbf{g} - \alpha_l \nabla P + 
+    	\nabla \cdot (\alpha_l \bm{\tau}_l) \nonumber \\
+    	&+ M^L_l + M^d_l + M^T_l + M_l^{GDXF}
+    	\end{align}
+    	Where $l$ denotes the liquid phase and $\alpha$ is the volume fraction liquid.  The coefficients $M^L, M^d, M^T, M_l^{GDXF}$ account for droplet or bubble entrainment, phase interfacial drag, turbulent mixing and grid directed cross flow.  Avramova devised a method to use CFD computations to obtain an accurate prediction for $M_l^{GDXF}$ for a variety of grid designs.
+    	
+    	\item The grid directed cross flow source term is defined as:
+    	\begin{equation}
+    	M_l^{GDXF} = f^2_{sg}(z) u_l^2 \rho_l A_g S_g
+    	\end{equation}
+    	Where $w_l$ is the axial liquid velocity.
+    	With
+    	\begin{equation}
+    	f_{sg}(z) = \frac{V^{CFD}_l(z-z_{in})}{U^{CFD}_{in}}
+    	\end{equation}
+    	
+    	\item The effectiveness of the grid enhanced cross flow model was determined by comparing exit bulk temperature profiles across a variety of assembly designs against experimental and CFD results.
+    	
+    \end{itemize}
+    
+    \item (\checkmark) T. Blyth.  Development of CFD informed models for the advanced subchannel code CTF.  This work presented strategies for CFD informed model of grid enhanced heat transfer and for computing the form loss coefficient across spacer grids from CFD.  Blyth's work served as a precursor to Salko's CFD informed method for developing HTC and TKE maps.
+    
+    
     \item (\checkmark) S. Yao.  Empirical model of heat transfer coefficient downstream of spacer grids. \cite{yao82}
     An empirical relationship between the Nusselt number ratio and the vane angle, $\phi$, blockage ratio $\epsilon$, dimensionless distance from the grid, $x/D$, and fraction of flow area impeded by the vanes, $A$, was developed by S. C. Yao et al. (1982) [ref].
 \begin{equation}
@@ -73,7 +103,7 @@ Where the first term is accounts for the effect of grid flow restriction and the
     \end{align*}
     Where $\dot m_i$ is the inlet mass flow rate.  The superscript, $(\cdot)^l$, represents low flow conditions and $(\cdot)^h$ represent high flow conditions.
 
-     \item Some simplifications are made:  For a given assembly, the multiplier maps have been shown to have a high span to span repeatability.  Therefore, a representative map is derived from a single span in a fully developed flow field.  This representative map is then applied to all other spans in the model.
+     Some simplifications are made in this mapping.  For a given assembly, the multiplier maps have been shown to have a high span to span repeatability.  Therefore, a representative map is derived from a single span in a fully developed flow field.  This representative map is then applied to all other spans in the model.
 
      \item The multiplier map may not be transferable to other assemblies in the core due to geometric effects including the orientation of neighboring assemblies and TH/neutronics feedbacks.  This represents a limitation to the spatial mapping procedure as unique maps must be generated for different assemblies in the core.
     \end{itemize}
@@ -82,4 +112,4 @@ Where the first term is accounts for the effect of grid flow restriction and the
     \item ($\cdot$) Other hi2lo approaches?
 \end{itemize}
 
-The lit review included in the proposal document will be expanded to include Bob Slako's new Hi2Lo findings.
+
