@@ -26,7 +26,30 @@ The availability of synthetic data alleviates the need to generate comparatively
 
 \subsection{Single Pin Synthetic Data Set}
 
-The original baseline CTF results are shown in figure ().
+The original baseline CTF results are shown in figures \ref{fig:ctf_twall_orig} and \ref{fig:ctf_tke_orig}.  The baseline CTF pin parameters are provided in table \ref{tab:pin_settings}.  The CTF result was produced from a quarter symmetric case, and therefore no azimuthal variation is observed.
+
+\begin{table}[h]
+    \begin{center}
+        \caption{Single pin reference thermal hydraulic boundary conditions.}
+        \begin{tabular}{|l|l|l|}
+            \hline
+            Setting & Value & Unit \\
+            \hline
+            Inlet Flow Rate & 0.3 & $[kg/s]$ \\
+            Inlet Temperature & 565 & $[K]$ \\
+            Pressure & 2250 & $[psia]$ \\
+            Rod Outer Radius & 0.425 & $[cm]$ \\
+            Pin Pitch & 1.26 & $[cm]$ \\
+            Power Shape & constant & $[]$ \\
+            Heat Flux & 85.86  & $[W/m^2]$ \\
+            Rod Height & 3.6275 & $[m]$ \\
+            Number of Grids & 3  & $[]$ \\
+            Grid Locations & 2.0, 2.4, 2.8 & $[m]$ \\
+            \hline
+        \end{tabular}
+    \label{tab:pin_settings}
+    \end{center}
+\end{table}
 
 \begin{figure}[H]%
     \centering
@@ -34,7 +57,7 @@ The original baseline CTF results are shown in figure ().
     \qquad
     \subfloat[2D rod map of CTF result.]{{\includegraphics[width=0.45\linewidth]{figs/synth/ctf_pin_h5_temperature} }}%
     \caption[Single pin CTF baseline temperature result.  160\% nominal power conditions.]{Single pin CTF baseline temperature result.  160\% nominal power conditions.}%
-    \label{fig:ctf_twall_aug}%
+    \label{fig:ctf_twall_orig}%
 \end{figure}
 
 \begin{figure}[H]%
@@ -43,15 +66,47 @@ The original baseline CTF results are shown in figure ().
     \qquad
     \subfloat[2D rod map of CTF result.]{{\includegraphics[width=0.45\linewidth]{figs/synth/ctf_pin_h5_tke} }}%
     \caption[Single pin CTF baseline TKE result.  160\% nominal power conditions.]{Single pin CTF baseline TKE result.  160\% nominal power conditions.}%
-    \label{fig:ctf_twall_aug}%
+    \label{fig:ctf_tke_orig}%
 \end{figure}
 
 
 The boundary heat flux was assumed to be constant at $85.86 [W/cm^2]$ which corresponds to approximately 160\% nominal PWR power conditions.
 
-Next synthetic noise was generated according to:
+Next synthetic noise was generated according to table \ref{tab:synth_settings}.  The complete synthetic data generation code and input deck is provided in Appendix ().
 
-Finally the original CTF result was augmented with the synthetically generated noise.
+\begin{table}[h]
+    \begin{center}
+        \caption{Per-span synthetic data generation settings.}
+        \begin{tabular}{|l|l|l|l|l|}
+            \hline
+            \bf Span 1 & Node & Node location & Copula Settings  & Margin Settings \\
+            \hline
+            $N$: 8000  & 1  & 0.0 & $\Theta_c:$ Gaussian, $\theta:-0.6$ &  T:$\beta(5.0, 5.0)$ , k: $\mathcal{N}(0, 0.001)$ \\
+                   & 2  & 2.0 & $\Theta_c:$ Gaussian, $\theta:-0.6$ &  T:$\beta(5.0, 5.0)$ , k: $\mathcal{N}(0, 0.001)$   \\     
+            \hline \hline
+            \bf Span 2 & Node & Node location & Copula Settings  & Margin Settings \\
+            \hline
+             $N$: 8000 & 1  & 2.0 & $\Theta_c:$ Clayton-90, $\theta: 2.0$ &  T:$\beta(5.0, 2.7)$ , k: $\beta(1.75, 5.0)$ \\
+            & 2  & 2.4 & $\Theta_c:$ Frank-90, $\theta: 8.0$ &  T:$\beta(5.0, 1.5)$ , k: $\beta(1.75, 5.0)$   \\     
+            \hline \hline
+            \bf Span 3 & Node & Node location & Copula Settings  & Margin Settings \\
+            \hline
+             $N$: 8000 & 1  & 2.4 & $\Theta_c:$ Clayton-90, $\theta: 2.0$ &  T:$\beta(5.0, 2.7)$ , k: $\beta(1.75, 5.0)$ \\
+            & 2  & 2.8 & $\Theta_c:$ Frank-90, $\theta: 8.0$ &  T:$\beta(5.0, 1.5)$ , k: $\beta(1.75, 5.0)$   \\      
+            \hline \hline
+            \bf Span 4 & Node & Node location & Copula Settings  & Margin Settings \\
+            \hline
+            $N$: 8000 & 1  & 2.8 & $\Theta_c:$ Clayton-90, $\theta: 2.0$ &  T:$\beta(5.0, 2.7)$ , k: $\beta(1.75, 5.0)$ \\
+            & 2  & 3.6 & $\Theta_c:$ Frank-90, $\theta: 8.0$ &  T:$\beta(5.0, 1.5)$ , k: $\beta(1.75, 5.0)$   \\     
+            \hline      
+        \end{tabular}
+        \label{tab:synth_settings}
+    \end{center}
+\end{table}
+
+In each span a separate copula mixture model is defined.  Samples are drawn with probability equal to the distance to the nearest node.  This enables one to change the behavior of the temperature and TKE margins and copula as a function of axial position on the rod.
+
+After the copula models are sampled in each span, the original CTF result was augmented with the synthetically generated noise.
 
 
 \begin{figure}[H]%
@@ -69,21 +124,86 @@ Finally the original CTF result was augmented with the synthetically generated n
     \qquad
     \subfloat[2D rod map of sythetically augmented CTF result.]{{\includegraphics[width=0.45\linewidth]{figs/synth/cfd_pin_tke} }}%
     \caption[Augmented CFD TKE result.]{Augmented CTF TKE result.}%
-    \label{fig:ctf_twall_aug}%
+    \label{fig:ctf_tke_aug}%
 \end{figure}
 
 
 
-\section{Single CTF Face Comparisons}
+
+
+\section{Single Pin Comparisons}
+
+
 \begin{itemize}
-	\item (\checkmark) Compare CTF vs Synthetic CFD vs Hi2Lo Reconstructed CRUD results on a single CTF face.
-	\item (\checkmark) Show sensitivity of integrated crud mass and boron to the following tunable parameters.  Also show impact on uncertainty in these integrated results to:
+	\item (\checkmark) Compare CTF vs Synthetic CFD vs Hi2Lo Reconstructed CRUD results for a full pin for fixed TH conditions.
+	\item (\checkmark) Show sensitivity of integrated crud mass and boron to the following.  Also show impact on uncertainty in these integrated results to:
 	\begin{itemize}
-		\item (\checkmark) The number of samples drawn per patch
-		\item (\checkmark) Gaussian copula vs. best fit copula approach.
-		\item (\checkmark) Number of quantiles used in the reconstruction of margins
+		\item (\checkmark) Increase the number of samples drawn per patch
+		\item (\checkmark) Force Gaussian copula vs. best fit copula approach.
 	\end{itemize}
 \end{itemize}
+
+For the synthetic single pin data the difference between hi2lo and CTF predicted fractional surface area above a saturation temperature threshold ($T_{sat}$) is shown in figure \ref{fig:frac_a}.   CTF
+is unable to capture small scale effects of the mixing vanes on the surface temperature distribution.
+
+\begin{figure}[H]%
+    \centering
+    \subfloat[CTF predicted fractional area of each CTF face above the saturation point.]{{\includegraphics[width=0.45\linewidth]{figs/synth/hi2lo/ctf_pin_t_threshold} }}%
+    \qquad
+    \subfloat[Hi2lo predicted fractional area of each CTF face above the saturation point.]{{\includegraphics[width=0.45\linewidth]{figs/synth/hi2lo/hi2lo_pin_t_threshold} }}%
+    \caption[]{Fraction area above the saturation point prediction comparison for the synthetic data set.}%
+    \label{fig:frac_a}%
+\end{figure}
+
+The more significant the temperature thresholding behavior of the crud, the more important figure \ref{fig:frac_a} becomes with respect to computing the correct crud deposition rate on any given CTF surface.  This importance of this figure is echoed in figure (), which shows that a CTF and crud coupling without a hi2lo treatment of spacer grid effects might miss thresholding behavior entirely.
+
+\begin{figure}[H]%
+    \centering
+    \subfloat[Hi2lo patch cladding wall temperature spatial distrubtion]{{\includegraphics[width=0.45\linewidth]{figs/synth/hi2lo/hi2lo_patch_t} }}%
+    \qquad
+    \subfloat[Hi2lo patch TKE spatial distrubtion.]{{\includegraphics[width=0.45\linewidth]{figs/synth/hi2lo/hi2lo_patch_tke} }}%
+    \caption[]{Single hi2lo patch sample reordering demonstration.}%
+    \label{fig:reshuffle_a}%
+\end{figure}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{figs/synth/hi2lo/hi2lo_pin_cmass}
+    \caption{Single pin crud mass distribution from synthetic TH data at 160\% nominal power conditions.}
+    \label{fig:hi2lopincmass}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{figs/synth/hi2lo/hi2lo_pin_t}
+    \caption{Single pin temperature distribution from synthetic TH data at 160\% nominal power conditions.}
+    \label{fig:hi2lopint}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{figs/synth/hi2lo/hi2lo_pin_tke}
+    \caption{Single pin surface TKE distribution from synthetic TH data at 160\% nominal power conditions.}
+    \label{fig:hi2lopintke}
+\end{figure}
+
+\section{Single CTF Face Comparisons}
+\begin{itemize}
+    \item (\checkmark) Compare CTF vs Synthetic CFD vs Hi2Lo Reconstructed CRUD results on a single CTF face.
+    \item (\checkmark) Show sensitivity of integrated crud mass and boron to the following tunable parameters.  Also show impact on uncertainty in these integrated results to:
+    \begin{itemize}
+        \item (\checkmark) The number of samples drawn per patch
+        \item (\checkmark) Gaussian copula vs. best fit copula approach.
+        \item (\checkmark) Number of quantiles used in the reconstruction of margins
+    \end{itemize}
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.99\linewidth]{figs/synth/patch_scatter_0_4_0_6}
+    \caption[Single patch synthetic CFD data vs hi2lo sampled data.]{Single patch synthetic data vs hi2lo sampled data from patch centered on the rod at (3.14 $[rad]$, 2.85 $[m]$) at 300$[days]$.}
+    \label{fig:patchscatter}
+\end{figure}
+
 
 \subsubsection{Importance Sampling}
 
@@ -152,14 +272,14 @@ Although it is possible to specify a custom proposal copula density, for this wo
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.95\linewidth]{figs/imp_patch/importance_t_tke_bmass_scatter}
+    \includegraphics[width=0.99\linewidth]{figs/imp_patch/importance_t_tke_bmass_scatter}
     \caption[Importance sampled single patch crud result.]{Importance sampled single patch crud result.}
     \label{fig:importancettkebmassscatter}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.95\linewidth]{figs/imp_patch/original_t_tke_bmass_scatter}
+    \includegraphics[width=0.99\linewidth]{figs/imp_patch/original_t_tke_bmass_scatter}
     \caption[Standard Monte Carlo sampled patch crud result.]{Standard Monte Carlo sampled patch crud result.}
     \label{fig:originalttkebmassscatter}
 \end{figure}
@@ -167,59 +287,6 @@ Although it is possible to specify a custom proposal copula density, for this wo
 The importance sampling efficiency is estimated by computing the variance ratio:  $\frac{\sigma^2_{MC}}{\sigma^2_{I}}$.  For the case studied, the application of importance sampling reduced the crud mass and boron mass sample variance by a factor of 2.
 
 The improvement in performance can be attributed to expending a larger proportion of sample in the upper tail of the temperature distribution as this is a region which strongly contributes to crud growth.
-
-
-\section{Single Pin Comparisons}
-
-
-\begin{itemize}
-	\item (\checkmark) Compare CTF vs Synthetic CFD vs Hi2Lo Reconstructed CRUD results for a full pin for fixed TH conditions.
-	\item (\checkmark) Show sensitivity of integrated crud mass and boron to the following.  Also show impact on uncertainty in these integrated results to:
-	\begin{itemize}
-		\item (\checkmark) Increase the number of samples drawn per patch
-		\item (\checkmark) Force Gaussian copula vs. best fit copula approach.
-	\end{itemize}
-	\item (\checkmark) Show difference between Hi2Lo vs CTF predicted fractional surface area above a threshold ($T_{sat}$).  Clearly, the CTF result
-	is unable to capture small scale effects of the mixing vanes on the surface temperature distribution.
-\end{itemize}
-
-\begin{figure}[H]%
-    \centering
-    \subfloat[CTF predicted fractional area of each CTF face above the saturation point.]{{\includegraphics[width=0.45\linewidth]{figs/synth/hi2lo/ctf_pin_t_threshold} }}%
-    \qquad
-    \subfloat[Hi2lo predicted fractional area of each CTF face above the saturation point.]{{\includegraphics[width=0.45\linewidth]{figs/synth/hi2lo/hi2lo_pin_t_threshold} }}%
-    \caption[]{Fraction area above the saturation point prediction comparison for the synthetic data set.}%
-    \label{fig:imp_sample1}%
-\end{figure}
-
-\begin{figure}[H]%
-    \centering
-    \subfloat[Hi2lo patch cladding wall temperature spatial distrubtion]{{\includegraphics[width=0.45\linewidth]{figs/synth/hi2lo/hi2lo_patch_t} }}%
-    \qquad
-    \subfloat[Hi2lo patch TKE spatial distrubtion.]{{\includegraphics[width=0.45\linewidth]{figs/synth/hi2lo/hi2lo_patch_tke} }}%
-    \caption[]{Single hi2lo patch sample reordering demonstration.}%
-    \label{fig:imp_sample1}%
-\end{figure}
-
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.8\linewidth]{figs/synth/hi2lo/hi2lo_pin_cmass}
-    \caption{}
-    \label{fig:hi2lopincmass}
-\end{figure}
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.8\linewidth]{figs/synth/hi2lo/hi2lo_pin_t}
-    \caption{}
-    \label{fig:hi2lopint}
-\end{figure}
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.8\linewidth]{figs/synth/hi2lo/hi2lo_pin_tke}
-    \caption{}
-    \label{fig:hi2lopintke}
-\end{figure}
 
 
 \subsection{Single Pin with Time Stepping}
@@ -240,6 +307,34 @@ The improvement in performance can be attributed to expending a larger proportio
 		This reduces variance in the total integrated boron and crud mass quantities.
 	\end{itemize}
 \end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{figs/synth/cmpr_pin_totals_0_4_0_6}
+    \caption[Total integrated crud born mass vs. time using approximately optimal remapping weights.]{Total integrated crud born mass vs. time using approximately optimal remapping weights ($\alpha_T=0.4, \alpha_{k}=0.6, \alpha_{q''}=0.0$).}
+    \label{fig:cmprpintotals0406}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{figs/synth/cmpr_pin_totals_no_remap}
+    \caption{Total integrated crud born mass vs. time without remapping samples.}
+    \label{fig:cmprpintotalsnoremap}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{figs/synth/patch_fields_0_4_0_6}
+    \caption{}
+    \label{fig:patchfields0406}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{figs/synth/patch_fields_no_remap}
+    \caption{}
+    \label{fig:patchfieldsnoremap}
+\end{figure}
+
 
 Section Takeaways:
 \begin{itemize}

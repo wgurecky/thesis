@@ -39,6 +39,13 @@
 \end{equation}
 Where the first term is accounts for the effect of grid flow restriction and the second term represents the contribution of vane induced swirl on the heat transfer.
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\linewidth]{../proposal/images/grid_nu_eff}
+    \caption{S. Yao empirical Nusselt number ratio vs. distance from upstream spacer grid.}
+    \label{fig:gridnueff}
+\end{figure}
+
     \item (\checkmark) B. Salko et al. developed a CFD-Informed hi2lo spatial remapping procedure for CILC/CIPS screening. \cite{salko17}
     Similar to Yao apporach.  Additionally developed a TKE remap.
     The multiplier maps capture the ratio of the CFD predicted HTC and TKE surface distributions to the same surface distributions on a bare rod with no spacer grids present.
@@ -102,6 +109,20 @@ Where the first term is accounts for the effect of grid flow restriction and the
         \alpha & = \frac{\dot m_i - \dot m_i^l }{\dot m_i^h - \dot m_i^l}
     \end{align*}
     Where $\dot m_i$ is the inlet mass flow rate.  The superscript, $(\cdot)^l$, represents low flow conditions and $(\cdot)^h$ represent high flow conditions.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{../proposal/images/ctf_crud_orig}
+    \caption{CTF/MAMBA crud predictions without hi2lo remapping on a quarter symmetric pin.}
+    \label{fig:ctfcrudorig}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{../proposal/images/ctf_crud_reconstructed}
+    \caption{CTF/MAMBA crud predictions using hi2lo remapping on a quarter symmetric pin.}
+    \label{fig:ctfcrudreconstructed}
+\end{figure}
+
 
      Some simplifications are made in this mapping.  For a given assembly, the multiplier maps have been shown to have a high span to span repeatability.  Therefore, a representative map is derived from a single span in a fully developed flow field.  This representative map is then applied to all other spans in the model.
 

@@ -2,8 +2,27 @@
 
 \section{Model Approach}
 
+A fundamental difference between the CFD and CTF computations is the average size of the mesh cells.  In the azimuthal coordinate, CTF decomposes a single rod surface into four patches.  An example top down view of typical CFD and CTF meshes for a single pin are given in figure \ref{fig:cfd_ctf_mesh}.  Though both codes employ a finite volume spatial discretization CFD can resolve the flow at much smaller length scales.  Additionally, each code employs a different set of closure models to the underlying set of coupled energy, mass, and momentum balances.  In practice these differences can lead to large discrepancies in boiling, turbulent mixing, and rod surface temperature predictions between the two codes.
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=10cm]{../proposal/images/cfd_ctf_mesh.png}
+    \caption{Top-down view of typical subchannel and CFD meshes for a single pin \cite{salko12}.}
+    \label{fig:cfd_ctf_mesh}
+\end{figure}
+
+Shown in figure \ref{fig:model_overview}, on a given CTF rod surface patch, a single point estimates for the surface temperature, TKE, and heat flux are predicted.  The predicted CTF quantities are an estimate for the average thermal hydraulic conditions over that coarse patch.   Consequentially, CTF CRUD predictions may significantly deviate from reality.  Since CRUD growth is highly sensitive to the presence of subcooled boiling on the rod surface; if CTF predicts a rod surface temperature less than the saturation point very little or no CRUD will form - when in reality, a small portion of that rod surface could exist above the saturation point and thus harbor CRUD.  Small localized mistakes in CRUD predictions compound throughout the core, leading to poor CIPS estimates. 
+
+In the figure $f$ denotes a probability density function whos value can be interpreted as fractional area of the rod surface.  
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=12cm]{../proposal/images/model_relations.png}
+    \caption{On a single coarse CTF patch: Differences in CRUD prediction between CFD and CTF models.}
+    \label{fig:model_overview}
+\end{figure}
+
 \begin{itemize}
-        \item (\checkmark) Model overview.
+
     \item CTF estimates mean TH conditions everywhere in the core at a low spatial resolution.  The surrogate provides higher order moments about the mean.
     \begin{equation}
     \mathbf S(\mathbf z) = \underbrace{ \bm \mu(\mathbf{z})}_\text{CTF} +
@@ -157,63 +176,43 @@ In order to estimate a sample quantile given the empirical CDF $F$, minimize: $\
         \item (\checkmark) Sampling from a known CDF via inverse transform sampling.
         \item (\checkmark-) Show that the order statistics are distributed according to a Gaussian distribution.
         \item (\checkmark-) Show that sample quantiles also follow a Gaussian distribution.  This directly follows from the distribution of the order statistics.
-            The sample quantiles are distributed normally according to equation \ref{eq:theory_qdist}.
+            The sample quantiles are distributed normally according to equation \ref{eq:theory_qdist_1}.
         \begin{eqnarray}
         q_p &\sim \mathcal N \left( F_T^{-1}(p), \sigma^2_{q_p} \right) \\
-        \sigma^2_{q_p} &= \frac{p(1 - p)}{n[f_T(F_T^{-1}(p))]^2} \nonumber
-        \label{eq:theory_qdist}
+        \sigma^2_{q_p} &= \frac{p(1 - p)}{n[f_T(F_T^{-1}(p))]^2}
+        \label{eq:theory_qdist_1}
         \end{eqnarray}
         
-        
-\begin{figure}[H]
+
+
+\begin{figure}[]%
     \centering
-    \includegraphics[width=0.5\linewidth]{figs/quantile_theory/q_beta_residual}
-    \caption{}
-    \label{fig:qbetaresidual}
-\end{figure}
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.5\linewidth]{figs/quantile_theory/q_beta_residual_conditional_0_1}
-    \caption{}
-    \label{fig:qbetaresidualconditional01}
-\end{figure}
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.5\linewidth]{figs/quantile_theory/q_beta_residual_conditional_0_5}
-    \caption{}
-    \label{fig:qbetaresidualconditional05}
-\end{figure}
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.5\linewidth]{figs/quantile_theory/q_beta_residual_conditional_0_9}
-    \caption{}
-    \label{fig:qbetaresidualconditional09}
+    \subfloat[Emperical quantiles for a normal distrubtion. 500 trials shown. $0.1, 0.5, 0.9$ quantiles denoted by dashed verticle lines.]{{\includegraphics[width=0.45\linewidth]{figs/quantile_theory/q_gauss_residual} }}%
+    \qquad
+        \subfloat[Emperical vs theoredical $0.1$ quantile distribution.]{{\includegraphics[width=0.45\linewidth]{figs/quantile_theory/q_gauss_residual_conditional_0_1} }}%
+    \qquad
+        \subfloat[Emperical vs theoredical $0.5$ quantile distribution.]{{\includegraphics[width=0.45\linewidth]{figs/quantile_theory/q_gauss_residual_conditional_0_5} }}%
+    \qquad
+        \subfloat[Emperical vs theoredical $0.9$ quantile distribution.]{{\includegraphics[width=0.45\linewidth]{figs/quantile_theory/q_gauss_residual_conditional_0_9} }}%
+    \qquad
+    \caption[Distribution of quantiles for a normally distributed RV.]{Distribution of quantiles for a normally distributed RV: $X \sim \mathcal{N}(0, 1)$.  Theoretical quantile standard deviation given by equation \ref{eq:theory_qdist_1}.}%
+    \label{fig:normal_q_theory}%
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}[H]%
     \centering
-    \includegraphics[width=0.5\linewidth]{figs/quantile_theory/q_gauss_residual}
-    \caption{}
-    \label{fig:qgaussresidual}
+    \subfloat[Emperical quantiles for a beta distrubtion. 500 trials shown. $0.1, 0.5, 0.9$ quantiles denoted by dashed verticle lines.]{{\includegraphics[width=0.45\linewidth]{figs/quantile_theory/q_beta_residual} }}%
+    \qquad
+    \subfloat[Emperical vs theoredical $0.1$ quantile distribution.]{{\includegraphics[width=0.45\linewidth]{figs/quantile_theory/q_beta_residual_conditional_0_1} }}%
+    \qquad
+    \subfloat[Emperical vs theoredical $0.5$ quantile distribution.]{{\includegraphics[width=0.45\linewidth]{figs/quantile_theory/q_beta_residual_conditional_0_5} }}%
+    \qquad
+    \subfloat[Emperical vs theoredical $0.9$ quantile distribution.]{{\includegraphics[width=0.45\linewidth]{figs/quantile_theory/q_beta_residual_conditional_0_9} }}%
+    \qquad
+    \caption[Distribution of quantiles for a beta distributed RV.]{Distribution of quantiles for a beta distributed RV: $X \sim \beta(1, 2)$}%
+    \label{fig:ctf_twall_aug}%
 \end{figure}
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.5\linewidth]{figs/quantile_theory/q_gauss_residual_conditional_0_1}
-    \caption{}
-    \label{fig:qgaussresidualconditional01}
-\end{figure}
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.5\linewidth]{figs/quantile_theory/q_gauss_residual_conditional_0_5}
-    \caption{}
-    \label{fig:qgaussresidualconditional05}
-\end{figure}
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.5\linewidth]{figs/quantile_theory/q_gauss_residual_conditional_0_9}
-    \caption{}
-    \label{fig:qgaussresidualconditional09}
-\end{figure}
+
 
         \item ($\cdot$) Show the impact of the uncertainty in where the sample quantiles fall given CFD data on crud growth.  The reconstructed CDFs which comprise the hi2lo mapping are essentially fuzzy which means the temperature, TKE, and BHF distributions are artificially smeared out (artificially high densities in the tails).
 \end{itemize}
@@ -240,7 +239,7 @@ In order to estimate a sample quantile given the empirical CDF $F$, minimize: $\
     
     The variance of upper tail probability mass estimate can be found by standard propagation of uncertainty principles:
    \begin{equation}
-    \sigma_p^2 = \left(\frac{\partial p_e}{\partial q_p} \right)^2 \cdot \sigma_{q_p}^2
+    \sigma_p^2 = \left(\frac{\partial p_e}{\partial q_p} \right)^2 \cdot \sigma_{q_p}^2 +\  HOT.
     \end{equation}
     
     Where
@@ -251,7 +250,7 @@ In order to estimate a sample quantile given the empirical CDF $F$, minimize: $\
     \end{eqnarray}
     
     This dictates that estimates of extreme upper tail integrals carry large relative uncertainties.
-    \item The distribution for $p_e$ can be obtained by a change of variables, since $p_e$ and $q_p$ are related by:
+    \item The approximate large sample distribution for $p_e$ can be obtained by a change of variables, since $p_e$ and $q_p$ are related by:
     \begin{equation}
     q_p = F_T^{-1}(1 - p_e)
     \end{equation}
