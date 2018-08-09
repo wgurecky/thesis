@@ -110,17 +110,14 @@ Where the first term is accounts for the effect of grid flow restriction and the
     \end{align*}
     Where $\dot m_i$ is the inlet mass flow rate.  The superscript, $(\cdot)^l$, represents low flow conditions and $(\cdot)^h$ represent high flow conditions.
 
-\begin{figure}[H]
+
+\begin{figure}[H]%
     \centering
-    \includegraphics[width=0.5\linewidth]{../proposal/images/ctf_crud_orig}
-    \caption{CTF/MAMBA crud predictions without hi2lo remapping on a quarter symmetric pin.}
-    \label{fig:ctfcrudorig}
-\end{figure}
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.5\linewidth]{../proposal/images/ctf_crud_reconstructed}
-    \caption{CTF/MAMBA crud predictions using hi2lo remapping on a quarter symmetric pin.}
-    \label{fig:ctfcrudreconstructed}
+    \subfloat[CTF/MAMBA crud predictions without hi2lo remapping on a quarter symmetric pin.]{{\includegraphics[width=0.45\linewidth]{../proposal/images/ctf_crud_orig} }}%
+    \qquad
+    \subfloat[CTF/MAMBA crud predictions using hi2lo remapping on a quarter symmetric pin.]{{\includegraphics[width=0.45\linewidth]{../proposal/images/ctf_crud_reconstructed} }}% 
+    \caption[The impact of spatial HTC hi2lo remapping on CTF/MAMBA crud predictions.]{The impact of spatial HTC hi2lo remapping on CTF/MAMBA crud predictions.}%
+    \label{fig:htc_remap_crud}%
 \end{figure}
 
 
