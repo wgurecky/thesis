@@ -69,16 +69,18 @@ The goal is to estimate the expected crud mass $C_m$ on each CTF patch given by 
         \label{eq:expected_crud}
 \end{align}
 
-Algorithm \ref{algo:basic_crud_algo} is used to compute the total crud mass in each CTF face.
+A strategy to compute the unknowns of the join distribution on each CTF face is required.  In this work we propose a data driven model, $\mathcal M$, to predict the unknowns provided a suite of pre-computed CFD results are used to train the machine learning model and local thermal hydraulic conditions provided by CTF at runtime are utilized to evaluate the model on each CTF face. Algorithm \ref{algo:basic_crud_algo} is used to compute the total crud mass in each CTF face.
 
 \begin{algorithm}[H]
     \captionsetup{labelfont={sc,bf}, labelsep=newline}
     \caption{Generic statistically based hi2lo method for crud prediction.}
-    \begin{algorithmic}        
-    \STATE (1) Pre-process training set $\theta(\mathbf p, \mathbf z)$.  
-    \STATE (2) Train model $\mathcal M(\mathbf p ; \gamma)$:  $ argmin_\gamma ||\mathcal M(\mathbf p; \gamma) - \theta(\mathbf p)|| $
+    \begin{algorithmic}      
+    \STATE \textbf{Initialization}  
+    \STATE (1) Pre-process training set.  
+    \STATE $\ \ $   (1b) Fit the joint distribution parameters to known CFD data: $\theta(\mathbf p, \mathbf z)$.  
+    \STATE (2) Train model $\mathcal M(\mathbf p, \mathbf z ; \gamma)$:  $ argmin_\gamma ||\mathcal M(\mathbf p, \mathbf z; \gamma) - \theta(\mathbf p, \mathbf z)|| $
 \FOR {CTF face, $i$}
-    \STATE Evaluate ML model $\hat \theta_i \leftarrow \mathcal M(\mathbf p_{i})$ \;
+    \STATE Evaluate ML model $\hat \theta_i \leftarrow \mathcal M(\mathbf p_{i}, \mathbf z_i; \gamma)$ \;
     \STATE Reconstruct $\hat H_i(\cdot |\hat \theta_i)$ \;
     \STATE Draw samples $\mathbf X \sim \hat H_i$ \;
     \STATE Evaluate \ref{eq:expected_crud} via Monte Carlo approximation \;
@@ -86,7 +88,7 @@ Algorithm \ref{algo:basic_crud_algo} is used to compute the total crud mass in e
     \end{algorithmic}
 \label{algo:basic_crud_algo}
 \end{algorithm}
-Where $\gamma$ are free parameters in the machine learning regression model.  A discussion on the machine learning model follows in section ().  The reconstruction of the joint density function $\hat H$ from copula and univariate quantile functions is discussed in section ().  Monte Carlo and importance sampling are discussed in sections () and () respectively.
+Where $\gamma$ are free parameters in the machine learning regression model.  A discussion on the machine learning model follows in section ().  The reconstruction of the joint density function $\hat H$ from copula and univariate quantile functions is discussed in section ().  Monte Carlo and importance sampling are discussed in sections () and () respectively.  A critical question to answer is:  Can a data driven machine learning model adequately predict the parameters of a probability distribution on each CTF face $(\hat \theta_i \leftarrow \mathcal M(\mathbf p_{i}, \gamma))$?  There is some uncertainty in the optimal machine learning model parameters.  This propagates to the distribution parameters which ultimately governs the uncertainty of the crud results.  An adequet model in this contex reduces the uncertainty in the final crud estimate to some acceptable level.
 \bigskip
 
 In addition to improving the expected value prediction of CRUD on each CTF patch vs the CTF standalone case, the model provides the capability to estimate the likelihood of extreme value events (i.e. $\mathcal P_f \propto Pr(C_t(x) > C_t^*)$, where $C_t^*$ is some critical crud thickness and $\mathcal P_f$ is a cladding failure probability) on the rod surface.  This would be impossible to quantify with CTF/MAMBA alone.  A significant challenge is computing an estimate for $Var(\mathcal P_f) = \E[(\mathcal P_f - \E(\mathcal P_f))^2]$.
@@ -283,6 +285,7 @@ The generalized gradient boosting algorithm was developed by Friedman (1999).
     \captionsetup{labelfont={sc,bf}, labelsep=newline}
     \caption{Gradient boosting algorithm (ref).}
     \begin{algorithmic}
+    \STATE \textbf{Initialization} 
     \STATE (1) Training set $\{(p_i, y_i)\}_{i=1}^n$. 
     \STATE (2) Differentiable loss function $L(y, F(p))$. 
     \STATE (3) Number of iterations ${{M}}$.
