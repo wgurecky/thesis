@@ -325,7 +325,7 @@ Where $\nu$ is a tunable constant in $[0, 1]$ called the learning rate.
 
 In the construction of the hi2lo method an important assumption is made about the location of hot and cold spots on the rod surface as a function of time.   The presence of hot and cold spots downstream spacer grids and the location on the rod surface these spots occupy are assumed to be principally governed by the geometry of the mixing vanes and geometric layout of the fuel and guide tubes.  The influence of flow rate and core power on the relative location of the hot spots on the rod surface are assumed to be second order effects and are not explicitly captured by the hi2lo methodology at present.
 
-\subsubsection{Hot Spot Stationarity}
+\subsection{Hot Spot Stationarity}
 
 This assumption leads to the notion of hot spot stationarity in time since the geometry of the core does not change throughout a cycle.  In the context of the statistically based hi2lo approach to achieve a stable location of hot and cold spots one must structure the samples.  To accomplish this, one must compute the order statistics of the joint temperate and turbulent kinetic energy distribution in each CTF patch and ensure that the highest order statistic always falls on the same location within a given CTF patch.
 
@@ -350,6 +350,29 @@ Typical values for the remapping coefficients are $w_T=0.6, w_k=0.4, w_{q''}=0$.
 \end{figure}
 
 Note that since the crud simulation package utilized in this work is one-dimensional the pattern chosen for sample emplacement has no influence on the integrated crud result over a patch.  This would not be the case if the crud simulation package modeled a fully 3D crud layer as the state of the neighboring crud nodes in that case would matter.  Interestingly, since the hi2lo model user  can specify the sample remapping pattern at run time, a physically realistic pattern could be prescribed on the rod surface - even prescribed as a function of local core conditions leading to a hybrid strategy between the current pure statistical hi2lo procedure and the spatial remapping procedure implemented by Salko et. al.
+
+\subsection{Stepping Scheme}
+
+In figure \ref{fig:stepscheme}, the VERA state-point time index is denoted by $t$. Resampling events are performed at time intervals $\Delta s$.  At each resampling event $n$, samples are drawn from the reconstructed joint probability $\hat H^t$.  Assume that the sample time step is constant and equal to $\Delta s$.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{figs/step_scheme}
+    \caption{}
+    \label{fig:stepscheme}
+\end{figure}
+
+The sample time is denoted by $s$:
+\begin{equation}
+s_n = n\Delta t_s
+\end{equation}
+
+The time averaged sample weights are updated at every resampling event according to:
+
+\begin{equation}
+\bar \omega = \left( \frac{1}{\sum \Delta t_s} \right) \sum_{i=0}^n \omega_i \Delta t_{s_i}
+\end{equation}
+And $\omega_i$ is computed according to the ratio of the target density and the sampling distribution density as given in equation ().
 
 \subsection{Smearing Over Azimuth}
 
