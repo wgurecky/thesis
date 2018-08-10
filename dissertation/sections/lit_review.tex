@@ -70,16 +70,20 @@ Where the first term is accounts for the effect of grid flow restriction and the
     several iterations are required to converge upon the correct surface temperature, $\hat T_s$ due to the surface boiling term.
 
     \begin{algorithm}[H]
-    Guess $T^{i=0}_s=T_0$.  Maximum number, $N$ iterations.
+        \captionsetup{labelfont={sc,bf}, labelsep=newline}
+        \caption{Heat transfer coefficient map based hi2lo method for crud prediction (Salko. et. al.).}
+    \begin{algorithmic}
+    \STATE Guess $T^{i=0}_s=T_0$.  Maximum number, $N$ iterations.
 
-        \For{i in range($N$):}{
-        Evaluate effective multiphase CTF HTC: $h_{eff} = h_{{ctf}}(T^i_{s}, \hat h_l, q'')$ \;
-        Compute new hi2lo surface temperatures: $T_{s} = \frac{q''}{h_{eff}} + T_\infty$ \;
-        Under relax  $T^{i+1}_{s} = \omega T_{s} + (1 - \omega) T^{i}_{s} ;\ \omega < 1.$ \;
-        \textbf{break if}:  $|T^{i+1}_s - T^i_s| < tol$ \;
-        }
-        \textbf{return}: $\hat T_s = T^{i+1}_s$
-        \end{algorithm}
+        \FOR {i in range($N$):}
+           \STATE Evaluate effective multiphase CTF HTC: $h_{eff} = h_{{ctf}}(T^i_{s}, \hat h_l, q'')$ \;
+           \STATE Compute new hi2lo surface temperatures: $T_{s} = \frac{q''}{h_{eff}} + T_\infty$ \;
+           \STATE  Under relax  $T^{i+1}_{s} = \omega T_{s} + (1 - \omega) T^{i}_{s} ;\ \omega < 1.$ \;
+           \STATE  \textbf{break if}:  $|T^{i+1}_s - T^i_s| < tol$ \;
+        \ENDFOR 
+    \STATE \textbf{return}: $\hat T_s = T^{i+1}_s$
+    \end{algorithmic}
+    \end{algorithm}
     Where $h_{ctf}(\cdot)$ is a callable CTF function that returns and effective multiphase HTC, $h_{eff}$.
 
     TKE remap:

@@ -13,7 +13,7 @@ A fundamental difference between the CFD and CTF computations is the average siz
 
 Shown in figure \ref{fig:model_overview}, on a given CTF rod surface patch, a single point estimates for the surface temperature, TKE, and heat flux are predicted.  The predicted CTF quantities are an estimate for the average thermal hydraulic conditions over that coarse patch.   Consequentially, CTF CRUD predictions may significantly deviate from reality.  Since CRUD growth is highly sensitive to the presence of subcooled boiling on the rod surface; if CTF predicts a rod surface temperature less than the saturation point very little or no CRUD will form - when in reality, a small portion of that rod surface could exist above the saturation point and thus harbor CRUD.  Small localized mistakes in CRUD predictions compound throughout the core, leading to poor CIPS estimates. 
 
-In the figure $f$ denotes a probability density function whos value can be interpreted as fractional area of the rod surface.  
+In figure \ref{fig:model_overview}, $f$ denotes a probability density function.  Integration of this density function can be interpreted as computing a fractional area of the rod surface that exists within the specified integration limits.  
 \begin{figure}[!htbp]
     \centering
     \includegraphics[width=12cm]{../proposal/images/model_relations.png}
@@ -21,29 +21,26 @@ In the figure $f$ denotes a probability density function whos value can be inter
     \label{fig:model_overview}
 \end{figure}
 
-\begin{itemize}
+CTF estimates mean TH conditions everywhere in the core at a low spatial resolution.  The CFD informed model provides higher order moments about the mean.
+\begin{equation}
+   \mathbf S(\mathbf p, \mathbf z) = \underbrace{ \bm \mu(\mathbf p, \mathbf{z})}_\text{CTF} +
+   \underbrace{\varepsilon({\theta (\bm p, \mathbf z)})}_\text{CFD Informed} + \bm b(\mathbf p, \mathbf{z})
+   \label{eq:hi2lo_overview}
+\end{equation}
 
-    \item CTF estimates mean TH conditions everywhere in the core at a low spatial resolution.  The surrogate provides higher order moments about the mean.
-    \begin{equation}
-    \mathbf S(\mathbf z) = \underbrace{ \bm \mu(\mathbf{z})}_\text{CTF} +
-    \underbrace{\varepsilon({\theta (\bm p(\mathbf z))})}_\text{CFD Informed} + \bm b(\mathbf{z})
-    \end{equation}
-    \begin{itemize}
+\begin{itemize}
         \item $\mathbf S$ is a three component vector field representing the cladding surface temperature, turbulent kinetic energy and boundary heat flux.
-        \item $\mathbf z$ are spatial coordinates. $\mathbf p$ are a set of auxiliary predictors.  Auxiliary predictors are covariates that describe local core conditions and may be geometric or thermal hydraulic in nature.
+        \item $\mathbf z$ denotes spatial coordinates and $\mathbf p$ represents a set of auxiliary predictors.  Auxiliary predictors are covariates that describe local core conditions and may be geometric or thermal hydraulic in nature.
         \item $\varepsilon$ is a random three-component vector field with components: $\{\varepsilon_T, \varepsilon_k, \varepsilon_{q''}\}$.
-        \item $\varepsilon({\theta (\bm p(\mathbf z))})$ is a CFD informed model with $\theta$ representing free model parameters which must be fit to CFD data.
-        \item $\bm b$ is bias ($\bm \mu_{CTF} - \bm \mu_{CFD}$)
-        \item Field averages, $\bm \mu$, are piecewise constant over each CTF patch
+        \item $\varepsilon$ is a CFD informed model with $\theta$ representing free model parameters which must be determined given CFD data.
+        \item $\bm b$ is bias between the low and high fidelity models ($\bm \mu_{CTF} - \bm \mu_{CFD}$).  Despite providing identical inlet boundary conditions to both codes bias exists due to algorithmic differences, closure model differences, and meshing differences between the two codes.
+        \item Field averages, $\bm \mu$, are piecewise constant over each CTF patch.
         \item Note this is a additive model where Salko constructed a multiplicative model.
-    \end{itemize}
 \end{itemize}
 
-Consider the case where the CFD results are normally distributed about the CTF results such that $\varepsilon \sim \mathcal N(0, \mathbf \theta(\mathbf p))$, where $\mathbf \theta(\mathbf p) = \bm \Sigma(\mathbf p)$ is a covariance matrix that depends on local core conditions.
-
-Shifting this distribution by a constant vector $\bm c=\bm b + \bm \mu_{ctf}$, results in a new distribution denoted:
+Consider the hypothetical case where the CFD results are normally distributed about the CTF results such that $\varepsilon \sim \mathcal N(0, \mathbf \theta(\mathbf p, \mathbf z))$, where $\mathbf \theta(\mathbf p, \mathbf z) = \bm \Sigma(\mathbf p, \mathbf z)$ is a covariance matrix that depends on local core conditions.  Shifting this distribution by a constant vector $\bm c=\bm b + \bm \mu_{ctf}$, results in a new distribution denoted by $h$ in equation \ref{eq:norm_noise}.
 \begin{align}
-    \left. h \right|_{\bm p} & = \mathcal N(\bm c, \bm \Sigma(\mathbf p)) \nonumber \\
+    \left. h \right|_{(\bm p, \bm z)} & = \mathcal N(\bm c, \bm \Sigma(\mathbf p, \bm z)) \nonumber \\
     & = \left.
         \mathcal N \left(
         \begin{pmatrix}
@@ -58,38 +55,41 @@ Shifting this distribution by a constant vector $\bm c=\bm b + \bm \mu_{ctf}$, r
             \sigma_{q''} \sigma_{T} & \sigma_{q''} \sigma_{k} & \sigma_{q''} \sigma_{q''}
         \end{pmatrix}
     \right)
-    \right|_{\mathbf p}
+    \right|_{(\mathbf p, \mathbf z)}
+\label{eq:norm_noise}
 \end{align}
 
 
-The goal is to estimate the expected crud on each CTF patch given by equation \ref{eq:expected_crud}.
+The goal is to estimate the expected crud mass $C_m$ on each CTF patch given by equation \ref{eq:expected_crud}.  Let $\mathbf X= \{T, k, q''\}$ denote a random vector of temperature, TKE, and BHF. $\mathbf I$ represents additional known crud parameters, $\mathbf C_o$ is the crud state at the start of the time step and $\theta$ are distribution parameters.    The CRUD model, $\mathcal G(\cdot)$, is common to all CTF faces.  The joint cumulative density's parameters, $\theta$, $(\hat H(\cdot|\theta))$ must be predicted from the available high resolution CFD data in every CTF face.  In the case of an assumed normal distribution model there are nine unknowns:  $\{ \sigma^2_T, \sigma^2_k, \sigma^2_{q''}, \sigma_k \sigma_T, \sigma_{q''}\sigma_T, \sigma_{q''}\sigma_{k}, c_T, c_k, c_{q''} \}$.  In the subsequent sections we will seek to relax this normality assumption of the CFD residuals about the CTF result.
 
-\begin{eqnarray}
-        total\ crud\ [grams] = A \mu_g\ = A \E[g(\mathbf X|g_o, \mathbf I, \delta t)] \nonumber \\
-        = A \iiint g(\mathbf X|g_o, \mathbf I, \delta t) h(\mathbf X|\theta) d \mathbf X
+\begin{align}
+        C_m &= A \mu_{m} \nonumber \\
+        &= A \E[\mathcal G(\mathbf X|\mathbf C_o, \mathbf I, \delta t)] \nonumber \\
+        &= A \iiint \mathcal G(\mathbf X|\mathbf C_o, \mathbf I, \delta t) h(\mathbf X|\theta) d \mathbf X
         \label{eq:expected_crud}
-\end{eqnarray}
-let $\mathbf X= \{T, k, q''\}$ denote a random vector of temperature, TKE, and BHF. $\mathbf I$ represents additional known crud parameters, $g_o$ is the crud state at the start of the time step and $\theta$ are distribution parameters.  The goal is to predict what $h(\cdot)$ is in every CTF face.  The CRUD model, $g(\cdot)$, is common to all ctf faces.
+\end{align}
 
-To compute the total crud/boron in each CTF face:
-\\
+Algorithm \ref{algo:basic_crud_algo} is used to compute the total crud mass in each CTF face.
 
 \begin{algorithm}[H]
-\KwData{(1) Pre-process training set $\theta(\mathbf p)$.  (2) Train model $M(\mathbf p ; \gamma)$:  $ argmin_\gamma ||M(\mathbf p; \gamma) - \theta(\mathbf p)|| $}
-
-\For{CTF face, $i$}{
-Evaluate ML model $\hat \theta_i \leftarrow M(\mathbf p_{i})$ \;
-Reconstruct $\hat h_i(x|\hat \theta_i)$ \;
-Draw samples $\mathbf X \sim \hat h_i$ \;
-Evaluate \ref{eq:expected_crud} via Monte Carlo approximation \;
-}
+    \captionsetup{labelfont={sc,bf}, labelsep=newline}
+    \caption{Generic statistically based hi2lo method for crud prediction.}
+    \begin{algorithmic}        
+    \STATE (1) Pre-process training set $\theta(\mathbf p, \mathbf z)$.  
+    \STATE (2) Train model $\mathcal M(\mathbf p ; \gamma)$:  $ argmin_\gamma ||\mathcal M(\mathbf p; \gamma) - \theta(\mathbf p)|| $
+\FOR {CTF face, $i$}
+    \STATE Evaluate ML model $\hat \theta_i \leftarrow \mathcal M(\mathbf p_{i})$ \;
+    \STATE Reconstruct $\hat H_i(\cdot |\hat \theta_i)$ \;
+    \STATE Draw samples $\mathbf X \sim \hat H_i$ \;
+    \STATE Evaluate \ref{eq:expected_crud} via Monte Carlo approximation \;
+\ENDFOR
+    \end{algorithmic}
+\label{algo:basic_crud_algo}
 \end{algorithm}
-Where $\gamma$ are free parameters in the ML model.
+Where $\gamma$ are free parameters in the machine learning regression model.  A discussion on the machine learning model follows in section ().  The reconstruction of the joint density function $\hat H$ from copula and univariate quantile functions is discussed in section ().  Monte Carlo and importance sampling are discussed in sections () and () respectively.
 \bigskip
 
-In addition to improving the expected value prediction of CRUD on each CTF patch vs the CTF standalone case, the model provides the capability to estimate the likelihood of extreme value events (i.e. $\mathcal P_f \propto Pr(g(x) > g^*)$, where $g^*$ is some critical crud thickness and $\mathcal P_f$ is a cladding failure probability) on the rod surface.  This would be impossible to quantify with CTF/MAMBA alone.
-
-A significant challenge is computing an estimate for $Var(\mathcal P_f) = \E[(\mathcal P_f - \E(\mathcal P_f))^2]$.
+In addition to improving the expected value prediction of CRUD on each CTF patch vs the CTF standalone case, the model provides the capability to estimate the likelihood of extreme value events (i.e. $\mathcal P_f \propto Pr(C_t(x) > C_t^*)$, where $C_t^*$ is some critical crud thickness and $\mathcal P_f$ is a cladding failure probability) on the rod surface.  This would be impossible to quantify with CTF/MAMBA alone.  A significant challenge is computing an estimate for $Var(\mathcal P_f) = \E[(\mathcal P_f - \E(\mathcal P_f))^2]$.
 
 
 \section{Construction of the Hi2lo Map}
@@ -280,25 +280,31 @@ In order to estimate a sample quantile given the empirical CDF $F$, minimize: $\
 The generalized gradient boosting algorithm was developed by Friedman (1999).
 
 \begin{algorithm}[H]
-    \KwData{ (1) Training set $\{(p_i, y_i)\}_{i=1}^n$. (2) Differentiable loss function $L(y, F(p))$. (3) Number of iterations ${{M}}$.
-        Initialize model with a constant value:
-        $F_0(p) = \underset{\gamma}{\arg\min} \sum_{i=1}^n L(y_i, \gamma).$}
+    \captionsetup{labelfont={sc,bf}, labelsep=newline}
+    \caption{Gradient boosting algorithm (ref).}
+    \begin{algorithmic}
+    \STATE (1) Training set $\{(p_i, y_i)\}_{i=1}^n$. 
+    \STATE (2) Differentiable loss function $L(y, F(p))$. 
+    \STATE (3) Number of iterations ${{M}}$.
+    \STATE (4)   Initialize model with a constant value:
+        $F_0(p) = \underset{\gamma}{\arg\min} \sum_{i=1}^n L(y_i, \gamma).$
     
-    \For{${{m}} = 1$ to ${{M}}$}{
-        Compute the pseudo-residuals:
+    \FOR {${{m}} = 1$ to ${{M}}$}
+        \STATE Compute the pseudo-residuals:  
+        \FOR {$i=1,\ldots,n $}
+            \STATE $r_{im} = -\frac{\partial L(y_i, F_{m-1}(p_i))}{\partial F_{m-1}(p_i)}$
+        \ENDFOR
         
-        \For{$i=1,\ldots,n $}{
-            $r_{im} = -\frac{\partial L(y_i, F_{m-1}(p_i))}{\partial F_{m-1}(p_i)}$
-        }
+        \STATE Fit a weak learner $h_m(p)$ to pseudo-residuals, $r_{m}$: Training data set is $\{(p_i, r_{im})\}_{i=1}^n$ \;
         
-        Fit a weak learner $h_m(p)$ to pseudo-residuals, $r_{m}$: Training data set is $\{(p_i, r_{im})\}_{i=1}^n$ \;
-        
-        Compute multiplier $\gamma_m$ :
+        \STATE Compute multiplier $\gamma_m$ :
         $\gamma_m = \underset{\gamma}{\operatorname{arg\,min}} \sum_{i=1}^n L\left(y_i, F_{m-1}(p_i) + \gamma h_m(p_i)\right)$\;
-        Update the model:
+        \STATE Update the model:
         $F_m(p) = F_{m-1}(p) + \nu \gamma_m h_m(p).$
-    }
-    Output $F_M(p).$
+    
+    \ENDFOR
+    \STATE Output $F_M(p).$
+    \end{algorithmic}
 \end{algorithm}
 Where $\nu$ is a tunable constant in $[0, 1]$ called the learning rate.
 
@@ -327,9 +333,9 @@ In the construction of the hi2lo method an important assumption is made about th
 
 \subsection{Hot Spot Stationarity}
 
-This assumption leads to the notion of hot spot stationarity in time since the geometry of the core does not change throughout a cycle.  In the context of the statistically based hi2lo approach to achieve a stable location of hot and cold spots one must structure the samples.  To accomplish this, one must compute the order statistics of the joint temperate and turbulent kinetic energy distribution in each CTF patch and ensure that the highest order statistic always falls on the same location within a given CTF patch.
+This assumption leads to the notion of hot spot stationarity in time since the geometry of the core does not change throughout a cycle.  In the context of the statistically based hi2lo approach to achieve a stable location of hot and cold spots one establish a mapping from sample space to a location on the rod surface.  To accomplish this, the order statistics of the joint temperate and turbulent kinetic energy distribution in each CTF patch are computed and the condition that the highest order statistic always falls on the same location within a given CTF patch is enforced.
 
-Order statistics are well defined for a single dimensional random variable but in higher dimensions, a consistent ordering is not possible.  Therefore, as shown in equation \ref{eq:weighting}, a weighting procedure is used to reduce the trivariate random vector of T, TKE, and $q''$ on any given CTF patch into a univariate random variable denoted by $\mathbf{m}=\{m_0, m_1, ... m_N\}$.
+Order statistics are well defined for a single dimensional random variable but in higher dimensions a consistent ordering is not possible.  Therefore, as shown in equation \ref{eq:weighting}, a weighting procedure is used to reduce the trivariate random vector of T, TKE, and $q''$ on any given CTF patch into a univariate random variable denoted by $\mathbf{m}=\{m_0, m_1, ... m_N\}$.
 
 \begin{equation}
 m_i = w_T \left( \frac{T_i}{T_{max} - T_{min}} \right) + w_k \left( \frac{k_i}{k_{max} - k_{min}} \right) +  w_q'' \left( \frac{q^{''}_i}{q_{max} - q_{min}} \right)
@@ -339,26 +345,26 @@ Where the sample remapping coefficients $\mathbf w$ are set at runtime by the hi
 \begin{equation}
 w_T + w_k + w_{q''} = 1
 \end{equation}
-Next the order statistics of $\mathbf m$ are computed such that $\mathbf m' = \{ m_{(0)} < m_{(1)}< ... m_{(N)} \}$.  As shown in figure \ref{fig:samplemapping}, the ordered samples are then emplaced on the CTF patch in an organized manner.  The path taken on the patch surface is user controllable and is taken to be a simple serpentine left-to-right pattern in this work.
+Next the order statistics of $\mathbf m$ are computed such that $\mathbf m' = \{ m_{(0)} < m_{(1)}< ... m_{(N)} \}$.  As shown in figure \ref{fig:samplemapping}, the ordered samples are then emplaced on the CTF patch in an organized manner.  The sample space is denoted by $\Omega$ and a specific temperature, TKE, and boundary heat flux sample is denoted by $\mathcal F_i$ as a single dot residing inside the sample space.  The path taken on the patch surface is user controllable and is taken to be a simple serpentine left-to-right pattern in this work.
 Typical values for the remapping coefficients are $w_T=0.6, w_k=0.4, w_{q''}=0$.  With this setting, relatively high temperate and low TKE samples are likely to remain in the same location on the rod surface over multiple resampling events.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.4\linewidth]{../proposal/slides/seminar_slides/figs/sample_mapping}
-    \caption{}
+    \caption{Sample remapping.}
     \label{fig:samplemapping}
 \end{figure}
 
 Note that since the crud simulation package utilized in this work is one-dimensional the pattern chosen for sample emplacement has no influence on the integrated crud result over a patch.  This would not be the case if the crud simulation package modeled a fully 3D crud layer as the state of the neighboring crud nodes in that case would matter.  Interestingly, since the hi2lo model user  can specify the sample remapping pattern at run time, a physically realistic pattern could be prescribed on the rod surface - even prescribed as a function of local core conditions leading to a hybrid strategy between the current pure statistical hi2lo procedure and the spatial remapping procedure implemented by Salko et. al.
 
-\subsection{Stepping Scheme}
+\subsection{Time Stepping Scheme}
 
-In figure \ref{fig:stepscheme}, the VERA state-point time index is denoted by $t$. Resampling events are performed at time intervals $\Delta s$.  At each resampling event $n$, samples are drawn from the reconstructed joint probability $\hat H^t$.  Assume that the sample time step is constant and equal to $\Delta s$.
+In figure \ref{fig:stepscheme}, the VERA state-point time index is denoted by $t$. Dotted arrows represent sampling from a probability distribution and solid samples represent a mapping, with $\mathcal R$ being the spatial reordering map from sample space to a position on the rod surface. $\mathcal G$ represents the crud generation function provided by the crud simulation package which takes thermal hydraulic boundary conditions as input in addition to the previous crud state and produces a new crud state.  Resampling events are performed at time intervals $\Delta s$.  At each resampling event $n$, samples are drawn from the reconstructed joint probability $\hat H^t$.  Assume that the sample time step is constant and equal to $\Delta s$.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\linewidth]{figs/step_scheme}
-    \caption{}
+    \caption{Multi-state point time stepping overview.}
     \label{fig:stepscheme}
 \end{figure}
 
