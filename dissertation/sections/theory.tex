@@ -317,11 +317,39 @@ Where $\nu$ is a tunable constant in $[0, 1]$ called the learning rate.
 
 
 \subsection{Propagating CRUD Through Time}
-\subsubsection{Hot Spot Stationarity}
+
 \begin{itemize}
         \item (\checkmark) Elucidate why we need a spatial remapping scheme.
         \item (\checkmark) Detail how this mapping is produced.
 \end{itemize}
+
+In the construction of the hi2lo method an important assumption is made about the location of hot and cold spots on the rod surface as a function of time.   The presence of hot and cold spots downstream spacer grids and the location on the rod surface these spots occupy are assumed to be principally governed by the geometry of the mixing vanes and geometric layout of the fuel and guide tubes.  The influence of flow rate and core power on the relative location of the hot spots on the rod surface are assumed to be second order effects and are not explicitly captured by the hi2lo methodology at present.
+
+\subsubsection{Hot Spot Stationarity}
+
+This assumption leads to the notion of hot spot stationarity in time since the geometry of the core does not change throughout a cycle.  In the context of the statistically based hi2lo approach to achieve a stable location of hot and cold spots one must structure the samples.  To accomplish this, one must compute the order statistics of the joint temperate and turbulent kinetic energy distribution in each CTF patch and ensure that the highest order statistic always falls on the same location within a given CTF patch.
+
+Order statistics are well defined for a single dimensional random variable but in higher dimensions, a consistent ordering is not possible.  Therefore, as shown in equation \ref{eq:weighting}, a weighting procedure is used to reduce the trivariate random vector of T, TKE, and $q''$ on any given CTF patch into a univariate random variable denoted by $\mathbf{m}=\{m_0, m_1, ... m_N\}$.
+
+\begin{equation}
+m_i = w_T \left( \frac{T_i}{T_{max} - T_{min}} \right) + w_k \left( \frac{k_i}{k_{max} - k_{min}} \right) +  w_q'' \left( \frac{q^{''}_i}{q_{max} - q_{min}} \right)
+\label{eq:weighting}
+\end{equation}
+Where the sample remapping coefficients $\mathbf w$ are set at runtime by the hi2lo model user and sum to 1:
+\begin{equation}
+w_T + w_k + w_{q''} = 1
+\end{equation}
+Next the order statistics of $\mathbf m$ are computed such that $\mathbf m' = \{ m_{(0)} < m_{(1)}< ... m_{(N)} \}$.  As shown in figure \ref{fig:samplemapping}, the ordered samples are then emplaced on the CTF patch in an organized manner.  The path taken on the patch surface is user controllable and is taken to be a simple serpentine left-to-right pattern in this work.
+Typical values for the remapping coefficients are $w_T=0.6, w_k=0.4, w_{q''}=0$.  With this setting, relatively high temperate and low TKE samples are likely to remain in the same location on the rod surface over multiple resampling events.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\linewidth]{../proposal/slides/seminar_slides/figs/sample_mapping}
+    \caption{}
+    \label{fig:samplemapping}
+\end{figure}
+
+Note that since the crud simulation package utilized in this work is one-dimensional the pattern chosen for sample emplacement has no influence on the integrated crud result over a patch.  This would not be the case if the crud simulation package modeled a fully 3D crud layer as the state of the neighboring crud nodes in that case would matter.  Interestingly, since the hi2lo model user  can specify the sample remapping pattern at run time, a physically realistic pattern could be prescribed on the rod surface - even prescribed as a function of local core conditions leading to a hybrid strategy between the current pure statistical hi2lo procedure and the spatial remapping procedure implemented by Salko et. al.
 
 \subsection{Smearing Over Azimuth}
 
