@@ -18,16 +18,19 @@ Positive outcomes:
 \begin{itemize}
 	\item  Not trivial to incorporate CRUD/TH feedback into the hi2lo model.  The hi2lo mapping must be modified to depend on the current crud state.  This CRUD/TH feedback was presently misssed in the current implementation.
 	\item  Extreme upper and lower sample quantiles (upper and lower tail integrals) are plagued by high uncertainty which diminishes the applicability of this method to CILC.  
+    \item  The hi2lo model cannot be extrapolated outside the available CFD data envelope.
 \end{itemize}
 
 \section{Future Work}
 
 \begin{itemize}
-	\item  Investigate multi-state, many assembly cases.
-	\begin{itemize}
-		\item Requires extensive feature engineering in order to remain predictive under a wide variety of pin orientations and local core conditions.
-	\end{itemize}
-		
+    
+    \item Quantify uncertainty of conditional quantile predictions made by the machine learning model.  Consider using Bayesian additive regression trees for this purpose.
+    
+    \item Propagate uncertainties from the machine learning model predictions through the hi2lo model into the crud estimates.  This is required for adoption of this methodology in a production setting.
+    
+    \item Conduct additional feature engineering studies in order to improve predictive performance under a wide variety of pin orientations and local core conditions.  Consider using geometric features such as rod position inside a bundle and bundle position inside the core in addition to the local thermal hydraulic conditions.
+	
 	\item Use parametric marginal models in place of the predicted piecewise conditional quantile function.  This would include identifying some class of distribution which accurately models the temperature and TKE variation on a CTF patch.
 	
 	\item Explore generating a heat transfer coefficient (HTC) map rather than predicting the temperature residual distribution.  This is avenue for future work is motivated by energy balance consistency concerns.  Under the current strategy the CTF energy balance is disobeyed because the mean surface temperatures are shifted to the CFD value in cases where the $CFD-CTF$ bias is nonzero.  In this scinario the Hi2lo model acts as a replacement for the Dittus-Boelter empirical heat transfer coefficient relation in CTF.

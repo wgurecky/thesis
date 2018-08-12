@@ -201,8 +201,24 @@ The more significant the temperature thresholding behavior of the crud, the more
     \label{fig:patchscatter}
 \end{figure}
 
+\subsubsection{Crud Copula Parameter Sensitivity}
+
+Here the sensitivity of the crud result to the copula parameters is investigated.  Both the impact of the rank correlation coefficient and the archimidean copula family are investigated.  The sensitivity results from four patches are shown in figure ().  The result shows crud is relatively insensitive to the choice of copula, but the rank correlation coefficient can be an important quantity to accurately capture in the hi2lo model.  
+
+Next, two full single pin scenarios were considered:  The first scenario uses the best-fit copula on each patch as determined by the AIC metric.  The second pin scenario enforces that a Gaussian copula model is used on every CTF face.  The crud results from these scenarios were then compared.  The data shows the choice of copula (between Gaussian, Frank, and Clayton) has a small overall impact on the total integrated rod boron mass.  A large simplification is possible.  The copula can be assumed to be Gaussian in all cases without significantly impacting overall integrated crud results.
+
+\subsubsection{Crud Sample Size Study}
+
+The number of samples used to estimate the integral in equation () is a user input.
+As expected for a single rod the integrated crud variance is reduced by increasing the number of samples used per CTF face to estimate the integrated crud quantities of interest.   Section \ref{sec:Importance Sampling} demonstrates that improvements in sampling efficiency are possible by way of importance sampling.
+
+\subsubsection{Crud Sensitivity to the Number of Quantiles}
+
+The number of sample quantiles used in the reconstruction of the marginal distributions is a tunable input.  In this section the number of quantiles necissary to obtain a converged integrated crud estimate on a single rod is determined.  Only the case of evenly spaced probability levels is considered i.e the allowable probability levels used to compute the sample quantiles are evenly spaced in $[0, 1]$.   The results indicate that 20 sample quantiles results in a converged integrated and average axial crud solution.  
+
 
 \subsubsection{Importance Sampling}
+\label{sec:Importance Sampling}
 
 To obtain estimates for the efficiency gain offered by importance sampling to compute \ref{eq:expected_crud}, a singe patch was studied under synthetic TH data.
 
