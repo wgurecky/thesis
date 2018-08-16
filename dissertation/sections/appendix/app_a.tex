@@ -1,7 +1,7 @@
 %! TEX root = ../dissertation_gurecky.tex
 
 %-----------------------------------------------------------------------------%
-\section{Copula}
+\subsection{Copula}
 
 In this section, Sklar's theorem is provided along with examples of copula functions
 and techniques to draw samples from them. 
@@ -41,10 +41,10 @@ C(F_1(x_1), ... F_d(x_d)) = H(x_1, ... x_d)
 \end{equation}
 If $F_1, .. F_d$ are continuous, then $C$ is unique.  Conversely, if $C$ is a copula and $F_1, .. F_d$ are smooth cumulative destiny functions then the function $H$ is a joint cumulative distribution with margins $F_1, ... F_d$.  A proof is provided in Nelsen's introductory copula text \cite{Nelsen2006}.
 
-Sklar also showed that the joint probability distribution, $f(x_1, ... x_d)$, can be computed from
+Sklar also showed that the joint probability distribution, $h(x_1, ... x_d)$, can be computed from
 constituent marginalized univariate distributions and the copula density, $c$.
 \begin{equation}
-f(x_1,\dots x_d)= c(F_1(x_1),\dots F_d(x_d))\cdot f_1(x_1)\cdot\dots\cdot f_d(x_d)
+h(x_1,\dots x_d)= c(F_1(x_1),\dots F_d(x_d))\cdot f_1(x_1)\cdot\dots\cdot f_d(x_d)
 \label{eq:sklar2}
 \end{equation}
 

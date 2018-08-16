@@ -99,7 +99,6 @@ In addition to improving the expected value prediction of CRUD on each CTF patch
 
 \subsection{Capturing Dependence Between Random Variables}
 \begin{itemize}
-        \item (\checkmark) Sklar's theorem.
         \item (\checkmark) Assumptions:
         \begin{itemize}
                 \item Capture Temperature and TKE dependence structure.
@@ -117,6 +116,8 @@ In addition to improving the expected value prediction of CRUD on each CTF patch
                 h(T, k, q'') \approx  f_T f_k, f_{q''} c(u_{T}, v_{k})  \cdot 1 \cdot 1
     \end{equation}
 \end{itemize}
+
+\input{./sections/appendix/app_a.tex}
 
 
 \subsection{Sample Quantiles}
@@ -267,22 +268,28 @@ In order to estimate a sample quantile given the empirical CDF $F$, minimize: $\
 \end{itemize}
 
 
-\subsection{Introduction Gradient Boosted Regression Trees}
-\begin{itemize}
-    \item (\checkmark-) Explain a classification and regression tree (CART).  (Move to appendix?)
-    \item (\checkmark-) Explain gradient boosting.  (Move to appendix?)
-\end{itemize}
+\subsection{Gradient Boosted Regression Trees}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\linewidth]{../proposal/slides/seminar_slides/figs/cart}
-    \caption[Regression tree stump.]{Regression tree stump comparing a fit of depth 1 and 2.}
+    \caption[Regression tree stump.]{Single CART Regression tree stump comparing a fit of depth 1 and 2.}
     \label{fig:cart}
 \end{figure}
 
-The generalized gradient boosting algorithm was developed by Friedman (1999).  This work was significant because it re-invisioned previous boosting algorithims such as adaBoost as specific special cases of general gradient boosting with specific loss functions.  Gradient boosting is optimization in a function space.
+The generalized gradient boosting algorithm was developed by Friedman (1999).  This work was significant because it re-invisioned previous boosting algorithms such as adaBoost as specific special cases of general gradient boosting with specific loss functions.  Gradient boosting is a numerical optimization procedure in function space \cite{friedman2001}.  Friedman described this as finding a function $\mathcal M^*$ that maps the inputs $\mathbf x$ to $y$ where $\mathcal M^*$ is given by:
 
-This hi2lo work employs gradient tree boosting in which simple desscission trees are greedly fit to the gradient of the loss function, or so called "pseudo residuals" since if the loss function is taken to be the L2 loss, the gradient of the loss functions coincides with a residual vector.  In this  weak learner is defined to be a typical classification and regression tree (CART).  Methods for pruning the tree and optimizing the numerical implementation of finding the best splits are left to (refs).
+\begin{equation}
+\mathcal M^* = \text{argmin}_F \E_{y, \mathbf x} (L(y, F(\mathbf x)))
+\end{equation}
+Where $L(\cdot)$ is a differentiable loss function.  For the standard gradient boosting trees the functional form of $F$ is chosen to be an additive model of the form \cite{friedman2001}:
+\begin{equation}
+F(\mathbf x; \mathbf{\beta}, \mathbf a) = \sum_{m=0}^M \beta_m h(\mathbf x; a_m)
+\end{equation} 
+
+This hi2lo work employs gradient tree boosting in which decision trees are greedily fit to the gradient of the loss function.  For clarity, in the literature the vector of gradients is sometimes referred to as the "pseudo residuals vector" since if the loss function is taken to be the L2 loss, the gradient of the loss functions is proportional to the residual vector.  
+
+The  weak learner is defined to be a typical classification and regression tree (CART).  Methods for pruning the tree and optimizing the numerical implementation of finding the best splits are left to (refs).  Examples of single classification tree with a depth of 1 and 2 are shown in figure \ref{fig:cart}.  The decision tree produces a piecewise constant prediction.
 
 \begin{algorithm}[H]
     \captionsetup{labelfont={sc,bf}, labelsep=newline}
@@ -311,21 +318,50 @@ This hi2lo work employs gradient tree boosting in which simple desscission trees
     \ENDFOR
     \STATE Output $F_M(p).$
     \end{algorithmic}
+\label{alg:boosting}
 \end{algorithm}
-Where $\nu$ is a tunable constant in $[0, 1]$ called the learning rate.
+Where $\nu$ is a tunable constant in $[0, 1]$ called the learning rate.  The learning rate reduces the contribution of each weak learner in the final model.  Reducing the learning rate results in a proportional increase in the number of boosted iterations to achieve the same level of convergence of the boosted tree chain.  Smaller values for the learning rate result in performing smaller steps in function space so we are less likely to overshoot the optimal function - since this is a stage-wise additive model overshoots are problematic since the final model ``remembers`` mistakes made in previous iterations.  A typical learning rate is $\nu\leq 0.05$.
 
+For quantile regression, the loss function is given by equation \ref{eq:qloss_fn} is substituted into algorithm \ref{alg:boosting}:
+\begin{equation}
+L(y, F(p)) = \left[ (1-\tau) \sum_{y \leq F(p)}( y_i - F(p) ) - \tau \sum_{y > F(p)} (y_i - F(p)) \right]
+\end{equation}
+
+% boosting tree results
+\input{./sections/appendix/app_c.tex}
 
 \subsection{Monte Carlo CRUD Estimation}
 
 \begin{itemize}
-        \item (\checkmark-) Show importance sampling scheme to estimate \ref{eq:expected_crud}.  (Move to Appendix?)
-        \begin{equation}
-        \E(g(x)) \approx \frac{1}{N} \sum_i^N g(x_i) \frac{h(x_i)}{\tilde h(x_i)}, \ x \sim \tilde{h}
-        \end{equation}
+        \item (\checkmark-) Show importance sampling scheme to estimate \ref{eq:expected_crud}. 
         \item (\checkmark-) Show examples of $g(x)$, $h(x)$ and $\tilde h(x)$ on a single CTF face.
-        \item (\xmark) \sout{Find optimal proposal density distribution, $\tilde{h^*}$.}
+        \item (\xmark) \sout{Find optimal proposal density distribution.}
 \end{itemize}
 
+\begin{equation}
+\E(\mathcal G(x)) \approx \frac{1}{N} \sum_i^N \mathcal G(x_i) \frac{h(x_i)}{\tilde h(x_i)}, \ x \sim \tilde{h}
+\label{eq:mc_imp_int}
+\end{equation}
+
+Substituting the joint density function defined by \ref{eq:sklar2} in to \ref{eq:mc_imp_int} yields:
+
+\begin{align}
+    h(x_1, x_2..) &= c(u_1, u_2, ...) f(x_1) f(x_2) \nonumber \\
+    \tilde h(x_1, x_2..) &= \tilde c(u_1, u_2, ...) \tilde f(x_1) \tilde f(x_2)
+\label{eq:mc_imp_int_2}
+\end{align}
+
+To simplify \ref{eq:mc_imp_int}, the proposal and target copula densities are assumed to be the same and therefore we can rewrite \ref{eq:mc_imp_int} as equation \ref{eq:mc_imp_int3}.
+\begin{equation}
+\E(\mathcal G(x)) \approx \frac{1}{N} \sum_i^N \mathcal G(x_i) \frac{f_1(x_i) f_2(x_i)}{\tilde f_1(x_i) \tilde f_2(x_i)}, \ x \sim \tilde{f_1} \tilde f_2
+\label{eq:mc_imp_int3}
+\end{equation}
+
+Let the probability ratio of the target density to the proposal density be:
+
+\begin{equation}
+\omega_i = \frac{h_i}{\tilde h_i} = \frac{f_1(x_i) f_2(x_i)}{\tilde f_1(x_i) \tilde f_2(x_i)}
+\end{equation}
 
 
 \subsection{Propagating CRUD Through Time}
@@ -365,7 +401,7 @@ Note that since the crud simulation package utilized in this work is one-dimensi
 
 \subsection{Time Stepping Scheme}
 
-In figure \ref{fig:stepscheme}, the VERA state-point time index is denoted by $t$. Dotted arrows represent sampling from a probability distribution and solid samples represent a mapping, with $\mathcal R$ being the spatial reordering map from sample space to a position on the rod surface. $\mathcal G$ represents the crud generation function provided by the crud simulation package which takes thermal hydraulic boundary conditions as input in addition to the previous crud state and produces a new crud state.  Resampling events are performed at time intervals $\Delta t_s$.  The resample index is denoted by $n$.  At each resampling event temperature, TKE and boundary heat flux samples are drawn from the reconstructed joint probability $\hat H^t$.  Assume that the sample time step is constant and equal to $\Delta s$.
+In figure \ref{fig:stepscheme}, the VERA state-point time index is denoted by $t$. Dotted arrows represent sampling from a probability distribution.  $\mathcal R$ is the spatial reordering map from sample space to a position on the rod surface. $\mathcal G$ represents the crud generation function provided by the crud simulation package which takes thermal hydraulic boundary conditions as input in addition to the previous crud state and produces a new crud state.  Resampling events are performed at time intervals $\Delta t_s$.  The resample index is denoted by $n$.  At each resampling event temperature, TKE and boundary heat flux samples are drawn from the reconstructed joint probability $\hat H^t$.  Assume that the sample time step is constant and equal to $\Delta s$.
 
 \begin{figure}[H]
     \centering
@@ -374,22 +410,16 @@ In figure \ref{fig:stepscheme}, the VERA state-point time index is denoted by $t
     \label{fig:stepscheme}
 \end{figure}
 
-Since the resampling time step size is constant the sample time denoted by $s$, can be computed by multiplying the resampling event index by the constant resampling step size:
+Since the resampling time step size is constant the sample time can be computed by multiplying the resampling event index by the constant resampling step size:
 \begin{equation}
-s_n = n\Delta t_s
+t_{s_n} = n\Delta t_s
 \end{equation}
 
-The time averaged sample weights are updated according to equation \ref{eq:time_sample_weights1}
+After applying the constance resample step size assumption the time averaged sample weights can be updated at each reasmpling step according to equation \ref{eq:time_sample_weights2}.
+The ratio of the target density and the sampling distribution density is denoted by $\omega$ and is given in equation ().  
 
 \begin{equation}
-\bar \omega_s = \left( \frac{1}{\sum_i^n \Delta t_{s_i}} \right) \sum_{i=0}^n \omega_i \Delta t_{s_i}
-\label{eq:time_sample_weights1}
-\end{equation}
-
-And $\omega_i$ is the ratio of the target density and the sampling distribution density as given in equation ().  Applying uniform resampling step size assumption results in equation \ref{eq:time_sample_weights2}.
-
-\begin{equation}
-\bar \omega_s = \left( \frac{\Delta t_s}{\sum_i^n \Delta t_{s_i}} \right) \sum_{i=0}^n \omega_i
+\bar \omega_{s_n} = \left( \frac{(n) \Delta t_s}{\sum_i^n \Delta t_{s_i}} \right) \bar \omega_{n-1} + \left( \frac{\Delta t_s}{\sum_i^n \Delta t_{s_i}} \right) \omega_n
 \label{eq:time_sample_weights2}
 \end{equation}
 
