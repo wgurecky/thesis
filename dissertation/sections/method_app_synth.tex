@@ -203,18 +203,50 @@ The more significant the temperature thresholding behavior of the crud, the more
 
 \subsubsection{Crud Copula Parameter Sensitivity}
 
-Here the sensitivity of the crud result to the copula parameters is investigated.  Both the impact of the rank correlation coefficient and the archimidean copula family are investigated.  The sensitivity results from four patches are shown in figure ().  The result shows crud is relatively insensitive to the choice of copula, but the rank correlation coefficient can be an important quantity to accurately capture in the hi2lo model.  
+Here the sensitivity of the crud result to the copula parameters is investigated.  Both the impact of the rank correlation coefficient, Kendall's $\tau$, and the Archimidean copula family are investigated.  The sensitivity results generated for the patch centered at $(\theta=3.14[rad], z=2.95[m])$ are shown in figure \ref{fig:patchcrudfit80}.  There is noise present in the crud predictions due to the Monte Carlo integration of equation \ref{eq:expected_crud} over the patch.  In this instance 2500 samples were used.  The crud is relatively insensitive to the choice of copula family, but the rank correlation coefficient is shown to have a significant influence on crud growth with an average boron deposition sensitivity of $\frac{\partial C_b}{\partial \rho_\tau} =$ -1.086e-7 $[g/cm^2/\tau]$ for this particular patch.  Accurately predicting Kendall's $\tau$ provided local core conditions is important.
+  
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{figs/synth/patch_crud_fit_80}
+    \caption{Single CTF face crud sensitivity to copula parameters.}
+    \label{fig:patchcrudfit80}
+\end{figure}
 
-Next, two full single pin scenarios were considered:  The first scenario uses the best-fit copula on each patch as determined by the AIC metric.  The second pin scenario enforces that a Gaussian copula model is used on every CTF face.  The crud results from these scenarios were then compared.  The data shows the choice of copula (between Gaussian, Frank, and Clayton) has a small overall impact on the total integrated rod boron mass.  A large simplification is possible.  The copula can be assumed to be Gaussian in all cases without significantly impacting overall integrated crud results.
+Next, two full single pin scenarios were considered. In the first scenario, shown if figure \ref{fig:crud_copula_fam_sensi}a, the best-fit copula on each patch as determined by the AIC metric is applied on each CTF face.  The second pin scenario enforces that a Gaussian copula model is used on every CTF face.  The crud results from these scenarios were then compared.  The data shows the choice of copula (between Gaussian, Frank, and Clayton) has a small overall impact on the total integrated rod boron mass.   The total integrated crud mass and crud boron mass for these scenarios at 300 days simulation time are given in table \ref{tab:crud_totals_copula}.
+
+\begin{figure}[H]%
+    \centering
+    \subfloat[Best fit copula via AIC metric used in each CTF face.]{{\includegraphics[width=0.45\linewidth]{figs/synth/copula_compare/struct_pin_z_cmass_300_bestfit} }}%
+    \qquad
+    \subfloat[Gaussian copula used in each CTF face.]{{\includegraphics[width=0.45\linewidth]{figs/synth/copula_compare/struct_pin_z_cmass_300_gauss_only} }}%
+    \caption[]{Influence of the choice parameters on the axial crud distribution.}%
+    \label{fig:crud_copula_fam_sensi}%
+\end{figure}
+
+
+\begin{table}[h]
+    \begin{center}
+        \caption[Crud totals with different copula assumptions.]{Single pin crud totals at 300 days with different copula assumptions.}
+        \begin{tabular}[h]{|l | l | l |}
+            \hline
+            Copula, $\Theta_c$ & Crud Boron Total: $C_B$ & Crud Mass Total: $C_m$ \\
+            \hline
+            Best Fit &  2.789529e-08 $[g]$ & 5.340151e-05 $[g]$ \\
+            Gaussian &  2.783009e-08 $[g]$ & 5.327686e-05 $[g]$ \\
+            \hline
+            Rel Diff &  0.01724 $[\%]$ & 0.23396 $[\%]$ \\
+            \hline
+        \end{tabular}
+        \label{tab:crud_totals_copula}
+    \end{center}
+\end{table}
+
+The choice of the copula family, $\Theta_c$, has a negligible impact on the integrated crud results over a pin.  This result can reduce the complexity of the hi2lo model by removing the need to predict the correct copula family on each CTF patch in the core.  In section (), it is shown that CFD data exhibits a complex relationship between the best fitting copula family and the axial position along the rod.  This relationship is difficult to model using standard classification techniques, though further testing with a larger quantity of training data is warranted to ascertain if the copula family describing the dependence between the temperature and TKE fields on the rod surface can be accurately predicted given local core conditions.
 
 \subsubsection{Crud Sample Size Study}
 
-The number of samples used to estimate the integral in equation () is a user input.
+The number of samples, $N$, used to estimate the integral in equation () is a parameter set at runtime of the hi2lo method.
 As expected for a single rod the integrated crud variance is reduced by increasing the number of samples used per CTF face to estimate the integrated crud quantities of interest.   Section \ref{sec:Importance Sampling} demonstrates that improvements in sampling efficiency are possible by way of importance sampling.
-
-\subsubsection{Crud Sensitivity to the Number of Quantiles}
-
-The number of sample quantiles used in the reconstruction of the marginal distributions is a tunable input.  In this section the number of quantiles necissary to obtain a converged integrated crud estimate on a single rod is determined.  Only the case of evenly spaced probability levels is considered i.e the allowable probability levels used to compute the sample quantiles are evenly spaced in $[0, 1]$.   The results indicate that 20 sample quantiles results in a converged integrated and average axial crud solution.  
 
 
 \subsubsection{Importance Sampling}
@@ -222,7 +254,7 @@ The number of sample quantiles used in the reconstruction of the marginal distri
 
 To obtain estimates for the efficiency gain offered by importance sampling to compute \ref{eq:expected_crud}, a singe patch was studied under synthetic TH data.
 
-The choice of importance distribution is informed by the crud response.  To compute the integral \ref{eq:expected_crud} efficiently it is favorable to sample the TH distribution in regions which result in crud and .  The importance distribution is shown in figure ().  
+The choice of importance distribution is informed by the crud response.  To compute the integral \ref{eq:expected_crud} efficiently it is favorable to sample the TH distribution in regions which result in relatively large amounts of crud growth.  The response surface of the crud simulation code is presented in figures \ref{fig:crud_sensi1} to \ref{fig:crud_sensi3}.  Larger surface temperatures result in a higher crud growth rate.  Larger local TKE results in smaller crud growth rates due to the effects of erosion.  Additionally of note is the relatively small influence of the boundary heat flux.
 
 \begin{figure}[H]%
     \centering
@@ -252,25 +284,15 @@ The choice of importance distribution is informed by the crud response.  To comp
 \end{figure}
 
 
-The optimal importance distribution depends on the crud response surface and the TH probability density function.  Though an unique optimal importance distribution can be theoretically found [ref], the minimization problems required are not solved in this work and are left as an avenue for future investigation.
-Although the optimal importance distribution is forgone, a locally adaptive approach was pursued in this work based on a distribution mixing approach.  With a known crud TH response surface existing in only $R^3$ it is feasible to design a near-optimal importance distribution by hand.
+The optimal importance distribution depends on the crud response surface and the TH probability density function.  Though an optimal importance distribution can be found [ref], the minimization problem is not solved in this work and is left as an avenue for future investigation.
+Although the theoretically optimal importance distribution is forgone, a locally adaptive importance function was pursued in this work based on a distribution mixing approach.  With a known crud TH response surface existing in only $R^3$ it is feasible to design a near-optimal importance distribution by hand.
 
 \begin{equation}
 Q(\tilde{p}) = \sum_i^m a_{qi} Q_i(\tilde{p})
 \end{equation}
 Where $Q_i$ are the quantile functions as $a_{qi}$ are the weights.
 
-Beta distributions with proscribed parameters are used in mixture with the original density functions to produce a proposal density distribution for each patch.  The mixture weights may also be adjusted.  This approach yields extensive flexibility of proposal density for both the temperature and TKE marginal distributions.  Shown in figure \ref{fig:imp_sample2} the proposal
-
-
-\begin{figure}[H]%
-    \centering
-    \subfloat[Crud boron deposition rate.]{{\includegraphics[width=0.45\linewidth]{figs/imp_patch/bmass_sample_violin} }}%
-    \qquad
-    \subfloat[Crud mass deposition rate.]{{\includegraphics[width=0.45\linewidth]{figs/imp_patch/cmass_sample_violin} }}%
-    \caption[]{Importance sampling trial results.}%
-    \label{fig:imp_sample1}%
-\end{figure}
+Beta distributions with proscribed parameters are used in mixture with the original temperature and TKE density functions to produce a proposal density distribution for each patch.  The mixture weights can be adjusted.  This approach yields flexibility in the design of proposal density and by suitably tuning the parameters of the beta distributions.  Shown in figure \ref{fig:imp_sample2}, the sampling distribution can be skewed towards higher temperatures and lower TKE. 
 
 \begin{figure}[H]%
     \centering
@@ -281,7 +303,17 @@ Beta distributions with proscribed parameters are used in mixture with the origi
     \label{fig:imp_sample2}%
 \end{figure}
 
-Although it is possible to specify a custom proposal copula density, for this work the original copula density distribution is adopted to construct the multivariate proposal density distribution.  This leads to the cancellation of the copula density in the computation of the importance weights.  With this assumption in place the sample weights can be computed efficiently using an independence assumption.
+
+\begin{figure}[H]%
+    \centering
+    \subfloat[Crud boron deposition rate.]{{\includegraphics[width=0.45\linewidth]{figs/imp_patch/bmass_sample_violin} }}%
+    \qquad
+    \subfloat[Crud mass deposition rate.]{{\includegraphics[width=0.45\linewidth]{figs/imp_patch/cmass_sample_violin} }}%
+    \caption[]{Importance sampling trial results on a single CTF face.}%
+    \label{fig:imp_sample1}%
+\end{figure}
+
+In figures \ref{fig:importancettkebmassscatter} the relative importance weight is denoted by the size of each point in the scatter plot.  Samples which have a small ratio $(h_i/\tilde h_i)$ appear as small points.  The sample weight is analogous to the rod surface area occupied by the sample.  In comparison, figure \ref{fig:originalttkebmassscatter} shows the same patch using a standard Monte Carlo sampling where each sample has the same weight.  The number of samples drawn in the upper tail of the temperature distribution is greater when importance sampling is applied, though these samples carry expectedly small sample weights.
 
 \begin{figure}[H]
     \centering
@@ -297,7 +329,7 @@ Although it is possible to specify a custom proposal copula density, for this wo
     \label{fig:originalttkebmassscatter}
 \end{figure}
 
-The importance sampling efficiency is estimated by computing the variance ratio:  $\frac{\sigma^2_{MC}}{\sigma^2_{I}}$.  For the case studied, the application of importance sampling reduced the crud mass and boron mass sample variance by a factor of 2.
+The importance sampling efficiency can be estimated by computing the variance ratio:  $\frac{\sigma^2_{MC}}{\sigma^2_{I}}$.  The variance of the patch-integrated crud result for the Monte Carlo and importance sampling schemes are provided figure \ref{fig:imp_sample1}.  The variance estimates were performed by running 1000 independent trials in which crud was grown on the patch for 300 days.  A total of 100 samples per patch per trial were used.  For the case studied, the application of importance sampling reduced the crud mass and boron mass sample variance by a factor of 2.02 [(4.979e-6)$^2$ / (3.503e-6)$^2$].  The mean crud predictions did not significantly deviate between two sampling schemes indicating that importance samples does not introduce any bias in the evaluation of the integral \ref{eq:expected_crud}.
 
 The improvement in performance can be attributed to expending a larger proportion of the total available samples in the upper tail of the temperature distribution as this is a region which strongly contributes to crud growth.
 

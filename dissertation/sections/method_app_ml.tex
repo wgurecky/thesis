@@ -35,7 +35,7 @@ For each pin in the dataset, the
         \subfloat[Pin 4]{{\includegraphics[width=0.45\linewidth]{figs/preproc/copula_params_pin_4} }}%
     \qquad
     \caption[Best fitting copula to CFD data.]{Best fitting copula class as determined by the AIC as a function of axial rod position.}%
-    \label{fig:tkepin1}%
+    \label{fig:copula_predicted}%
 \end{figure}
 
 
@@ -201,11 +201,9 @@ Here we compute the classification error rate and summarize the model's performa
 \end{figure}
 
 
-The copula classifiers performance averaged over all pins is shown in figure \ref{fig:confusionmatrixavg}. The copula classifier struggles to predict the correct copula class given the local TH state and axial core position.  As indicated in figures ()-(), the behavior of the copula as a function of axial rod position are erratic and inconsistent from pin to pin.  Introducing other TH exogenous variables in addition to the axial position did not increase the classification score significantly.  We can conclude that the copula are not well described by local core condition and axial position.  It remains as future work to investigate if including additional geometric pin and grid attributes could improve the classification results.  Additional software infrastructure would be required to both write geometric pin and grid features from CTF and to utilize the geometric features in the current model.
+The copula classifiers performance averaged over all pins is shown in figure \ref{fig:confusionmatrixavg}. The copula classifier struggles to predict the correct copula class given the local TH state and axial core position.  As indicated in figure \ref{fig:copula_predicted}, the behavior of the copula as a function of axial rod position are erratic and inconsistent from pin to pin.  Introducing other TH exogenous variables in addition to the axial position did not increase the classification score significantly.  We can conclude that the copula are not well described by local core condition and axial position.  It remains as future work to investigate if including additional geometric pin and grid attributes could improve the classification results.  Additional software infrastructure would be required to both write geometric pin and grid features from CTF and to utilize the geometric features in the current model.
 
-On average the classifier predicts an incorrect result more often than not.  This poor performance leads to the question:  What is the consequence of assuming a particular copula class for all CTF surfaces in lieu of poor quality copula class predictions?  First a single patch can selected to study the influence of a particular copula selection while retaining the same marginal distributions on the crud result.  The choice of copula is shown to have a small but statistically significant influence on the integrated crud and crud boron result in a particular CTF patch.  A larger scale study was also carried out.
-
-Substituting the gradient boosted copula classifier with a constant copula assumption on the assembly scale is shown in figure ().  A cancellation of error effect from patch to patch is hypothesized to explain the close agreement in the crud preconditions made over the entire assembly.
+On average the classifier predicts an incorrect result more often than not.  This poor performance leads to the question:  What is the consequence of assuming a particular copula class for all CTF surfaces in lieu of poor quality copula class predictions?  
 
 \section{Single Pin Comparisons}
 
@@ -219,6 +217,68 @@ Substituting the gradient boosted copula classifier with a constant copula assum
     \item (\checkmark-) Show integrated crud comparisons for a single hi2lo, CFD and CTF pin.
 \end{itemize}
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{figs/5x5/imp/1_5_axial_bmass}
+    \caption{Pin 1 CTF vs CFD vs Hi2lo axial crud boron mass distribution.}
+    \label{fig:15axialbmass}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{figs/5x5/imp/1_5_axial_cmass}
+    \caption{Pin 1 CTF vs CFD vs Hi2lo axial crud mass distribution.}
+    \label{fig:15axialcmass}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{figs/5x5/imp/1_5_pin_bmass_time}
+    \caption{Pin 1 CTF vs CFD vs Hi2lo integrated crud boron mass distribution as a function of time.}
+    \label{fig:15pinbmasstime}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{figs/5x5/imp/1_5_pin_cmass_time}
+    \caption{Pin 1 CTF vs CFD vs Hi2lo integrated crud mass distribution as a function of time.}
+    \label{fig:15pincmasstime}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{figs/5x5/imp/tstep_5/pin_1/hi2lo_imp_pin_bmass}
+    \caption{}
+    \label{fig:hi2loimppinbmass}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{figs/5x5/imp/tstep_5/pin_1/hi2lo_imp_pin_cmass}
+    \caption{}
+    \label{fig:hi2loimppincmass}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{figs/5x5/imp/tstep_5/pin_1/hi2lo_imp_pin_z_bmass}
+    \caption{}
+    \label{fig:hi2loimppinzbmass}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{figs/5x5/imp/tstep_5/pin_1/hi2lo_imp_pin_z_cthick}
+    \caption{}
+    \label{fig:hi2loimppinzcthick}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{figs/5x5/imp/tstep_5/pin_1/hi2lo_imp_pin_z_tke}
+    \caption{}
+    \label{fig:hi2loimppinztke}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{figs/5x5/imp/tstep_5/pin_1/hi2lo_imp_pin_z_twall}
+    \caption{}
+    \label{fig:hi2loimppinztwall}
+\end{figure}
+
 \section{Multi Pin Comparisons}
 
 \begin{itemize}
@@ -228,6 +288,64 @@ Substituting the gradient boosted copula classifier with a constant copula assum
     \item (\checkmark-) Show axial CFD vs CTF vs hi2lo results for each pin.
     \item (\checkmark-) Compare total integrated assembly crud mass and boron bass for CFD vs CTF vs hi2lo.
 \end{itemize}
+
+
+
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{figs/5x5/imp/asm_cmass_time}
+    \caption{Assembly integrated CTF vs CFD vs Hi2lo crud mass as a function of time.}
+    \label{fig:asmcmasstime}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{figs/5x5/imp/l2_boron_asm_errors_hmap}
+    \caption{5x5 Axial RMS crud boron mass relative error distribution.}
+    \label{fig:l2boronasmerrorshmap}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{figs/5x5/imp/l2_cmass_asm_errors_hmap}
+    \caption{5x5 Axial RMS crud mass relative error distribution.}
+    \label{fig:l2cmassasmerrorshmap}
+\end{figure}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{figs/5x5/imp/tot_bmass_rel_asm_errors_hmap}
+    \caption{5x5 Integrated crud boron mass relative error distribution.}
+    \label{fig:totbmassrelasmerrorshmap}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{figs/5x5/imp/tot_boron_asm_errors_hmap}
+    \caption{5x5 Integrated crud boron mass absolute error distribution.}
+    \label{fig:totboronasmerrorshmap}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{figs/5x5/imp/tot_cmass_asm_errors_hmap}
+    \caption{5x5 Integrated crud mass absolute error distribution.}
+    \label{fig:totcmassasmerrorshmap}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{figs/5x5/imp/tot_cmass_rel_asm_errors_hmap}
+    \caption{5x5 Integrated crud mass relative error distribution.}
+    \label{fig:totcmassrelasmerrorshmap}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\linewidth]{figs/5x5/imp/asm_error_corr}
+    \caption{Correlation of ML errors with crud prediction errors.}
+    \label{fig:asmerrorcorr}
+\end{figure}
+
 
 \subsection{Multi State Point 5x5 Results}
 

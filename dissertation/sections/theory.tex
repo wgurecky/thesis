@@ -29,10 +29,9 @@ CTF estimates mean TH conditions everywhere in the core at a low spatial resolut
 \end{equation}
 
 \begin{itemize}
-        \item $\mathbf S$ is a three component vector field representing the cladding surface temperature, turbulent kinetic energy and boundary heat flux.
+        \item $\mathbf S$ is a three component vector representing the cladding surface temperature, turbulent kinetic energy and boundary heat flux.
         \item $\mathbf z$ denotes spatial coordinates and $\mathbf p$ represents a set of auxiliary predictors.  Auxiliary predictors are covariates that describe local core conditions and may be geometric or thermal hydraulic in nature.
-        \item $\varepsilon$ is a random three-component vector field with components: $\{\varepsilon_T, \varepsilon_k, \varepsilon_{q''}\}$.
-        \item $\varepsilon$ is a CFD informed model with $\theta$ representing free model parameters which must be determined given CFD data.
+        \item $\varepsilon$ is a random three-component vector comprised of temperature, turbulent kinetic energy and boundary heat flux fields: $\{\varepsilon_T, \varepsilon_k, \varepsilon_{q''}\}$.  $\varepsilon$ is a CFD informed model with $\theta$ representing free model parameters which must be determined given CFD data.
         \item $\bm b$ is bias between the low and high fidelity models ($\bm \mu_{CTF} - \bm \mu_{CFD}$).  Despite providing identical inlet boundary conditions to both codes bias exists due to algorithmic differences, closure model differences, and meshing differences between the two codes.
         \item Field averages, $\bm \mu$, are piecewise constant over each CTF patch.
         \item Note this is a additive model where Salko constructed a multiplicative model.
@@ -98,24 +97,36 @@ In addition to improving the expected value prediction of CRUD on each CTF patch
 \section{Construction of the Hi2lo Map}
 
 \subsection{Capturing Dependence Between Random Variables}
-\begin{itemize}
-        \item (\checkmark) Assumptions:
-        \begin{itemize}
-                \item Capture Temperature and TKE dependence structure.
-                \item Assume 1) Temperature is uncorrelated with BHF.  2) TKE is uncorrelated with BHF.
-                \item Justify 1) showing actual CFD data. 2) Relative variations in BHF are very small over a CTF face $(+/- 5\%)$.  3) Sensitivity of CRUD to BHF is small relative to sensitivity of CRUD to surface temperature.
-        \end{itemize}
-        \item (\checkmark) Show fallout of these assumptions on hi2lo model.
-        \begin{equation}
-                h(T, k, q'') = f_T f_k, f_{q''} \prod_c c_i(u_i, v_i)
-        \end{equation}
-        Where each bivariate copula model in $\prod c_i $ is known as a pair copula construction.
 
-        Applying the aforementioned assumptions results in: $c(u_T, u_{q''}) = 1$ and $c(u_{k}, u_{q''}) = 1$. The simplified joint density is given by:
-        \begin{equation}
-                h(T, k, q'') \approx  f_T f_k, f_{q''} c(u_{T}, v_{k})  \cdot 1 \cdot 1
-    \end{equation}
+Since the outer cladding temperature, near-wall TKE and boundary heat flux are used as boundary conditions to a crud growth package, it is particularly important to understand and capture the relationship between these fields in the hi2lo model.  The hi2lo model under consideration is not a dynamic model in the sense it is not a coupled system of differential equations.  Instead, in the purely data driven approach the relationships are established through standard statistical correlation measures.
+
+The coupled momentum, mass, and thermal balance in a core simulation along with the appropriate closure models to admit a solution dictates the rod outer cladding surface temperature.  The Dittus Boelter relationship is a commonly used closure model which relates the surface heat transfer coefficient with the local Reynolds number.  According to this relationship larger Reynolds numbers corresponds to higher heat transfer coefficients.   Newtons law of cooling states $T_s = q''/h + T_{\infty}$ and $h$ may be computed via Dittus Boelter (See Appendix D).  Therefore, the surface temperature $(T_s)$ is negatively correlated with the Reynolds number and where the local turbulent kinetic energy is large the rod surface temperature will be depressed if the local heat flux is held fixed.  It is also apparent that the surface temperature is positively correlated with the the local boundary heat flux.  In order to simplify the model only the dependency between the surface temperature and local turbulent kinetic energy is considered in hi2lo model.
+
+\textbf{Assume}:
+\begin{itemize}
+\item Temperature and TKE are uncorrelated with the boundary heat flux.
 \end{itemize}
+
+\textbf{Justification}:
+        \begin{itemize}
+                \item  Relative variations in boundary heat flux are very small over a CTF face $(+/- 5\%)$.  Recall a CTF face represents a small approximate $1cm^2$ patch on the rod surface.  Large absolute heat fluxs of approximately $80W/cm^2$ are possible on the cladding surface of fuel in a typical PWR.  However, high axial and azimulthal gradients of boundary heat flux on the rod surface are not typical under standard operation conditions.  High thermal gradients can lead to extra thermal stresses on the cladding which can promote rod bowing or extreme conditions fuel failure.
+                \item Figures \ref{fig:crud_sensi1} to \ref{fig:crud_sensi3} show that the sensitivity of crud growth rate to the boundary heat flux is small relative to sensitivity of curd to surface temperature and local turbulent kinetic energy. 
+        \end{itemize}
+
+After applying the independence assumptions the original trivariate dependence model between the temperature, TKE, and boundary heat flux can be reduced to a bivariate model with the boundary heat flux being treated and sampled from independently.
+
+A flexible method to model high dimensional dependence structures is provided by vine copula (refs). Vine copula are a hierarchical tree model in which the edges represent bivariate copula and the nodes are univariate distributions. Vine copula have seen significant historical use in the financial industry in portfolio value at risk models.  The canonical vine copula shown in equation \ref{eq:ori_vine_model} can be used to express the trivariate distribution of temperature, TKE, and $q''$ on the rod surface.
+\begin{equation}
+h(T, k, q'') = f_T f_k, f_{q''} \prod_c c_i(u_i, v_i)
+\label{eq:ori_vine_model}
+\end{equation}
+Where each bivariate copula model in $\prod c_i $ is known as a pair copula construction.
+
+Applying the simplifying assumptions results in: $c(u_T, u_{q''}) = 1$ and $c(u_{k}, u_{q''}) = 1$. The simplified joint density can then be given by equation \ref{eq:simple_vine_model}:
+\begin{equation}
+h(T, k, q'') \approx  f_T f_k, f_{q''} c(u_{T}, v_{k})  \cdot 1 \cdot 1
+\label{eq:simple_vine_model}
+\end{equation}
 
 \input{./sections/appendix/app_a.tex}
 
@@ -151,12 +162,12 @@ The quantile loss function is given by equation \ref{eq:qloss_fn}.
 \label{eq:qloss_fn}
 \end{equation}
 Where $\mathbb{I}$ is the indicator function which returns 1 if the argument is true and 0 otherwise.
-In order to estimate a sample quantile given the empirical CDF $F$, minimize: $\E[\rho_\tau(T - q_\tau)]$ where $T$ is a random variable distributed according to $F$.
+In order to estimate a sample quantile, $\hat q_\tau$, given the empirical CDF $F$, minimize: $\E[\rho_\tau(T - q_\tau)]$ where $T$ is a random variable distributed according to $F$.
 \begin{equation}
             \left.\begin{aligned}
-            \hat q_{\tau_i} &= argmin_{q} \E[\rho(u)];\ \  u = T - q  \\
-            \approx & argmin_q  \frac{1}{N} \sum_i^N \rho(u_i); \ u_i = t_i - q \\
-            \approx & argmin_q \left[ (1-\tau) \sum_{y \leq q}( t_i - q ) - \tau \sum_{y > q} (t_i - q) \right]
+            \hat q_{\tau_i} &= argmin_{q_\tau} \E[\rho(u)];\ \  u = T - q_\tau  \\
+            \approx & argmin_{q_\tau}  \frac{1}{N} \sum_i^N \rho(u_i); \ u_i = t_i - q_\tau \\
+            \approx & argmin_{q_\tau} \left[ (1-\tau) \sum_{t \leq q_\tau}( t_i - q_\tau ) - \tau \sum_{t > q_\tau} (t_i - q_\tau) \right]
             \end{aligned}\right.
 \end{equation}
 
@@ -293,7 +304,7 @@ The  weak learner is defined to be a typical classification and regression tree 
 
 \begin{algorithm}[H]
     \captionsetup{labelfont={sc,bf}, labelsep=newline}
-    \caption{Gradient boosting algorithm (ref).}
+    \caption{Gradient boosting algorithm \cite{friedman2002}.}
     \begin{algorithmic}
     \STATE \textbf{Initialization} 
     \STATE (1) Training set $\{(p_i, y_i)\}_{i=1}^n$. 
@@ -324,8 +335,9 @@ Where $\nu$ is a tunable constant in $[0, 1]$ called the learning rate.  The lea
 
 For quantile regression, the loss function is given by equation \ref{eq:qloss_fn} is substituted into algorithm \ref{alg:boosting}:
 \begin{equation}
-L(y, F(p)) = \left[ (1-\tau) \sum_{y \leq F(p)}( y_i - F(p) ) - \tau \sum_{y > F(p)} (y_i - F(p)) \right]
+L(y, F(p);\tau) = \left[ (1-\tau) \sum_{y \leq F(p)}( y_i - F(p) ) \right] - \left[ \tau \sum_{y > F(p)} (y_i - F(p)) \right]
 \end{equation}
+Where $\tau$ is the user set probability level of interest. for instance if the 95\% quantile is desired then $\tau=0.95$.
 
 % boosting tree results
 \input{./sections/appendix/app_c.tex}
@@ -361,6 +373,7 @@ Let the probability ratio of the target density to the proposal density be:
 
 \begin{equation}
 \omega_i = \frac{h_i}{\tilde h_i} = \frac{f_1(x_i) f_2(x_i)}{\tilde f_1(x_i) \tilde f_2(x_i)}
+\label{eq:imp_prob_ratio}
 \end{equation}
 
 
@@ -401,7 +414,7 @@ Note that since the crud simulation package utilized in this work is one-dimensi
 
 \subsection{Time Stepping Scheme}
 
-In figure \ref{fig:stepscheme}, the VERA state-point time index is denoted by $t$. Dotted arrows represent sampling from a probability distribution.  $\mathcal R$ is the spatial reordering map from sample space to a position on the rod surface. $\mathcal G$ represents the crud generation function provided by the crud simulation package which takes thermal hydraulic boundary conditions as input in addition to the previous crud state and produces a new crud state.  Resampling events are performed at time intervals $\Delta t_s$.  The resample index is denoted by $n$.  At each resampling event temperature, TKE and boundary heat flux samples are drawn from the reconstructed joint probability $\hat H^t$.  Assume that the sample time step is constant and equal to $\Delta s$.
+In figure \ref{fig:stepscheme}, the VERA state-point time index is denoted by $t$. Dotted arrows represent sampling from a probability distribution.  $\mathcal R$ is the spatial reordering map from sample space to a position on the rod surface. $\mathcal G$ represents the crud generation function provided by the crud simulation package which takes thermal hydraulic boundary conditions as input in addition to the previous crud state and produces a new crud state.  Resampling events are performed at time intervals $\Delta t_s$.  The resample index is denoted by $n$.  At each resampling event temperature, TKE and boundary heat flux samples are drawn from the reconstructed joint probability $\hat H^t$.  Assume that the sample time step is constant and equal to $\Delta t_s$.
 
 \begin{figure}[H]
     \centering
@@ -416,10 +429,10 @@ t_{s_n} = n\Delta t_s
 \end{equation}
 
 After applying the constance resample step size assumption the time averaged sample weights can be updated at each reasmpling step according to equation \ref{eq:time_sample_weights2}.
-The ratio of the target density and the sampling distribution density is denoted by $\omega$ and is given in equation ().  
+The ratio of the target density and the sampling distribution density is denoted by $\omega$ and is given in equation \ref{eq:imp_prob_ratio}.  
 
 \begin{equation}
-\bar \omega_{s_n} = \left( \frac{(n) \Delta t_s}{\sum_i^n \Delta t_{s_i}} \right) \bar \omega_{n-1} + \left( \frac{\Delta t_s}{\sum_i^n \Delta t_{s_i}} \right) \omega_n
+\bar \omega_{s_n} = \left( \frac{n \Delta t_s}{\sum_i^n \Delta t_{s_i}} \right) \bar \omega_{n-1} + \left( \frac{\Delta t_s}{\sum_i^n \Delta t_{s_i}} \right) \omega_n
 \label{eq:time_sample_weights2}
 \end{equation}
 
