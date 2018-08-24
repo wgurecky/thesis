@@ -100,7 +100,7 @@ In addition to improving the expected value prediction of CRUD on each CTF patch
 
 Since the outer cladding temperature, near-wall TKE and boundary heat flux are used as boundary conditions to a crud growth package, it is particularly important to understand and capture the relationship between these fields in the hi2lo model.  The hi2lo model under consideration is not a dynamic model in the sense it is not a coupled system of differential equations.  Instead, in the purely data driven approach the relationships are established through standard statistical correlation measures.
 
-The coupled momentum, mass, and thermal balance in a core simulation along with the appropriate closure models to admit a solution dictates the rod outer cladding surface temperature.  The Dittus Boelter relationship is a commonly used closure model which relates the surface heat transfer coefficient with the local Reynolds number.  According to this relationship larger Reynolds numbers corresponds to higher heat transfer coefficients.   Newtons law of cooling states $T_s = q''/h + T_{\infty}$ and $h$ may be computed via Dittus Boelter (See Appendix D).  Therefore, the surface temperature $(T_s)$ is negatively correlated with the Reynolds number and where the local turbulent kinetic energy is large the rod surface temperature will be depressed if the local heat flux is held fixed.  It is also apparent that the surface temperature is positively correlated with the the local boundary heat flux.  In order to simplify the model only the dependency between the surface temperature and local turbulent kinetic energy is considered in hi2lo model.
+The coupled momentum, mass, and thermal balance in a core simulation along with the appropriate closure models dictate the rod outer cladding surface temperature.  The Dittus Boelter relationship is a commonly used closure model which relates the surface heat transfer coefficient with the local Reynolds number.  According to this relationship larger Reynolds numbers corresponds to higher heat transfer coefficients.   Newtons law of cooling states $T_s = q''/h + T_{\infty}$ and $h$ may be computed via Dittus Boelter (See Appendix D).  Therefore, the surface temperature $(T_s)$ is negatively correlated with the Reynolds number and where the local turbulent kinetic energy is large the rod surface temperature will be depressed if the local heat flux is held fixed.  It is also apparent that the surface temperature is positively correlated with the the local boundary heat flux.  In order to simplify the model only the dependency between the surface temperature and local turbulent kinetic energy is considered in hi2lo model.
 
 \textbf{Assume}:
 \begin{itemize}
@@ -109,18 +109,18 @@ The coupled momentum, mass, and thermal balance in a core simulation along with 
 
 \textbf{Justification}:
         \begin{itemize}
-                \item  Relative variations in boundary heat flux are very small over a CTF face $(+/- 5\%)$.  Recall a CTF face represents a small approximate $1cm^2$ patch on the rod surface.  Large absolute heat fluxs of approximately $80W/cm^2$ are possible on the cladding surface of fuel in a typical PWR.  However, high axial and azimulthal gradients of boundary heat flux on the rod surface are not typical under standard operation conditions.  High thermal gradients can lead to extra thermal stresses on the cladding which can promote rod bowing or extreme conditions fuel failure.
+                \item  Relative variations in boundary heat flux are very small over a CTF face $(+/- 5\%)$.  Recall a CTF face represents a small approximate $1cm^2$ patch on the rod surface.  Large absolute heat fluxs of approximately $80W/cm^2$ are possible on the cladding surface of fuel in a typical PWR.  However, high axial and azimulthal gradients of boundary heat flux on the rod surface are not typical under standard operation conditions.  High thermal gradients can lead to extra thermal stresses on the cladding which can promote rod bowing or extreme in conditions fuel failure.
                 \item Figures \ref{fig:crud_sensi1} to \ref{fig:crud_sensi3} show that the sensitivity of crud growth rate to the boundary heat flux is small relative to sensitivity of curd to surface temperature and local turbulent kinetic energy. 
         \end{itemize}
 
 After applying the independence assumptions the original trivariate dependence model between the temperature, TKE, and boundary heat flux can be reduced to a bivariate model with the boundary heat flux being treated and sampled from independently.
 
-A flexible method to model high dimensional dependence structures is provided by vine copula (refs). Vine copula are a hierarchical tree model in which the edges represent bivariate copula and the nodes are univariate distributions. Vine copula have seen significant historical use in the financial industry in portfolio value at risk models.  The canonical vine copula shown in equation \ref{eq:ori_vine_model} can be used to express the trivariate distribution of temperature, TKE, and $q''$ on the rod surface.
+Vine copula provide a flexible framework to model high dimensional dependence structures \cite{Joe2015}. Vine copula are hierarchical tree models in which the edges represent bivariate copula and the nodes are univariate distributions. Vine copula have seen significant historical use in the financial industry in portfolio value at risk models.  The canonical vine copula shown in equation \ref{eq:ori_vine_model} can be used to express the trivariate distribution of temperature, TKE, and $q''$ on the rod surface.
 \begin{equation}
 h(T, k, q'') = f_T f_k, f_{q''} \prod_c c_i(u_i, v_i)
 \label{eq:ori_vine_model}
 \end{equation}
-Where each bivariate copula model in $\prod c_i $ is known as a pair copula construction.
+Where each bivariate copula model in $\prod c_i $ is known as a pair copula.  The complete nested tree model is sometimes refereed to as a pair copula construction in the literature.
 
 Applying the simplifying assumptions results in: $c(u_T, u_{q''}) = 1$ and $c(u_{k}, u_{q''}) = 1$. The simplified joint density can then be given by equation \ref{eq:simple_vine_model}:
 \begin{equation}
@@ -401,7 +401,7 @@ Where the sample remapping coefficients $\mathbf w$ are set at runtime by the hi
 w_T + w_k + w_{q''} = 1
 \end{equation}
 Next the order statistics of $\mathbf m$ are computed such that $\mathbf m' = \{ m_{(0)} < m_{(1)}< ... m_{(N)} \}$.  As shown in figure \ref{fig:samplemapping}, the ordered samples are then emplaced on the CTF patch in an organized manner.  The sample space is denoted by $\Omega$ and a specific temperature, TKE, and boundary heat flux sample is denoted by $\mathcal F_i$ as a single dot residing inside the sample space.  The path taken on the patch surface is user controllable and is taken to be a simple serpentine left-to-right pattern in this work.
-Typical values for the remapping coefficients are $w_T=0.6, w_k=0.4, w_{q''}=0$.  With this setting, relatively high temperate and low TKE samples are likely to remain in the same location on the rod surface over multiple resampling events.
+Typical values for the remapping coefficients are $w_T=0.6, w_k=0.4, w_{q''}=0$.  With this setting, relatively high temperate and low TKE samples are likely to remain in the same location on the rod surface over multiple re-sampling events.
 
 \begin{figure}[H]
     \centering
@@ -414,7 +414,7 @@ Note that since the crud simulation package utilized in this work is one-dimensi
 
 \subsection{Time Stepping Scheme}
 
-In figure \ref{fig:stepscheme}, the VERA state-point time index is denoted by $t$. Dotted arrows represent sampling from a probability distribution.  $\mathcal R$ is the spatial reordering map from sample space to a position on the rod surface. $\mathcal G$ represents the crud generation function provided by the crud simulation package which takes thermal hydraulic boundary conditions as input in addition to the previous crud state and produces a new crud state.  Resampling events are performed at time intervals $\Delta t_s$.  The resample index is denoted by $n$.  At each resampling event temperature, TKE and boundary heat flux samples are drawn from the reconstructed joint probability $\hat H^t$.  Assume that the sample time step is constant and equal to $\Delta t_s$.
+In figure \ref{fig:stepscheme}, the VERA state-point time index is denoted by $t$. Dotted arrows represent sampling from a probability distribution.  $\mathcal R$ is the spatial reordering map from sample space to a position on the rod surface. $\mathcal G$ represents the crud generation function provided by the crud simulation package which takes thermal hydraulic boundary conditions as input in addition to the previous crud state and produces a new crud state.  Re-sampling events are performed at time intervals $\Delta t_s$.  The re-sample index is denoted by $n$.  At each re-sampling event temperature, TKE and boundary heat flux samples are drawn from the reconstructed joint probability $\hat H^t$.  Assume that the sample time step is constant and equal to $\Delta t_s$.
 
 \begin{figure}[H]
     \centering
@@ -423,12 +423,12 @@ In figure \ref{fig:stepscheme}, the VERA state-point time index is denoted by $t
     \label{fig:stepscheme}
 \end{figure}
 
-Since the resampling time step size is constant the sample time can be computed by multiplying the resampling event index by the constant resampling step size:
+Since the resampling time step size is constant the sample time can be computed by multiplying the re-sampling event index by the constant resampling step size:
 \begin{equation}
 t_{s_n} = n\Delta t_s
 \end{equation}
 
-After applying the constance resample step size assumption the time averaged sample weights can be updated at each reasmpling step according to equation \ref{eq:time_sample_weights2}.
+After applying the constant re-sample step size assumption the time averaged sample weights can be updated at each re-sampling step according to equation \ref{eq:time_sample_weights2}.
 The ratio of the target density and the sampling distribution density is denoted by $\omega$ and is given in equation \ref{eq:imp_prob_ratio}.  
 
 \begin{equation}

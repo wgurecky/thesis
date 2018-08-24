@@ -245,8 +245,18 @@ The choice of the copula family, $\Theta_c$, has a negligible impact on the inte
 
 \subsubsection{Crud Sample Size Study}
 
-The number of samples, $N$, used to estimate the integral in equation () is a parameter set at runtime of the hi2lo method.
+The number of samples, $N$, used to estimate the integral in equation \ref{eq:expected_crud} is a parameter set at runtime of the hi2lo method.
 As expected for a single rod the integrated crud variance is reduced by increasing the number of samples used per CTF face to estimate the integrated crud quantities of interest.   Section \ref{sec:Importance Sampling} demonstrates that improvements in sampling efficiency are possible by way of importance sampling.
+
+Figure \ref{fig:cmprpintotalsviolinnsample} shows that increasing the number of samples used to in crud expected value Monte Carlo approximation yields an improvement in the variance of the predicted integrated crud results.  A single 300 day time step was conducted without re-sampling the underlaying density functions during this period. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{figs/synth/nsample_study/cmpr_pin_totals_violin_nsample}
+    \caption{Effect of sample size on the integrated crud results.}
+    \label{fig:cmprpintotalsviolinnsample}
+\end{figure}
+
 
 
 \subsubsection{Importance Sampling}
@@ -336,7 +346,7 @@ The improvement in performance can be attributed to expending a larger proportio
 
 \subsection{Single Pin with Time Stepping}
 
-\subsubsection{Spatial Remapping Results}
+\subsubsection{Spatial Remapping with Time Stepping}
 \begin{itemize}
 	\item (\checkmark) Show influence of hot spot stationarity assumptions on crud growth.
 \end{itemize}
@@ -379,6 +389,19 @@ The improvement in performance can be attributed to expending a larger proportio
     \caption{}
     \label{fig:patchfieldsnoremap}
 \end{figure}
+
+\subsubsection{Time Step Re-Sample Frequency}
+
+The frequency at which the distribution functions are sampled from on each CTF face influences the variance in the predicted integrated crud results.  To investigate this behavior, a parameter sweep was conducted in which the same pin was.  50 independent trials were conducted for each step size shown if table ().  Shown in figure \ref{fig:cmprpintotalsviolin} a smaller re-sampling steps size, $\Delta t_s$, results in a reduction in the variance of the rod integrated crud estimates at 300 days of simulation time.  It is also important to note that the variance of the rod integrated crud results increases as a function of time.   
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{figs/synth/tstep_study/cmpr_pin_totals_violin}
+    \caption{Influence of the re-sample frequency on the predicted integrated crud variance.}
+    \label{fig:cmprpintotalsviolin}
+\end{figure}
+
+There is little computational penalty for reducing the re-sampling step size, and therefore taking a larger number of samples per VERA state, since the computational cost of sampling the underlaying joint density functions on each patch is far less than the time required to perform the crud simulations.  
 
 
 Section Takeaways:
