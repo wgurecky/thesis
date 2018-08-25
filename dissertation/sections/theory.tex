@@ -342,20 +342,24 @@ Where $\tau$ is the user set probability level of interest. for instance if the 
 % boosting tree results
 \input{./sections/appendix/app_c.tex}
 
-\subsection{Monte Carlo CRUD Estimation}
+\subsection{Monte Carlo Crud Estimation}
 
-\begin{itemize}
-        \item (\checkmark-) Show importance sampling scheme to estimate \ref{eq:expected_crud}. 
-        \item (\checkmark-) Show examples of $g(x)$, $h(x)$ and $\tilde h(x)$ on a single CTF face.
-        \item (\xmark) \sout{Find optimal proposal density distribution.}
-\end{itemize}
+
+First the goal is to reconstruct the joint density function from copula and marginal distributions.  The margins are defined by their quantile functions as shown in section ().  Equation () defines the joint density. After reconstruction of the joint temperature, boundary heat flux and turbulent kinetic energy distribution on each patch, one draws samples via methods outlined in section (), or in particular equation ().  This leads to the Monte Carlo approximation of integral shown previously in equation \ref{eq:expected_crud} shown in equation \ref{eq:mc_expected_crud}.
+
+\begin{equation}
+\E(\mathcal G(x)) \approx \frac{1}{N} \sum_i^N \mathcal G(x_i) h(x_i), \ x \sim {h}
+\label{eq:mc_expected_crud}
+\end{equation}
+
+Rather than sampling from the density function $h$, one may draw samples from an alternate proposal density distribution denoted, $\tilde h$, and appropriately weight the samples by the proability ratio of the original density to the proposal density: $h/\tilde h$.  This leads to importance sampling formulation of equation \ref{eq:mc_expected_crud} which is given in equation \ref{eq:mc_imp_expected_crud}.
 
 \begin{equation}
 \E(\mathcal G(x)) \approx \frac{1}{N} \sum_i^N \mathcal G(x_i) \frac{h(x_i)}{\tilde h(x_i)}, \ x \sim \tilde{h}
-\label{eq:mc_imp_int}
+\label{eq:mc_imp_expected_crud}
 \end{equation}
 
-Substituting the joint density function defined by \ref{eq:sklar2} in to \ref{eq:mc_imp_int} yields:
+Substituting the joint density function defined by \ref{eq:sklar2} in to () yields:
 
 \begin{align}
     h(x_1, x_2..) &= c(u_1, u_2, ...) f(x_1) f(x_2) \nonumber \\
@@ -363,19 +367,26 @@ Substituting the joint density function defined by \ref{eq:sklar2} in to \ref{eq
 \label{eq:mc_imp_int_2}
 \end{align}
 
-To simplify \ref{eq:mc_imp_int}, the proposal and target copula densities are assumed to be the same and therefore we can rewrite \ref{eq:mc_imp_int} as equation \ref{eq:mc_imp_int3}.
 \begin{equation}
-\E(\mathcal G(x)) \approx \frac{1}{N} \sum_i^N \mathcal G(x_i) \frac{f_1(x_i) f_2(x_i)}{\tilde f_1(x_i) \tilde f_2(x_i)}, \ x \sim \tilde{f_1} \tilde f_2
-\label{eq:mc_imp_int3}
+\E(\mathcal G(x)) \approx \frac{1}{N} \sum_i^N \mathcal G_i(x) \omega_i(x), \ x \sim \tilde{f_1} \tilde f_2 \tilde c(u_1, u_2)
+\label{eq:mc_imp_int2}
 \end{equation}
 
-Let the probability ratio of the target density to the proposal density be:
+with the probability ratio of the target density to the proposal given by \ref{eq:imp_prob_ratio}:
 
 \begin{equation}
-\omega_i = \frac{h_i}{\tilde h_i} = \frac{f_1(x_i) f_2(x_i)}{\tilde f_1(x_i) \tilde f_2(x_i)}
+\omega_i = \frac{h_i}{\tilde h_i} = \frac{f_1(x_i) f_2(x_i)c}{\tilde f_1(x_i) \tilde f_2(x_i) \tilde c}
 \label{eq:imp_prob_ratio}
 \end{equation}
 
+In the case that the proposal and target copula densities are assumed to be the same equation \ref{eq:imp_prob_ratio} can be rewritten as \ref{eq:imp_prob_ratio2}.
+
+\begin{equation}
+\omega_i = \frac{f_1(x_i) f_2(x_i)}{\tilde f_1(x_i) \tilde f_2(x_i)}
+\label{eq:imp_prob_ratio2}
+\end{equation}
+
+In this work the target and proposal copula are taken to be the same function.
 
 \subsection{Propagating CRUD Through Time}
 
