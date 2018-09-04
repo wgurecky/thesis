@@ -447,9 +447,4 @@ The ratio of the target density and the sampling distribution density is denoted
 \label{eq:time_sample_weights2}
 \end{equation}
 
-\subsection{Smearing Over Azimuth}
-
-\begin{itemize}
-        \item ($\cdot$) Smear the CFD data and CTF results over all azimuthal angles.  This will increase the number of CFD samples used for the hi2lo mapping construction by a factor of four, and therefore decrease the uncertainty in the sample quantiles by a factor of 2.  See section on the theoretical distribution of sample quantiles (the sample quantile distributions follow 1/sqrt(N) behavior).
-        \item ($\cdot$) Since the primary goal of this method is to predict CIPS, it is possible neglect azimuthal variation entirely and focus solely on the axial variation.  In this case, for any given pin, each CTF face at a fixed axial level will all get the same crud thickness and crud boron from the hi2lo model.
-\end{itemize}
+The crud stepping strategy is fully explicit in time as the next crud samples can be drawn from knowledge of the previous crud state and the current thermal hydraulic conditions.  Feedback between the crud state and the underlaying density functions is not modeled in the hi2lo time stepping scheme.  The presence of crud influences the rod surface temperature distribution due to two competing effects: Providing favorable conditions for bubble nucleation and an increased thermal resistance.  Though these effects are slight they do impact not only the mean surface temperature but also higher moments about the mean of the probability densities of surface temperature.  These higher order feedbacks are not currently considered.

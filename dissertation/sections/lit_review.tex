@@ -1,5 +1,22 @@
 %! TEX root = ../dissertation_gurecky.tex
 
+
+\section{Statistical Downscaling}
+
+Statistical downscaling refers to generating a statistical link between a low and high fidelity models.
+The process of statistical downscaling and augmentation is not without precedent.  In particular, in the climate and weather data communities, it is common to perform local bias-correction on coarsely resolved weather models provided local weather station measurements [ref].  
+
+A particular class of SD methods known as bias-corrected spatial disaggregation (BCSD) focus on establishing local area estimates of higher order moments about the mean from a coarse model given previous historical local station data.  These models have been used to forecast the probability of extreme precipitation events in a given local region which is important for flood risk assessment studies [ref].
+
+
+It is also possible to nest a high fidelity simulation within a coarse fidelity weather simulation. Boundary conditions and constraints are supplied by the coarse fidelity model to the nested regional high resolution weather model.  The practice of coupling regional weather models with coarse scale global models is sometimes referred to as dynamical downscaling, though, this weather modeling strategy can also be viewed as a particular tightly coupled multi-scale model.  There are examples of such coupled simulation in reactor physics (see literature on coupled coarse RELAP and CFD models.  CFD is used where the flow is 'complicated' but RELAP handles the primary loop piping and heat exchanger)  The construction of dynamical downscaling models are not the focus of the current hi2lo work and will not be discussed further.
+
+\section{Kriging}
+
+Besides the BCSD based tools, other bias-correction and statistical augmentation techniques are well suited when the errors can be assumed to be normally distributed about some mean prediction.  Simple kriging assumes that the mean of the underlaying field does not drift as a function location in the input space and therefore only requires the fitting of a co-variogram which describes the statistical spatial autocorrelation between the known data.  More advanced kriging strategies such as regression kriging (RK) forgo this simplification decomposing the interpolation problem into one separate mean predicting and bias-correcting residual models.  In RK the spatial-autocorrelation in the residuals is modeled by a simple kriging model.  The mean response may be predicted by any regression strategy, with a common choice being an ordinary least squares model though works which investigate the use of random-forests or more advanced machine learning strategies in this role are pervasive [refs].
+
+\section{Subchannel TH Hi2lo}
+
 \begin{itemize}
     \item (\checkmark) M. Avramova.  CFD informed grid mixing coefficients in CTF.  This work leveraged CFD results to improve the momentum balance (grid mixing models) in CTF. \cite{avramova2007}
     

@@ -346,16 +346,11 @@ On average the classifier predicts an incorrect result more often than not.  Thi
     \label{fig:asmerrorcorr}
 \end{figure}
 
+\subsection{Section Takeaways}
 
-\subsection{Multi State Point 5x5 Results}
 
 \begin{itemize}
-	\item ($\cdot$) Step a 5x5 assembly forward in time using pre-computed ctf-mpact results as input to the hi2lo model with the trained ML model supplying quantiles and copula.
-	\item ($\cdot$) Report hi2lo crud model results under:
-	\begin{itemize}
-		\item ($\cdot$) Changes in power shapes.
-		\item ($\cdot$) Changes in total rod power.
-		\item ($\cdot$) Changes in flow rate.
-	\end{itemize}
-	
+    \item A leave one out cross validation strategy was utilized to quantify the predicted performance of the model.  For this cross validation strategy the model was trained on data provided by 24 pins.  Predictions were made for the left-out pin and compared against the expected results.  This process was repeated for all 25 pins in the assembly.
+
+	\item The copula classifier performed poorly given the current set of considered explanatory variables.  Future work is required to identify additional predictors to include in the explanatory variable set.  However, figures () and () show that the selected copula model family (eg. Gumbel, Frank, Clayton or Gaussian) does not influence the integrated crud result on a patch or pin as strongly as the rank correlation coefficient, Kendall's tau.
 \end{itemize}

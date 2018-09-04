@@ -1,11 +1,10 @@
 %! TEX root = ../dissertation_gurecky.tex
 
-In this chapter the copula fitting, marginal reconstruction from quantiles, and Monte Carlo with importance sampling strategies are applied to a synthetic data set.  Synthetic data offers advantages over CFD born data for the puposes of testing and evaluating the efficacy of the proposed models.  Since synthetic data conforms to a known functional form with specified noise and bias the fitting and sampling routines can be easily checked against the expected result.
-In this chapter we do not introduce any machine learning components and therefore, the copula and marginal models presented are not predictive but are reconstructions of the original synthetic data source.
+In this chapter the copula fitting, marginal reconstruction from quantiles, and Monte Carlo with importance sampling strategies are applied to a synthetic data set.  Synthetic data offers advantages over CFD born data for the puposes of testing and evaluating the efficacy of the proposed models.  Since synthetic data conforms to a known functional form with specified distribution and bias parameters the fitting and sampling routines can be checked against the pre-specified expected result.
+This chapter does not introduce any machine learning components and or explore forward model construction capabilities. The copula and marginal models presented are not predictive but rather are semi-parametric representations of the original synthetic data source.
 
-The availability of synthetic data alleviates the need to generate comparatively expensive CFD results to test the hi2lo strategy.  Some aspects of CFD fields are preserved, including expected biases between CFD and CTF results that arise due to discrepancies in wall heat transfer closure models, among other differences, additionally turbulent dispersion of the temperature and surface shear distributions around spacer grids are specified.  Accounting for spatial auto-correlation in the surface fields was not pursued since the hi2lo procedures do preserve fine scale spatial features.  Any spatial autocorrelation present in the surface fields within a CTF face is lost.  The synthetic data is not a direct replacement to CFD data but serves as data source for method interrogation and integration testing.
+The availability of synthetic data alleviates the need to generate comparatively expensive CFD results to test the hi2lo strategy.  Some aspects of CFD fields are preserved, including expected biases between CFD and CTF results that arise due to discrepancies in wall heat transfer closure models, among other differences, additionally turbulent dispersion of the temperature and surface shear distributions around spacer grids are emulated by the synthetic data model.  Accounting for spatial auto-correlation in the surface fields was not pursued.  Spatial autocorrelation present in the surface fields within a CTF face is not captured.  Consequently the synthetic data is not a direct replacement to CFD data but serves as data source for method interrogation and integration testing.
 
-The synthetic data generation routines specify the copula family, Kendall's $\tau$ rank correlation coefficient and marginal distribution parameters as a function of axial location and local TH conditions supplied by CTF.
 
 \section{Generating Synthetic Data}
 
@@ -16,8 +15,8 @@ Synthetic data generation begins by first running standalone CTF on a single qua
 \end{equation}
 Where $\varepsilon(\mathbf z, \theta)$ is a user controlled spatially dependent residual distribution, with a mean of 0, which is
 shifted by a bias function,
-$ b(\mathbf z)$, where $\mathbf z=(z, \varphi)$ is the axial and azimuthal location on_the rod surface.
-$_\theta$ represents user specified distribution parameters.
+$ b(\mathbf z)$, where $\mathbf z=(z, \varphi)$ is the axial and azimuthal location on the rod surface.
+$\theta$ represents user specified distribution parameters.
 
 Equation \ref{eq:synth_aug} represents continuous random scalar surface field, however in practice a large number of indipendent and identically distributed samples are drawn in each CTF from the underlaying random field.  Individual temperature samples can be specified by equation ():
 
@@ -27,7 +26,15 @@ Equation \ref{eq:synth_aug} represents continuous random scalar surface field, h
 \end{equation}
 Where the index $j$ represents the $j^{th}$ CTF face on the rod, and the index $i$ is the sample index within the $j^{th}$ CTF face.  The distribution parameters, $\theta$ are fixed over a given CTF face.
 
-The copula and marginal parameters are specified as inputs in the synthetic data generation tool.  To allow a great deal of flexibility, the copula and margin parameters can be provied as a function of local thermal hydraulic conditions and as a function of axial position.
+The copula family, Kendall's $\tau$ rank correlation coefficient and marginal distribution parameters as a function of axial location and local TH conditions supplied by CTF.
+To allow a great deal of flexibility, the copula and margin parameters can be specified as a function of local thermal hydraulic conditions and as a function of axial position.
+
+Borrowing the decomposed joint density provided by Sklar's theorm The residual distrubtion can be expressed by:
+
+\begin{equation}
+    \varepsilon_j = c_j(F_k(k_i), F_T(T_i); \theta_j) f_{T_i} f_{k_i}
+\end{equation}
+With $T \sim F_T$ and $k \sim F_k$ where.
 
 \subsection{Single Pin Synthetic Data Set}
 
@@ -141,25 +148,14 @@ The copula models were sampled in each span, the original CTF result was augment
     \label{fig:ctf_tke_aug}%
 \end{figure}
 
-The augmented surface temperature and turbulent kinetic energy fields shown if figures \ref{fig:ctf_twall_aug} and \ref{fig:ctf_tke_aug} can be compared against the original CTF results provided in figures \ref{fig:ctf_twall_orig} and \ref{fig:ctf_tke_orig} respectively.  No azimuthal variations are present in the augmented result which would be present if a physics based model, such as CFD, were used.  Additionally, no spatial auto-correlation in the temperature and TKE cladding surface fields are included in the synthetic data.  Spatial autocorrelation could be captured with a kriging model in the future, however, the 1d nature of the crud simulation code used in this work dictates that the fine scale spatial detail in the surface fields are irrelivant when computing surface-integrated crud quantities.
+The augmented surface temperature and turbulent kinetic energy fields shown if figures \ref{fig:ctf_twall_aug} and \ref{fig:ctf_tke_aug} can be compared against the original CTF results provided in figures \ref{fig:ctf_twall_orig} and \ref{fig:ctf_tke_orig} respectively.  No azimuthal variations are present in the augmented fields which would be present if a physics based model, such as CFD, were used.  Additionally, no spatial auto-correlation in the temperature and TKE cladding surface fields are included in the synthetic data.  Spatial autocorrelation could be captured with a kriging model in the future, however, the one dimensional nature of the crud simulation code used in this work dictates that the fine scale spatial detail in the surface fields are irrelevant when computing surface-integrated crud quantities.
 
-In the following sections the goal is to fit separate copula and maginal models to the synthetic data in each CTF face.  Samples are then drawn from the fitted statistical models on each CTF face.  The samples are passed to the crud simulation code.  The reconsctuted crud results can be compared against crud results generated using the original synthtic surface field data.
 
 \subsection{Single Pin Reconstruction}
 
-Copula models are fit to the synthetic rod data in each CTF face according the the method of maximum likelyhood shown in equation () and AIC model selection, given in equatin ().  Additionally, in each CTF patch the sample quantiles of the local temperature, TKE, and boundary heat flux populations are computed by equation ().
-
+The first 
 
 The rod surface is divided into CTF faces.  In each face the emperical quantile distribution of temperature, turbulent kinetic energy, and boundary heat flux distributions are computed.  The number and spacing of quantiles used in the emperical quantile distribution is user specified.  Copula are fit to the synthetic data based on maximum likelihood and the Akiki information criterion in each CTF face.
-
-\begin{itemize}
-        \item (\checkmark) Compare CTF vs Synthetic CFD vs Hi2Lo Reconstructed CRUD results for a full pin for fixed TH conditions.
-        \item (\checkmark) Show sensitivity of integrated crud mass and boron to the following.  Also show impact on uncertainty in these integrated results to:
-        \begin{itemize}
-                \item (\checkmark) Increase the number of samples drawn per patch
-                \item (\checkmark) Force Gaussian copula vs. best fit copula approach.
-        \end{itemize}
-\end{itemize}
 
 For the synthetic single pin data the difference between hi2lo and CTF predicted fractional surface area above a saturation temperature threshold ($T_{sat}$) is shown in figure \ref{fig:frac_a}.   CTF
 is unable to capture small scale effects of the mixing vanes on the surface temperature distribution.
@@ -425,7 +421,7 @@ The frequency at which the distribution functions are sampled from on each CTF f
 There is little computational penalty for reducing the re-sampling step size, and therefore taking a larger number of samples per VERA state, since the computational cost of sampling the underlaying joint density functions on each patch is far less than the time required to perform the crud simulations.
 
 
-Section Takeaways:
+\subsection{Section Takeaways}
 \begin{itemize}
         \item Increasing the number of samples per patch decreases variance in total crud and total precipitated boron estimates.
         \item Increasing the number of re-sampling steps per VERA state point reduces variance in the final integrated crud results.
