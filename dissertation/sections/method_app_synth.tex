@@ -8,7 +8,7 @@ The availability of synthetic data alleviates the need to generate comparatively
 Semi-parametric copula and marginal distributions are fit to the synthetic data in each CTF face independently.  Samples are drawn from the fitted joint temperature, TKE and BHF density models on each patch using standard Monte Carlo methods or importance sampling.  The surface samples are provied to a crud simulation package as cladding-surface boundary conditions.  Additional required bulk coolant properties are supplied by CTF.
 In this chapter some consequences of adopting a statistically based hi2lo map  on a multistate point, or time dependent crud simulation are discussed.
 
-Finally, speedups afforded by importance sampling are presented.  The sampling distributions utilized in importance sampling are informed by the physics of crud growth. Careful treatment of the propagation importance weights through discrete re-sampling steps is also discussed.
+Finally, speedups afforded by importance sampling are presented.  The sampling distributions utilized in importance sampling are informed by the physics of crud growth.
 
 \section{Generating Synthetic Data}
 
@@ -43,21 +43,21 @@ $\bm \theta$ represents user specified distribution parameters.
 Equation \ref{eq:synth_aug} represents three continuous random surface fields.  In practice a large number of independent and identically distributed samples are drawn in each CTF face from the underlaying random field.  Individual surface samples can be specified by equation \ref{eq:synth_aug_discrete}.
 
 \begin{equation}
-    X_{ij} = \mu_{j,\ ctf}} + b_j + \varepsilon_{ij};\ \   \varepsilon_{ij} \sim h_j(\bm \theta)
+    X_{ij} = \mu_{j,\ ctf} + b_j + \varepsilon_{ij};\ \   \varepsilon_{ij} \sim h_j(\bm \theta)
     \label{eq:synth_aug_discrete}
 \end{equation}
-Where the index $j$ represents the $j^{th}$ CTF face on the rod, and the index $i$ is the sample index within the $j^{th}$ CTF face.  The distribution parameters, $\bm \theta = \{\theta_c, \theta_x\}$ are constant over a given CTF face.
+Where the index $j$ represents the $j^{th}$ CTF face on the rod, and the index $i$ is the sample index within the $j^{th}$ CTF face.  The distribution parameters are constant over a given CTF face and give by $\bm \theta = \{\theta_c, \{\theta_x\}\}$ where $\theta_c$ is the copula parameter and  $\{\theta_x\}$ are marginal parameters, 
 
 
 Shown in equation \ref{eq:synth_aug_face}, according to Sklar's theorem the surface residual temperature and TKE joint distribution may be decomposed into copula an marginal models on each CTF face:
 
 \begin{equation}
-    h_j = c_j(F_k(k_i), F_T(T_i); \theta_{c_j}) f_{T_i}(T;\ \ \theta_{T_j}) f_{k_i}(k; \theta_{k_j})
+    h_j = c_j(F_k(k), F_T(T); \theta_{c_j}) f_{T_i}(T; \theta_{T_j}) f_{k_i}(k; \theta_{k_j})
     \label{eq:synth_aug_face}
 \end{equation}
-Where the copula parameter $\thata_{c_j}$ and the marginal parameter $\theta_{T_j} and \theta_{k_j}$ are set at runtime of the synthetic data generation tool.
+Where the copula parameter $\theta_{c_j}$ and the marginal temperature and TKE distribution parameters $\theta_{T_j}$ and $\theta_{k_j}$ are set at runtime of the synthetic data generation tool.
 
-To allow for a great deal of flexibility in the synthetic data the copula family, Kendall's $\tau$ rank correlation coefficient and marginal distribution parameters are a function of axial location and local TH conditions supplied by CTF.  The copula's shape parameter, $\theta_c$ may be related to the rank correlation coefficient by equation \ref{eq:tauar} which is a one to one mapping for the Archimidean copula considered in this work.
+To allow for a great deal of flexibility in the synthetic data the copula family, Kendall's $\tau$ rank correlation coefficient and marginal distribution parameters are specified as a function of axial location and local TH conditions supplied by CTF.  The copula's shape parameter, $\theta_c$ may be related to the rank correlation coefficient by equation \ref{eq:tauar} which is a one to one function for the Archimidean copula considered in this work.
 
 
 \subsection{Single Pin Synthetic Data Set}
@@ -176,7 +176,9 @@ The augmented surface temperature and turbulent kinetic energy fields shown if f
 
 \subsection{Single Pin Reconstruction}
 
-The rod surface is divided into CTF faces.  In each face the empirical quantile distribution of temperature, turbulent kinetic energy, and boundary heat flux distributions are computed.  The number and spacing of quantiles used in the empirical quantile distribution is user specified.  Copula are fit to the synthetic data based on maximum likelihood and the Akiki information criterion in each CTF face.
+The rod surface is subdivided into CTF faces before fitting and reconstructing the synthetic data.  The location and extent of the CTF faces on the rod surface can be determined from a CTF output file.  
+
+In each face the empirical quantile distribution of temperature, turbulent kinetic energy, and boundary heat flux distributions are computed.  The number and spacing of quantiles used in the empirical quantile distribution is user specified.  Copula are fit to the synthetic data based on maximum likelihood and the Akaike information criterion (AIC) in each CTF face.  Maximum likelihood estimation is described in section \ref{sec:fitting_copula} and the AIC may be computed from equation \ref{eq:cop_aic}.
 
 For the synthetic single pin data the hi2lo predicted fractional surface area above a saturation temperature threshold ($T_{sat}$) is shown in figure \ref{fig:frac_a}.
 
@@ -190,7 +192,6 @@ For the synthetic single pin data the hi2lo predicted fractional surface area ab
 \end{figure}
 
 Provided that crud growth exhibits a temperature thresholding behavior about the saturation point it is important to predict the fractional area of the rod surface which exists above this critical temperature. Figure \ref{fig:frac_a} shows a substantial difference in the fractional area predicted above the saturation point in each CTF face when utilizing the hi2lo model rather than the predictions generated from a CTF computation alone.  The more significant the thresholding behavior of crud growth, the more important it becomes to accurately compute areas of the rod surface in excess of the saturation point.
-
 
 Figure \ref{fig:patchscatter} examines the surface frequency distributions of temperature, crud boron mass and TKE for the CTF patch denoted by the red box in figures \ref{fig:hi2lopincmass} and \ref{fig:hi2lopintke}.
 
@@ -232,6 +233,7 @@ After samples are independently drawn in each CTF face the temperature, TKE, and
 % \end{figure}
 
 \subsubsection{Crud Copula Parameter Sensitivity}
+\label{sec:crud_copula_sensi}
 
 Here the sensitivity of the crud result to the copula parameters is investigated.  Both the impact of the rank correlation coefficient, Kendall's $\tau$, and the Archimidean copula family are investigated.  The sensitivity results generated for the patch centered at $(\theta=3.14[rad], z=2.95[m])$ are shown in figure \ref{fig:patchcrudfit80}.  There is noise present in the crud predictions due to the Monte Carlo integration of equation \ref{eq:expected_crud} over the patch.  In this instance 2500 samples were used.  The crud is relatively insensitive to the choice of copula family, but the rank correlation coefficient is shown to have a significant influence on crud growth with an average boron deposition sensitivity of $\frac{\partial C_b}{\partial \rho_\tau} =$ -1.086e-7 $[g/cm^2/\tau]$ for this particular patch.  Accurately predicting Kendall's $\tau$ provided local core conditions is important.
 
@@ -380,7 +382,7 @@ Stepping the crud simulation forward under the application of hi2lo supplied bou
 
 \subsubsection{Spatial Remapping with Time Stepping}
 
-The influence of hotspot stationarity assumptions can be seen in figures \ref{fig:cmprpintotals0406} and \ref{fig:cmprpintotalsnoremap}.  When the surface temperature is alloed to randomly mix on each resampling event in each CTF face, the influence of the hot spots are smeared over the surface of the rod which leads to an overall under prediction in the total integrated crud mass.  Reordering the samples in each CTF face by their temperature improves the ability of the hi2lo model to preserve the impact of stationary hot and cold spots on the rod surface.  Good agreement with the original coupled CFD-Crud simulation data was achived by tuning the constants introduced in equation () to values of $\omega_T = 0.4$, and of $\omega_k = 0.6$.  This balanced seeks to preserve a heuristic thermal-hydraulic metric on the rod surface.  Since crud is sensitive to both the surface temperature and wall shear stress with a proxy of near wall turbulent kinetic energy.
+The influence of hotspot stationarity assumptions can be seen in figures \ref{fig:cmprpintotals0406} and \ref{fig:cmprpintotalsnoremap}.  When the surface temperature is allowed to randomly mix on each re-sampling event in each CTF face, the influence of the hot spots are smeared over the surface of the rod which leads to an overall under prediction in the total integrated crud mass.  Reordering the samples in each CTF face by their temperature improves the ability of the hi2lo model to preserve the impact of stationary hot and cold spots on the rod surface.  Good agreement with the original coupled CFD-Crud simulation data was achived by tuning the constants introduced in equation () to values of $\omega_T = 0.4$, and of $\omega_k = 0.6$.  This balanced seeks to preserve a heuristic thermal-hydraulic metric on the rod surface.  Since crud is sensitive to both the surface temperature and wall shear stress with a proxy of near wall turbulent kinetic energy.
 
 
 \begin{figure}[H]
@@ -407,7 +409,8 @@ A spatial representation of the samples pre and post-remapping are shown in figu
     \label{fig:remmap_comp}%
 \end{figure}
 
-\subsubsection{Re-Sample Frequency}
+\subsection{Re-Sample Frequency}
+\label{sec:resample_freq_study}
 
 The frequency at which the distribution functions are sampled from on each CTF face influences the variance in the predicted integrated crud results.  To investigate this behavior, a parameter sweep was conducted in which the same pin was.  50 independent trials were conducted for each step size shown if table ().  Shown in figure \ref{fig:cmprpintotalsviolin} a smaller re-sampling steps size, $\Delta t_s$, results in a reduction in the variance of the rod integrated crud estimates at 300 days of simulation time.  It is also important to note that the variance of the rod integrated crud results increases as a function of time.
 

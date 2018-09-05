@@ -110,8 +110,8 @@ that spans essentially all possible TH conditions encountered in an operational 
 \end{itemize}
 
 
-Q-Q plots of the  temperature and TKE residual distributions are used to elucidate bias introduced by the machine learning model at a variety of axial positions and local core conditions.  The results are computed by evaluating the model given boundary conditions from the left-out pin and comparing to the expected CFD result.
-A subset of the TKE residual quantile regression results are given in figure \ref{fig:tkepin1} to \ref{fig:tkepin3}.
+Q-Q plots of the  temperature and TKE residual distributions are used to elucidate bias introduced by the machine learning model in the conditional quantiles at a variety of axial positions and local core conditions.  Estimated quantiles are obtained for the left-out pin by evaluating the trained reduced LOO model and are compared to the expected CFD result.
+A subset of the TKE residual quantile regression results are given in figure \ref{fig:tkepin1} to \ref{fig:tkepin3}.  The Q-Q plots summarize the biases in the conditional quantile distributions when compared to the target golden standard CFD data.  The maximum and average Kolmogorov–Smirnov (KS) statistic is provided in the Q-Q figures for each pin.  This statistic was computed at each axial level on the CTF grid.
 
 \begin{figure}[H]%
     \centering
@@ -141,7 +141,7 @@ A subset of the TKE residual quantile regression results are given in figure \re
 \end{figure}
 
 
-A subset of the Temperature residual quantile regression results are given in figure \ref{fig:temppin1} to \ref{fig:temppin3}.
+A subset of the Temperature residual quantile regression results are given in figure \ref{fig:temppin1} to \ref{fig:temppin3}.  Similar to the TKE conditional quantiles, the conditional temperature distribution exhibits sharp changes in behavior across the spacer grids.  These discontinuities enforced the choice of a machine learning algorithm, such as gradient boosted regression trees, which are resilient to extremely sharp gradients in the response surface.  Section () investigates this characteristic of gradient boosted regression tree models.
 
 \begin{figure}[H]%
     \centering
@@ -172,7 +172,7 @@ A subset of the Temperature residual quantile regression results are given in fi
 
 \subsection{Kendall's $\tau$ Regression}
 
-A subset of the Kendall's $\tau$ regression results are given in figure \ref{fig:ktauregression}.
+A subset of the 5x5 assembly's Kendall's $\tau$ regression results are given in figure \ref{fig:ktauregression}.  There is a marked change in behavior of the rank correlation coefficient as a function of axial position in the core from pin to pin.  The influence of Kendall's $\tau$ on the CTF face-integrated crud results was discussed in section \ref{sec:crud_copula_sensi}, and it was shown to be an important parameter to accurately predict via the machine learning model.  Pins with large relative errors for Kendall's $\tau$ are expected to produce anomalously poor crud predictions.
 
 \begin{figure}[H]%
     \centering
@@ -187,11 +187,13 @@ A subset of the Kendall's $\tau$ regression results are given in figure \ref{fig
     \caption[Kendall's $\tau$ regression LOO results.]{Kendall's $\tau$ regression results from LOO cross validation study.}%
     \label{fig:ktauregression}%
 \end{figure}
-
+To combat poor performance of the Kendall's $\tau$ regressors, a larger training set should be investigated in future work.  For this limited 25 pin data set, it is hypothesized that each pin has a substantially unique flow field when compared to the other 24 pins.  Therefore, when expelling a pin from the training data set for cross validation the predictive performance of the model will suffer since the remaining pins in the training set do not provide the requisite information about the local core conditions vs. Kendall's $\tau$ relationship for the missing pin.
 
 \subsection{Copula Classifier}
 
-Here we compute the classification error rate and summarize the model's performance with a confusion matrix.
+In addition to the rank correlation coefficient, Kendall's $\tau$, the copula family must also be specified to recover the copula density function on each CTF face.  A gradient boosted classifier was trained on the available CFD data.  Copula information extracted from the raw CFD results is shown in figure \ref{fig:copula_predicted}.
+
+Figure \ref{fig:confusionmatrixavg} summarizes the LOO cross validation results of the copula classifier as a confusion matrix.  The diagonal entries of the confusion matrix represent the fraction of predictions correctly made for each copula family.
 
 \begin{figure}[H]
     \centering

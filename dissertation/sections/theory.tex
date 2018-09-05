@@ -421,11 +421,15 @@ Typical values for the remapping coefficients are $w_T=0.6, w_k=0.4, w_{q''}=0$.
     \label{fig:samplemapping}
 \end{figure}
 
-Note that since the crud simulation package utilized in this work is one-dimensional the pattern chosen for sample emplacement has no influence on the integrated crud result over a patch.  This would not be the case if the crud simulation package modeled a fully 3D crud layer as the state of the neighboring crud nodes in that case would matter.  Interestingly, since the hi2lo model user  can specify the sample remapping pattern at run time, a physically realistic pattern could be prescribed on the rod surface - even prescribed as a function of local core conditions leading to a hybrid strategy between the current pure statistical hi2lo procedure and the spatial remapping procedure implemented by Salko et. al.
+Note that since the crud simulation package utilized in this work is one-dimensional the pattern chosen for sample emplacement has no influence on the integrated crud result over a patch.  This would not be the case if the crud simulation package modeled a fully 3D crud layer as the state of the neighboring crud nodes in that case would matter.  Interestingly, since the hi2lo model user  can specify the sample remapping pattern at run time, a physically realistic pattern could be prescribed on the rod surface - even prescribed as a function of local core conditions leading to a hybrid strategy between the current pure statistical hi2lo procedure and the spatial remapping procedure implemented by Salko et. al \cite{salko17}.
 
 \subsection{Time Stepping Scheme}
 
-In figure \ref{fig:stepscheme}, the VERA state-point time index is denoted by $t$. Dotted arrows represent sampling from a probability distribution.  $\mathcal R$ is the spatial reordering map from sample space to a position on the rod surface. $\mathcal G$ represents the crud generation function provided by the crud simulation package which takes thermal hydraulic boundary conditions as input in addition to the previous crud state and produces a new crud state.  Re-sampling events are performed at time intervals $\Delta t_s$.  The re-sample index is denoted by $n$.  At each re-sampling event temperature, TKE and boundary heat flux samples are drawn from the reconstructed joint probability $\hat H^t$.  Assume that the sample time step is constant and equal to $\Delta t_s$.
+Careful treatment of the propagation importance weights through discrete re-sampling steps is necessary to ensure there is no bias in the crud results when moving through multiple time steps and VERA states.
+
+Figure \ref{fig:stepscheme} depicts the time stepping scheme for a single patch. The patch index is not shown to reduce visual clutter. The VERA state-point time index is denoted by $t$.  At the beginning of each VERA state-point the power distribution and thermal hydraulic conditions in the core change.  Here it is assumed there is a constant power profile and constant flow conditions over a VERA depletion step. 
+
+In figure \ref{fig:stepscheme} dotted arrows represent sampling from a probability distribution.  $\mathcal R$ is the spatial reordering map from sample space to a position on the rod surface. $\mathcal G$ represents the crud generation function provided by the crud simulation package which takes thermal hydraulic boundary conditions as input in addition to the previous crud state and produces a new crud state.  Re-sampling events are performed at time intervals $\Delta t_s$ and this interval is set at runtime by the user.  The influence of the re-sampling interval size is discussed in section \ref{sec:resample_freq_study}.  The re-sample index is denoted by $n$.  The subscript, $(\cdot)_s$ , denotes evaluation at a re-sampling event.  At each re-sampling event the temperature, TKE and boundary heat flux samples are drawn from the reconstructed joint probability $\hat H^t$.  Assume that the sample time step is constant and equal to $\Delta t_s$.
 
 \begin{figure}[H]
     \centering
@@ -434,17 +438,45 @@ In figure \ref{fig:stepscheme}, the VERA state-point time index is denoted by $t
     \label{fig:stepscheme}
 \end{figure}
 
-Since the resampling time step size is constant the sample time can be computed by multiplying the re-sampling event index by the constant resampling step size:
+Since the re-sampling time step size is constant the sample time can be computed by multiplying the re-sampling event index by the constant re-sampling step size:
 \begin{equation}
 t_{s_n} = n\Delta t_s
 \end{equation}
 
-After applying the constant re-sample step size assumption the time averaged sample weights can be updated at each re-sampling step according to equation \ref{eq:time_sample_weights2}.
-The ratio of the target density and the sampling distribution density is denoted by $\omega$ and is given in equation \ref{eq:imp_prob_ratio}.  
+The time averaged sample weights are in general updated by equation \ref{eq:time_sample_weights1} at each re-sampling step.
 
 \begin{equation}
-\bar \omega_{s_n} = \left( \frac{n \Delta t_s}{\sum_i^n \Delta t_{s_i}} \right) \bar \omega_{n-1} + \left( \frac{\Delta t_s}{\sum_i^n \Delta t_{s_i}} \right) \omega_n
-\label{eq:time_sample_weights2}
+\bar \omega_{{s_n},i} = 
+\left( \frac{\sum_{l}^{n-1}t_{s_l}}{\sum_l^n \Delta t_{s_l}} \right) \bar \omega_{n-1,i} + 
+\left( \frac{\Delta t_{s_l}}{\sum_l^n \Delta t_{s_l}} \right) \omega_{n,i}
+\label{eq:time_sample_weights1}
 \end{equation}
+Where $i$ is the sample index within a single CTF face.
 
-The crud stepping strategy is fully explicit in time as the next crud samples can be drawn from knowledge of the previous crud state and the current thermal hydraulic conditions.  Feedback between the crud state and the underlaying density functions is not modeled in the hi2lo time stepping scheme.  The presence of crud influences the rod surface temperature distribution due to two competing effects: Providing favorable conditions for bubble nucleation and an increased thermal resistance.  Though these effects are slight they do impact not only the mean surface temperature but also higher moments about the mean of the probability densities of surface temperature.  These higher order feedbacks are not currently considered.
+After applying the constant re-sample step size assumption the time averaged sample weights can be updated at each re-sampling step according to equation \ref{eq:time_sample_weights3}.
+The ratio of the target density and the sampling distribution density is denoted by $\omega$ and is given in equation \ref{eq:imp_prob_ratio}. 
+
+\begin{align}
+\bar \omega_{{s_n},i} &= \left( \frac{(n-1) \Delta t_s}{n \Delta t_s} \right) \bar \omega_{n-1,i} + \left( \frac{\Delta t_s}{n \Delta t_s} \right) \omega_{n,i} \nonumber \\
+ &= \left( \frac{(n-1)}{n} \right) \bar \omega_{n-1,i} + \left( \frac{1}{n} \right) \omega_{n,i}
+\label{eq:time_sample_weights3}
+\end{align}
+
+After each re-sampling event the total crud mass, $C_m$ on a CTF face, can be computed by a wighted sum given in equation \ref{eq:patch_sum_mass}.  The sampling and weighting procedure is depicted in figure \ref{fig:crudsamplesdt}.
+
+\begin{equation}
+C_{m} = \frac{A}{M}\sum_i^M C_i \bar \omega_i
+\label{eq:patch_sum_mass}
+\end{equation}
+Where $M$ is the number of samples drawn per CTF face and $A$ is the surface area of the $j^{th}$ CTF face.  The re-stepping index $n$ and the patch index $j$ are dropped to reduce clutter in equation \ref{eq:patch_sum_mass}.
+
+The crud stepping strategy is explicit in time as the next crud samples can be drawn from knowledge of the previous crud state and the current thermal hydraulic conditions.  Feedback between the crud state and the underlaying density functions is not captured in the hi2lo stepping scheme.  The presence of crud influences the rod surface temperature distribution due to two competing effects: Providing favorable conditions for bubble nucleation and an increased thermal resistance.  Though these effects are slight they impact not only the mean rod surface temperature but also higher moments about the mean of the probability densities of surface temperature.  These higher order feedbacks are not currently considered, however it is possible to incorporate the current crud state into the explanatory variable set used by the machine learning model to resolve this feedback between the crud thickness and the higher order moments of temperature and TKE about the CTF prediction.  This remains as future work as this impact is hypothesized to only significantly matter if the crud deposits significantly shifts the locations of the onset of nucleate boiling within the core.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\linewidth]{figs/theory/crud_samples_dt}
+    \caption[Time step procedure depicted for a single CTF face]{Time step procedure depicted for a single CTF face.  The re-stepping index $n$ and the patch index $j$ are dropped to reduce clutter.}
+    \label{fig:crudsamplesdt}
+\end{figure}
+
+
