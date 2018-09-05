@@ -34,9 +34,11 @@ for a statistically driven approach which predicts the fractional
 area of a rod's surface in excess of some critical temperature - but not
 precisely where such maxima occur.
 
-In this approach the method does not predict the fine scale flow/temperature field on the pin surface, rather, this approach estimates the joint T, TKE, BHF probability density on each CTF face.  The goal is retain the minimum amount of information required to get CRUD correct on each CTF face.  The amount of CRUD deposition downstream of spacer grids is influenced by the presence of hot and cold spots present due to the turbulent flow induced by mixing vanes.  CRUD is highly sensitive to the rod surface temperature, particularly around the saturation point, and therefore it is important to account for these small scale flow features when providing boundary conditions to MAMBA.
+In this approach the method does not predict the fine scale flow/temperature field on the pin surface, rather, this approach estimates the joint temperature, TKE, and BHF probability density on each CTF face.  The goal is retain the minimum amount of information required to predict the correct total amount of crud each CTF face.  The amount of CRUD deposition downstream of spacer grids is influenced by the presence of hot and cold spots present due to the turbulent flow induced by mixing vanes.  CRUD is highly sensitive to the rod surface temperature, particularly around the saturation point, and therefore it is important to account for these small scale flow features when providing boundary conditions to the crud simulation.
 
-By capturing the action of local hot and cold spots on the crud deposition rate the method accounts for more physics when making predictions of the total integrated boron mass in the CRUD layer.  This results in an improvement in CIPS predictions since the total quantity of boron in the crud layer is of principle importance.  Additionally the ability to estimate the likelihood of extreme crud buildup enables the hi2lo methods developed in this work as a crud induced local corrosion (CILC) scoping tool.  It is envisioned that such a tool will identify potential CILC "hot spots" where a significant amount of cladding is consumed by oxide ingress, resulting in potential fuel failure.  The effectiveness of the model in this role is governed by the magnitude of propagated uncertainties through the hi2lo model.
+By capturing the action of local hot and cold spots on the crud deposition rate the hi2lo method accounts for more physics when making predictions of the total integrated boron mass in the CRUD layer than a subchannel code could provide alone.  An improvement in crud predictions in the immediate vicinity of mixing vanes results in an overall improvement in CIPS predictions since both the total integrated boron mass within the crud layer as well as the axial distribution of crud is of principle importance when predicting crud induced power shift.  Additionally, the ability to estimate the likelihood of extreme crud buildup events enables the hi2lo methods developed in this work to function as a crud induced local corrosion (CILC) scoping tool.  It is envisioned that such a tool will identify potential CILC hot spots where a significant amount of cladding is consumed by oxide ingress, resulting in potential fuel failure.  The effectiveness of the model in this role is governed by the magnitude of propagated uncertainties through the hi2lo model.
+
+Prior to this work, hi2lo efforts directed at improving subchannel thermal hydraulic predictions generally used CFD results as a data source to calibrate corrective or closure terms in the subchannel flow models, such as grid loss or mixing coefficients.  Other efforts used the CFD data as a data source to construct spatial downscaling maps of key surface fields impacting crud growth.  A statistically based CFD informed subchannel downscaling implementation is novel, particularly as a means for improving crud predictions in a core simulator.
 
 
 \subsection{CASL CRUD Challenge Problems}
@@ -54,7 +56,7 @@ This previous code development effort provides a starting point for the currentl
 
 A phenomena known as CRUD Induced Power Shift (CIPS) is caused by the presence
 of elevated \ce{^{10}B} concentrations in the CRUD layer.  Since CRUD is preferentially
-deposited on the fuel rods' in hot regions of the core, this leads to a slight shift in
+deposited on the fuel rods' in hot regions of the core the crud layer leads to a slight shift in
 power production towards to bottom of the core under steady state operation.  
 CRUD induced power shift impacts the burnup distribution over a cycle
 and is important to account for when computing thermal
@@ -64,7 +66,7 @@ output.  Additionally, the presence of CRUD on the rod surface has been shown
 to exacerbate local oxide penetration rates of some zirconium alloys \cite{adamson07}.
 This is known as CRUD induced local corrosion (CILC).  Improvements in CRUD
 simulation techniques ultimately improve the ability to predict the CIPS and
-CILC phenomena.
+CILC phenomena for a given loading pattern.  If significant CIPS or CILC can be accurately predicted provided a candidate loading pattern significant cost savings are possible by ensuring the target burnup is not missed due to the presence of excess crud in the core.  Loading patterns which would yeild unfavorable crud buildup could be avoided.
 
 The Virtual Environment for Reactor Applications (VERA) is a key component of
 CASL's technical portfolio.  This meta-package integrates a variety of physics
