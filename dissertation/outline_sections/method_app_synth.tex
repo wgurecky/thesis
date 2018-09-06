@@ -6,8 +6,6 @@ The
 
 \begin{itemize}
     \item (\checkmark) Describe the synthetic data generation tool developed to test the hi2lo procedure.
-        \begin{itemize}
-        \end{itemize}
     \item (\checkmark) Show original CTF solution with added synthetic noise.
     \item \textbf{Note}: The synthetic CFD data generation tool does not capture spatial auto-correlation of the surface fields.  It does not reflect
         the physics of fluid flow.
@@ -25,7 +23,7 @@ To generate synthetic data, CTF results are augmented by user controlled noise d
     \end{equation}
 
 
-The availability of synthetic data alleviates the need to generate comparatively expensive CFD results to test the hi2lo strategy.  Some aspects of CFD field are preserved, including expected biases between CFD and CTF results that arise due to discrepancies in wall heat transfer closure models, among other differences [ref], additionally turbulent dispersion of the temperature and surface shear distributions around spacer grids are specified.  Accounting for spatial auto-correlation in the surface fields was not purssued since the hi2lo procedures do not seek to preserve fine scale spatial features.  Any spatial autocorrelation present within a CTF face is lost.  The synthetic data is not a direct replacement to CFD data but serves as data source for integration testing.
+The availability of synthetic data alleviates the need to generate comparatively expensive CFD results to test the hi2lo strategy.  Some aspects of CFD field are preserved, including expected biases between CFD and CTF results that arise due to discrepancies in wall heat transfer closure models, among other differences [ref], additionally turbulent dispersion of the temperature and surface shear distributions around spacer grids are specified.  Accounting for spatial auto-correlation in the surface fields was not pursued since the hi2lo procedures do not seek to preserve fine scale spatial features.  Any spatial autocorrelation present within a CTF face is lost.  The synthetic data is not a direct replacement to CFD data but serves as data source for integration testing.
 
 \section{Single CTF Face Comparisons}
 \begin{itemize}

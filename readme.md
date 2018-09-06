@@ -3,7 +3,7 @@ About
 
 PhD Thesis repository.
 
-A Gradient Boosted Surrogate Model for CFD-Informed CRUD Growth Predictions.
+A CFD-Informed Model for Improving Subchannel Resolution CRUD Predictions
 
 Notes
 ======

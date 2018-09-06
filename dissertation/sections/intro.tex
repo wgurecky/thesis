@@ -1,6 +1,8 @@
 %! TEX root = ../dissertation_gurecky.tex
 
-\section{Background}
+
+
+\section{Crud Background}
 
 \begin{itemize}
         \item (\checkmark) What is CRUD?  What is CIPS?
@@ -18,36 +20,92 @@
 
 \section{Significance and Novelty}
 
-\begin{itemize}
-    \item (\checkmark) Significance \& Novelty.
-    \item (\checkmark) Introduce the overarching strategy.
-\end{itemize}
+CRUD growth is dominated by threshold physics [ref].  Hot and cold spots
+present downstream of spacer grids must be accurately resolved by the Hi2Low model
+in order to predict the maximum CRUD
+thickness and boron precipitation within the CRUD layer.  
 
-Highlight novel approach to hi2lo modeling:  We do not predict the fine scale flow/temperature field on the pin surface, rather, this approach estimates the joint T, TKE, BHF probability density on each CTF face.  The goal is retain the minimum amount of information required to get CRUD correct on each CTF face.  The amount of CRUD deposition downstream of spacer grids is influenced by the presence of hot and cold spots present due to the turbulent flow induced by mixing vanes.  CRUD is highly sensitive to the rod surface temperature, particularly around the saturation point, and therefore it is important to account for these small scale flow features when providing boundary conditions to MAMBA.
+It is challenging to faithfully capture the peaks and valleys in
+rod surface temperature and TKE distribution by traditional interpolation
+techniques since such a model must guard against smearing out the sharp peaks
+present in the spatial distributions.  
+In the present method we forgo a spatial shape function mapping strategy
+for a statistically driven approach which predicts the fractional
+area of a rod's surface in excess of some critical temperature - but not
+precisely where such maxima occur.
 
-By capturing the action of local hot and cold spots on the crud deposition rate the method accounts for more physics when making predictions of the total integrated boron mass in the CRUD layer.  This results in an improvement in CIPS predictions since the total quantity of boron in the crud layer is of principle importance.  Additionally the ability to estimate the likelihood of extreme crud buildup enables the hi2lo methods developed in this work as a crud induced local corrosion (CILC) scoping tool.  It is envisioned that such a tool will identify potential CILC "hot spots" where a significant amount of cladding is consumed by oxide ingress, resulting in potential fuel failure.
+In this approach the method does not predict the fine scale flow/temperature field on the pin surface, rather, this approach estimates the joint temperature, TKE, and BHF probability density on each CTF face.  The goal is retain the minimum amount of information required to predict the correct total amount of crud each CTF face.  The amount of CRUD deposition downstream of spacer grids is influenced by the presence of hot and cold spots present due to the turbulent flow induced by mixing vanes.  CRUD is highly sensitive to the rod surface temperature, particularly around the saturation point, and therefore it is important to account for these small scale flow features when providing boundary conditions to the crud simulation.
+
+By capturing the action of local hot and cold spots on the crud deposition rate the hi2lo method accounts for more physics when making predictions of the total integrated boron mass in the CRUD layer than a subchannel code could provide alone.  An improvement in crud predictions in the immediate vicinity of mixing vanes results in an overall improvement in CIPS predictions since both the total integrated boron mass within the crud layer as well as the axial distribution of crud is of principle importance when predicting crud induced power shift.  Additionally, the ability to estimate the likelihood of extreme crud buildup events enables the hi2lo methods developed in this work to function as a crud induced local corrosion (CILC) scoping tool.  It is envisioned that such a tool will identify potential CILC hot spots where a significant amount of cladding is consumed by oxide ingress, resulting in potential fuel failure.  The effectiveness of the model in this role is governed by the magnitude of propagated uncertainties through the hi2lo model.
+
+Prior to this work, hi2lo efforts directed at improving subchannel thermal hydraulic predictions generally used CFD results as a data source to calibrate corrective or closure terms in the subchannel flow models, such as grid loss or mixing coefficients.  Other efforts used the CFD data as a data source to construct spatial downscaling maps of key surface fields impacting crud growth.  A statistically based CFD informed subchannel downscaling implementation is novel, particularly as a means for improving crud predictions in a core simulator.
 
 
-\section{CIPS Challenge Problem}
+\subsection{CASL CRUD Challenge Problems}
 
-\begin{itemize}
-    \item (\checkmark) Provide a background of CIPS.  Importance of CIPS:  Fuel ramifications, licensing, impact on TH limits, ect...
-\end{itemize}
+The Consortium for the Advanced Simulation of LWRs (CASL) selected several problems identified by industry partners as critical, inadequately understood, engineering scale phenomena which would provide
+financial and safety benefits to the nuclear power industry if resolved \cite{Turinsky15}.
+The problem of
+interest in this work is the prediction of Chalk River Unidentified Deposit
+(CRUD) growth rates.  The growth of CRUD comes with neutronic and thermal
+hydraulic repercussions that are of interest to CASL's industry partners.
+In an effort to simulate the
+effects of CRUD on the power and burnup distribution, a code produced by a LANL
+and ORNL collaboration \cite{collins16} under the name MAMBA was developed.
+This previous code development effort provides a starting point for the currently proposed work.
+
+A phenomena known as CRUD Induced Power Shift (CIPS) is caused by the presence
+of elevated \ce{^{10}B} concentrations in the CRUD layer.  Since CRUD is preferentially
+deposited on the fuel rods' in hot regions of the core the crud layer leads to a slight shift in
+power production towards to bottom of the core under steady state operation.  
+CRUD induced power shift impacts the burnup distribution over a cycle
+and is important to account for when computing thermal
+margins of the fuel.  The prediction
+of CIPS is especially important for older facilities seeking to uprate power
+output.  Additionally, the presence of CRUD on the rod surface has been shown
+to exacerbate local oxide penetration rates of some zirconium alloys \cite{adamson07}.
+This is known as CRUD induced local corrosion (CILC).  Improvements in CRUD
+simulation techniques ultimately improve the ability to predict the CIPS and
+CILC phenomena for a given loading pattern.  If significant CIPS or CILC can be accurately predicted provided a candidate loading pattern significant cost savings are possible by ensuring the target burnup is not missed due to the presence of excess crud in the core.  Loading patterns which would yeild unfavorable crud buildup could be avoided.
+
+The Virtual Environment for Reactor Applications (VERA) is a key component of
+CASL's technical portfolio.  This meta-package integrates a variety of physics
+packages and multiphysics coupling options to form a robust reactor simulation
+capability.  For multi-cycle depletion computations, VERA relies upon MPACT, a
+2D-1D method of characteristics neutronics package, coupled with the subchannel
+thermal hydraulics code, CTF.  An integrated CRUD modeling capability
+is provided by MAMBA to address the CRUD induced power shift challenge problem.
+
+To reduce computation times, the subchannel TH code discretizes the reactor
+domain into large, centimeter scale finite volumes. As a consequence of this
+discretization scheme, sub-centimeter scale thermal hydraulic effects of the
+spacer grids on CRUD are averaged over large regions on the fuel rods'
+surfaces.  Though small scale phenomena are not explicitly modeled, they are
+approximately accounted for in a variety of empirically derived closure
+relations.  In effect, a single constant estimate for the mean thermal
+hydraulic conditions are obtained in each finite volume.
+
+Previous Hi2Low focused work in CASL focused on utilizing experimental or CFD
+data sets to improve heat transfer and turbulent mixing models in CTF.  These studies focused on
+correcting biases in the bulk-average behavior of the flow (due to the
+previously neglected physics).  Examples of such Hi2Low models are given in
+\autoref{chap:lit}.
+
+The traditional approach must be modified to accommodate the CILC and CIPS
+challenge problems.  Here arises the need to retain not only the effect of
+fine-scale physics on the bulk, but also to predict if certain temperature or
+TKE thresholds are exceeded in a given subchannel volume.  Furthermore, for a
+complete treatment of thermal hydraulic impacts on CRUD growth, the
+scale-bridging model must describe completely the frequency distribution of
+extreme TH events above a given threshold.
 
 
-\section{Hi2lo Definition}
+\section{Hi2lo Discussion}
 
-\begin{itemize}
-    \item (\checkmark) Provide a background on Hi2Lo.
-\end{itemize}
+Hi2lo, or High to Low modeling, implies that a source of high fidelity gold standard data produced by an expensive to evaluate physics model is used to downscale and augment a low fidelity model of the same physics.
+Provided sparsely available high fidelity data, this mapping must be possible even in the case where matching high and low fidelity results do not exist.  The hi2lo strategy put forward in this work can be viewed as a particular implementation of a statistical downscaling (SD) based model, of which a large variety exist in the literature and some of which are described in chapter ().  One interesting challenge in this work which is atypical of SD models is the requirement of co-prediction of multiple correlated fields, sometimes this is refereed to as multiple target regression.
 
-Hi2lo, or High to Low modeling, implies that a source of high fidelity gold standard data produced by an expensive to evaluate physics model is used to upscale and augment a low fidelity model of the same physics.
-Furthermore, this mapping must be possible even in the case where matching high and low fidelity results do not exist (i.e. both models are run at the same boundary conditions).
+The hi2lo mapping, which includes downscaling and augmentation of the CTF-predicted low fidelity fuel rod surface temperature, TKE, and boundary heat flux surface fields, must possible given any CTF pin at any operating condition - even when only a relatively small number of high fidelity results are available.  Furthermore it is assumed that the flow of information is uni-directional from the high fidelity data to the low fidelity model.  Feedback between the disparate scale models is not included.
 
-This mapping (upscaling and augmentation) must possible given any CTF pin at any operating condition - even when only a relatively small number of high fidelity results are available.
-
-We assume that the flow of information is uni-directional: from the high fidelity data to the low fidelity model.  No feedback between the disparate scale models is included.
-
-Generally, a surrogate model replaces expensive to evaluate physics with a math model that preserves some aspects of the physics.  It is oftentimes the goal to make the surrogate quickly executing relative to the original model. Therefore, the hi2Lo approach is analogous to a surrogate construction since the ultimate goal is to replace CFD with a model that captures the action of high fidelity CFD resolved flow phenomena on CRUD growth without having to run the CFD model outright.
-
+Generally, a surrogate model replaces expensive to evaluate physics with a quick to evaluate model that preserves some aspects of the physics. The hi2lo strategy seeks to capture the action of high fidelity CFD resolved flow phenomena on crud growth without having to run the CFD model outright.  However, a key difference between the hi2lo model pursued in this work and a canonical dynamical system surrogate is that the hi2lo model does not seek to behave as a stand-in for a differential equation and should not be confused as such.  
 

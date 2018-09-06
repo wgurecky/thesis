@@ -1,7 +1,49 @@
-\subsection{Gradient Boosted Regression Trees}
+%! TEX root = ../dissertation_gurecky.tex
 
-\begin{itemize}
-    \item (\checkmark) Overview of gradient boosting.  Boosting composes a strong classifier from an ensemble of weak classifiers.
-    \item (\checkmark) Define a classification and regression tree (CART).  We use CART tree stumps in the current work.
-    \item (\checkmark) Demonstrate gradient boosted quantile regression.
-\end{itemize}
+% \subsection{Gradient Boosted Regression Trees}
+
+The standard gradient boosting regression technique is resilient to discontinuities in the data.  
+
+
+\begin{figure}[H]%
+    \centering
+    \subfloat[$\tau = 0.5$.]{{\includegraphics[width=0.45\linewidth]{figs/grad_boost/1d_boosted_regression_quantile_ex_0_5} }}%
+    \qquad
+    \subfloat[$\tau = 0.9$.]{{\includegraphics[width=0.45\linewidth]{figs/grad_boost/1d_boosted_regression_quantile_ex_0_9} }}%
+    \qquad
+    \subfloat[$\tau = 0.75$.]{{\includegraphics[width=0.45\linewidth]{figs/grad_boost/1d_boosted_regression_quantile_ex_0_75} }}%
+    \qquad
+    \subfloat[$\tau = 0.95$.]{{\includegraphics[width=0.45\linewidth]{figs/grad_boost/1d_boosted_regression_quantile_ex_0_95} }}%
+    \qquad
+    \caption[Gradient boosted quantile regression example.]{Gradient boosted quantile regression example.}%
+    \label{fig:gb1}%
+\end{figure}
+
+Two gradient boosting implementations were evaluated.  For this problem results from the Scikit-Learn gradient boosting implementation are compared to a custom boosting implementation developed specifically to solve the classification and quantile regression problems in this work.  The residuals provided figure \ref{fig:gb2} show that the custom implementation performs similarly to the well-tested scikit-learn implementation with both models agreeing with the theoretical large-sample quantile distribution provided by equation \ref{eq:theory_qdist_1}.
+
+\begin{figure}[H]%
+    \centering
+    \subfloat[$\tau = 0.5$ model residuals.]{{\includegraphics[width=0.45\linewidth]{figs/grad_boost/1d_boosted_regression_quantile_resid_0_5} }}%
+    \qquad
+    \subfloat[$\tau = 0.9$ model residuals.]{{\includegraphics[width=0.45\linewidth]{figs/grad_boost/1d_boosted_regression_quantile_resid_0_9} }}%
+    \qquad
+    \subfloat[$\tau = 0.75$ model residuals.]{{\includegraphics[width=0.45\linewidth]{figs/grad_boost/1d_boosted_regression_quantile_resid_0_75} }}%
+    \qquad
+    \subfloat[$\tau = 0.95$ model residuals.]{{\includegraphics[width=0.45\linewidth]{figs/grad_boost/1d_boosted_regression_quantile_resid_0_95} }}%
+    \qquad
+    \caption[Gradient boosted quantile regression residual summary.]{Gradient boosted quantile regression residual summary.  Theoretical residual distribution computed according to \ref{eq:theory_qdist_1}.} %
+    \label{fig:gb2}%
+\end{figure}
+
+Gradient boosting is also used to predict the parametric copula family which corresponds to a given set of local core conditions.  Results from a generic 2D classification problem are shown in figure \ref{fig:gb3}.  The AdaBoost algorithm is employed in this this example and for determining copula families provided core conditions.   The AdaBoost algorithm can be recovered by substituting the multinomial loss function shown in equation () into algorithm ().  
+
+Classifier predictions are made by tallying the predictions of each constituent fitted classification tree stump.  By tallying the predictions of all trees in the model one can obtain a probability distribution over all possible classes with the most likely class at each requested point taken as the output of the classification model.
+
+\begin{figure}[H]%
+    \centering
+    \subfloat[Class predictions.]{{\includegraphics[width=0.43\linewidth]{figs/grad_boost/dblgauss_boosted_classify_ex} }}%
+    \qquad
+    \subfloat[Blue class probability.]{{\includegraphics[width=0.47\linewidth]{figs/grad_boost/dblgauss_boosted_classify_probs} }}%
+    \caption[]{Gradient boosted classifier example.}%
+    \label{fig:gb3}%
+\end{figure}

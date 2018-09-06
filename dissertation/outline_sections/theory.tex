@@ -116,7 +116,7 @@ A significant challenge is computing an estimate for $Var(\mathcal P_f) = \E(\ma
         \item (\checkmark) Detail how to compute sample quantiles.
         \item (\checkmark) Show reconstruction of the CDF from sample quantiles.
         \begin{itemize}
-           \item Peicewise linear CDF leads to histogram PDF.
+           \item Piecewise linear CDF leads to histogram PDF.
            \item PCHIP spline CDF preserves monotonicity of CDF and results in a smooth PDF. \cite{Fritsch80}
         \end{itemize}
         \item (\checkmark) Sampling from a known CDF via inverse transform sampling.
@@ -155,10 +155,13 @@ A significant challenge is computing an estimate for $Var(\mathcal P_f) = \E(\ma
 
 \begin{itemize}
     \item (\checkmark-) The sampled temperatures may be tallied over each CTF face to estimate the fractional area that exceeds some threshold temperature.
-    The proability of exceeding a threshold temperature can be obtained by integrating the PDF:
+    The probability of exceeding a threshold temperature is shown in equation \ref{eq:pr_thresh}.
+    
     \begin{equation}
-        p_e &= Pr(T > T^*) = 1 - \int_0^{T^*} f_T dT \\
+        p_e = Pr(T > T^*) = 1 - \int_0^{T^*} f_T dT
+    \label{eq:pr_thresh}
     \end{equation}
+    
     Let $q_p = F_T^{-1}(1 - p_e)$
     denote the quantile associated with the threshold probability, $p_e$.
     $F_T^{-1}$ is the inverse CDF function and $f_T$ is the probability density function of temperature on the patch.
@@ -168,7 +171,7 @@ A significant challenge is computing an estimate for $Var(\mathcal P_f) = \E(\ma
         q_p &\sim \mathcal N \left( F_T^{-1}(p), \sigma^2_{q_p} \right) \\
         \sigma^2_{q_p} &= \frac{p(1 - p)}{n[f_T(F_T^{-1}(p))]^2}
     \end{align}
-    The variance of the exceedance probability estimate can be found by standard propagation of uncertainty principles:
+    The variance of upper tail probability mass estimate can be found by standard propagation of uncertainty principles:
     \begin{align}
         \sigma_p^2 = \left(\frac{\partial p_e}{\partial q_p} \right)^2 \cdot \sigma_{q_p}^2
     \end{align}
