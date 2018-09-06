@@ -1,6 +1,15 @@
 %! TEX root = ../dissertation_gurecky.tex
+\label{sec:ml_cfd}
+
+For deployment as an in-line statistically based downscaling tool which sits between a subchannel code and a crud simulation code in a core simulator such as VERA the model must be able to perform the hi2lo mapping for all pins in the core at any operating condition.  In other words, the model must be evaluable at any local core conditions typical of an operating PWR.  Since the training data set cannot contain all possible pin geometries, loading configurations and operating conditions due to computational expense, the model must interpolate between known states.  
+
+One may envision a table-lookup approach where high fidelity CFD flow field maps are pre-computed and stored for a wide array of flow and power conditions.  A nearest neighbor interpolation scheme could then be applied to extract the best-matching CFD map provided some local core state.  This however, is not tractable since the number of CFD computations to build the data base would be prohibitively large.  It is appealing to transform the problem of hi2lo construction from performing spatial flow map prediction into one of summary statistics prediction where much less information is required adequately fill out the operating envelope.  
+
+In this chapter the statistically based downscaling methodology introduced in this work is exercised against a small CFD data set derived from a 5x5 fuel assembly operating at realistic PWR conditions.
+
 
 \section{Machine Learning Model Trained on CFD Data Source}
+
 
 \begin{itemize}
 	\item (\checkmark-) Harvesting CFD data for training. Explain the pre-processing pipeline.
@@ -193,7 +202,7 @@ To combat poor performance of the Kendall's $\tau$ regressors, a larger training
 
 In addition to the rank correlation coefficient, Kendall's $\tau$, the copula family must also be specified to recover the copula density function on each CTF face.  A gradient boosted classifier was trained on the available CFD data.  Copula information extracted from the raw CFD results is shown in figure \ref{fig:copula_predicted}.
 
-Figure \ref{fig:confusionmatrixavg} summarizes the LOO cross validation results of the copula classifier as a confusion matrix.  The diagonal entries of the confusion matrix represent the fraction of predictions correctly made for each copula family.
+Figure \ref{fig:confusionmatrixavg} summarizes the LOO cross validation results of the copula classifier as a confusion matrix.  The diagonal entries of the confusion matrix represent the correctly labeled copula predictions made by the reduced LOO trained classifier for each copula family average over the entire 5x5 assembly.
 
 \begin{figure}[H]
     \centering

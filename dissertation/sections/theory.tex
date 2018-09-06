@@ -448,7 +448,7 @@ The time averaged sample weights are in general updated by equation \ref{eq:time
 \begin{equation}
 \bar \omega_{{s_n},i} = 
 \left( \frac{\sum_{l}^{n-1}t_{s_l}}{\sum_l^n \Delta t_{s_l}} \right) \bar \omega_{n-1,i} + 
-\left( \frac{\Delta t_{s_l}}{\sum_l^n \Delta t_{s_l}} \right) \omega_{n,i}
+\left( \frac{\Delta t_{s_n}}{\sum_l^n \Delta t_{s_l}} \right) \omega_{n,i}
 \label{eq:time_sample_weights1}
 \end{equation}
 Where $i$ is the sample index within a single CTF face.

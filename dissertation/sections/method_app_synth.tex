@@ -1,7 +1,7 @@
 %! TEX root = ../dissertation_gurecky.tex
 
 In this chapter marginal reconstruction from quantiles, copula fitting, Monte Carlo and importance sampling strategies are exercised with a synthetic data set.  Synthetic data offers advantages over CFD born data for the purposes of testing and evaluating the efficacy of the proposed models.  Since synthetic data conforms to a known form with specified distribution and bias parameters the fitting and sampling routines can be checked against the pre-specified expected result.
-This chapter does not introduce machine learning components and does not explore forward model predictions.  See chapter () for hi2lo model performance when used in a predictive capacity.
+This chapter does not introduce machine learning components and does not explore forward model predictions.  See chapter \ref{sec:ml_cfd} for hi2lo model performance when used in a predictive capacity.
 
 The availability of synthetic data alleviates the need to generate comparatively expensive CFD results to test the hi2lo strategy.  Some aspects of CFD fields are preserved in the synthetic ata, including expected biases between CFD and CTF results that arise due to discrepancies in wall heat transfer closure models, among other differences. Additionally turbulent dispersion of the temperature and surface shear distributions around spacer grids are emulated by the synthetic data model.  Accounting for spatial auto-correlation in the surface fields was not pursued.  Spatial autocorrelation present in the surface fields within a CTF face is not captured.  Consequently the synthetic data is not a direct replacement to CFD data but serves as data source for method interrogation and integration testing.
 
