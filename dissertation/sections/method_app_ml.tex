@@ -1,20 +1,16 @@
 %! TEX root = ../dissertation_gurecky.tex
 \label{sec:ml_cfd}
 
-For deployment as an in-line statistically based downscaling tool which sits between a subchannel code and a crud simulation code in a core simulator such as VERA the model must be able to perform the hi2lo mapping for all pins in the core at any operating condition.  In other words, the model must be evaluable at any local core conditions typical of an operating PWR.  Since the training data set cannot contain all possible pin geometries, loading configurations and operating conditions due to computational expense, the model must interpolate between known states.  
+For deployment as an in-line statistically based downscaling tool which sits between a subchannel code and a crud simulation code in a core simulator such as VERA the model is required to perform the hi2lo mapping for all pins in the core at any operating condition.  In other words, the model must be evaluable at any local core conditions typical of an operating PWR.  Since the training data set cannot contain all possible pin geometries, loading configurations and operating conditions due to computational expense, the model must make a prediction for the copula and marginal distribution parameters between known states.  This prediction is made by evaluating a trained gradient boosted regression tree in this case.
 
-One may envision a table-lookup approach where high fidelity CFD flow field maps are pre-computed and stored for a wide array of flow and power conditions.  A nearest neighbor interpolation scheme could then be applied to extract the best-matching CFD map provided some local core state.  This however, is not tractable since the number of CFD computations to build the data base would be prohibitively large.  It is appealing to transform the problem of hi2lo construction from performing spatial flow map prediction into one of summary statistics prediction where much less information is required adequately fill out the operating envelope.  
+One might envision a table-lookup approach where high fidelity CFD flow field maps are pre-computed and stored for a wide array of flow and power conditions.  A nearest neighbor interpolation scheme could then be applied to extract the best-matching CFD map provided some local core state.  This however, is not tractable since the number of CFD computations to build the data base would be prohibitively large.  It is appealing to transform the problem of hi2lo construction from performing spatial flow map prediction into one of summary statistics prediction where much less information is required adequately fill out the operating envelope.  
 
-In this chapter the statistically based downscaling methodology introduced in this work is exercised against a small CFD data set derived from a 5x5 fuel assembly operating at realistic PWR conditions.
+In this chapter the hi2lo methodology introduced in this work is exercised against a small CFD data set derived from a 5x5 fuel assembly operating at realistic PWR conditions.
 
 
 \section{Machine Learning Model Trained on CFD Data Source}
 
-
-\begin{itemize}
-	\item (\checkmark-) Harvesting CFD data for training. Explain the pre-processing pipeline.
-	\item ($\cdot$) Why use gradient boosted regression trees vs some other ML technique?
-\end{itemize}
+For the generation of high fidelity CFD data sets the Westinghouse 5x5 test stand shown in figures \ref{fig:5x5topdown} and \ref{fig:5x5side} was used to prepare the CAD geometry.  The CFD mesh consisted of approximately 25 million cells and 1e5 surface elements per pin.  A matching CTF input deck for the 5x5 assembly was also constructed with 100 axial zones.  The CTF and CFD codes were then executed for a variety of flow conditions and power levels.
 
 \begin{figure}[H]
     \centering
@@ -32,7 +28,9 @@ In this chapter the statistically based downscaling methodology introduced in th
 
 
 \subsection{Preprocessing}
-For each pin in the dataset, the 
+
+TODO: Harvesting CFD data for training. Explain the pre-processing pipeline.
+
 \begin{figure}[H]%
     \centering
     \subfloat[Pin 1]{{\includegraphics[width=0.45\linewidth]{figs/preproc/copula_params_pin_1} }}%
@@ -50,22 +48,27 @@ For each pin in the dataset, the
 
 \subsection{Feature Engineering}
 
-The first objective of feature engineering is to select a predictive variable set that can describe the behavior of the conditional quantiles and copula everywhere in the assembly.
+The objective of feature engineering is to select a predictive variable set that can describe the behavior of the conditional quantiles and copula everywhere in the assembly.   
    
 \begin{table}[h]
     \begin{center}
-    \caption[Included features.]{Features included in the gradient boosted models.}
-\begin{tabular}[h]{|l | l | l |}
+    \caption[Included exogenous training features.]{Features included in the gradient boosted models as exogenous variables.}
+\begin{tabular}[h]{|l | l | l | l |}
     \hline
-    Symbol & Feature & Unit \\
+    Sym & Label & Feature & Unit \\
     \hline
-    $T$ & Bulk Temperature  &  $[K]$ \\
-    $q''$ & Local heat flux & $[W/m^2]$ \\
-    $u_z$ & Bulk Z Velocity &  $[m/s]$ \\
-    $k$ & Near wall TKE &  $[J/kg]$ \\
-    $z$ & Absolute axial position & $[m]$ \\
-    $z_g$ & Position relative to Nearest Spacer Grid & $[m]$ \\
-    $N_g$ & Nearest upstream spacer grid ID & $[]$ \\
+    \hline
+    $T$ & ctf\_twall\_avg & CTF Face surface temperature & $[K]$ \\
+    $R_T$ & ctf\_twall\_range & Surface temperature range in 4 adjacent faces & $[K]$ \\ 
+    $q''$ & ctf\_bhf\_avg & Local CTF face heat flux & $[W/m^2]$ \\
+    $R_{q''}$ & ctf\_bhf\_range & Heat flux range in 4 adjacent faces & $[W/m^2]$ \\ 
+    $u_z$ & w\_bulk & CTF subchannel bulk Z Velocity &  $[m/s]$ \\
+    $k$ & ctf\_tke\_avg & Local CTF face near wall TKE &  $[J/kg]$ \\
+    $R_k$ & ctf\_tke\_range & CTF TKE range in 4 adjacent faces & $[J/kg]$ \\ 
+    $z$ & z & Global axial position & $[m]$ \\
+    $\delta z_g$ & dz\_grid & Position relative to nearest spacer grid & $[m]$ \\
+    $N_g$ & n\_upsteam\_grid  & Nearest upstream spacer grid ID & $[]$ \\
+    $T_\infty$ & t\_bulk & Subchannel bulk temperature  &  $[K]$ \\
     \hline
 \end{tabular}
 \label{tab:features}
@@ -74,23 +77,19 @@ The first objective of feature engineering is to select a predictive variable se
 
 The predictive variables given in table \ref{tab:features} were selected based on two criteria:  availability and orthogonality.  A predictive variable must be made available by VERA or must be computable from CTF results alone.  This must be true since when evaluating the hi2lo model, the inputs to the hi2lo model must come from either previously stored information or information made available by CTF at runtime.  At this juncture, this criteria precludes using information such as geometric orientation of a given spacer grid since it is not possible to extract or infer this information from the CTF output.
 
-It is not useful to include multiple variables which are co-linear therefore the bulk fluid density was not included in the predictive variable set as it only strongly depends on the local temperature in PWR. Likewise the local static pressure was not used as a predictive variable.  The exclusion of this TH information is primarily done for computational saving when training the boosted models.  
+It is not useful to include multiple variables which are co-linear. The bulk fluid density was not included in the predictive variable set as it strongly depends on the local temperature. Likewise the local static pressure was not used as a predictive variable since this would be one-to-one with the axial position.  The exclusion of this TH information is primarily done for computational saving when training the boosted models since, as opposed to other machine learning algorithms and statistical inference techniques, gradient boosting is robust to collinearity of features in the input space. 
 
-It should be noted that gradient boosting is particularly resilient to co-linear variables in the feature set.  Their inclusion will not necessarily reduce the model's ability to generalize to unseen data, only hamper computational efficiency.  The resulting feature importance plot shown in figure \ref{fig:ktauregfeatureimp} suggests that the relative axial position within a span does not provide predictive power since this information is redundant provided the absolute axial position and the nearest upstream spacer grid.  
+In this case the inclusion of nuisance or collinear exogenous variables in the model will not necessarily reduce the model's ability to generalize to unseen data, only hamper computational efficiency.  The resulting feature importance plot shown in figure \ref{fig:ktauregfeatureimp} suggests that the relative axial position within a span does not provide predictive power since this information is redundant provided the absolute axial position and the nearest upstream spacer grid.  
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\linewidth]{figs/ktau_reg_feature_imp}
+    \includegraphics[width=0.6\linewidth]{figs/ktau_reg_feature_imp}
     \caption[Relative feature importance.]{Relative feature importances on kendall's $\tau$.}
     \label{fig:ktauregfeatureimp}
 \end{figure}
 
-\begin{itemize}
-	\item ($\cdot$) Is an edge pin special?  Can we predict the impact of neighboring
-	guide tubes on the crud growth rate?  (Maybe move to future work.)
-	\item ($\cdot$) Perform principle component analysis on the remaining predictive variables. (Maybe move to future work.)
-	
-\end{itemize}
+TODO: Include example training table.  With predictive features and endogenous variable columns.
+
 
 
 \subsection{Cross Validation}
@@ -200,9 +199,9 @@ To combat poor performance of the Kendall's $\tau$ regressors, a larger training
 
 \subsection{Copula Classifier}
 
-In addition to the rank correlation coefficient, Kendall's $\tau$, the copula family must also be specified to recover the copula density function on each CTF face.  A gradient boosted classifier was trained on the available CFD data.  Copula information extracted from the raw CFD results is shown in figure \ref{fig:copula_predicted}.
+In addition to the rank correlation coefficient, Kendall's $\tau$, the copula family is also required to recover the copula density function on each CTF face.  To this end a gradient boosted classifier was trained on the available CFD data.  Copula information extracted from the raw CFD results is shown in figure \ref{fig:copula_predicted}.
 
-Figure \ref{fig:confusionmatrixavg} summarizes the LOO cross validation results of the copula classifier as a confusion matrix.  The diagonal entries of the confusion matrix represent the correctly labeled copula predictions made by the reduced LOO trained classifier for each copula family average over the entire 5x5 assembly.
+Figure \ref{fig:confusionmatrixavg} summarizes the LOO cross validation results of the copula classifier as a confusion matrix.  The diagonal entries of the confusion matrix represent the correctly labeled copula predictions made by the reduced LOO trained classifier for each copula family average over the entire 5x5 assembly.  It is shown that on average the classifier predicts an incorrect result more often than not.  
 
 \begin{figure}[H]
     \centering
@@ -214,7 +213,7 @@ Figure \ref{fig:confusionmatrixavg} summarizes the LOO cross validation results 
 
 The copula classifiers performance averaged over all pins is shown in figure \ref{fig:confusionmatrixavg}. The copula classifier struggles to predict the correct copula class given the local TH state and axial core position.  As indicated in figure \ref{fig:copula_predicted}, the behavior of the copula as a function of axial rod position are erratic and inconsistent from pin to pin.  Introducing other TH exogenous variables in addition to the axial position did not increase the classification score significantly.  We can conclude that the copula are not well described by local core condition and axial position.  It remains as future work to investigate if including additional geometric pin and grid attributes could improve the classification results.  Additional software infrastructure would be required to both write geometric pin and grid features from CTF and to utilize the geometric features in the current model.
 
-On average the classifier predicts an incorrect result more often than not.  This poor performance leads to the question:  What is the consequence of assuming a particular copula class for all CTF surfaces in lieu of poor quality copula class predictions?  
+Additional future work could include performing a non-linear transformation of the input space so that the copula labels are approximately linearly separable in the transformed space.  Potential candidate methods for building this transformation are the UMAP [ref] and tSNE [ref] manifold learning algorithms.  Classification performed in the transformed space could result in better performance but this is yet to be demonstrated for this copula vs local core condition dataset.
 
 \section{Single Pin Comparisons}
 
