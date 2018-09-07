@@ -96,6 +96,9 @@ In addition to improving the expected value prediction of CRUD on each CTF patch
 
 \section{Construction of the Hi2lo Map}
 
+Next, we seek to relax the multivariate Gaussian assumption made to capture the autocorrelation between the surface temperature, boundary heat flux and near wall TKE fields.  Flexibility is afforded by factorizing the multivariate distribution into marginal distributions and a copula.  The statistical parameters describing this multivariate distribution are still determined via a data driven model, as in algorithm \ref{algo:basic_crud_algo}.
+The result is a semi-parametric model of the conditional joint distribution of temperature, TKE, and boundary heat flux on the rod surface.  The model is semi-parametric because the copula is selected from a library of parametric distribution families while the marginal models are constructed using conditional quantile prediction, where the number of quantiles used in the reconstruction is set at runtime.  Quantile regression does not assume a priori the univariate distribution family.
+
 \subsection{Capturing Dependence Between Random Variables}
 
 Since the outer cladding temperature, near-wall TKE and boundary heat flux are used as boundary conditions to a crud growth package, it is particularly important to understand and capture the relationship between these fields in the hi2lo model.  The hi2lo model under consideration is not a dynamic model in the sense it is not a coupled system of differential equations.  Instead, in the purely data driven approach the relationships are established through standard statistical correlation measures.
