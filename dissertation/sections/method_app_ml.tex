@@ -213,7 +213,11 @@ Figure \ref{fig:confusionmatrixavg} summarizes the LOO cross validation results 
 
 The copula classifiers performance averaged over all pins is shown in figure \ref{fig:confusionmatrixavg}. The copula classifier struggles to predict the correct copula class given the local TH state and axial core position.  As indicated in figure \ref{fig:copula_predicted}, the behavior of the copula as a function of axial rod position are erratic and inconsistent from pin to pin.  Introducing other TH exogenous variables in addition to the axial position did not increase the classification score significantly.  We can conclude that the copula are not well described by local core condition and axial position.  It remains as future work to investigate if including additional geometric pin and grid attributes could improve the classification results.  Additional software infrastructure would be required to both write geometric pin and grid features from CTF and to utilize the geometric features in the current model.
 
-Additional future work could include performing a non-linear transformation of the input space so that the copula labels are approximately linearly separable in the transformed space.  Potential candidate methods for building this transformation are the UMAP [ref] and tSNE [ref] manifold learning algorithms.  Classification performed in the transformed space could result in better performance but this is yet to be demonstrated for this copula vs local core condition dataset.
+Additional future work could include performing a transformation of the input space so that the copula labels are more easily separable in the transformed space.  A Potential candidate for building this transformation is the UMAP [ref] manifold learning algorithm.  
+
+A complementary strategy to transforming the original data set as a preprocessing step is a ensemble machine learning technique known as stacking [ref].  Stacking combines the predictions of multiple classifiers using a meta-classifier.  Since model tuning and ML performance is not a focus of this work, the application of this technique to improve copula classification results is left as future work.  
+
+Though improvements are possible, it should also be noted that section \ref{sec:crud_copula_sensi} and table \ref{tab:crud_totals_copula} show that the copula family does not significantly influence overall pin integrated crud results.  Gains in the copula classifier accuracy will not translate to a large improvement in crud prediction accuracy.
 
 \section{Single Pin Comparisons}
 
