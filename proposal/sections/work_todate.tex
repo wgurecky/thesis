@@ -131,7 +131,7 @@ A toolkit to overlay custom noise atop a CTF solution was developed to provide a
 A unique blended copula model can be specified in each span providing space dependent, correlated tri-variate $f(T,\ TKE,\ q'')$  distributions.
 In order to completely specify the local TH distributions conditioned on space and local TH conditions, the parameters of the marginal distributions can be made functions of space and local averaged TH conditions provided by CTF.  
 
-An exerpt of an input to generate a synthetic single pin data set is given below:
+An excerpt of an input to generate a synthetic single pin data set is given below:
 \tiny
 \begin{lstlisting}[language=XML]
 {
@@ -209,7 +209,7 @@ The gradient boosting package \emph{pCRTree} is available at \url{https://github
 
 \subsection{Copula Toolkit}
 
-For copula simulation, the CDvine toolkit (GPLv3 licensed) is available for the R programming language. This packages does not implement all rotations of copula making it burdensome to handle negative dependence structures out-of-the-box.  Furthermore, the maximum likelihood fitting method included in CDVine does not allow the user to specify sample weights.
+For copula simulation, the CDvine toolkit (GPLv3 licensed) is available for the R programming language. This packages does not implement all rotations of copula making it burdensome to handle negative dependence structures out-of-the-box.  Furthermore, the maximum likelihood fitting method included in CDVine does not allow the user to specify sample weights, a key feature for the CFD data under consideration since the CFD mesh cells vary in size.
 
 To circumvent these deficiencies and potential license compatibility issues with VERA, a new copula toolkit was developed in python and is BSD3 licensed.
 Careful attention was paid to develop a flexible abstract copula class which enables custom copula functions to be specified.  Importantly, all copula rotations are supported by default allowing one to model positive and negative dependence structures without duplication of code.
@@ -220,14 +220,14 @@ The \emph{StarVine} copula package and documentation is available at \url{https:
 
 \subsection{Python Interfaces to CRUD Codes}
 
-As part of this work, python interfaces were developed for both the legacy CASL CRUD tool known as MAMBA1D and the state-of-the art CRUD package, Mongoose.  The python wrappers to these Fortran codes facilitate rapid prototyping of Hi2Low procedures which provide boundary conditions to the CRUD codes.  Additionally, the high level interface simplifies the process of orchestrating large CRUD sensitivity studies.
+As part of this work, python interfaces were developed for both the legacy CASL CRUD tool known as MAMBA1D and the state-of-the art CRUD package, Mongoose.  The python wrappers to these Fortran codes facilitate rapid prototyping of hi2lo procedures which provide boundary conditions to the CRUD codes.  Additionally, the high level interface simplifies the process of orchestrating large CRUD sensitivity studies.
 
-The python wrappers are available for download from casl-dev at \url{git@casl-dev:collaboration/MAMBA/pyMAMBA} and \url{git@casl-dev:collaboration/Mongoose/pygoose}.
+The python wrappers are available in the Virtual Environment for Reactor Analysis VERA developed by CASL \url{https://www.casl.gov}.
 
-\subsection{Hi2Low Crud Growth Code}
+\subsection{Hi2lo Code}
 
 Finally, a package that leverages all the aforementioned tools was developed.  This high level package is the primary user facing result of the proposed work - though it should be noted this package is heavily dependent on CRUD simulation, copula construction, and gradient boosting technologies.
-This package orchestrates the construction and evaluation of GBRTs which provide boundary conditions for the CRUD simulation.
-Currently, single pin, single state point simulation is implemented with future work focused on multi pin and multi state point execution.
+This package orchestrates the construction and evaluation of gradient boosted regression trees which provide the copula and marginal distribution parameters as a function of local core conditions.
+Currently, multi pin, multi state point simulation is implemented with future work focused on parallelization, training data acquisition, and improvements to the machine learning model implementation.
 
-The High2Low crud growth package and documentation is available at \url{https://github.com/wgurecky/crudBoost.git}.
+The hi2lo crud growth package and documentation is available at \url{https://github.com/wgurecky/crudBoost.git}.

@@ -6,16 +6,16 @@
 # prefix="./ktau_regression_"
 prefix=$1
 suffix=".png "
-suffix2="_lab.png "
+# suffix2="_lab.png "
 
 # gen montage fig list
 for i in {1..25};
 do
-    convert $i$prefix$suffix   -background Black  -fill White -pointsize 14 label:'Pin '$i \
-              -gravity Center -append    $i$prefix$suffix2
+    #convert $i$prefix$suffix   -background Black  -fill White -pointsize 14 label:'Pin '$i \
+    #          -gravity Center -append    $i$prefix$suffix2
 
-    # image_list+=$i$prefix$suffix
-    image_list+=$i$prefix$suffix2
+    image_list+=$i$prefix$suffix
+    # image_list+=$i$prefix$suffix2
 done
 
 # resize images

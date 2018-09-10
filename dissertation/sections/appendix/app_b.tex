@@ -1,13 +1,36 @@
 %! TEX root = ../dissertation_gurecky.tex
 
+\section{5x5 Results}
 
-\subsection{Sampling Efficiency and UQ}
+All axial crud results for the 5x5 model are shown in figures \ref{fig:montageaxialbmasssm} and \ref{fig:montageaxialcmasssm}.  The axial distributions are shown at a simulated time of 300 days. All time integrated crud results are given in figures \ref{fig:montagetimebmasssm} and \ref{fig:montagetimecmasssm}.
+
+\begin{landscape}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.9\linewidth]{figs/5x5/imp/montage_axial_bmass_sm}
+    \caption{5x5 axial crud boron mass results at 300 days.}
+    \label{fig:montageaxialbmasssm}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.9\linewidth]{figs/5x5/imp/montage_axial_cmass_sm}
+    \caption{5x5 axial crud mass results at 300 days.}
+    \label{fig:montageaxialcmasssm}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\linewidth]{figs/5x5/imp/montage_time_bmass_sm}
+    \caption{5x5 rod integrated crud boron mass vs time.}
+    \label{fig:montagetimebmasssm}
+\end{figure}
 
 
-\begin{itemize}
-    \item (\checkmark) Theoretical distribution of the order statistics and sample quantiles.
-    \item ($\cdot$) Propagating uncertainty in sample quantiles through the CDF reconstruction and sampling steps.
-    \item ($\cdot$) Propagating uncertainty through time.  Monte-Carlo approach.
-    \item (\checkmark-) Effect of increasing the number of re-sampling points.  Increases mixing and reduces variance.
-    \item (\checkmark-) Importance sampling.
-\end{itemize}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\linewidth]{figs/5x5/imp/montage_time_cmass_sm}
+    \caption{5x5 rod integrated crud mass vs time.}
+    \label{fig:montagetimecmasssm}
+\end{figure}
+
+\end{landscape}
