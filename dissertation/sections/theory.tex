@@ -2,12 +2,12 @@
 
 \section{Model Approach}
 
-A fundamental difference between the CFD and CTF computations is the average size of the mesh cells.  In the azimuthal coordinate, CTF decomposes a single rod surface into four patches.  An example top down view of typical CFD and CTF meshes for a single pin are given in figure \ref{fig:cfd_ctf_mesh}.  Though both codes employ a finite volume spatial discretization CFD can resolve the flow at much smaller length scales.  Additionally, each code employs a different set of closure models to the underlying set of coupled energy, mass, and momentum balances.  In practice these differences can lead to large discrepancies in boiling, turbulent mixing, and rod surface temperature predictions between the two codes.
+A fundamental difference between the CFD and CTF computations is the average size of the mesh cells.  In the azimuthal coordinate, CTF decomposes a single rod surface into four patches.  An example top down view of typical CFD and CTF meshes for a single pin are given in figure \ref{fig:cfd_ctf_mesh}.  Though both codes employ a finite volume spatial discretization CFD can resolve the flow at much smaller length scales.  Additionally, each code employs a different set of closure models to the underlying set of coupled energy, mass, and momentum balances.  In practice these differences can lead to large discrepancies in boiling, turbulent mixing, and rod surface temperature predictions between the two codes [ref].
 
 \begin{figure}[!htbp]
     \centering
     \includegraphics[width=10cm]{../proposal/images/cfd_ctf_mesh.png}
-    \caption{Top-down view of typical subchannel and CFD meshes for a single pin \cite{salko12}.}
+    \caption[Top-down view of typical subchannel and CFD meshes]{Top-down view of typical subchannel (left) and CFD mesh (right) for a single pin \cite{salko12}.}
     \label{fig:cfd_ctf_mesh}
 \end{figure}
 
@@ -24,7 +24,7 @@ In figure \ref{fig:model_overview}, $f$ denotes a probability density function. 
 CTF estimates mean TH conditions everywhere in the core at a low spatial resolution.  The CFD informed model provides higher order moments about the mean.
 \begin{equation}
    \mathbf S(\mathbf p, \mathbf z) = \underbrace{ \bm \mu(\mathbf p, \mathbf{z})}_\text{CTF} +
-   \underbrace{\varepsilon({\theta (\bm p, \mathbf z)})}_\text{CFD Informed} + \bm b(\mathbf p, \mathbf{z})
+   \underbrace{\varepsilon({\theta (\bm p, \mathbf z)}) + \bm b(\mathbf p, \mathbf{z})}_\text{CFD Informed}
    \label{eq:hi2lo_overview}
 \end{equation}
 
@@ -49,17 +49,17 @@ Consider the hypothetical case where the CFD results are normally distributed ab
         \end{pmatrix}
     ,
         \begin{pmatrix}
-            \sigma_{T} \sigma_{T} & \sigma_{T} \sigma_{k} & \sigma_{T} \sigma_{q''} \\
-            \sigma_{k} \sigma_{T} & \sigma_{k} \sigma_{k} & \sigma_{k} \sigma_{q''} \\
-            \sigma_{q''} \sigma_{T} & \sigma_{q''} \sigma_{k} & \sigma_{q''} \sigma_{q''}
+            \Sigma_{TT} & \Sigma_{Tk} & \Sigma_{Tq''} \\
+            \Sigma_{kT} & \Sigma_{kk} & \Sigma_{kq''} \\
+            \Sigma_{q''T} & \Sigma_{q''k} & \Sigma_{q''q''}
         \end{pmatrix}
     \right)
     \right|_{(\mathbf p, \mathbf z)}
 \label{eq:norm_noise}
 \end{align}
+Where $\Sigma_{xx} = \sigma_x^2$ and $\Sigma_{xy} = cov(x,y)$.
 
-
-The goal is to estimate the expected crud mass $C_m$ on each CTF patch given by equation \ref{eq:expected_crud}.  Let $\mathbf X= \{T, k, q''\}$ denote a random vector of temperature, TKE, and BHF. $\mathbf I$ represents additional known crud parameters, $\mathbf C_o$ is the crud state at the start of the time step and $\theta$ are distribution parameters.    The CRUD model, $\mathcal G(\cdot)$, is common to all CTF faces.  The joint cumulative density's parameters, $\theta$, $(\hat H(\cdot|\theta))$ must be predicted from the available high resolution CFD data in every CTF face.  In the case of an assumed normal distribution model there are nine unknowns:  $\{ \sigma^2_T, \sigma^2_k, \sigma^2_{q''}, \sigma_k \sigma_T, \sigma_{q''}\sigma_T, \sigma_{q''}\sigma_{k}, c_T, c_k, c_{q''} \}$.  In the subsequent sections we will seek to relax this normality assumption of the CFD residuals about the CTF result.
+Equation \ref{eq:expected_crud} estimates the expected crud mass $C_m$ that accumulates on each CTF patch in time $\delta t$.  Let $\mathbf X= \{T, k, q''\}$ denote a random vector of temperature, TKE, and BHF. $\mathbf I$ represents additional known crud parameters, $\mathbf C_o$ is the crud state at the start of the time step and $\theta$ are distribution parameters.  Let the joint density function of $\bf X$ be denoted by $h$, and it's CDF be denoted by $H$.  The CRUD model, $\mathcal G(\cdot)$, is common to all CTF faces.  The joint cumulative density's parameters are predicted from the available high resolution CFD data in every CTF face.  In the case of an assumed normal distribution model there are nine unknowns:  $\{ \sigma^2_T, \sigma^2_k, \sigma^2_{q''}, \Sigma_{kT}, \Sigma_{q''T}, \Sigma_{q''k}, c_T, c_k, c_{q''} \}$.  In the subsequent sections we will seek to relax this normality assumption of the CFD residuals about the CTF result.
 
 \begin{align}
         C_m &= A \mu_{m} \nonumber \\
@@ -68,7 +68,7 @@ The goal is to estimate the expected crud mass $C_m$ on each CTF patch given by 
         \label{eq:expected_crud}
 \end{align}
 
-A strategy to compute the unknowns of the join distribution on each CTF face is required.  In this work we propose a data driven model, $\mathcal M$, to predict the unknowns provided a suite of pre-computed CFD results are used to train the machine learning model and local thermal hydraulic conditions provided by CTF at runtime are utilized to evaluate the model on each CTF face. Algorithm \ref{algo:basic_crud_algo} is used to compute the total crud mass in each CTF face.
+A strategy to compute the unknowns of the joint distribution on each CTF face is required.  In this work we propose a data driven model, $\mathcal M$, to predict the unknowns provided a suite of pre-computed CFD results are used to train the machine learning model and local thermal hydraulic conditions provided by CTF at runtime are utilized to evaluate the model on each CTF face. Algorithm \ref{algo:basic_crud_algo} is used to compute the total crud mass in each CTF face.
 
 \begin{algorithm}[H]
     \captionsetup{labelfont={sc,bf}, labelsep=newline}
@@ -83,7 +83,7 @@ A strategy to compute the unknowns of the join distribution on each CTF face is 
     \STATE Evaluate ML model $\hat \theta_j \leftarrow \mathcal M(\mathbf p_{j}, \mathbf z_j; \hat \gamma)$ \;
     \STATE Reconstruct $\hat H_j(\cdot |\hat \theta_j)$ \;
     \STATE Draw samples $\mathbf X \sim \hat H_j$ \;
-    \STATE Evaluate \ref{eq:expected_crud} via Monte Carlo approximation \;
+    \STATE Evaluate equation \ref{eq:expected_crud} via Monte Carlo approximation \;
 \ENDFOR
     \end{algorithmic}
 \label{algo:basic_crud_algo}
@@ -105,27 +105,20 @@ Since the outer cladding temperature, near-wall TKE and boundary heat flux are u
 
 The coupled momentum, mass, and thermal balance in a core simulation along with the appropriate closure models dictate the rod outer cladding surface temperature.  The Dittus Boelter relationship is a commonly used closure model which relates the surface heat transfer coefficient with the local Reynolds number.  According to this relationship larger Reynolds numbers corresponds to higher heat transfer coefficients.   Newtons law of cooling states $T_s = q''/h + T_{\infty}$ and $h$ may be computed via Dittus Boelter (See Appendix D).  Therefore, the surface temperature $(T_s)$ is negatively correlated with the Reynolds number and where the local turbulent kinetic energy is large the rod surface temperature will be depressed if the local heat flux is held fixed.  It is also apparent that the surface temperature is positively correlated with the the local boundary heat flux.  In order to simplify the model only the dependency between the surface temperature and local turbulent kinetic energy is considered in hi2lo model.
 
-\textbf{Assume}:
-\begin{itemize}
-\item Temperature and TKE are uncorrelated with the boundary heat flux.
-\end{itemize}
-
-\textbf{Justification}:
-        \begin{itemize}
-                \item  Relative variations in boundary heat flux are very small over a CTF face $(+/- 5\%)$.  Recall a CTF face represents a small approximate $1cm^2$ patch on the rod surface.  Large absolute heat fluxs of approximately $80W/cm^2$ are possible on the cladding surface of fuel in a typical PWR.  However, high axial and azimulthal gradients of boundary heat flux on the rod surface are not typical under standard operation conditions.  High thermal gradients can lead to extra thermal stresses on the cladding which can promote rod bowing or extreme in conditions fuel failure.
-                \item Figures \ref{fig:crud_sensi1} to \ref{fig:crud_sensi3} show that the sensitivity of crud growth rate to the boundary heat flux is small relative to sensitivity of curd to surface temperature and local turbulent kinetic energy. 
-        \end{itemize}
-
-After applying the independence assumptions the original trivariate dependence model between the temperature, TKE, and boundary heat flux can be reduced to a bivariate model with the boundary heat flux being treated and sampled from independently.
-
-Vine copula provide a flexible framework to model high dimensional dependence structures \cite{Joe2015}. Vine copula are hierarchical tree models in which the edges represent bivariate copula and the nodes are univariate distributions. Vine copula have seen significant historical use in the financial industry in portfolio value at risk models.  The canonical vine copula shown in equation \ref{eq:ori_vine_model} can be used to express the trivariate distribution of temperature, TKE, and $q''$ on the rod surface.
+The statistical relationship between the surface temperature, TKE, and boundary heat flux in each CTF face could be estimated from the available CFD data and modeled.  To this end vine copula provide a flexible framework to model high dimensional dependence structures \cite{Joe2015}. Vine copula are hierarchical tree models in which the edges represent bivariate copula and the nodes are univariate distributions.  The canonical vine copula shown in equation \ref{eq:ori_vine_model} can be used to express the trivariate distribution of temperature, TKE, and $q''$ on the rod surface. 
 \begin{equation}
 h(T, k, q'') = f_T f_k, f_{q''} \prod_c c_i(u_i, v_i)
 \label{eq:ori_vine_model}
 \end{equation}
-Where each bivariate copula model in $\prod c_i $ is known as a pair copula.  The complete nested tree model is sometimes refereed to as a pair copula construction in the literature.
+Where each bivariate copula model in $\prod c_i $ is known as a pair copula.  The complete nested tree model is sometimes refereed to as a pair copula construction in the literature.  Simplifying independence assumptions can be made based on the heat transfer processes on a fuel rod that lead to certain copula in the vine to take on a uniform value of 1.
 
-Applying the simplifying assumptions results in: $c(u_T, u_{q''}) = 1$ and $c(u_{k}, u_{q''}) = 1$. The simplified joint density can then be given by equation \ref{eq:simple_vine_model}:
+In this work it is assumed that the cladding surface temperature and near-wall TKE are uncorrelated with the boundary heat flux.  The justification is as follows.
+
+Relative variations in boundary heat flux are very small over a CTF face $(\pm 5\%)$ provided that a CTF face represents a small approximately $1 [cm^2]$ localized patch on the rod surface.  Large absolute heat fluxes of approximately $80 [W/cm^2]$ are possible on the cladding surface of fuel in a typical PWR.  However, high axial and azimuthal gradients of boundary heat flux on the rod surface are not typical under standard operation conditions.  High thermal gradients can lead to extra thermal induced stresses on the cladding which can promote rod bowing or, extreme in conditions, fuel failure.
+Additionally, figures \ref{fig:crud_sensi1} to \ref{fig:crud_sensi3} show that the sensitivity of crud growth rate to the boundary heat flux is small relative to sensitivity of curd to surface temperature and local turbulent kinetic energy.
+
+
+After applying the independence assumptions the original trivariate dependence model between the temperature, TKE, and boundary heat flux can be reduced to a bivariate model with the boundary heat flux being treated independently.  Applying the simplifying assumptions results in: $c(u_T, u_{q''}) = 1$ and $c(u_{k}, u_{q''}) = 1$. The simplified joint density can then be given by equation \ref{eq:simple_vine_model}:
 \begin{equation}
 h(T, k, q'') \approx  f_T f_k, f_{q''} c(u_{T}, v_{k})  \cdot 1 \cdot 1
 \label{eq:simple_vine_model}
@@ -291,19 +284,21 @@ In order to estimate a sample quantile, $\hat q_\tau$, given the empirical CDF $
     \label{fig:cart}
 \end{figure}
 
-The generalized gradient boosting algorithm was developed by Friedman (1999).  This work was significant because it re-invisioned previous boosting algorithms such as adaBoost as specific special cases of general gradient boosting with specific loss functions.  Gradient boosting is a numerical optimization procedure in function space \cite{friedman2001}.  Friedman described this as finding a function $\mathcal M^*$ that maps the inputs $\mathbf x$ to $y$ where $\mathcal M^*$ is given by:
+The generalized gradient boosting algorithm was developed by Friedman (1999)  \cite{friedman2001}.  This work was significant because it re-envisioned previous boosting algorithms such as adaBoost as special cases of gradient boosting with specific loss functions.  Gradient boosting is a numerical optimization procedure in function space.  Friedman described this as finding a function $\mathcal F_M$ that maps the inputs $\mathbf x$ to $y$ where $\mathcal F_M$ is given by:
 
 \begin{equation}
-\mathcal M^* = \text{argmin}_F \E_{y, \mathbf x} (L(y, F(\mathbf x)))
+\mathcal F_M = \text{argmin}_F \E_{y, \mathbf x} (L(y, F(\mathbf x)))
 \end{equation}
-Where $L(\cdot)$ is a differentiable loss function.  For the standard gradient boosting trees the functional form of $F$ is chosen to be an additive model of the form \cite{friedman2001}:
+Where $L(\cdot)$ is a differentiable loss function.  $\mathbf x$ are known as features and $y$ is the response.  In the standard gradient boosting algorithm the functional form of $F$ is chosen to be an additive model of the form \ref{eq:single_cart_model}:
 \begin{equation}
 F(\mathbf x; \mathbf{\beta}, \mathbf a) = \sum_{m=0}^M \beta_m h(\mathbf x; a_m)
+\label{eq:single_cart_model}
 \end{equation} 
+Where $M$ is the number of constituent, simple, sub-models and $\{ \beta_m, a_m\}$ are coefficients and free parameters requiring fitting in each sub-model.
+Rather than fitting all sub-models simultaneously, 
+Gradient tree boosting greedily fits decision trees to the gradient of the loss function in a stage wise fashion as shown in algorithm \ref{alg:boosting}.  For clarity, in the literature the vector of gradients is sometimes referred to as the pseudo residuals vector since if the loss function is taken to be the L2 loss, the gradient of the loss functions is proportional to the residual vector.  
 
-This hi2lo work employs gradient tree boosting in which decision trees are greedily fit to the gradient of the loss function.  For clarity, in the literature the vector of gradients is sometimes referred to as the "pseudo residuals vector" since if the loss function is taken to be the L2 loss, the gradient of the loss functions is proportional to the residual vector.  
-
-The  weak learner is defined to be a typical classification and regression tree (CART).  Methods for pruning the tree and optimizing the numerical implementation of finding the best splits are left to (refs).  Examples of single classification tree with a depth of 1 and 2 are shown in figure \ref{fig:cart}.  The decision tree produces a piecewise constant prediction.
+The  weak learner is defined to be a typical classification and regression tree (CART).  Methods for pruning the decision trees and optimizing the numerical implementation of finding the best splits are left to (refs).  Examples of single fitted tree with a depth of 1 and 2 are shown in figure \ref{fig:cart}.  The decision tree produces a piecewise constant prediction.
 
 \begin{algorithm}[H]
     \captionsetup{labelfont={sc,bf}, labelsep=newline}
@@ -322,7 +317,7 @@ The  weak learner is defined to be a typical classification and regression tree 
             \STATE $r_{im} = -\frac{\partial L(y_i, F_{m-1}(p_i))}{\partial F_{m-1}(p_i)}$
         \ENDFOR
         
-        \STATE Fit a weak learner $h_m(p)$ to pseudo-residuals, $r_{m}$: Training data set is $\{(p_i, r_{im})\}_{i=1}^n$ \;
+        \STATE Fit a weak learner $h_m(p; a_m)$ to pseudo-residuals, $r_{m}$: Training data set is $\{(p_i, r_{im})\}_{i=1}^n$ \;
         
         \STATE Compute multiplier $\gamma_m$ :
         $\gamma_m = \underset{\gamma}{\operatorname{arg\,min}} \sum_{i=1}^n L\left(y_i, F_{m-1}(p_i) + \gamma h_m(p_i)\right)$\;
@@ -398,7 +393,7 @@ In this work the target and proposal copula are taken to be the same function.
         \item (\checkmark) Detail how this mapping is produced.
 \end{itemize}
 
-In the construction of the hi2lo method an important assumption is made about the location of hot and cold spots on the rod surface as a function of time.   The presence of hot and cold spots downstream spacer grids and the location on the rod surface these spots occupy are assumed to be principally governed by the geometry of the mixing vanes and geometric layout of the fuel and guide tubes.  The influence of flow rate and core power on the relative location of the hot spots on the rod surface are assumed to be second order effects and are not explicitly captured by the hi2lo methodology at present.
+In the construction of the hi2lo method an assumption is made about the location of hot and cold spots on the rod surface as a function of time.   The presence of hot and cold spots downstream spacer grids and the location on the rod surface these spots occupy are assumed to be principally governed by the geometry of the mixing vanes and geometric layout of the fuel and guide tubes.  The influence of flow rate and core power on the relative location of the hot spots on the rod surface are assumed to be second order effects and are not explicitly captured by the hi2lo methodology at present.
 
 \subsection{Hot Spot Stationarity}
 

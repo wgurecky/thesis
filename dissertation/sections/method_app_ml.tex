@@ -5,7 +5,7 @@ For deployment as an in-line statistically based downscaling tool which sits bet
 
 One might envision a table-lookup approach where high fidelity CFD flow field maps are pre-computed and stored for a wide array of flow and power conditions.  A nearest neighbor interpolation scheme could then be applied to extract the best-matching CFD map provided some local core state.  This however, is not tractable since the number of CFD computations to build the data base would be prohibitively large.  It is appealing to transform the problem of hi2lo construction from performing spatial flow map prediction into one of summary statistics prediction where much less information is required adequately fill out the operating envelope.  
 
-In this chapter the hi2lo methodology introduced in this work is exercised against a small CFD data set derived from a 5x5 fuel assembly operating at realistic PWR conditions.
+In this chapter the hi2lo methodology introduced in this work is exercised against a small CFD data set derived from a 5x5 fuel assembly operating at realistic PWR conditions.  A leave-one-out cross validation strategy is used to asses the predictive performance of the model.
 
 
 \section{Machine Learning Model Trained on CFD Data Source}
@@ -234,13 +234,13 @@ Though improvements are possible, it should also be noted that section \ref{sec:
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\linewidth]{figs/5x5/imp/1_5_axial_bmass}
-    \caption{Pin 1 CTF vs CFD vs Hi2lo axial crud boron mass distribution.}
+    \caption{Pin 1 CTF vs CFD vs Hi2lo axial crud boron mass distribution at 300 days.}
     \label{fig:15axialbmass}
 \end{figure}
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\linewidth]{figs/5x5/imp/1_5_axial_cmass}
-    \caption{Pin 1 CTF vs CFD vs Hi2lo axial crud mass distribution.}
+    \caption{Pin 1 CTF vs CFD vs Hi2lo axial crud mass distribution at 300 days.}
     \label{fig:15axialcmass}
 \end{figure}
 \begin{figure}[H]
@@ -259,39 +259,50 @@ Though improvements are possible, it should also be noted that section \ref{sec:
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\linewidth]{figs/5x5/imp/tstep_5/pin_1/hi2lo_imp_pin_bmass}
-    \caption{}
+    \caption{Pin 1 hi2lo 2D surface map of crud boron mass density.}
     \label{fig:hi2loimppinbmass}
 \end{figure}
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\linewidth]{figs/5x5/imp/tstep_5/pin_1/hi2lo_imp_pin_cmass}
-    \caption{}
+    \caption{Pin 1 hi2lo 2D surface map of crud mass density.}
     \label{fig:hi2loimppincmass}
 \end{figure}
-\begin{figure}[H]
+
+
+\begin{figure}[H]%
     \centering
-    \includegraphics[width=0.7\linewidth]{figs/5x5/imp/tstep_5/pin_1/hi2lo_imp_pin_z_bmass}
-    \caption{}
+    \subfloat[Hi2lo pin boron mass.]{{\includegraphics[width=0.46\linewidth]{figs/5x5/imp/tstep_5/pin_1/hi2lo_imp_pin_z_bmass} }}%
+    \qquad
+    \subfloat[CFD pin boron mass.]{{\includegraphics[width=0.46\linewidth]{figs/5x5/cfd/tstep_5/pin_1/CFD_pin_z_bmass} }}%
+    \caption{Pin 1 crud boron mass results at 300 days.}%
     \label{fig:hi2loimppinzbmass}
 \end{figure}
-\begin{figure}[H]
+
+
+\begin{figure}[H]%
     \centering
-    \includegraphics[width=0.7\linewidth]{figs/5x5/imp/tstep_5/pin_1/hi2lo_imp_pin_z_cthick}
-    \caption{}
+    \subfloat[Hi2lo pin crud thickness.]{{\includegraphics[width=0.46\linewidth]{figs/5x5/imp/tstep_5/pin_1/hi2lo_imp_pin_z_cthick} }}%
+    \qquad
+    \subfloat[CFD pin crud thickness.]{{\includegraphics[width=0.46\linewidth]{figs/5x5/cfd/tstep_5/pin_1/CFD_pin_z_cthick} }}%
+    \caption{Pin 1 crud thickness results at 300 days.}%
     \label{fig:hi2loimppinzcthick}
 \end{figure}
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.7\linewidth]{figs/5x5/imp/tstep_5/pin_1/hi2lo_imp_pin_z_tke}
-    \caption{}
-    \label{fig:hi2loimppinztke}
-\end{figure}
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.7\linewidth]{figs/5x5/imp/tstep_5/pin_1/hi2lo_imp_pin_z_twall}
-    \caption{}
-    \label{fig:hi2loimppinztwall}
-\end{figure}
+
+
+% Redundant since we already have tempearture and TKE results
+% \begin{figure}[H]
+%    \centering
+%    \includegraphics[width=0.7\linewidth]{figs/5x5/imp/tstep_5/pin_1/hi2lo_imp_pin_z_tke}
+%    \caption{}
+%    \label{fig:hi2loimppinztke}
+% \end{figure}
+% \begin{figure}[H]
+%    \centering
+%    \includegraphics[width=0.7\linewidth]{figs/5x5/imp/tstep_5/pin_1/hi2lo_imp_pin_z_twall}
+%    \caption{}
+%    \label{fig:hi2loimppinztwall}
+% \end{figure}
 
 \section{Multi Pin Comparisons}
 
