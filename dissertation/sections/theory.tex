@@ -68,7 +68,7 @@ Equation \ref{eq:expected_crud} estimates the expected crud mass $C_m$ that accu
         \label{eq:expected_crud}
 \end{align}
 
-A strategy to compute the unknowns of the joint distribution on each CTF face is required.  In this work we propose a data driven model, $\mathcal M$, to predict the unknowns provided a suite of pre-computed CFD results are used to train the machine learning model and local thermal hydraulic conditions provided by CTF at runtime are utilized to evaluate the model on each CTF face. Algorithm \ref{algo:basic_crud_algo} is used to compute the total crud mass in each CTF face.
+A strategy to compute the unknowns of the joint distribution on each CTF face is required.  In this work we propose a data driven model, $\mathcal F_M$, to predict the unknowns provided a suite of pre-computed CFD results are used to train the machine learning model and local thermal hydraulic conditions provided by CTF at runtime are utilized to evaluate the model on each CTF face. Algorithm \ref{algo:basic_crud_algo} is used to compute the total crud mass in each CTF face.
 
 \begin{algorithm}[H]
     \captionsetup{labelfont={sc,bf}, labelsep=newline}
@@ -77,10 +77,11 @@ A strategy to compute the unknowns of the joint distribution on each CTF face is
     \STATE \textbf{Initialization}  
     \STATE (1) Pre-process training set.  
     \STATE $\ \ $   (1b) Fit the joint distribution parameters to known CFD data: $\theta(\mathbf p, \mathbf z)$.  
-    \STATE $\ \ $   (1c) \textbf{def:}  $\ \theta \leftarrow \mathcal M(\mathbf p, \mathbf z | \gamma)$
-    \STATE (2) Train model:  $\hat \gamma =  argmin_\gamma ||\mathcal M(\mathbf p, \mathbf z| \gamma) - \theta(\mathbf p, \mathbf z)|| $
+    \STATE $\ \ $   (1c) \textbf{def:}  $\ \theta \leftarrow \mathcal F_M(\mathbf p, \mathbf z | \gamma)$
+    \STATE (2) Train model:  $\hat{\mathcal F_M} =  \mathrm{argmin}_{\mathcal F}$
+      $L(\mathcal{F}_M (\mathbf p, \mathbf z| \gamma), \theta(\mathbf p, \mathbf z)) $
 \FOR {CTF face, $j$}
-    \STATE Evaluate ML model $\hat \theta_j \leftarrow \mathcal M(\mathbf p_{j}, \mathbf z_j; \hat \gamma)$ \;
+    \STATE Evaluate ML model $\hat \theta_j \leftarrow \hat{\mathcal F_M}(\mathbf p_j, \mathbf z_j)$ \;
     \STATE Reconstruct $\hat H_j(\cdot |\hat \theta_j)$ \;
     \STATE Draw samples $\mathbf X \sim \hat H_j$ \;
     \STATE Evaluate equation \ref{eq:expected_crud} via Monte Carlo approximation \;
@@ -88,16 +89,17 @@ A strategy to compute the unknowns of the joint distribution on each CTF face is
     \end{algorithmic}
 \label{algo:basic_crud_algo}
 \end{algorithm}
-Where $\gamma$ are free parameters in the machine learning regression model.  A discussion on the machine learning model follows in section ().  The reconstruction of the joint density function $\hat H$ from copula and univariate quantile functions is discussed in section ().  Monte Carlo and importance sampling are discussed in sections () and () respectively.  A critical question to answer is:  Can a data driven machine learning model adequately predict the parameters of a probability distribution on each CTF face: $Var[(\hat \theta_j \leftarrow \mathcal M(\mathbf p_{j}, \gamma))] < \epsilon$?  There is some uncertainty in the optimal machine learning model parameters.  This propagates to the distribution parameters which ultimately governs the uncertainty of the crud results.  An adequet model in this contex reduces the uncertainty in the final crud estimate to some acceptable level.
-\bigskip
+Where $L(\cdot)$ is a generic differentiable loss function.  A discussion on the machine learning model and loss function follows in section ().  The reconstruction of the joint density function $\hat H$ from copula and univariate quantile functions is discussed in section ().  Monte Carlo and importance sampling are discussed in sections () and () respectively.  
 
-In addition to improving the expected value prediction of CRUD on each CTF patch vs the CTF standalone case, the model provides the capability to estimate the likelihood of extreme value events (i.e. $\mathcal P_f \propto Pr(C_t(x) > C_t^*)$, where $C_t^*$ is some critical crud thickness and $\mathcal P_f$ is a cladding failure probability) on the rod surface.  This would be impossible to quantify with CTF/MAMBA alone.  A significant challenge is computing an estimate for $Var(\mathcal P_f) = \E[(\mathcal P_f - \E(\mathcal P_f))^2]$.
+% A critical question to answer is:  Can a data driven machine learning model adequately predict the parameters of a probability distribution on each CTF face: $Var[(\hat \theta_j \leftarrow \mathcal M(\mathbf p_{j}, \gamma))] < \epsilon$?  There is some uncertainty in the optimal machine learning model parameters.  This propagates to the distribution parameters which ultimately governs the uncertainty of the crud results.  An adequate model in this context reduces the uncertainty in the final crud estimate to some acceptable level.
+
+In addition to improving the expected value prediction of crud on each CTF patch vs the CTF standalone case, the model provides the capability to estimate the likelihood of extreme value events i.e. $\mathcal P_f \propto Pr(C_t(x) > C_t^*)$, where $C_t^*$ is some critical crud thickness and $\mathcal P_f$ is a cladding failure probability.  This would be difficult to quantify with CTF/MAMBA alone and requires either a hi2lo approach or detailed investigation of at-risk pins with high fidelity CFD computations.  A significant challenge is computing an estimate for $Var(\mathcal P_f) = \E[(\mathcal P_f - \E(\mathcal P_f))^2]$, or that is to say, the variance in the expected amount of crud over a given threshold.  This quantity is necessary to conduct credible CILC risk assessment.
 
 
 \section{Construction of the Hi2lo Map}
 
-Next, we seek to relax the multivariate Gaussian assumption made to capture the autocorrelation between the surface temperature, boundary heat flux and near wall TKE fields.  Flexibility is afforded by factorizing the multivariate distribution into marginal distributions and a copula.  The statistical parameters describing this multivariate distribution are still determined via a data driven model, as in algorithm \ref{algo:basic_crud_algo}.
-The result is a semi-parametric model of the conditional joint distribution of temperature, TKE, and boundary heat flux on the rod surface.  The model is semi-parametric because the copula is selected from a library of parametric distribution families while the marginal models are constructed using conditional quantile prediction, where the number of quantiles used in the reconstruction is set at runtime.  Quantile regression does not assume a priori the univariate distribution family.
+Next, we seek to relax the multivariate Gaussian assumption made to capture the autocorrelation between the surface temperature, boundary heat flux and near wall TKE fields.  Flexibility is afforded by factoring the multivariate distribution into marginal distributions and a copula.  The statistical parameters describing this multivariate distribution are still determined via a data driven model, as in algorithm \ref{algo:basic_crud_algo}.
+The result is a semi-parametric model of the conditional joint distribution of temperature, TKE, and boundary heat flux on the rod surface.  The model is semi-parametric because the copula is selected from a library of parametric distribution families while the marginal models are constructed using conditional quantile prediction, where the number of quantiles used in the reconstruction is set at runtime.  Quantile regression as applied in this work does not assume a priori the univariate distribution family.
 
 \subsection{Capturing Dependence Between Random Variables}
 
@@ -427,7 +429,7 @@ Careful treatment of the propagation importance weights through discrete re-samp
 
 Figure \ref{fig:stepscheme} depicts the time stepping scheme for a single patch. The patch index is not shown to reduce visual clutter. The VERA state-point time index is denoted by $t$.  At the beginning of each VERA state-point the power distribution and thermal hydraulic conditions in the core change.  Here it is assumed there is a constant power profile and constant flow conditions over a VERA depletion step. 
 
-In figure \ref{fig:stepscheme} dotted arrows represent sampling from a probability distribution.  $\mathcal R$ is the spatial reordering map from sample space to a position on the rod surface. $\mathcal G$ represents the crud generation function provided by the crud simulation package which takes thermal hydraulic boundary conditions as input in addition to the previous crud state and produces a new crud state.  Re-sampling events are performed at time intervals $\Delta t_s$ and this interval is set at runtime by the user.  The influence of the re-sampling interval size is discussed in section \ref{sec:resample_freq_study}.  The re-sample index is denoted by $n$.  The subscript, $(\cdot)_s$ , denotes evaluation at a re-sampling event.  At each re-sampling event the temperature, TKE and boundary heat flux samples are drawn from the reconstructed joint probability $\hat H^t$.  Assume that the sample time step is constant and equal to $\Delta t_s$.
+In figure \ref{fig:stepscheme} dotted arrows represent sampling from a probability distribution.  $\mathcal R$ is the spatial reordering map from sample space to a position on the rod surface. $\mathcal G$ represents the crud generation function provided by the crud simulation package which takes thermal hydraulic boundary conditions as input in addition to the previous crud state and produces a new crud state.  Re-sampling events are performed at time intervals $\Delta t_s$ and this interval is set at runtime by the user.  The influence of the re-sampling interval size is discussed in section \ref{sec:resample_freq_study}.  The re-sample index is denoted by $n$.  The subscript, $(\cdot)_s$ , denotes evaluation at a re-sampling event.  A prime-notated variable,  $(\cdot)'$, represents a spatially re-mapped sample as in figure \ref{fig:remmap_comp}.  At each re-sampling event the temperature, TKE and boundary heat flux samples are drawn from the reconstructed joint probability $\hat H^t$.  Assume that the sample time step is constant and equal to $\Delta t_s$.
 
 \begin{figure}[H]
     \centering
@@ -444,9 +446,9 @@ t_{s_n} = n\Delta t_s
 The time averaged sample weights are in general updated by equation \ref{eq:time_sample_weights1} at each re-sampling step.
 
 \begin{equation}
-\bar \omega_{{s_n},i} = 
-\left( \frac{\sum_{l}^{n-1}t_{s_l}}{\sum_l^n \Delta t_{s_l}} \right) \bar \omega_{n-1,i} + 
-\left( \frac{\Delta t_{s_n}}{\sum_l^n \Delta t_{s_l}} \right) \omega_{n,i}
+\bar \omega'_{{s_n},i} = 
+\left( \frac{\sum_{l}^{n-1}t_{s_l}}{\sum_l^n \Delta t_{s_l}} \right) \bar \omega'_{n-1,i} + 
+\left( \frac{\Delta t_{s_n}}{\sum_l^n \Delta t_{s_l}} \right) \omega'_{n,i}
 \label{eq:time_sample_weights1}
 \end{equation}
 Where $i$ is the sample index within a single CTF face.
@@ -455,15 +457,15 @@ After applying the constant re-sample step size assumption the time averaged sam
 The ratio of the target density and the sampling distribution density is denoted by $\omega$ and is given in equation \ref{eq:imp_prob_ratio}. 
 
 \begin{align}
-\bar \omega_{{s_n},i} &= \left( \frac{(n-1) \Delta t_s}{n \Delta t_s} \right) \bar \omega_{n-1,i} + \left( \frac{\Delta t_s}{n \Delta t_s} \right) \omega_{n,i} \nonumber \\
- &= \left( \frac{(n-1)}{n} \right) \bar \omega_{n-1,i} + \left( \frac{1}{n} \right) \omega_{n,i}
+\bar \omega'_{{s_n},i} &= \left( \frac{(n-1) \Delta t_s}{n \Delta t_s} \right) \bar \omega'_{n-1,i} + \left( \frac{\Delta t_s}{n \Delta t_s} \right) \omega'_{n,i} \nonumber \\
+ &= \left( \frac{(n-1)}{n} \right) \bar \omega'_{n-1,i} + \left( \frac{1}{n} \right) \omega'_{n,i}
 \label{eq:time_sample_weights3}
 \end{align}
 
 After each re-sampling event the total crud mass, $C_m$ on a CTF face, can be computed by a wighted sum given in equation \ref{eq:patch_sum_mass}.  The sampling and weighting procedure is depicted in figure \ref{fig:crudsamplesdt}.
 
 \begin{equation}
-C_{m} = \frac{A}{M}\sum_i^M C_i \bar \omega_i
+C_{m} = \frac{A}{M}\sum_i^M C'_i \bar \omega'_i
 \label{eq:patch_sum_mass}
 \end{equation}
 Where $M$ is the number of samples drawn per CTF face and $A$ is the surface area of the $j^{th}$ CTF face.  The re-stepping index $n$ and the patch index $j$ are dropped to reduce clutter in equation \ref{eq:patch_sum_mass}.

@@ -1,18 +1,18 @@
 %! TEX root = ../dissertation_gurecky.tex
 
-In this chapter marginal reconstruction from quantiles, copula fitting, Monte Carlo and importance sampling strategies are exercised with a synthetic data set.  Synthetic data offers advantages over CFD born data for the purposes of testing and evaluating the efficacy of the proposed models.  Since synthetic data conforms to a known form with specified distribution and bias parameters the fitting and sampling routines can be checked against the pre-specified expected result.
-This chapter does not introduce machine learning components and does not explore forward model predictions.  See chapter \ref{sec:ml_cfd} for hi2lo model performance when used in a predictive capacity.
+In this chapter the univariate distribution reconstruction from quantiles, copula parameter fitting, Monte Carlo and importance sampling strategies are exercised with a synthetic data set.  Synthetic data offers advantages over CFD born data for the purposes of testing and evaluating the efficacy of the proposed models.  Since synthetic data conforms to a known form with specified distribution and bias parameters the fitting and sampling routines can be checked against the pre-specified expected result. This chapter does not introduce machine learning components and does not explore forward model predictions.  See chapter \ref{sec:ml_cfd} for hi2lo model performance when used in a predictive capacity.
 
-The availability of synthetic data alleviates the need to generate comparatively expensive CFD results to test the hi2lo strategy.  Some aspects of CFD fields are preserved in the synthetic ata, including expected biases between CFD and CTF results that arise due to discrepancies in wall heat transfer closure models, among other differences. Additionally turbulent dispersion of the temperature and surface shear distributions around spacer grids are emulated by the synthetic data model.  Accounting for spatial auto-correlation in the surface fields was not pursued.  Spatial autocorrelation present in the surface fields within a CTF face is not captured.  Consequently the synthetic data is not a direct replacement to CFD data but serves as data source for method interrogation and integration testing.
+The availability of synthetic data alleviates the need to generate comparatively expensive CFD results to test the hi2lo strategy.  Some aspects of CFD fields are preserved in the synthetic data, including expected biases between CFD and CTF results that arise due to discrepancies in wall heat transfer closure models, among other differences. Additionally turbulent dispersion of the temperature and surface shear distributions around spacer grids are emulated by the synthetic data model.  Accounting for spatial auto-correlation in the surface fields was not pursued.  Spatial autocorrelation present in the surface fields within a CTF face is not captured.  Consequently the synthetic data is not a direct replacement to CFD data but serves as data source for method interrogation and integration testing.
 
-Semi-parametric copula and marginal distributions are fit to the synthetic data in each CTF face independently.  Samples are drawn from the fitted joint temperature, TKE and BHF density models on each patch using standard Monte Carlo methods or importance sampling.  The surface samples are provided to a crud simulation package as cladding-surface boundary conditions.  Additional required bulk coolant properties are supplied by CTF.
-In this chapter some consequences of adopting a statistically based hi2lo map  on a multistate point, or time dependent crud simulation are discussed.
+Semi-parametric copula and marginal distributions are fit to the synthetic data in each CTF face independently.  Samples are drawn from the fitted joint temperature, TKE and BHF density models on each patch using standard Monte Carlo methods or importance sampling.  The surface samples are provided to a crud simulation package as cladding-surface boundary conditions.  Additional required bulk coolant properties such as the bulk fluid temperature and bulk concentration of soluble boron are supplied by CTF.
 
-Finally, speedups afforded by importance sampling are presented.  The sampling distributions utilized in importance sampling are informed by the physics of crud growth.
+Time dependent crud simulation is also discussed.  The interaction between the sample surface remapping stragety and the intergrated crud results are dissuced.  Additionally, the process by which importance sample weights are averaged over discrete time steps is discussed.
+
+Speedups afforded by importance sampling are presented and contrasted against standard Monte Carlo sampling results.  The sampling distributions utilized in importance sampling are informed by the physics of crud growth.
 
 \section{Generating Synthetic Data}
 
-Synthetic data generation begins by first running standalone CTF on a single quarter symmetric pin and then augmenting the CTF result with tailored noise.  The augmented surface fields can be constructed by equation \ref{eq:synth_aug}.
+Synthetic data generation begins by running standalone CTF on a single quarter symmetric pin.   The CTF result is then augmented with tailored noise.  The augmented synthetic surface fields can be constructed by equation \ref{eq:synth_aug}.
 \begin{align}
     \bm X &= \bm \mu_{ctf} + \bm b + \bm \varepsilon \nonumber \\
           &=
@@ -108,7 +108,7 @@ The original baseline CTF results are shown in figures \ref{fig:ctf_twall_orig} 
 
 The boundary heat flux was uniform at $85.86 [W/cm^2]$ which corresponds to approximately 160\% nominal PWR power conditions.
 
-Next synthetic noise was generated using copula and marginal disrubution settings provided in table \ref{tab:synth_settings}. The complete synthetic data generation input deck for this case along with references to the code are provided in chapter \ref{chap:app_c}, (Appendix C).
+Next synthetic noise was generated using copula and marginal distribution settings provided in table \ref{tab:synth_settings}. The complete synthetic data generation input deck for this case along with references to the code are provided in chapter \ref{chap:app_c}, (Appendix C).
 
 \begin{table}[h]
     \begin{center}
@@ -235,7 +235,7 @@ After samples are independently drawn in each CTF face the temperature, TKE, and
 \subsubsection{Crud Copula Parameter Sensitivity}
 \label{sec:crud_copula_sensi}
 
-Here the sensitivity of the crud result to the copula parameters is investigated.  Both the impact of the rank correlation coefficient, Kendall's $\tau$, and the Archimidean copula family are investigated.  The sensitivity results generated for the patch centered at $(\theta=3.14[rad], z=2.95[m])$ are shown in figure \ref{fig:patchcrudfit80}.  There is noise present in the crud predictions due to the Monte Carlo integration of equation \ref{eq:expected_crud} over the patch.  In this instance 2500 samples were used.  The crud is relatively insensitive to the choice of copula family, but the rank correlation coefficient is shown to have a significant influence on crud growth with an average boron deposition sensitivity of $\frac{\partial C_b}{\partial \rho_\tau} =$ -1.086e-7 $[g/cm^2/\tau]$ for this particular patch.  Accurately predicting Kendall's $\tau$ provided local core conditions is important.
+Here the sensitivity of the crud result to the copula parameters is investigated.  Both the impact of the rank correlation coefficient, Kendall's $\tau$, and the Archimidean copula family are investigated.  The sensitivity results generated for the patch centered at $\{ \phi=3.14[rad], z=2.95[m]\}$ are shown in figure \ref{fig:patchcrudfit80}.  There is noise present in the crud predictions due to the Monte Carlo integration of equation \ref{eq:expected_crud} over the patch.  In this instance 2500 samples were used.  The crud is relatively insensitive to the choice of copula family, but the rank correlation coefficient is shown to have a significant influence on crud growth with an average boron deposition sensitivity of $\frac{\partial C_b}{\partial \rho_\tau} =$ -1.086e-7 $[g/cm^2/\tau]$ for this particular patch.  Accurately predicting Kendall's $\tau$ provided local core conditions is important.
 
 \begin{figure}[H]
     \centering
@@ -277,10 +277,11 @@ The choice of the copula family, $\Theta_c$, has a negligible impact on the inte
 
 \subsubsection{Crud Sample Size Study}
 
-The number of samples, $N$, used to estimate the integral given in equation \ref{eq:expected_crud} is a parameter set at runtime of the hi2lo method.
-As expected for a single rod the integrated crud variance is reduced by increasing the number of samples used per CTF face to estimate the integrated crud quantities of interest.   Section \ref{sec:Importance Sampling} demonstrates that improvements in sampling efficiency are possible by way of importance sampling.
+The number of samples, $N$, used to estimate the integral given in equation \ref{eq:mc_expected_crud} is a parameter set at runtime of the hi2lo method.  Here, it is shown that the integrated crud variance is reduced by increasing the number of samples used per CTF face to estimate the integrated crud quantities of interest.   Furthermore, section \ref{sec:Importance Sampling} demonstrates that improvements in sampling efficiency are possible by way of importance sampling.
 
-Figure \ref{fig:cmprpintotalsviolinnsample} shows that increasing the number of samples used to in crud expected value Monte Carlo approximation yields an improvement in the variance of the predicted integrated crud results.  A single 300 day time step was conducted without re-sampling the underlaying density functions during this period.
+Figure \ref{fig:cmprpintotalsviolinnsample} shows the variance of the crud expectation value at 300 days of simulation time computed by the Monte Carlo approximation when using a sample sizes of 100, 400, and $800  [\frac{N}{\mathrm{CTF_{face}}}]$.  80 independent trials were conducted for each sample size to estimate the variance.
+
+To isolate the impact of increasing the sample size on the crud variance, a single 300 day time step was conducted without re-sampling the underlaying density functions during this period.  Importance sampling was not applied in this study.
 
 \begin{figure}[H]
     \centering
@@ -289,12 +290,14 @@ Figure \ref{fig:cmprpintotalsviolinnsample} shows that increasing the number of 
     \label{fig:cmprpintotalsviolinnsample}
 \end{figure}
 
+The standard deviation of the rod-integrated crud results at 300 days simulation time are summarized in table ().
+
 
 
 \subsubsection{Importance Sampling}
 \label{sec:Importance Sampling}
 
-To obtain estimates for the efficiency gain offered by importance sampling to compute the integral shown in equation \ref{eq:expected_crud}, a singe patch was studied under synthetic TH data.
+To obtain estimates for the efficiency gain offered by importance sampling to compute the expected crud value by equation \ref{eq:mc_imp_expected_crud}, a singe patch was studied under synthetic TH data.
 
 The choice of importance distribution is informed by the crud response.  To compute the integral \ref{eq:expected_crud} efficiently it is favorable to sample the TH distribution in regions which result in relatively large amounts of crud growth.  The response surface of the crud simulation code is presented in figures \ref{fig:crud_sensi1} to \ref{fig:crud_sensi3}.  Larger surface temperatures result in a higher crud growth rate.  Larger local TKE results in smaller crud growth rates due to the effects of erosion.  Additionally of note is the relatively small influence of the boundary heat flux.
 
@@ -428,9 +431,9 @@ This is in part due to the minimal computational requirements of sampling the jo
 \subsection{Section Takeaways}
 \begin{itemize}
         \item Table () and figure () show good rod-integrated crud agreement between the synthetic source data and the predicted results.  Fitting copula and marginal distributions to the sample data, re-sampling from these models, and then growing curd using these samples reproduces the correct total amount of crud at each time step and correctly reproduces the axial distribution of crud as shown in figure ().
-        \item Increasing the number of samples per patch decreases variance in total crud and total precipitated boron estimates.
-        \item Increasing the number of re-sampling steps per VERA state point reduces variance in the final integrated crud results.
-        \item After drawing samples from the predicted TH distribution a reordering of the samples on the rod surface is necessary to preserve hot spot stationarity.  This is required for an optimal time marching sampling strategy.
+        \item Increasing the number of samples drawn per CTF patch decreases variance in total crud mass and total precipitated boron estimates.  The number of samples used is an adjustable runtime parameter and can be increased depending on the available computational resources and accuracy desired.
+        \item Increasing the number of re-sampling steps per VERA state point reduces variance in the final integrated crud results. 
+        \item After drawing samples from the joint density distribution a reordering of the samples on the rod surface is necessary to preserve hot spot stationarity.  This is required for an optimal time marching sampling strategy.
         \item Importance sampling was shown to reduce the variance in the integrated crud results.
-        \item A synthetic data generation tool allows absolute control over the properties of joint distribution of TH boundary conditions which are fed into the crud simulation code.  Since the synthetic data has known properties, this data serves as an important data source for benchmarking and validation operations.
+        \item A synthetic data generation tool allows absolute control over the properties of joint distribution of TH boundary conditions which are fed into the crud simulation code.  Since the synthetic data has known statistical properties, this data serves as an important data source for benchmarking and validation operations.
 \end{itemize}
