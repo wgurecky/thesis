@@ -141,7 +141,7 @@ Next synthetic noise was generated using copula and marginal distribution settin
 \end{table}
 
 Samples are drawn with probability proportional to the inverse distance to the nearest specified node.
-Let the subscript $_u$ denote the location of the upstream span and $_d$ denote the downstream grid. $d_{u_j}$ and  $d_{d_j}$ denote the distance from the centroid of the CTF face to the nearest upsteam and downstream copula nodes respectively.
+Let the subscript $(\cdot)_u$ denote the location of the upstream span and $(\cdot)_d$ denote the downstream grid. $d_{u_j}$ and  $d_{d_j}$ denote the distance from the centroid of the CTF face to the nearest upsteam and downstream copula nodes respectively.
 
 The mixture joint density model in any given CTF face can be specified by equation \ref{eq:dist_weighted_synth}.
 \begin{equation}
@@ -202,7 +202,7 @@ Figure \ref{fig:patchscatter} examines the surface frequency distributions of te
     \label{fig:patchscatter}
 \end{figure}
 
-After samples are independently drawn in each CTF face the temperature, TKE, and boundary heat flux samples were passed to a crud simulation packages as aboundary condtitions.  The crud simulation was stepped forward for 300 days with a resample step size of 50 days.  The resultant crud distribution is given in figure \ref{fig:hi2lopincmass}.
+After samples are independently drawn in each CTF face the temperature, TKE, and boundary heat flux samples were passed to a crud simulation packages as the cladding-side boundary conditions.  The CTF bulk fluid properties were used as the coolant-side boundary conditions.  The crud simulation was stepped forward for 300 days with a resample step size of 50 days.  400 samples per CTF face were drawn at each resampling event. The resultant crud distribution at 300 days is given in figure \ref{fig:hi2lopincmass}.
 
 \begin{figure}[H]
     \centering

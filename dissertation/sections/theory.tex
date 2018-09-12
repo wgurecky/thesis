@@ -105,14 +105,22 @@ The result is a semi-parametric model of the conditional joint distribution of t
 
 Since the outer cladding temperature, near-wall TKE and boundary heat flux are used as boundary conditions to a crud growth package, it is particularly important to understand and capture the relationship between these fields in the hi2lo model.  The hi2lo model under consideration is not a dynamic model in the sense it is not a coupled system of differential equations.  Instead, in the purely data driven approach the relationships are established through standard statistical correlation measures.
 
-The coupled momentum, mass, and thermal balance in a core simulation along with the appropriate closure models dictate the rod outer cladding surface temperature.  The Dittus Boelter relationship is a commonly used closure model which relates the surface heat transfer coefficient with the local Reynolds number.  According to this relationship larger Reynolds numbers corresponds to higher heat transfer coefficients.   Newtons law of cooling states $T_s = q''/h + T_{\infty}$ and $h$ may be computed via Dittus Boelter (See Appendix D).  Therefore, the surface temperature $(T_s)$ is negatively correlated with the Reynolds number and where the local turbulent kinetic energy is large the rod surface temperature will be depressed if the local heat flux is held fixed.  It is also apparent that the surface temperature is positively correlated with the the local boundary heat flux.  In order to simplify the model only the dependency between the surface temperature and local turbulent kinetic energy is considered in hi2lo model.
+The coupled momentum, mass, and thermal balance in a core simulation along with the appropriate closure models dictate the rod outer cladding surface temperature.  The Dittus Boelter relationship is used to relate the surface heat transfer coefficient with the local Reynolds number (See Chapter \ref{chap:app_d}).  According to this relationship larger Reynolds numbers corresponds to higher heat transfer coefficients.   Newtons law of cooling states $T_s = q''/h + T_{\infty}$ and $h$ may be computed via Dittus Boelter.  Therefore, the surface temperature $(T_s)$ is negatively correlated with the Reynolds number and where the local turbulent kinetic energy is large the rod surface temperature will be depressed if the local heat flux is held fixed.  It is also apparent that the surface temperature is positively correlated with the the local boundary heat flux.  In order to simplify the model only the dependency between the surface temperature and local turbulent kinetic energy is considered in hi2lo model.
 
-Here a statistical relationship between the surface temperature, TKE, and boundary heat flux in each CTF face is sought.  To this end vine copula provide a flexible framework to model high dimensional dependence structures \cite{Joe2015}. Vine copula are hierarchical tree models in which the edges represent bivariate copula and the nodes are univariate distributions.  The canonical vine copula shown in equation \ref{eq:ori_vine_model} can be used to express the trivariate ($n=3$) distribution of temperature, TKE, and $q''$ on the rod surface. 
+A statistical relationship between the surface temperature, TKE, and boundary heat flux in each CTF face is sought.  To this end vine copula provide a flexible framework to model high dimensional dependence structures \cite{Joe2015}. Vine copula are hierarchical tree models in which the edges represent bivariate copula and the nodes are univariate distributions.  The canonical vine (C-vine) copula shown in equation \ref{eq:ori_vine_model} can be used to express the trivariate ($n=3$) distribution of temperature, TKE, and $q''$ on the rod surface. 
 \begin{equation}
 h(T, k, q'') = f_T f_k, f_{q''} \prod_{m=1}^{n-1} \prod_{e \in E_m} c_{ij|D_e}(u_{i|D_e}, u_{j|D_e})
 \label{eq:ori_vine_model}
 \end{equation}
-Where $m$ denotes the tree level in the vine and each bivariate copula model, $c$ defined on the edge $\{e\}$ is known as a pair copula.  The conditioning set at edge $e$ is denoted $D_e$ which is defined by a proximity condition $ http://www.rogermcooke.net/rogermcooke_files/aivines.pdf$. $E_m$ denotes the set of all edges at level $m$. The complete nested tree model is sometimes refereed to as a pair copula construction in the literature.  Simplifying independence assumptions can be made based on the heat transfer processes on a fuel rod that lead to certain copula in the vine to take the form of a uniform density distribution on the unit square.
+Where $m$ denotes the tree level in the vine and each bivariate copula model, $c$ defined on the edge $\{e\}$ is known as a pair copula.  The conditioning set at edge $e$ is denoted $D_e$ is defined by a proximity condition  \cite{bedford2001}. $E_m$ denotes the set of all edges at level $m$. The graphical representation of this vine is provided in figure \ref{fig:cvine3var}. The complete nested tree model is sometimes refereed to as a pair copula construction in the literature.  Simplifying independence assumptions can be made based on the heat transfer processes on a fuel rod that lead to certain copula in the vine to take the form of a uniform density distribution on the unit square.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\linewidth]{figs/theory/c_vine_3var}
+    \caption{C-vine on 3 variables: $\{T,q'',k\}$.}
+    \label{fig:cvine3var}
+\end{figure}
+
 
 In this work it is assumed that the cladding surface temperature and near-wall TKE are uncorrelated with the boundary heat flux.  The justification is as follows.
 
@@ -120,9 +128,9 @@ Relative variations in boundary heat flux are very small over a CTF face $(\pm 5
 Additionally, figures \ref{fig:crud_sensi1} to \ref{fig:crud_sensi3} show that the sensitivity of crud growth rate to the boundary heat flux is small relative to sensitivity of curd to surface temperature and local turbulent kinetic energy.
 
 
-After applying the independence assumptions the original trivariate dependence model between the temperature, TKE, and boundary heat flux can be reduced to a bivariate model with the boundary heat flux being treated independently.  Applying the simplifying assumptions results in: $c_{T,q''|D_e}(u_T, u_{q''}) = 1$ and $c(u_{k}, u_{q''}) = 1$. The simplified joint density can then be given by equation \ref{eq:simple_vine_model}:
+After applying the independence assumptions the original trivariate dependence model between the temperature, TKE, and boundary heat flux can be reduced to a bivariate model with the boundary heat flux being treated independently.  Applying the simplifying assumptions results in: $c_{T,q''}(u_T, u_{q''}) = 1$ and $c_{k,q''|T}(u_{k|T}, u_{q''|T}) = 1$. The simplified joint density can then be given by equation \ref{eq:simple_vine_model}:
 \begin{equation}
-h(T, k, q'') \approx  f_T f_k, f_{q''} c(u_{T}, u_{k})  \cdot 1 \cdot 1
+h(T, k, q'') \approx  f_T f_k, f_{q''} c_{T,k}(u_{T}, u_{k})  \cdot 1 \cdot 1
 \label{eq:simple_vine_model}
 \end{equation}
 Where $u_T=F(T)$ and $u_k = F(k)$. $F(\cdot)$ denotes the CDF.
@@ -291,7 +299,7 @@ In order to estimate a sample quantile, $\hat q_\tau$, given the empirical CDF $
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\linewidth]{../proposal/slides/seminar_slides/figs/cart}
-    \caption[Regression tree stump.]{Single CART Regression tree stump comparing a fit of depth 1 and 2.}
+    \caption[Regression tree stump.]{Single CART Regression tree stump comparing a fit of depth 1 and 2 to $y=sin(x) + \varepsilon,\ x\in[0,2\pi], \varepsilon \sim \mathcal N(0,0.001)$.}
     \label{fig:cart}
 \end{figure}
 
@@ -300,7 +308,7 @@ The generalized gradient boosting algorithm was developed by Friedman (1999)  \c
 \begin{equation}
 \mathcal F_M = \text{argmin}_F \E_{y, \mathbf x} (L(y, F(\mathbf x)))
 \end{equation}
-Where $L(\cdot)$ is a differentiable loss function.  $\mathbf x$ are known as features and $y$ is the response.  In the standard gradient boosting algorithm the functional form of $F$ is chosen to be an additive model of the form \ref{eq:single_cart_model}:
+Where $L(\cdot)$ is a differentiable loss function.  $\mathbf x$ are known as features and $y$ is the response.  The paired set $\{\mathbf x, y \}$ is referred to as the training data set.  In the standard gradient boosting algorithm the functional form of $F$ is chosen to be an additive model of the form \ref{eq:single_cart_model}:
 \begin{equation}
 F(\mathbf x; \mathbf{\beta}, \mathbf a) = \sum_{m=0}^M \beta_m h(\mathbf x; a_m)
 \label{eq:single_cart_model}
@@ -309,7 +317,7 @@ Where $M$ is the number of constituent, simple, sub-models and $\{ \beta_m, a_m\
 Rather than fitting all sub-models simultaneously, 
 Gradient tree boosting greedily fits decision trees to the gradient of the loss function in a stage wise fashion as shown in algorithm \ref{alg:boosting}.  For clarity, in the literature the vector of gradients is sometimes referred to as the pseudo residuals vector since if the loss function is taken to be the L2 loss, the gradient of the loss functions is proportional to the residual vector.  
 
-The  weak learner is defined to be a typical classification and regression tree (CART).  Methods for pruning the decision trees and optimizing the numerical implementation of finding the best splits are left to (refs).  Examples of single fitted tree with a depth of 1 and 2 are shown in figure \ref{fig:cart}.  The decision tree produces a piecewise constant prediction.
+The  weak learner is defined to be a typical classification and regression tree (CART).  Methods for pruning the decision trees and optimizing the numerical implementation of finding the best splits are left to (refs).  Examples of single fitted CART trees with a depth of 1 and 2 are shown in figure \ref{fig:cart}.  The decision tree produces a piecewise constant prediction.
 
 \begin{algorithm}[H]
     \captionsetup{labelfont={sc,bf}, labelsep=newline}
@@ -397,6 +405,8 @@ In the case that the proposal and target copula densities are assumed to be the 
 
 In this work the target and proposal copula are taken to be the same function.
 
+In some scenarios the proposal or target density is only known up to a constant, e.g. $h^* = c h(x)$.  In this case the probability ratio is known up to a constant of proportionality and requires normalization: $\omega_i = \frac{h^*/\tilde h^*}{\sum_i \omega_i}$.  This is known as self normalizing importance sampling.  Traditional importance sampling can be applied in this case since $h$ and $\tilde{h}$ are true density functions which integrate to 1 over their respective support.
+
 \section{Propagating CRUD Through Time}
 
 In the construction of the hi2lo method an assumption is made about the location of hot and cold spots on the rod surface as a function of time.   The presence of hot and cold spots downstream spacer grids and the location on the rod surface these spots occupy are assumed to be principally governed by the geometry of the mixing vanes and geometric layout of the fuel and guide tubes.  The influence of flow rate and core power on the relative location of the hot spots on the rod surface are assumed to be second order effects and are not explicitly captured by the hi2lo methodology at present.
@@ -433,7 +443,7 @@ Careful treatment of the propagation importance weights through discrete re-samp
 
 Figure \ref{fig:stepscheme} depicts the time stepping scheme for a single patch. The patch index is not shown to reduce visual clutter. The VERA state-point time index is denoted by $t$.  At the beginning of each VERA state-point the power distribution and thermal hydraulic conditions in the core change.  Here it is assumed there is a constant power profile and constant flow conditions over a VERA depletion step. 
 
-In figure \ref{fig:stepscheme} dotted arrows represent sampling from a probability distribution.  $\mathcal R$ is the spatial reordering map from sample space to a position on the rod surface. $\mathcal G$ represents the crud generation function provided by the crud simulation package which takes thermal hydraulic boundary conditions as input in addition to the previous crud state and produces a new crud state.  Re-sampling events are performed at time intervals $\Delta t_s$ and this interval is set at runtime by the user.  The influence of the re-sampling interval size is discussed in section \ref{sec:resample_freq_study}.  The re-sample index is denoted by $n$.  The subscript, $(\cdot)_s$ , denotes evaluation at a re-sampling event.  A prime-notated variable,  $(\cdot)'$, represents a spatially re-mapped sample as in figure \ref{fig:remmap_comp}.  At each re-sampling event the temperature, TKE and boundary heat flux samples are drawn from the reconstructed joint probability $\hat H^t$.  Assume that the sample time step is constant and equal to $\Delta t_s$.
+In figure \ref{fig:stepscheme} dotted arrows represent sampling from a probability distribution.  $\mathcal R$ is the spatial reordering map from sample space to a position on the rod surface. $\mathcal G$ represents the crud generation function provided by the crud simulation package which takes thermal hydraulic boundary conditions as input in addition to the previous crud state and produces a new crud state.  Re-sampling events are performed at time intervals $\Delta t_s$ and this interval is set at runtime by the user.  The influence of the re-sampling interval size is discussed in section \ref{sec:resample_freq_study}.  The re-sample index is denoted by $n$.  The subscript, $(\cdot)_s$ , denotes evaluation at a re-sampling event.  A prime-notated variable,  $(\cdot)'$, represents a spatially re-mapped sample as in figure \ref{fig:samplemapping}.  At each re-sampling event the temperature, TKE and boundary heat flux samples are drawn from the reconstructed joint probability $\hat H^t$.  Assume that the sample time step is constant and equal to $\Delta t_s$.
 
 \begin{figure}[H]
     \centering
@@ -469,7 +479,7 @@ The ratio of the target density and the sampling distribution density is denoted
 After each re-sampling event the total crud mass, $C_m$ on a CTF face, can be computed by a wighted sum given in equation \ref{eq:patch_sum_mass}.  The sampling and weighting procedure is depicted in figure \ref{fig:crudsamplesdt}.
 
 \begin{equation}
-C_{m} = \frac{A}{M}\sum_i^M C'_i \bar \omega'_i
+C_{m} = \left(\frac{A}{\sum_i^M \bar \omega'_i}\right) \sum_i^M C'_i \bar \omega'_i
 \label{eq:patch_sum_mass}
 \end{equation}
 Where $M$ is the number of samples drawn per CTF face and $A$ is the surface area of the $j^{th}$ CTF face.  The re-stepping index $n$ and the patch index $j$ are dropped to reduce clutter in equation \ref{eq:patch_sum_mass}.
