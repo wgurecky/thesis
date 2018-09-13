@@ -1,14 +1,16 @@
 %! TEX root = ../dissertation_gurecky.tex
 \label{sec:ml_cfd}
 
-For deployment as an in-line statistically based downscaling tool which sits between a subchannel code and a crud simulation code in a core simulator such as VERA the model is required to perform the hi2lo mapping for all pins in the core at any operating condition.  In other words, the model must be evaluable at any local core conditions typical of an operating PWR.  Since the training data set cannot contain all possible pin geometries, loading configurations and operating conditions due to computational expense, the model must make a prediction for the copula and marginal distribution parameters between known states.  This prediction is made by evaluating a trained gradient boosted regression tree in this case.
+For deployment as an in-line statistically based downscaling tool which sits between a subchannel code and a crud simulation code in a core simulator such as VERA the model is required to perform the hi2lo mapping for all pins in the core at any operating condition.  In other words, the model must be evaluable at any local core conditions typical of an operating PWR.  Since the training data set cannot contain all possible pin geometries, loading configurations and operating conditions due to computational expense, the model must make a prediction for the copula and marginal distribution parameters between known states. 
 
-One might envision a table-lookup approach where high fidelity CFD flow field maps are pre-computed and stored for a wide array of flow and power conditions.  A nearest neighbor interpolation scheme could then be applied to extract the best-matching CFD map provided some local core state.  This however, is not tractable since the number of CFD computations to build the data base would be prohibitively large.  It is appealing to transform the problem of hi2lo construction from performing spatial flow map prediction into one of summary statistics prediction where much less information is required adequately fill out the operating envelope.  
+One might envision a table-lookup approach where high fidelity CFD flow field maps are pre-computed and stored for a wide array of flow and power conditions.  A nearest neighbor interpolation scheme could then be applied to extract the best-matching CFD map provided some local core state.  This however, is not tractable since the number of CFD computations to build the data base would be prohibitively large.  
+
+% It is appealing to transform the problem of hi2lo construction from performing spatial flow map prediction into one of summary statistics prediction where much less information is required adequately fill out the operating envelope.  
 
 In this chapter the hi2lo methodology introduced in this work is exercised against a small CFD data set derived from a 5x5 fuel assembly operating at realistic PWR conditions.  A leave-one-out cross validation strategy is used to asses the predictive performance of the model.
 
 
-\section{Machine Learning Model Trained on CFD Data Source}
+\section{CFD Data Source}
 
 For the generation of high fidelity CFD data sets the Westinghouse 5x5 test stand shown in figures \ref{fig:5x5topdown} and \ref{fig:5x5side} was used to prepare the CAD geometry.  The CFD mesh consisted of approximately 25 million cells and 1e5 surface elements per pin.  A matching CTF input deck for the 5x5 assembly was also constructed with 100 axial zones.  The CTF and CFD codes were then executed for a variety of flow conditions and power levels.
 
@@ -29,7 +31,10 @@ For the generation of high fidelity CFD data sets the Westinghouse 5x5 test stan
 
 \subsection{Preprocessing}
 
-TODO: Harvesting CFD data for training. Explain the pre-processing pipeline.
+Pre-processing requires paired CFD and CTF results for a given pin generated with consistent boundary conditions between the codes.
+First each of the CFD $\{T,k,q''\}$ fields are aggregated onto the CTF face centers.  In the aggregation procedure spatial information is discarded within each CTF patch.  The aggregated CFD data are associated with a unique CTF face and corresponding local core conditions which comprise the predictive variable set given in table \ref{tab:features}.  The aggregated CFD field distributions are subtracted from the mean CTF predictions in each CTF face and the resultant (CFD-CTF) residual distributions are sored in an HDF5 table along with predictive variables.  
+
+Copula fitting by the maximum likelihood method with AIC model selection is carried out on each CTF face.  Additionally, the empirical Kendall's $\tau$ rank correlation coefficient is computed from the raw CFD data on each CTF face. Figure \ref{fig:copula_predicted} shows the copula parameters estimated from the raw CFD data on each pin as a function of axial position for the first 4 pins in the 5x5 CFD model.  There is a marked change in behavior of the copula between the pins.  This was an unexpected find since the flow patterns were speculated to be reasonably consistent from pin to pin.  Also, the influence of spacer grids on the correlation coefficient between the temperature and TKE fields is visible.  Across spacer grids the correlation coefficient first sharply falls indicating a tighter coupling between the TKE and temperature surface fields as the flow necks down when entering a grid.  This is followed by a sharp change in Kendall's $\tau$ towards unity indicating the temperature and TKE surface fields become less correlated immediately following the mixing vanes.  This change in correlation behavior is posited to be due to turbulent mixing effects.  The computed copula parameters are also stored alongside the raw temperature, TKE, and boundary heat flux aggregated residual distribution data in the HDF5 table.
 
 \begin{figure}[H]%
     \centering
@@ -45,6 +50,7 @@ TODO: Harvesting CFD data for training. Explain the pre-processing pipeline.
     \label{fig:copula_predicted}%
 \end{figure}
 
+After pre-processing, the HDF5 table includes a list of predictive scalar values, $\mathbf p$, which are shown in table \ref{tab:features}, and a list of associated response variables; the copula parameters and residual sample distribution for $\{T,k,q''\}$ on each CTF face. 
 
 \subsection{Feature Engineering}
 

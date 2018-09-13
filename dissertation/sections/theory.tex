@@ -178,12 +178,12 @@ The quantile loss function is given by equation \ref{eq:qloss_fn}.
 \label{eq:qloss_fn}
 \end{equation}
 Where $\mathbb{I}$ is the indicator function which returns 1 if the argument is true and 0 otherwise.
-In order to estimate a sample quantile, $\hat q_\tau$, given the empirical CDF $F$, minimize: $\E[\rho_\tau(T - q_\tau)]$ where $T$ is a random variable distributed according to $F$.
+In order to estimate a sample quantile, $\hat q_\tau$, given the empirical CDF $F$, minimize: $\E[\rho_\tau(T - q_\tau)]$ where $T$ is a random variable distributed according to $F_T$.
 \begin{equation}
             \left.\begin{aligned}
             \hat q_{\tau_i} &= argmin_{q_\tau} \E[\rho(u)];\ \  u = T - q_\tau  \\
-            \approx & argmin_{q_\tau}  \frac{1}{N} \sum_i^N \rho(u_i); \ u_i = t_i - q_\tau \\
-            \approx & argmin_{q_\tau} \left[ (1-\tau) \sum_{t \leq q_\tau}( t_i - q_\tau ) - \tau \sum_{t > q_\tau} (t_i - q_\tau) \right]
+            \approx & argmin_{q_\tau}  \frac{1}{N} \sum_i^N \rho(u_i); \ u_i = T_i - q_\tau \\
+            \approx & argmin_{q_\tau} \left[ (1-\tau) \sum_{T \leq q_\tau}( T_i - q_\tau ) - \tau \sum_{T > q_\tau} (T_i - q_\tau) \right]
             \end{aligned}\right.
 \end{equation}
 
@@ -407,7 +407,15 @@ In the case that the proposal and target copula densities are assumed to be the 
 
 In this work the target and proposal copula are taken to be the same function.
 
-In some scenarios the proposal or target density is only known up to a constant, e.g. $h^* = c h(x)$.  In this case the probability ratio is known up to a constant of proportionality and requires normalization: $\omega_i = \frac{h^*/\tilde h^*}{\sum_i \omega_i}$.  This is known as self normalizing importance sampling.  Traditional importance sampling can be applied in this case since $h$ and $\tilde{h}$ are true density functions which integrate to 1 over their respective support.
+In some scenarios the proposal or target density is only known up to a constant, e.g. $h^* = c h(x)$.  In this case the probability ratio is known up to a constant of proportionality and requires normalization: 
+
+\begin{equation}
+\E(\mathcal G(x)) \approx \frac{ \sum_i^N \mathcal G_i(x) \omega_i(x)}{\sum_i^N \omega_i(x)}
+,
+ \ x \sim \tilde{f_1} \tilde f_2 \tilde c(u_1, u_2)
+\end{equation}
+
+This is known as self normalizing importance sampling.  Traditional importance sampling can be applied in this case since $h$ and $\tilde{h}$ are properly normalized density functions in this hi2lo application which integrate to 1 over their respective support.
 
 \section{Propagating CRUD Through Time}
 
