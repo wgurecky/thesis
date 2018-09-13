@@ -17,9 +17,13 @@ Non-Standard Latex Depends
 Other Notes
 -------------
 
-Before compiling ensure the images are present in the `/tex/images` directory.
-Use git-lfs to download the image files in this repo.
+Use [git-lfs](https://git-lfs.github.com/) to download the image files before compiling the document.
 
+The dissertation tex doc is `dissertation/dissertation_gurecky.tex`
+
+The schedule and task list can be found in `dissertation/outline.tex`
+
+The proposal tex doc is `proposal/proposal_gurecky.tex`
 
 
 Author
