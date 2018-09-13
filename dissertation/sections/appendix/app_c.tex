@@ -2,7 +2,7 @@
 
 % \subsection{Gradient Boosted Regression Trees}
 
-The standard gradient boosting regression technique is resilient to discontinuities in the data.  
+  
 
 
 \begin{figure}[H]%
@@ -19,7 +19,7 @@ The standard gradient boosting regression technique is resilient to discontinuit
     \label{fig:gb1}%
 \end{figure}
 
-Two gradient boosting implementations were evaluated.  For this problem results from the Scikit-Learn gradient boosting implementation are compared to a custom boosting implementation developed specifically to solve the classification and quantile regression problems in this work.  The residuals provided figure \ref{fig:gb2} show that the custom implementation performs similarly to the well-tested scikit-learn implementation with both models agreeing with the theoretical large-sample quantile distribution provided by equation \ref{eq:theory_qdist_1}.
+Two candidate gradient boosting implementations were evaluated for use in this work.  A test problem was constructed to check that the standard gradient boosting regression technique is resilient to discontinuities in the data since the response fields are expected to abruptly change when moving across a spacer grid.  The function $y = x \mathrm{sin}(x) +12 \mathcal H(x-5)+\varepsilon$ with $x\in [0,10]$ was used for testing.  $\mathcal H$ denotes the Heaviside function. Synthetic noise, $\varepsilon \sim \mathcal N(0,2)$, was applied to the piecewise smooth test function.   Select quantiles ($\tau = \{0.5, 0.75, 0.9, 0.95 \})$ were then predicted as a function of $x$ using four fitted gradient boosted quantile regression models. For this problem, results from the Scikit-Learn gradient boosting implementation are compared to a custom boosting implementation developed specifically to solve the classification and quantile regression problems in this work.  The residuals provided figure \ref{fig:gb2} show that the custom implementation performs similarly to the well-tested scikit-learn implementation with both models agreeing with the theoretical large-sample quantile distributions provided by equation \ref{eq:theory_qdist_1}.
 
 \begin{figure}[H]%
     \centering
@@ -35,15 +35,23 @@ Two gradient boosting implementations were evaluated.  For this problem results 
     \label{fig:gb2}%
 \end{figure}
 
-Gradient boosting is also used to predict the parametric copula family which corresponds to a given set of local core conditions.  Results from a generic 2D classification problem are shown in figure \ref{fig:gb3}.  The AdaBoost algorithm is employed in this this example and for determining copula families provided core conditions.   The AdaBoost algorithm can be recovered by substituting the multinomial loss function shown in equation () into algorithm ().  
+Gradient boosting is also used to predict the parametric copula family which corresponds to a given set of local core conditions.  The gradient boosted classification algorithm can be recovered by substituting the exponential loss function shown in equation \ref{eq:exploss} into algorithm \ref{alg:boosting}.   A two-class test case was devised to validate the custom boosting implementation against the scikit-learn implementation.  Results from the test 2D classification problem are shown in figure \ref{fig:gb3}.  
 
-Classifier predictions are made by tallying the predictions of each constituent fitted classification tree stump.  By tallying the predictions of all trees in the model one can obtain a probability distribution over all possible classes with the most likely class at each requested point taken as the output of the classification model.
+\begin{equation}
+L(y, F(\mathbf p)) = \E \left[ e^{-yF(\mathbf p)}\right] 
+\label{eq:exploss}
+\end{equation} 
+Where $y$ takes on integer values in ${-1, 1}$ for the classification problem.
+
+Classifier predictions are made by tallying the weighted predictions of each constituent fitted classification tree stump in the boosted model.  By tallying the predictions of all trees in the model one can obtain a probability mass function over all possible classes.  The most likely class at each requested point is taken as the output of the classification model.
 
 \begin{figure}[H]%
     \centering
     \subfloat[Class predictions.]{{\includegraphics[width=0.43\linewidth]{figs/grad_boost/dblgauss_boosted_classify_ex} }}%
     \qquad
     \subfloat[Blue class probability.]{{\includegraphics[width=0.47\linewidth]{figs/grad_boost/dblgauss_boosted_classify_probs} }}%
-    \caption[]{Gradient boosted classifier example.}%
+    \caption[]{Two-class gradient boosted classifier example.}%
     \label{fig:gb3}%
 \end{figure}
+
+Finally, gradient boosting can be used to estimate relative explanatory power of each predictive variable included in the model.  This is done by tallying the number of times a particular dimension is split upon in the CART fitting process and weighting these splits by a gain measure.  The gain can be interpreted as the benefit of making a particular split in the descission tree as measured by improvement in $R^2$ for regression problems, or improvement in class purity as measured by the Gini impurity ratio for classification problems.  Finally, a weighted sum of the split gains of each tree is performed over all boosted iterations to obtain relative variable importances.  This feature of boosting has been exploited in email filter and web page ranking applications \cite{chapelle2011}, \cite{Tyree2011}.  In the case of copula prediction, exogenous variables which are extraneous can detected and eliminated from the model to save computation time.

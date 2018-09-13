@@ -303,21 +303,21 @@ In order to estimate a sample quantile, $\hat q_\tau$, given the empirical CDF $
     \label{fig:cart}
 \end{figure}
 
-The generalized gradient boosting algorithm was developed by Friedman (1999)  \cite{friedman2001}.  This work was significant because it re-envisioned previous boosting algorithms such as adaBoost as special cases of gradient boosting with specific loss functions.  Gradient boosting is a numerical optimization procedure in function space.  Friedman described this as finding a function $\mathcal F_M$ that maps the inputs $\mathbf x$ to $y$ where $\mathcal F_M$ is given by:
+The modern gradient boosting algorithm was developed by Friedman et. al. (1998) \cite{friedman1998}, \cite{friedman2001}.  This work was significant because it re-envisioned previous boosting algorithms such as AdaBoost as special cases of gradient boosting with specific loss functions.  Gradient boosting is a numerical optimization procedure in function space with the goal of finding a function $\mathcal F_M$ that maps the inputs $\mathbf p$ to $y$ where $\mathcal F_M$ is given by:
 
 \begin{equation}
-\mathcal F_M = \text{argmin}_F \E_{y, \mathbf x} (L(y, F(\mathbf x)))
+\mathcal F_M = \text{argmin}_F \E_{y, \mathbf p} (L(y, F(\mathbf p)))
 \end{equation}
-Where $L(\cdot)$ is a differentiable loss function.  $\mathbf x$ are known as features and $y$ is the response.  The paired set $\{\mathbf x, y \}$ is referred to as the training data set.  In the standard gradient boosting algorithm the functional form of $F$ is chosen to be an additive model of the form \ref{eq:single_cart_model}:
+Where $L(\cdot)$ is a differentiable loss function.  $\mathbf p$ are known as predictive features and $y$ is the response.  The paired set $\{\mathbf p, y \}$ is referred to as the training data set.  In the standard gradient boosting algorithm the functional form of $F$ is chosen to be an additive model of the form \ref{eq:single_cart_model}:
 \begin{equation}
-F(\mathbf x; \mathbf{\beta}, \mathbf a) = \sum_{m=0}^M \beta_m h(\mathbf x; a_m)
+F(\mathbf p; \mathbf{\beta}, \mathbf a) = \sum_{m=0}^M \beta_m h(\mathbf p; a_m)
 \label{eq:single_cart_model}
 \end{equation} 
-Where $M$ is the number of constituent, simple, sub-models and $\{ \beta_m, a_m\}$ are coefficients and free parameters requiring fitting in each sub-model.
+Where $M$ is the number of constituent sub-models and $\{ \beta_m, a_m\}$ are coefficients and free parameters requiring fitting in each sub-model.
 Rather than fitting all sub-models simultaneously, 
-Gradient tree boosting greedily fits decision trees to the gradient of the loss function in a stage wise fashion as shown in algorithm \ref{alg:boosting}.  For clarity, in the literature the vector of gradients is sometimes referred to as the pseudo residuals vector since if the loss function is taken to be the L2 loss, the gradient of the loss functions is proportional to the residual vector.  
+gradient tree boosting greedily fits decision trees to the gradient of the loss function in a stage wise fashion as shown in algorithm \ref{alg:boosting}.  In the literature the vector of gradients is sometimes referred to as the pseudo residuals vector since if the loss function is taken to be the L2 loss, the gradient of the loss is proportional to the residual vector, $(y - \hat {\mathcal F_{m}})$.  
 
-The  weak learner is defined to be a typical classification and regression tree (CART).  Methods for pruning the decision trees and optimizing the numerical implementation of finding the best splits are left to (refs).  Examples of single fitted CART trees with a depth of 1 and 2 are shown in figure \ref{fig:cart}.  The decision tree produces a piecewise constant prediction.
+Each sub-model is referred to as a weak learner and is defined to be a typical classification or regression tree (CART) depending on the problem context.  Methods for pruning the decision trees and optimizing the numerical implementation of finding the best splits when fitting the tree to the pseudo-residuals are left to Friedman et. al. \cite{friedman2002}.  Examples of single fitted CART trees with a depth of 1 and 2 are shown in figure \ref{fig:cart}.  Decision trees produce a piecewise constant prediction.  
 
 \begin{algorithm}[H]
     \captionsetup{labelfont={sc,bf}, labelsep=newline}
@@ -348,13 +348,13 @@ The  weak learner is defined to be a typical classification and regression tree 
     \end{algorithmic}
 \label{alg:boosting}
 \end{algorithm}
-Where $\nu$ is a tunable constant in $[0, 1]$ called the learning rate.  The learning rate reduces the contribution of each weak learner in the final model.  Reducing the learning rate results in a proportional increase in the number of boosted iterations to achieve the same level of convergence of the boosted tree chain.  Smaller values for the learning rate result in performing smaller steps in function space so we are less likely to overshoot the optimal function - since this is a stage-wise additive model overshoots are problematic since the final model ``remembers`` mistakes made in previous iterations.  A typical learning rate is $\nu\leq 0.05$.
+Where $\nu$ is a tunable constant in $[0, 1]$ called the learning rate.  The learning rate reduces the contribution of each weak learner in the final model.  Reducing the learning rate increases resilience to over fitting but results in a proportional increase in the number of boosted iterations to achieve the same level of convergence of the boosted tree chain.  Smaller values for the learning rate result in performing smaller steps in function space so we are less likely to overshoot the optimal function - since this is a stage-wise additive model overshoots are problematic since the final model ``remembers" mistakes made in previous iterations.  A typical learning rate is $\nu\leq 0.05$.
 
 For quantile regression, the loss function is given by equation \ref{eq:qloss_fn} is substituted into algorithm \ref{alg:boosting}:
 \begin{equation}
 L(y, F(p);\tau) = \left[ (1-\tau) \sum_{y \leq F(p)}( y_i - F(p) ) \right] - \left[ \tau \sum_{y > F(p)} (y_i - F(p)) \right]
 \end{equation}
-Where $\tau$ is the user set probability level of interest. for instance if the 95\% quantile is desired then $\tau=0.95$.
+Where $\tau$ is the user set quantile of interest. For instance, if the 95\% quantile is desired then $\tau=0.95$.
 
 % boosting tree results
 \input{./sections/appendix/app_c.tex}
