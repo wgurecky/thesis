@@ -118,14 +118,16 @@ that spans essentially all possible TH conditions encountered in an operational 
 
 \subsection{Quantile Regressors}
 
-\begin{itemize}   
-    \item (\xmark) \sout{Compute quantile uncertainty estimates associated with predicted quantiles provided by the trained ML model} (Unsure if feasible.  Look at BART ensemble of trees method. Future work)
-    \item (\xmark) \sout{Propagate ML model-induced quantile uncertainties} (Future work)
-\end{itemize}
+A principal goal of the machine learning model is to predict the shape of the conditional teperature and TKE distributions as a function of local core conditions.  
 
-
-Q-Q plots of the  temperature and TKE residual distributions are used to elucidate bias introduced by the machine learning model in the conditional quantiles at a variety of axial positions and local core conditions.  Estimated quantiles are obtained for the left-out pin by evaluating the trained reduced LOO model and are compared to the expected CFD result.
-A subset of the TKE residual quantile regression results are given in figure \ref{fig:tkepin1} to \ref{fig:tkepin3}.  The Q-Q plots summarize the biases in the conditional quantile distributions when compared to the target golden standard CFD data.  The maximum and average Kolmogorov–Smirnov (KS) statistic is provided in the Q-Q figures for each pin.  This statistic was computed at each axial level on the CTF grid.
+Quantile-quantile (Q-Q) plots of the  temperature and TKE residual distributions are used to elucidate bias introduced by the machine learning model in the conditional quantiles at a variety of axial positions and local core conditions.  Estimated quantiles are obtained for the left-out pin by evaluating the trained reduced LOO model and are compared to the expected CFD result.
+A subset of the TKE residual quantile regression results are given in figure \ref{fig:tkepin1} to \ref{fig:tkepin3}.  A complete set of quantile regression results are provide in chapter \ref{chap:app_ml}, Appendix A. The Q-Q plots summarize the biases in the conditional quantile distributions when compared to the target golden standard CFD data.  The maximum and average Kolmogorov–Smirnov (KS) statistic is provided in the Q-Q figures for each pin which can be computed by equation \ref{eq:ks_stat}.
+\begin{equation}
+KS = \mathrm{sup}(\{\hat F(\tau_i) - F(\tau_i)\})
+\label{eq:ks_stat}
+\end{equation}
+Where $\mathrm{sup}(\cdot)$ is the supremum of the set of distances between the predicted and empirical cumulative densities $\{\hat F(\tau_i) - F(\tau_i)\}$.
+This statistic was computed at each axial level on the CTF grid.
 
 \begin{figure}[H]%
     \centering
@@ -155,7 +157,7 @@ A subset of the TKE residual quantile regression results are given in figure \re
 \end{figure}
 
 
-A subset of the Temperature residual quantile regression results are given in figure \ref{fig:temppin1} to \ref{fig:temppin3}.  Similar to the TKE conditional quantiles, the conditional temperature distribution exhibits sharp changes in behavior across the spacer grids.  These discontinuities enforced the choice of a machine learning algorithm, such as gradient boosted regression trees, which are resilient to extremely sharp gradients in the response surface.  Section () investigates this characteristic of gradient boosted regression tree models.
+A subset of the Temperature residual quantile regression results are given in figure \ref{fig:temppin1} to \ref{fig:temppin3}.  Similar to the TKE conditional quantiles, the conditional temperature distribution exhibits sharp changes in behavior across the spacer grids.  Discontinuities enforced the choice of a machine learning algorithm which is resilient to extremely sharp gradients in the response surface.  
 
 \begin{figure}[H]%
     \centering
@@ -184,9 +186,15 @@ A subset of the Temperature residual quantile regression results are given in fi
     \label{fig:temppin3}%
 \end{figure}
 
+The ability of the gradient boosting method to predict conditional quantiles is  
+
 \subsection{Kendall's $\tau$ Regression}
 
-A subset of the 5x5 assembly's Kendall's $\tau$ regression results are given in figure \ref{fig:ktauregression}.  There is a marked change in behavior of the rank correlation coefficient as a function of axial position in the core from pin to pin.  The influence of Kendall's $\tau$ on the CTF face-integrated crud results was discussed in section \ref{sec:crud_copula_sensi}, and it was shown to be an important parameter to accurately predict via the machine learning model.  Pins with large relative errors for Kendall's $\tau$ are expected to produce anomalously poor crud predictions.
+The rank correlation coefficient, Kendall's $\tau$ ($\rho_\tau$), is used to quantify the strength of dependence between the temperature and TKE on the rod surface in each CTF face.  A separate gradient boosted regression model was tasked with predicting this statistic as a function of local core conditions.   The growth rate of crud was shown to be sensitive to   $\rho_\tau$ in section \ref{sec:crud_copula_sensi}, figure \ref{fig:patchcrudfit80}.  It is therefore important to understand the error and uncertainty carried by the predicted $\hat \rho_\tau$ values in each CTF face.  
+
+A subset of the 5x5 assembly's Kendall's $\tau$ regression results are given in figure \ref{fig:ktauregression} and the complete 5x5 $\rho_\tau$ LOO cross validation results are given in figure \ref{fig:ktauregressionmontage}.  There is a marked change in behavior of the rank correlation coefficient as a function of axial position in the core from pin to pin.  The influence of Kendall's $\tau$ on the CTF face-integrated crud results was discussed in section \ref{sec:crud_copula_sensi}, and it was shown to be an important parameter to accurately predict via the machine learning model.  Pins with large relative errors for Kendall's $\tau$ are expected to produce anomalously poor crud predictions.
+
+The worst performing pin with respect to $\hat \rho_\tau$ prediction was pin 8, as indicated in table () and figure \ref{fig:ktauregressionmontage}.  Interestingly, this pin exhibited relatively good agreement between the predicted crud distribution and the expected CFD crud distribution as indicated in table \ref{tab:loo_crud_bmass} and figure \ref{fig:montageaxialbmasssm}.  This pin, however, was relatively cold in comparison to the others in the fuel bundle, growing only $5.9$e-2 $[g]$ of crud in 300 days when the hotest rods grew $1.4$e0 $[g]$ in the same time.  In the case of pin 8, since the majority of the rod surface exists below the saturation point the crud is not sensitive to the shape of the joint temperature and TKE distributions.  
 
 \begin{figure}[H]%
     \centering
@@ -201,7 +209,7 @@ A subset of the 5x5 assembly's Kendall's $\tau$ regression results are given in 
     \caption[Kendall's $\tau$ regression LOO results.]{Kendall's $\tau$ regression results from LOO cross validation study.}%
     \label{fig:ktauregression}%
 \end{figure}
-To combat poor performance of the Kendall's $\tau$ regressors, a larger training set should be investigated in future work.  For this limited 25 pin data set, it is hypothesized that each pin has a substantially unique flow field when compared to the other 24 pins.  Therefore, when expelling a pin from the training data set for cross validation the predictive performance of the model will suffer since the remaining pins in the training set do not provide the requisite information about the local core conditions vs. Kendall's $\tau$ relationship for the missing pin.
+To improve the performance of the Kendall's $\tau$ regressors, a larger training set could be generated in future work.  For this limited 25 pin data set, it is hypothesized that each pin has a substantially unique flow field when compared to the other 24 pins.  Expelling a pin from the training data set for cross validation causes the predictive performance of the model to suffer since the remaining pins in the training set do not provide the requisite information about the local core conditions vs. Kendall's $\tau$ relationship for the missing pin.
 
 \subsection{Copula Classifier}
 
@@ -323,7 +331,7 @@ Though improvements are possible, it should also be noted that section \ref{sec:
 % Hi2lo Bmass results
 \begin{table}[h]
     \begin{center}
-    \caption[Hi2lo crud boron mass results]{Crud boron mass hi2lo LOO result summary.}
+    \caption[Hi2lo crud boron mass results]{Crud boron mass hi2lo LOO result summary at 300 days.}
     \begin{tabular}[h]{|c|c|c|c|} 
         \hline
 Pin & CTF Bmass Tot & CFD Bmass Tot & Hi2lo Bmass Tot  \\ 
@@ -363,7 +371,7 @@ Pin & CTF Bmass Tot & CFD Bmass Tot & Hi2lo Bmass Tot  \\
 % hi2lo cmass results
 \begin{table}[h]
     \begin{center}
-        \caption[Hi2lo crud mass results]{Crud mass hi2lo LOO result summary.}
+        \caption[Hi2lo crud mass results]{Crud mass hi2lo LOO result summary at 300 days.}
     \begin{tabular}[h]{|c|c|c|c|} 
         \hline
   Pin & CTF Cmass Tot & CFD Cmass Tot & Hi2lo Cmass Tot  \\ 
@@ -484,6 +492,12 @@ Pin  & RMS & RMS & RMS & RMS & RMS & RMS & RMS \\
     \label{fig:totcmassrelasmerrorshmap}
 \end{figure}
 
+The correlation between errors committed by the multiple quantile and $\rho_\tau$ regressors on the errors seen in the crud results was investigated in an attempt to establish performance metrics.  If a statistically significant trend can be drawn between the ML model performance and predicted crud accuracy results then the trend could be used as an indicative tool for testing the a.  To do this, one could first compute the ML regression errors via a cross validation strategy.  Provided these error estimates and known sensitivities of the crud results to the ML errors one can estimate the expected accuracy of the crud predictions obtained via the hi2lo model.  This allows a user of the hi2lo tool to detect problems with the ML models before using the model to make crud predictions.
+
+As shown in the upper-triangle of figure \ref{fig:asmerrorcorr} a Student-T test was conducted on the slope of each fitted linear trend model.  The null hypothesis was taken to be a slope of 0.  One can conclude that a  sample size greater than 25 pins should be used in future work to investigate the relative influence of machine learning errors on the predicted crud errors.  The standard deviation of the computed sensitivities is high when using a small sample size making it difficult to rigorously conclude that errors made by the machine learning models correspond to errors in the crud predictions.  
+
+Statistically significant trends were found between the RMS error committed by the TKE quantile regressors and the crud boron and mass distribution errors, as measured by root-mean-squared error.  
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.95\linewidth]{figs/5x5/imp/asm_error_corr}
@@ -495,7 +509,9 @@ Pin  & RMS & RMS & RMS & RMS & RMS & RMS & RMS \\
 
 
 \begin{itemize}
-    \item A leave one out cross validation strategy was utilized to quantify the predicted performance of the model.  For this cross validation strategy the model was trained on data provided by 24 pins.  Predictions were made for the left-out pin and compared against the expected results.  This process was repeated for all 25 pins in the assembly.
-
-	\item The copula classifier performed poorly given the current set of considered explanatory variables.  Future work is required to identify additional predictors to include in the explanatory variable set.  However, figures () and () show that the selected copula model family (eg. Gumbel, Frank, Clayton or Gaussian) does not influence the integrated crud result on a patch or pin as strongly as the rank correlation coefficient, Kendall's tau.
+    \item Crud predictions made by the hi2lo model were compared against CFD/crud coupled results and stanalone CTF/crud results.  The Hi2lo model produced crud results closer to the CFD result than the CTF result, as anticipated.  The overall crud mass results for the 5x5 assembly favorably compared against the gold-standard CFD assembly integrated results. 
+    \item A leave one out cross validation strategy was utilized to quantify the predictive performance of the model.  
+    \item The prediction accuracy of the temperature and TKE quantile regression models was summarized though Q-Q plots for each pin in the LOO cross validation study.
+    \item The prediction accuracy of the Kendall's $\tau$ regression model was assessed using the root-mean-square error for each pin in the LOO cross validation study.  \item Correlations between the errors committed by the machine learning models and the crud prediction errors were computed.  High uncertainty associated with these correlation measures did not permit a statistically significant link between poor Kendall's $\tau$ predictive performance and poor crud predictions to be drawn.
+	\item The copula classifier performed poorly given the current set of considered explanatory variables and limited size of the training data set.  A Gaussian copula was assumed on each CTF face in place of the poorly predicted copula family from the classifier.  Recalling the results shown in \ref{sec:crud_copula_sensi}, this is not expected to reduce crud prediction accuracy.
 \end{itemize}

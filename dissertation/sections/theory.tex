@@ -151,15 +151,9 @@ f_{j,q''} = \delta_{(q''_{j, \mathrm{ctf}})}
 
 \subsubsection{Non Parametric Representations of Univariate Distributions}
 
-\begin{itemize}
-    \item (\checkmark-) Introduce non-parametric representation of univariate distributions through sample quantiles.
-    \item ($\cdot$) Explain typical alternatives and why they are not suitable:
-        \begin{itemize}
-            \item Compute sample moments.  Use method of moments to fit a model to sample moments.
-            \item Compute sample cumulants.  Use sample cumulants to build an Edgeworth series.
-            \item Do cumulants or traditional moments behave in a predictable manner as a function of local core conditions?  Do the quantiles behave in a predictable manner?
-        \end{itemize}
-\end{itemize}
+
+
+Let the quantile function be represented by $Q=F^{-1}$ where $F$ is a cumulative density function.
 
 \begin{figure}[H]
     \centering
@@ -197,23 +191,20 @@ In order to estimate a sample quantile, $\hat q_\tau$, given the empirical CDF $
 
 
 
-\begin{itemize}
-        \item (\checkmark) Compute sample quantiles.
-        \item (\checkmark) Building a cumulative density function from sample quantiles.
-        \begin{itemize}
-           \item Piecewise linear CDF leads to histogram PDF.
-           \item PCHIP spline CDF preserves monotonicity of CDF and results in a smooth PDF. \cite{Fritsch80}
-        \end{itemize}
-        \item (\checkmark) Sampling from a known CDF via inverse transform sampling.
-        \item (\checkmark-) Show that the order statistics are distributed according to a Gaussian distribution.
-        \item (\checkmark-) Show that sample quantiles also follow a Gaussian distribution.  This directly follows from the distribution of the order statistics.
-            The sample quantiles are distributed normally according to equation \ref{eq:theory_qdist_1}.
-        \begin{eqnarray}
-        q_p &\sim \mathcal N \left( F_T^{-1}(p), \sigma^2_{q_p} \right) \\
-        \sigma^2_{q_p} &= \frac{p(1 - p)}{n[f_T(F_T^{-1}(p))]^2}
-        \label{eq:theory_qdist_1}
-        \end{eqnarray}
+In this work, a set of sample quantiles are used to construct a step-wise cumulative distribution, which in turn is used to build a histogram.  In place of the stepwise representation, a piecewise cubic hermite interpolating polynomial (PHCIP) can be fit to the stepwise conditional quantile distribution to generate a differentiable CDF.
+The PCHIP interpolation preserves monotonicity of the CDF if the provided quantiles are strictly monotone.  This condition is enforced in the software; any violation of the monotone restriction would indicate a software bug in the quantile regression code.  Inverse transform sampling is used to draw samples from the univariate distributions.
+
+Other strategies to model univariate density functions are abundant.  One alternative is to use a set of sample moments.  Next, a set of moment conditions is defined for the target parametric model.  Then the method of moments can be used to fit the parametric model to sample moments.  Non-parametric extension of the method of moments exist (refs).  
+
+Another possibility is to compute the sample cumulants.  The sample cumulants can be used to build an Edgeworth series expansion. It remains as future word to determine if cumulants or traditional moments behave in a predictable manner as a function of local core conditions.
         
+It can be shown that the sample quantiles are distributed according to \ref{eq:theory_qdist_1} [ref].  This directly follows from the distribution of the order statistics.
+
+\begin{eqnarray}
+    q_p &\sim \mathcal N \left( F_T^{-1}(p), \sigma^2_{q_p} \right) \\
+    \sigma^2_{q_p} &= \frac{p(1 - p)}{n[f_T(F_T^{-1}(p))]^2}
+    \label{eq:theory_qdist_1}
+\end{eqnarray}
 
 
 \begin{figure}[]%
@@ -245,12 +236,8 @@ In order to estimate a sample quantile, $\hat q_\tau$, given the empirical CDF $
 \end{figure}
 
 
-        \item ($\cdot$) Show the impact of the uncertainty in where the sample quantiles fall given CFD data on crud growth.  The reconstructed CDFs which comprise the hi2lo mapping are essentially fuzzy which means the temperature, TKE, and BHF distributions are artificially smeared out (artificially high densities in the tails).
-\end{itemize}
 
-\begin{itemize}
-    \item (\checkmark-) The sampled temperatures may be tallied over each CTF face to estimate the fractional area that exceeds some threshold temperature.
-    The probability of exceeding a threshold temperature is shown in equation \ref{eq:pr_thresh}.
+The sampled temperatures may be tallied over each CTF face to estimate the fractional area that exceeds some threshold temperature.  The probability of exceeding a threshold temperature is shown in equation \ref{eq:pr_thresh}.
     
     \begin{equation}
     p_e = Pr(T > T^*) = 1 - \int_0^{T^*} f_T dT
@@ -279,20 +266,16 @@ In order to estimate a sample quantile, $\hat q_\tau$, given the empirical CDF $
     &= \frac{\partial}{\partial q_p} \left( -F_T(q_p) + F_T(0) \right) \nonumber \\
     &= -f_T(q_p)
     \end{eqnarray}
-    
     This dictates that estimates of extreme upper tail integrals carry large relative uncertainties.
-    \item The approximate large sample distribution for $p_e$ can be obtained by a change of variables, since $p_e$ and $q_p$ are related by:
-    \begin{equation}
-    q_p = F_T^{-1}(1 - p_e)
-    \end{equation}
     
-    Where $F_T^{-1}$ is the inverse CDF.  $p_e$ is distributed according to:
-    
-    \begin{equation}
-    f_{p_e} = f_{q_p} \left( F_T^{-1}(1-p_e), \sigma_{q_p}(p_e) \right) \cdot \left|{ \frac{\partial}{\partial p_e} F^{-1}(1-p_e) } \right|
-    \end{equation}
-    
-\end{itemize}
+%    The approximate large sample distribution for $p_e$ can be obtained by a change of variables, since $p_e$ and $q_p$ are related by:
+%    \begin{equation}
+ %   q_p = F_T^{-1}(1 - p_e)
+%    \end{equation}   
+%    Where $F_T^{-1}$ is the inverse CDF.  $p_e$ is distributed according to: 
+%    \begin{equation}
+%    f_{p_e} = f_{q_p} \left( F_T^{-1}(1-p_e), \sigma_{q_p}(p_e) \right) \cdot \left|{ \frac{\partial}{\partial p_e} F^{-1}(1-p_e) } \right|
+%    \end{equation}
 
 
 \subsection{Gradient Boosted Regression Trees}
@@ -407,7 +390,7 @@ In the case that the proposal and target copula densities are assumed to be the 
 
 In this work the target and proposal copula are taken to be the same function.
 
-In some scenarios the proposal or target density is only known up to a constant, e.g. $h^* = c h(x)$.  In this case the probability ratio is known up to a constant of proportionality and requires normalization: 
+In some scenarios the proposal or target density is only known up to a constant, e.g. $h^* = c h(x)$.  In this case the probability ratio is known up to a constant of proportionality and requires renormalization: 
 
 \begin{equation}
 \E(\mathcal G(x)) \approx \frac{ \sum_i^N \mathcal G_i(x) \omega_i(x)}{\sum_i^N \omega_i(x)}
@@ -503,4 +486,71 @@ The crud stepping strategy is explicit in time as the next crud samples can be d
     \label{fig:crudsamplesdt}
 \end{figure}
 
+\section{Method Summary}
+
+The time stepping, importance sampling and surface sample remapping strategies can be included into algorithm \ref{algo:basic_crud_algo} to provide a detailed overview of the hi2lo procedure.  The expanded version of the hi2lo model is given in algorithm \ref{algo:hi2lo_crud_algo}.
+
+\begin{algorithm}[H]
+    \captionsetup{labelfont={sc,bf}, labelsep=newline}
+    \caption{Statistically based hi2lo method for time dependent crud prediction.}
+    \begin{algorithmic}      
+        \STATE \textbf{Initialization}  
+        \STATE (1) Pre-process training set.  
+        \STATE $\ \ $   (1b) Fit the joint distribution parameters to known CFD data: $\theta(\mathbf p, \mathbf z)$.  
+        \STATE $\ \ $   (1c) \textbf{def:}  $\ \theta \leftarrow \mathcal F_M(\mathbf p, \mathbf z | \gamma)$
+        \STATE (2) Train model:  $\hat{\mathcal F_M} =  \mathrm{argmin}_{\mathcal F}$
+        $L(\mathcal{F}_M (\mathbf p, \mathbf z| \gamma), \theta(\mathbf p, \mathbf z)) $
+        \FOR {VERA State, $v$}
+        \FOR {CTF face, $j$}
+          \STATE Evaluate ML model $\hat \theta_j \leftarrow \hat{\mathcal F_M}(\mathbf p_j, \mathbf z_j)$ \;
+          \STATE Reconstruct margins (CDFs) from quantiles  \\
+            $\ \ F_T= Q^{-1}(T; \{\hat{\theta}_\tau\})$ , $F_k= Q^{-1}(k; \{\hat{\theta}_\tau\})$
+          \STATE Def $q''$ margin  $f_{q''} = \delta_{(q''_\mathrm{j,ctf})}$
+          \STATE Reconstruct joint distribution $\hat h_j(\cdot |\hat \theta_j) = \hat f_T \hat f_k f_{q''} c(T, k; \hat \theta_c)$ \;
+        \ENDFOR
+          \FOR {Resample time step, $\Delta t_s$}
+            \FOR {CTF face, $j$}
+              \STATE Def importance sampling distribution $\tilde h = \tilde f_T(T; \beta_T) \tilde f_k(k; \beta_k)c(T, k; \hat \theta_c) $
+              \STATE Draw samples $\mathbf x \sim \tilde h_j$ \;
+              \STATE Compute importance weights $\omega = \hat h_j(\mathbf x) /  \tilde h_j(\mathbf x) $
+              \STATE Re-map samples  $\mathbf x', \omega' \xleftarrow[\text{ }]{\text{R}} \mathbf x, \omega $
+              \STATE Update importance weights by equation \ref{eq:time_sample_weights3}
+              \STATE Evaluate equation \ref{eq:expected_crud} via importance sampling \;
+          \ENDFOR
+        \ENDFOR
+        \ENDFOR
+    \end{algorithmic}
+    \label{algo:hi2lo_crud_algo}
+\end{algorithm}
+
+All model variables which are set at runtime are provided in table \ref{tab:hi2lo_params}.  Recommended settings are also provided by each model parameter.
+
+\begin{table}[h]
+    \begin{center}
+        \caption[Runtime model parameters.]{Runtime hi2lo model parameters.}
+        \begin{tabular}[h]{|l | l | L | }
+            \hline
+            Sym & Default Value & Purpose  \\
+            \hline
+            \hline
+            $\Delta t_s$ & 25 $[days]$ &  Re-sampling time step size. \\
+            \hline
+            $M$ & 400 & Number of samples drawn per CTF face. \\
+            \hline
+            $N_{Q_{k}}$ & 20 & Number of quantiles used in TKE marginal distribution reconstruction. \\
+            \hline
+            $N_{Q_{T}}$  & 20 & Number of quantiles used in temperature marginal distribution reconstruction. \\ 
+            \hline
+            $\omega_k$  & 0.6 & TKE weighting factor used to remap samples on the rod surface. \\ 
+            \hline
+            $\omega_T$  & 0.6 & Temperature weighting factor used to remap samples on the rod surface. \\ 
+            \hline
+            $\beta_T$  & $\{0.9, 1.0 \}$ & Beta distribution parameters for temperature importance distribution. \\ 
+            \hline
+            $\beta_k$  & $\{0.9, 0.8 \}$ & Beta distribution parameters for TKE importance distribution. \\ 
+            \hline
+        \end{tabular}
+        \label{tab:hi2lo_params}
+    \end{center}
+\end{table}
 
