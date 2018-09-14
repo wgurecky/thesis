@@ -115,25 +115,25 @@ Next synthetic noise was generated using copula and marginal distribution settin
         \caption{Per-span synthetic data generation settings.}
         \begin{tabular}{|l|l|l|l|l|}
             \hline
-            \bf Span 1 & Node & Node location & Copula Settings  & Margin Settings \\
+            \bf Span 1 & Node & $z$ & Copula Settings  & Margin Settings \\
             \hline
-            $N$: 8000  & 1  & 0.0 & $\Theta_c:$ Gaussian, $\theta_c:-0.6$ &  T:$\beta(5.0, 5.0)$ , k: $\mathcal{N}(0, 0.001)$ \\
-                   & 2  & 2.0 & $\Theta_c:$ Gaussian, $\theta_c:-0.6$ &  T:$\beta(5.0, 5.0)$ , k: $\mathcal{N}(0, 0.001)$   \\
+            $N$: 8000  & 1  & 0.0 & $\Theta_c:$ Gaussian, $\theta_c:-0.6$ &  $T\sim\beta(5.0, 5.0)$,$k\sim\mathcal{N}(0, 0.001)$ \\
+                   & 2  & 2.0 & $\Theta_c:$ Gaussian, $\theta_c:-0.6$ &  $T\sim\beta(5.0, 5.0)$, $k\sim\mathcal{N}(0, 0.001)$   \\
             \hline \hline
-            \bf Span 2 & Node & Node location & Copula Settings  & Margin Settings \\
+            \bf Span 2 & Node & $z$ & Copula Settings  & Margin Settings \\
             \hline
-             $N$: 8000 & 1  & 2.0 & $\Theta_c:$ Clayton-90, $\theta_c: 2.0$ &  T:$\beta(5.0, 2.7)$ , k: $\beta(1.75, 5.0)$ \\
-            & 2  & 2.4 & $\Theta_c:$ Frank-90, $\theta_c: 8.0$ &  T:$\beta(5.0, 1.5)$ , k: $\beta(1.75, 5.0)$   \\
+             $N$: 8000 & 1  & 2.0 & $\Theta_c:$ Clayton-90, $\theta_c: 2.0$ &  $T\sim\beta(5.0, 2.7)$, $k\sim\beta(1.75, 5.0)$ \\
+            & 2  & 2.4 & $\Theta_c:$ Frank-90, $\theta_c: 8.0$ &  $T\sim\beta(5.0, 1.5)$, $k\sim\beta(1.75, 5.0)$   \\
             \hline \hline
-            \bf Span 3 & Node & Node location & Copula Settings  & Margin Settings \\
+            \bf Span 3 & Node & $z$ & Copula Settings  & Margin Settings \\
             \hline
-             $N$: 8000 & 1  & 2.4 & $\Theta_c:$ Clayton-90, $\theta_c: 2.0$ &  T:$\beta(5.0, 2.7)$ , k: $\beta(1.75, 5.0)$ \\
-            & 2  & 2.8 & $\Theta_c:$ Frank-90, $\theta_c: 8.0$ &  T:$\beta(5.0, 1.5)$ , k: $\beta(1.75, 5.0)$   \\
+             $N$: 8000 & 1  & 2.4 & $\Theta_c:$ Clayton-90, $\theta_c: 2.0$ &  $T\sim\beta(5.0, 2.7)$, $k\sim\beta(1.75, 5.0)$ \\
+            & 2  & 2.8 & $\Theta_c:$ Frank-90, $\theta_c: 8.0$ &  $T\sim\beta(5.0, 1.5)$, $k\sim\beta(1.75, 5.0)$   \\
             \hline \hline
-            \bf Span 4 & Node & Node location & Copula Settings  & Margin Settings \\
+            \bf Span 4 & Node & $z$ & Copula Settings  & Margin Settings \\
             \hline
-            $N$: 8000 & 1  & 2.8 & $\Theta_c:$ Clayton-90, $\theta_c: 2.0$ &  T:$\beta(5.0, 2.7)$ , k: $\beta(1.75, 5.0)$ \\
-            & 2  & 3.6 & $\Theta_c:$ Frank-90, $\theta_c: 8.0$ &  T:$\beta(5.0, 1.5)$ , k: $\beta(1.75, 5.0)$   \\
+            $N$: 8000 & 1  & 2.8 & $\Theta_c:$ Clayton-90, $\theta_c: 2.0$ &  $T\sim\beta(5.0, 2.7)$, $k\sim\beta(1.75, 5.0)$ \\
+            & 2  & 3.6 & $\Theta_c:$ Frank-90, $\theta_c: 8.0$ &  $T\sim \beta(5.0, 1.5)$, $k\sim\beta(1.75, 5.0)$   \\
             \hline
         \end{tabular}
         \label{tab:synth_settings}
@@ -179,7 +179,7 @@ The augmented surface temperature and turbulent kinetic energy fields shown if f
 
 The rod surface is subdivided into CTF faces before fitting and reconstructing the synthetic data.  The location and extent of the CTF faces on the rod surface can be determined from a CTF output file.  
 
-In each face the empirical quantile distribution of temperature, turbulent kinetic energy, and boundary heat flux distributions are computed.  The number and spacing of quantiles used in the empirical quantile distribution is user specified.  Copula are fit to the synthetic data based on maximum likelihood and the Akaike information criterion (AIC) in each CTF face.  Maximum likelihood estimation is described in section \ref{sec:fitting_copula} and the AIC may be computed from equation \ref{eq:cop_aic}.
+In each face the empirical quantile distributions of temperature, turbulent kinetic energy, and boundary heat flux distributions were computed.  The number quantiles used in the empirical quantile distribution was set at 20.  A uniform spacing of quantiles was used.  Copula were fit to the synthetic data based on maximum likelihood and the Akaike information criterion (AIC) in each CTF face.  Maximum likelihood estimation is described in section \ref{sec:fitting_copula} and the AIC may be computed from equation \ref{eq:cop_aic}.
 
 For the synthetic single pin data the hi2lo predicted fractional surface area above a saturation temperature threshold ($T_{sat}$) is shown in figure \ref{fig:frac_a}.
 
@@ -194,7 +194,7 @@ For the synthetic single pin data the hi2lo predicted fractional surface area ab
 
 Provided that crud growth exhibits a temperature thresholding behavior about the saturation point it is important to predict the fractional area of the rod surface which exists above this critical temperature. Figure \ref{fig:frac_a} shows a substantial difference in the fractional area predicted above the saturation point in each CTF face when utilizing the hi2lo model rather than the predictions generated from a CTF computation alone.  The more significant the thresholding behavior of crud growth, the more important it becomes to accurately compute areas of the rod surface in excess of the saturation point.
 
-Figure \ref{fig:patchscatter} examines the surface frequency distributions of temperature, crud boron mass and TKE for the CTF patch denoted by the red box in figures \ref{fig:hi2lopincmass} and \ref{fig:hi2lopintke}.  A marked change in behavior of the crud boron mass vs cladding surface temperature scatter plot is exhibited at $\approx 619[K]$.  For samples which fell at or below this temperature, little crud was grown and thus the deposited crud boron mass is small.  Past this temperature threshold, there is an approximately linear relationship between the surface temperature and the crud deposition rate.  
+Figure \ref{fig:patchscatter} examines the surface frequency distributions of temperature, crud boron mass and TKE for the CTF patch denoted by the red box in figure \ref{fig:hi2lo_tke_t}.  A marked change in behavior of the crud boron mass vs cladding surface temperature scatter plot is exhibited at $\approx 619[K]$.  For samples which fell at or below this temperature, little crud was grown and thus the deposited crud boron mass is small.  Past this temperature threshold, there is an approximately linear relationship between the surface temperature and the crud deposition rate.  
 
 An additional feature of note in figure  \ref{fig:patchscatter} is the shape of the TKE vs. surface temperature scatter plot.  The dependence structure exhibits tighter coupling between these two fields at lower TKE values and less correlation at higher TKE.  This behavior was imposed by specifying a clayton copula in this location on the rod surface with the copula parameters given in table \ref{tab:synth_settings}.  The ability of the copula fitting routines to correctly preserve this skewed dependence structure is demonstrated in the figure and could not be achieved with Gaussian models.
 
@@ -205,35 +205,48 @@ An additional feature of note in figure  \ref{fig:patchscatter} is the shape of 
     \label{fig:patchscatter}
 \end{figure}
 
-After samples are independently drawn in each CTF face the temperature, TKE, and boundary heat flux samples were passed to a crud simulation packages as the cladding-side boundary conditions.  The CTF bulk fluid properties were used as the coolant-side boundary conditions.  The crud simulation was stepped forward for 300 days with a resample step size of 50 days.  400 samples per CTF face were drawn at each resampling event. The resultant crud distribution at 300 days is given in figure \ref{fig:hi2lopincmass}.
-
-\begin{figure}[H]
+\begin{figure}[H]%
     \centering
-    \includegraphics[width=0.8\linewidth]{figs/synth/hi2lo/hi2lo_pin_cmass}
-    \caption[Single pin crud mass distribution from synthetic TH data.]{Single pin crud mass distribution from synthetic TH data at 160\% nominal power conditions at 300 days simulation time.}
-    \label{fig:hi2lopincmass}
-\end{figure}
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.8\linewidth]{figs/synth/hi2lo/hi2lo_pin_t}
-    \caption{Single pin temperature distribution from synthetic TH data at 160\% nominal power conditions at 300 days.}
-    \label{fig:hi2lopint}
-\end{figure}
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.8\linewidth]{figs/synth/hi2lo/hi2lo_pin_tke}
-    \caption{Single pin surface TKE distribution from synthetic TH data at 160\% nominal power conditions at 300 days.}
-    \label{fig:hi2lopintke}
+    \subfloat[Hi2lo temperature reconstruction.]{{\includegraphics[width=0.45\linewidth]{figs/synth/best_fit/struct_pin_twall} }}%
+    \qquad
+    \subfloat[Hi2lo TKE reconstruction.]{{\includegraphics[width=0.45\linewidth]{figs/synth/best_fit/struct_pin_tke_marked} }}%
+    \caption{Hi2lo reconstruction of 2D surface temperature and TKE fields from synthetic CFD data source. }%
+    \label{fig:hi2lo_tke_t}%
 \end{figure}
 
-% \begin{figure}[H]%
-%     \centering
-%     \subfloat[Hi2lo patch cladding wall temperature spatial distrubtion]{{\includegraphics[width=0.45\linewidth]{figs/synth/hi2lo/hi2lo_patch_t} }}%
-%     \qquad
-%     \subfloat[Hi2lo patch TKE spatial distrubtion.]{{\includegraphics[width=0.45\linewidth]{figs/synth/hi2lo/hi2lo_patch_tke} }}%
-%     \caption[]{Single hi2lo patch sample reordering demonstration.}%
-%     \label{fig:reshuffle_a}%
-% \end{figure}
+
+After samples are independently drawn in each CTF face the temperature, TKE, and boundary heat flux samples were passed to a crud simulation packages as the cladding-side boundary conditions.  The CTF bulk fluid properties were used as the coolant-side boundary conditions.  The crud simulation was stepped forward for 300 days with a resample step size of $\Delta t_s =50$ days.  400 samples per CTF face were drawn at each resampling event. The resultant crud distribution at 300 days is given in figure \ref{fig:hi2lopincmass}.  Good agreement between the hi2lo predictions and the target synthetic data for the axial crud, temperature, and TKE distributions is exhibited.
+
+\begin{figure}[H]%
+    \centering
+    \subfloat[Hi2lo axial crud thickness.]{{\includegraphics[width=0.45\linewidth]{figs/synth/best_fit/struct_pin_z_cthick300} }}%
+    \qquad
+    \subfloat[Hi2lo axial crud mass desnity.]{{\includegraphics[width=0.45\linewidth]{figs/synth/best_fit/struct_pin_z_cmass_300} }}%
+    \caption{Hi2lo axial crud results compared to synthetic CFD/crud results at 300 days simulation time. }%
+    \label{fig:hi2lopincmass}%
+\end{figure}
+
+
+Table \label{tab:crud_totals_1} summarizes the hi2lo crud predictions for the synthetic single pin data set.  Good agreement is seen for the rod-integrated crud results.  Again, the hi2lo model was not used in a predictive manner and this represents a best-case scenario in which the copula and marginal distribution parameters can be directly estimated from the known (synthetic) CFD and CTF data sets.
+
+\begin{table}[h]
+    \begin{center}
+        \caption[Crud totals for synthetic and hi2lo models.]{Single pin crud totals at 300 days.}
+        \begin{tabular}[h]{|l | l | l |}
+            \hline
+            Copula, $\Theta_c$ & Crud Boron Total: $C_B$ & Crud Mass Total: $C_m$ \\
+            \hline  \hline
+            Synthetic CFD &  2.79049E-4 $[g]$ & 5.34151E-1 $[g]$ \\
+            Hi2lo Reconstruction &  2.78012E-4  $[g]$ & 5.32146E-1 $[g]$ \\
+            \hline
+            Rel Diff &  0.374 $[\%]$ & 0.377 $[\%]$ \\
+            \hline
+        \end{tabular}
+        \label{tab:crud_totals_1}
+    \end{center}
+\end{table}
+
+
 
 \subsubsection{Crud Copula Parameter Sensitivity}
 \label{sec:crud_copula_sensi}
@@ -269,14 +282,14 @@ Next, two full single pin scenarios were considered. In the first scenario, show
             Best Fit &  2.78953e-04 $[g]$ & 5.34015e-01 $[g]$ \\
             Gaussian &  2.78301e-04 $[g]$ & 5.32769e-01 $[g]$ \\
             \hline
-            Rel Diff &  0.01724 $[\%]$ & 0.23396 $[\%]$ \\
+            Rel Diff &  0.017 $[\%]$ & 0.234 $[\%]$ \\
             \hline
         \end{tabular}
         \label{tab:crud_totals_copula}
     \end{center}
 \end{table}
 
-The choice of the copula family, $\Theta_c$, has a negligible impact on the integrated crud results over a pin.  This result can reduce the complexity of the hi2lo model by removing the need to predict the correct copula family on each CTF patch in the core.  In section (), it is shown that CFD data exhibits a complex relationship between the best fitting copula family and the axial position along the rod.  This relationship is difficult to model using standard classification techniques, though further testing with a larger quantity of training data is warranted to ascertain if the copula family describing the dependence between the temperature and TKE fields on the rod surface can be accurately predicted given local core conditions.
+The choice of the copula family, $\Theta_c$, has a negligible impact on the integrated crud results over a pin.  This result can reduce the complexity of the hi2lo model by removing the need to predict the correct copula family on each CTF patch in the core.  In section \ref{sec:preprocessing} it is shown that CFD data exhibits a complex relationship between the best fitting copula family and the axial position along the rod.  This relationship proved difficult to model using standard classification techniques, though further testing with a larger quantity of training data is warranted to ascertain if the copula family describing the dependence between the temperature and TKE fields on the rod surface can be accurately predicted given local core conditions.
 
 \subsubsection{Crud Sample Size Study}
 
@@ -438,10 +451,10 @@ This is in part due to the minimal computational requirements of sampling the jo
 
 \section{Section Takeaways}
 \begin{itemize}
-        \item Table () and figure () show good rod-integrated crud agreement between the synthetic source data and the predicted results.  Fitting copula and marginal distributions to the sample data, re-sampling from these models, and then growing curd using these samples reproduces the correct total amount of crud at each time step and correctly reproduces the axial distribution of crud as shown in figure ().
+        \item  Good rod-integrated crud agreement between the synthetic source data and the predicted results.  The rod-integrated results were summarized in table \ref{tab:crud_totals_1}.  Fitting copula and marginal distributions to the sample data, re-sampling from these models, and then growing curd using these samples reproduces the correct total amount of crud at each time step and correctly reproduces the axial distribution of crud as shown in figure \ref{fig:hi2lopincmass}.
         \item Increasing the number of samples drawn per CTF patch decreases variance in total crud mass and total precipitated boron estimates.  The number of samples used is an adjustable runtime parameter and can be increased depending on the available computational resources and accuracy desired.
         \item Increasing the number of re-sampling steps per VERA state point reduces variance in the final integrated crud results. 
-        \item After drawing samples from the joint density distribution a reordering of the samples on the rod surface is necessary to preserve hot spot stationarity.  This is required for an optimal time marching sampling strategy.
+        \item After drawing samples from the joint density distribution a reordering of the samples on the rod surface is necessary to preserve hot spot stationarity.  Demonstrated in figure \ref{fig:cmprpintotals0406} and \ref{fig:cmprpintotalsnoremap}, sample remapping with weights of $\omega_T=0.4,\ \omega_k=0.6$ was performed to achieve an optimal time marching sampling strategy.
         \item Importance sampling was shown to reduce the variance in the integrated crud results.
         \item A synthetic data generation tool allows absolute control over the properties of joint distribution of TH boundary conditions which are fed into the crud simulation code.  Since the synthetic data has known statistical properties, this data serves as an important data source for benchmarking and validation operations.
 \end{itemize}
