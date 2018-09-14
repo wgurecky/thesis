@@ -516,7 +516,7 @@ The time stepping, importance sampling and surface sample remapping strategies c
           \STATE Def $q''$ margin  $f_{j,q''} = \delta_{(q''_\mathrm{j,ctf})}$
           \STATE Reconstruct joint distribution $\hat h_j(\cdot |\hat \theta_j) = \hat f_{j,T} \hat f_{j,k} f_{j,q''} c(\hat F_{j,T}, \hat F_{j,k}; \hat \theta_{j,c})$ \;
         \ENDFOR
-          \FOR {Resample time step, $\Delta t_s$}
+          \FOR {Resample time step, $s,\ \Delta t_s$}
             \FOR {CTF face, $j$}
               \STATE Def importance  mixture quantile functions \\
                 $\ \ \tilde Q_{j,k} = \lambda_{0,k} \hat Q_{j,k}  + \lambda_{1,k} Q_{\beta_k}(k; \vartheta_k)$, 
@@ -527,7 +527,10 @@ The time stepping, importance sampling and surface sample remapping strategies c
               \STATE Compute importance weights $\omega = \hat h_j(\mathbf x) /  \tilde h_j(\mathbf x) $
               \STATE Re-map samples  $\mathbf x', \omega' \xleftarrow[\text{ }]{\text{R}} \mathbf x, \omega $
               \STATE Update importance weights by equation \ref{eq:time_sample_weights3}
-              \STATE Evaluate equation \ref{eq:expected_crud} via importance sampling \;
+              \STATE Evaluate equation \ref{eq:expected_crud} via importance sampling \\
+                $\ \ \mathbf C_s = \mathcal G(x'_i; \mathbf C_{s-1}, \mathbf I, \Delta t_s)$ \\
+              \STATE Crud mass at step $s$ in patch $j$:
+                $\ \ C_{s,j,m} = \frac{A_j}{N} \sum_i^N C_{s,i,j,m} \omega'_i$
           \ENDFOR
         \ENDFOR
         \ENDFOR

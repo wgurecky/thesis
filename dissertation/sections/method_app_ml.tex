@@ -30,6 +30,7 @@ For the generation of high fidelity CFD data sets the Westinghouse 5x5 test stan
 
 
 \subsection{Preprocessing}
+\label{sec:preprocessing}
 
 Pre-processing requires paired CFD and CTF results for a given pin generated with consistent boundary conditions between the codes.
 First each of the CFD $\{T,k,q''\}$ fields are aggregated onto the CTF face centers.  In the aggregation procedure spatial information is discarded within each CTF patch.  The aggregated CFD data are associated with a unique CTF face and corresponding local core conditions which comprise the predictive variable set given in table \ref{tab:features}.  The aggregated CFD field distributions are subtracted from the mean CTF predictions in each CTF face and the resultant (CFD-CTF) residual distributions are sored in an HDF5 table along with predictive variables.  
