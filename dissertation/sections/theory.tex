@@ -153,7 +153,7 @@ f_{j,q''} = \delta_{(q''_{j, \mathrm{ctf}})}
 
 
 
-Let the quantile function be represented by $Q=F^{-1}$ where $F$ is a cumulative density function.
+Let the quantile function be represented by $Q=F^{-1}$ where $F$ is a cumulative density function (CDF).
 
 \begin{figure}[H]
     \centering
@@ -182,7 +182,6 @@ In order to estimate a sample quantile, $\hat q_\tau$, given the empirical CDF $
             \label{eq:qtau_est}
 \end{equation}
 
-
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.4\linewidth]{../proposal/slides/seminar_slides/figs/q_loss}
@@ -190,15 +189,14 @@ In order to estimate a sample quantile, $\hat q_\tau$, given the empirical CDF $
     \label{fig:qloss}
 \end{figure}
 
-
 In this work, a set of sample quantiles, $\hat \theta_\tau = \{q_{\tau_0}, \dots, q_{\tau_i}, \dots q_{N_Q} \}$, are used to construct step-wise cumulative distributions, $\hat F$.  $N_Q$ denotes the number of quantiles used in the CDF reconstruction. The stepwise quantile function can be reoved by equation \ref{eq:cdf_from_qtau}.
 
 \begin{equation}
 \hat F_{T}= Q^{-1}(T; \{\hat{\theta}_{\tau} \})
 \label{eq:cdf_from_qtau}
 \end{equation}
-This quantile function can then in turn be used to build a histogram.  In place of the stepwise representation, a piecewise cubic hermite interpolating polynomial (PHCIP) can be fit to the stepwise conditional quantile distribution to generate a differentiable CDF.
-The PCHIP interpolation preserves monotonicity of the CDF if the provided quantiles are strictly monotone \ref{Fritsch80}.  This condition is enforced in the software; any violation of the monotone restriction would indicate a software bug in the quantile regression code.  Inverse transform sampling is used to draw samples from the univariate distributions.
+The reconstructed CDF can then in turn be used to build a histogram.  In place of the stepwise representation, a piecewise cubic hermite interpolating polynomial (PHCIP) can be fit to the stepwise conditional quantile distribution to generate a differentiable CDF.
+The PCHIP interpolation preserves monotonicity of the CDF if the provided quantiles are strictly monotone \cite{Fritsch80}.  This condition is enforced in the software; any violation of the monotone restriction would indicate a software bug in the quantile regression code.  Inverse transform sampling is used to draw samples from the univariate distributions.
 
 Other strategies to model univariate density functions are abundant.  One alternative is to use a set of sample moments.  Next, a set of moment conditions is defined for the target parametric model.  Then the method of moments can be used to fit the parametric model to sample moments.  Non-parametric extensions of the method of moments exist (refs).  
 
@@ -206,22 +204,22 @@ Another possibility is to compute the sample cumulants.  The sample cumulants ca
         
 It can be shown that the sample quantiles are distributed according to \ref{eq:theory_qdist_1} [ref].  This directly follows from the distribution of the order statistics.
 
-\begin{eqnarray}
-    q_p &\sim \mathcal N \left( F_T^{-1}(p), \sigma^2_{q_p} \right) \\
+\begin{align}
+    q_p &\sim \mathcal N \left( F_T^{-1}(p), \sigma^2_{q_p} \right) \nonumber \\
     \sigma^2_{q_p} &= \frac{p(1 - p)}{n[f_T(F_T^{-1}(p))]^2}
     \label{eq:theory_qdist_1}
-\end{eqnarray}
+\end{align}
 
 
 \begin{figure}[]%
     \centering
-    \subfloat[Emperical quantiles for a normal distrubtion. 500 trials shown. $0.1, 0.5, 0.9$ quantiles denoted by dashed verticle lines.]{{\includegraphics[width=0.45\linewidth]{figs/quantile_theory/q_gauss_residual} }}%
+    \subfloat[Emperical quantiles for a normal distrubtion. 500 trials shown. $0.1, 0.5, 0.9$ quantiles denoted by dashed verticle lines.]{{\includegraphics[width=0.3\linewidth]{figs/quantile_theory/q_gauss_residual} }}%
     \qquad
-        \subfloat[Emperical vs theoredical $0.1$ quantile distribution.]{{\includegraphics[width=0.45\linewidth]{figs/quantile_theory/q_gauss_residual_conditional_0_1} }}%
+        \subfloat[Emperical vs theoredical $0.1$ quantile distribution.]{{\includegraphics[width=0.3\linewidth]{figs/quantile_theory/q_gauss_residual_conditional_0_1} }}%
     \qquad
-        \subfloat[Emperical vs theoredical $0.5$ quantile distribution.]{{\includegraphics[width=0.45\linewidth]{figs/quantile_theory/q_gauss_residual_conditional_0_5} }}%
+        \subfloat[Emperical vs theoredical $0.5$ quantile distribution.]{{\includegraphics[width=0.3\linewidth]{figs/quantile_theory/q_gauss_residual_conditional_0_5} }}%
     \qquad
-        \subfloat[Emperical vs theoredical $0.9$ quantile distribution.]{{\includegraphics[width=0.45\linewidth]{figs/quantile_theory/q_gauss_residual_conditional_0_9} }}%
+        \subfloat[Emperical vs theoredical $0.9$ quantile distribution.]{{\includegraphics[width=0.3\linewidth]{figs/quantile_theory/q_gauss_residual_conditional_0_9} }}%
     \qquad
     \caption[Distribution of quantiles for a normally distributed RV.]{Distribution of quantiles for a normally distributed RV: $X \sim \mathcal{N}(0, 1)$.  Theoretical quantile standard deviation given by equation \ref{eq:theory_qdist_1}.}%
     \label{fig:normal_q_theory}%
@@ -229,13 +227,13 @@ It can be shown that the sample quantiles are distributed according to \ref{eq:t
 
 \begin{figure}[H]%
     \centering
-    \subfloat[Emperical quantiles for a beta distrubtion. 500 trials shown. $0.1, 0.5, 0.9$ quantiles denoted by dashed verticle lines.]{{\includegraphics[width=0.45\linewidth]{figs/quantile_theory/q_beta_residual} }}%
+    \subfloat[Emperical quantiles for a beta distrubtion. 500 trials shown. $0.1, 0.5, 0.9$ quantiles denoted by dashed verticle lines.]{{\includegraphics[width=0.3\linewidth]{figs/quantile_theory/q_beta_residual} }}%
     \qquad
-    \subfloat[Emperical vs theoredical $0.1$ quantile distribution.]{{\includegraphics[width=0.45\linewidth]{figs/quantile_theory/q_beta_residual_conditional_0_1} }}%
+    \subfloat[Emperical vs theoredical $0.1$ quantile distribution.]{{\includegraphics[width=0.3\linewidth]{figs/quantile_theory/q_beta_residual_conditional_0_1} }}%
     \qquad
-    \subfloat[Emperical vs theoredical $0.5$ quantile distribution.]{{\includegraphics[width=0.45\linewidth]{figs/quantile_theory/q_beta_residual_conditional_0_5} }}%
+    \subfloat[Emperical vs theoredical $0.5$ quantile distribution.]{{\includegraphics[width=0.3\linewidth]{figs/quantile_theory/q_beta_residual_conditional_0_5} }}%
     \qquad
-    \subfloat[Emperical vs theoredical $0.9$ quantile distribution.]{{\includegraphics[width=0.45\linewidth]{figs/quantile_theory/q_beta_residual_conditional_0_9} }}%
+    \subfloat[Emperical vs theoredical $0.9$ quantile distribution.]{{\includegraphics[width=0.3\linewidth]{figs/quantile_theory/q_beta_residual_conditional_0_9} }}%
     \qquad
     \caption[Distribution of quantiles for a beta distributed RV.]{Distribution of quantiles for a beta distributed RV: $X \sim \beta(1, 2)$}%
     \label{fig:ctf_twall_aug}%
@@ -516,14 +514,15 @@ The time stepping, importance sampling and surface sample remapping strategies c
           \STATE Reconstruct margins (CDFs) from quantiles  \\
             $\ \ \hat F_{j,T}= Q^{-1}(T; \{\hat{\theta}_{j,\tau} \})$ , $\hat F_{j,k}= Q^{-1}(k; \{\hat{\theta}_{j,\tau} \})$
           \STATE Def $q''$ margin  $f_{j,q''} = \delta_{(q''_\mathrm{j,ctf})}$
-          \STATE Reconstruct joint distribution $\hat h_j(\cdot |\hat \theta_j) = \hat f_{j,T} \hat f_{j,k} f_{j,q''} c(T, k; \hat \theta_{j,c})$ \;
+          \STATE Reconstruct joint distribution $\hat h_j(\cdot |\hat \theta_j) = \hat f_{j,T} \hat f_{j,k} f_{j,q''} c(\hat F_{j,T}, \hat F_{j,k}; \hat \theta_{j,c})$ \;
         \ENDFOR
           \FOR {Resample time step, $\Delta t_s$}
             \FOR {CTF face, $j$}
-              \STATE Def importance  mixture densities \\
-                $\ \ \tilde f_{j,k} = \lambda_0 \hat f_{j,k}  + \lambda_1 \beta_k(k; \vartheta_k)$, 
-                $\ \ \tilde f_{j,T} = \lambda_0 \hat f_{j,T}  + \lambda_1 \beta_k(T; \vartheta_T);\ \ \sum_i \lambda_i = 1$
-              \STATE Def importance sampling distribution $\tilde h_j = \tilde f_{j,T} \tilde f_{j,k} c(T, k; \hat \theta_{j,c}) $
+              \STATE Def importance  mixture quantile functions \\
+                $\ \ \tilde Q_{j,k} = \lambda_{0,k} \hat Q_{j,k}  + \lambda_{1,k} Q_{\beta_k}(k; \vartheta_k)$, 
+                $\ \ \tilde Q_{j,T} = \lambda_{0,T} \hat Q_{j,T}  + \lambda_{1,T} Q_{\beta_T}(T; \vartheta_T); $ \\
+                $\ \ \sum_i \lambda_i = 1, \ \ \tilde F_{j,T} = \tilde Q^{-1}_{j,T},\ \  \tilde F_{j,k} = \tilde Q^{-1}_{j,k} $
+              \STATE Def importance sampling distribution $\tilde h_j = \tilde f_{j,T} \tilde f_{j,k} c(\tilde F_{j,T}, \tilde F_{j,k}; \hat \theta_{j,c}) $
               \STATE Draw samples $\mathbf x \sim \tilde h_j$ \;
               \STATE Compute importance weights $\omega = \hat h_j(\mathbf x) /  \tilde h_j(\mathbf x) $
               \STATE Re-map samples  $\mathbf x', \omega' \xleftarrow[\text{ }]{\text{R}} \mathbf x, \omega $
@@ -558,10 +557,17 @@ All model variables which are set at runtime are provided in table \ref{tab:hi2l
             \hline
             $\omega_T$  & 0.4 & Temperature weighting factor used to remap samples on the rod surface. \\ 
             \hline
-            $\vartheta_T$  & $\{0.9, 1.0 \}$ & Beta distribution parameters for temperature importance distribution. \\ 
+            $\vartheta_T$  & $\{1.0, 0.9 \}$ & Beta distribution parameters for temperature importance distribution. \\ 
             \hline
-            $\vartheta_k$  & $\{0.9, 0.8 \}$ & Beta distribution parameters for TKE importance distribution. \\ 
+            $\vartheta_k$  & $\{1.1, 1.2 \}$ & Beta distribution parameters for TKE importance distribution. \\ 
             \hline
+            $\lambda_{0,T},\lambda_{1,T}$  & $\{0.6, 0.4 \}$ & Mixture weighting parameters for temperature importance distribution. \\ 
+            \hline
+            $\lambda_{0,k},\lambda_{1,k}$  & $\{0.7, 0.3 \}$ & Mixture weighting parameters for TKE importance distribution. \\ 
+            \hline
+
+            \hline
+
         \end{tabular}
         \label{tab:hi2lo_params}
     \end{center}

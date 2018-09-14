@@ -332,12 +332,16 @@ The choice of importance distribution is informed by the crud response.  To comp
 The optimal importance distribution depends on the crud response surface and the TH probability density function.  Though an optimal importance distribution can be found [ref], the minimization problem is not solved in this work and is left as an avenue for future investigation.
 Although the theoretically optimal importance distribution is not achieved in this work, a locally adaptive importance function was adopted based on a distribution mixing approach.  The importance distribution can be made to depend on the temperature and TKE marginal distributions in a particular CTF face.  The temperature and TKE distributions in each CTF face are mixed with a beta distribution who's parameters are set at runtime of the hi2lo tool.  
 
-\begin{equation}
-Q(\tilde{p}) = \sum_i^m a_{qi} Q_i(\tilde{p})
-\end{equation}
-Where $Q_i$ are the quantile functions as $a_{qi}$ are the weights.
+The importance  mixture quantile functions are defined in equations \ref{eq:imp_mix_k} and \ref{eq:imp_mix_T}.
 
-Beta distributions with proscribed parameters are used in mixture with the original temperature and TKE density functions to produce a proposal density distribution for each patch.  The mixture weights can be adjusted.  This approach yields flexibility in the design of proposal density and by suitably tuning the parameters of the beta distributions.  Shown in figure \ref{fig:imp_sample2}, the sampling distribution can be skewed towards higher temperatures and lower TKE.
+\begin{align}
+\tilde Q_{j,k} &= \lambda_{0,k} \hat Q_{j,k}  + \lambda_{1,k} Q_{\beta_k}(k; \vartheta_k),  \label{eq:imp_mix_k} \\
+\tilde Q_{j,T} &= \lambda_{0,T} \hat Q_{j,T}  + \lambda_{1,T} Q_{\beta_T}(T; \vartheta_T);  \label{eq:imp_mix_T} \\
+\sum_i \lambda_i &= 1, \ \ \tilde F_{j,T} = \tilde Q^{-1}_{j,T},\ \  \tilde F_{j,k} = \tilde Q^{-1}_{j,k}
+\end{align}
+Where $\tilde Q_{j,T}$ is the quantile importance sampling temperature distribution in the $j^{th}$ CTF face. $\lambda_i$ are user set mixture weights. Standard Monte Carlo sampling can be recovered by setting $\lambda_{0,k}=1,\ \lambda_{0,T}=1$ and  $\lambda_{1,k}=0,\ \lambda_{1,T}=0$.
+
+Beta distributions, with quantile functions $Q_{\beta_k}$ and $Q_{\beta_T}$,  with proscribed parameters, $\{ \vartheta_k, \vartheta_T \}$, are used in mixture with the original target temperature and TKE density functions to produce a proposal density distribution for each patch.  To provide additional flexibility in the design of proposal density, the mixture weights can be adjusted. By suitably tuning the parameters of the beta distributions and mixture weights, one can target the hot locations of the rod which occur in coincidence with low TKE.  Mixture settings denoted in table \ref{tab:hi2lo_params} were adopted for this work.  Shown in figure \ref{fig:imp_sample2}, the sampling distribution can be skewed towards higher temperatures and lower TKE.
 
 \begin{figure}[H]%
     \centering
@@ -358,7 +362,7 @@ Beta distributions with proscribed parameters are used in mixture with the origi
     \label{fig:imp_sample1}%
 \end{figure}
 
-In figures \ref{fig:importancettkebmassscatter} the relative importance weight is denoted by the size of each point in the scatter plot.  Samples which have a small ratio $(h_i/\tilde h_i)$ appear as small points.  The sample weight is analogous to the rod surface area occupied by the sample.  In comparison, figure \ref{fig:originalttkebmassscatter} shows the same patch using a standard Monte Carlo sampling where each sample has the same weight.  The number of samples drawn in the upper tail of the temperature distribution is greater when importance sampling is applied, though these samples carry expectedly small sample weights.
+In figure \ref{fig:importancettkebmassscatter} the relative importance weight is denoted by the size of each point in the scatter plot.  Samples which have a small ratio $(h_i/\tilde h_i)$ appear as small points.  The sample weight is analogous to the rod surface area occupied by the sample.  In comparison, figure \ref{fig:originalttkebmassscatter} shows the same patch using a standard Monte Carlo sampling where each sample has the same weight.  The number of samples drawn in the upper tail of the temperature distribution is greater when importance sampling is applied, though these samples carry expectedly small sample weights.
 
 \begin{figure}[H]
     \centering
