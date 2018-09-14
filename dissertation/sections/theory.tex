@@ -172,13 +172,14 @@ The quantile loss function is given by equation \ref{eq:qloss_fn}.
 \label{eq:qloss_fn}
 \end{equation}
 Where $\mathbb{I}$ is the indicator function which returns 1 if the argument is true and 0 otherwise.
-In order to estimate a sample quantile, $\hat q_\tau$, given the empirical CDF $F$, minimize: $\E[\rho_\tau(T - q_\tau)]$ where $T$ is a random variable distributed according to $F_T$.
+In order to estimate a sample quantile, $\hat q_\tau$, given the empirical CDF $F$, minimize: $\E[\rho_\tau(T - q_\tau)]$ where $T$ is a random variable distributed according to $F_T$.  Considering a sample set $\{T_0, \dots T_N \}$ the desired quantile $q_\tau$ may be estimated by equation \ref{eq:qtau_est}.
 \begin{equation}
             \left.\begin{aligned}
-            \hat q_{\tau_i} &= argmin_{q_\tau} \E[\rho(u)];\ \  u = T - q_\tau  \\
+            \hat q_{\tau} &= argmin_{q_\tau} \E[\rho(u)];\ \  u = T - q_\tau  \\
             \approx & argmin_{q_\tau}  \frac{1}{N} \sum_i^N \rho(u_i); \ u_i = T_i - q_\tau \\
             \approx & argmin_{q_\tau} \left[ (1-\tau) \sum_{T \leq q_\tau}( T_i - q_\tau ) - \tau \sum_{T > q_\tau} (T_i - q_\tau) \right]
             \end{aligned}\right.
+            \label{eq:qtau_est}
 \end{equation}
 
 
@@ -190,11 +191,16 @@ In order to estimate a sample quantile, $\hat q_\tau$, given the empirical CDF $
 \end{figure}
 
 
+In this work, a set of sample quantiles, $\hat \theta_\tau = \{q_{\tau_0}, \dots, q_{\tau_i}, \dots q_{N_Q} \}$, are used to construct step-wise cumulative distributions, $\hat F$.  $N_Q$ denotes the number of quantiles used in the CDF reconstruction. The stepwise quantile function can be reoved by equation \ref{eq:cdf_from_qtau}.
 
-In this work, a set of sample quantiles are used to construct a step-wise cumulative distribution, which in turn is used to build a histogram.  In place of the stepwise representation, a piecewise cubic hermite interpolating polynomial (PHCIP) can be fit to the stepwise conditional quantile distribution to generate a differentiable CDF.
-The PCHIP interpolation preserves monotonicity of the CDF if the provided quantiles are strictly monotone.  This condition is enforced in the software; any violation of the monotone restriction would indicate a software bug in the quantile regression code.  Inverse transform sampling is used to draw samples from the univariate distributions.
+\begin{equation}
+\hat F_{T}= Q^{-1}(T; \{\hat{\theta}_{\tau} \})
+\label{eq:cdf_from_qtau}
+\end{equation}
+This quantile function can then in turn be used to build a histogram.  In place of the stepwise representation, a piecewise cubic hermite interpolating polynomial (PHCIP) can be fit to the stepwise conditional quantile distribution to generate a differentiable CDF.
+The PCHIP interpolation preserves monotonicity of the CDF if the provided quantiles are strictly monotone \ref{Fritsch80}.  This condition is enforced in the software; any violation of the monotone restriction would indicate a software bug in the quantile regression code.  Inverse transform sampling is used to draw samples from the univariate distributions.
 
-Other strategies to model univariate density functions are abundant.  One alternative is to use a set of sample moments.  Next, a set of moment conditions is defined for the target parametric model.  Then the method of moments can be used to fit the parametric model to sample moments.  Non-parametric extension of the method of moments exist (refs).  
+Other strategies to model univariate density functions are abundant.  One alternative is to use a set of sample moments.  Next, a set of moment conditions is defined for the target parametric model.  Then the method of moments can be used to fit the parametric model to sample moments.  Non-parametric extensions of the method of moments exist (refs).  
 
 Another possibility is to compute the sample cumulants.  The sample cumulants can be used to build an Edgeworth series expansion. It remains as future word to determine if cumulants or traditional moments behave in a predictable manner as a function of local core conditions.
         
@@ -295,10 +301,10 @@ The modern gradient boosting algorithm was developed by Friedman et. al. (1998) 
 \end{equation}
 Where $L(\cdot)$ is a differentiable loss function.  $\mathbf p$ are known as predictive features and $y$ is the response.  The paired set $\{\mathbf p, y \}$ is referred to as the training data set.  In the standard gradient boosting algorithm the functional form of $F$ is chosen to be an additive model of the form \ref{eq:single_cart_model}:
 \begin{equation}
-F(\mathbf p; \mathbf{\beta}, \mathbf a) = \sum_{m=0}^M \beta_m h(\mathbf p; a_m)
+F(\mathbf p; \mathbf{b}, \mathbf a) = \sum_{m=0}^M b_m h(\mathbf p; a_m)
 \label{eq:single_cart_model}
 \end{equation} 
-Where $M$ is the number of constituent sub-models and $\{ \beta_m, a_m\}$ are coefficients and free parameters requiring fitting in each sub-model.
+Where $M$ is the number of constituent sub-models and $\{b_m, a_m\}$ are coefficients and free parameters requiring fitting in each sub-model.
 Rather than fitting all sub-models simultaneously, 
 gradient tree boosting greedily fits decision trees to the gradient of the loss function in a stage wise fashion as shown in algorithm \ref{alg:boosting}.  In the literature the vector of gradients is sometimes referred to as the pseudo residuals vector since if the loss function is taken to be the L2 loss, the gradient of the loss is proportional to the residual vector, $(y - \hat {\mathcal F_{m}})$.  
 
@@ -321,12 +327,14 @@ Each sub-model is referred to as a weak learner and is defined to be a typical c
             \STATE $r_{im} = -\frac{\partial L(y_i, F_{m-1}(p_i))}{\partial F_{m-1}(p_i)}$
         \ENDFOR
         
-        \STATE Fit a weak learner $h_m(p; a_m)$ to pseudo-residuals, $r_{m}$: Training data set is $\{(p_i, r_{im})\}_{i=1}^n$ \;
+        \STATE Fit a weak learner $h_m(p; a_m)$ to pseudo-residuals, $r_{m}$: \\
+            $\ \ \ h^* = \underset{a_m}{\operatorname{arg\,min}}(||h_m(p; a_m) - r_m||)$ \\
+            $\ \ $ Training data set is $\{(p_i, r_{im})\}_{i=1}^n$ \;
         
         \STATE Compute multiplier $\gamma_m$ :
-        $\gamma_m = \underset{\gamma}{\operatorname{arg\,min}} \sum_{i=1}^n L\left(y_i, F_{m-1}(p_i) + \gamma h_m(p_i)\right)$\;
+        $\gamma_m = \underset{\gamma}{\operatorname{arg\,min}} \sum_{i=1}^n L\left(y_i, F_{m-1}(p_i) + \gamma h^*_m(p_i)\right)$\;
         \STATE Update the model:
-        $F_m(p) = F_{m-1}(p) + \nu \gamma_m h_m(p).$
+        $F_m(p) = F_{m-1}(p) + \nu \gamma_m h^*_m(p).$
     
     \ENDFOR
     \STATE Output $F_M(p).$
@@ -399,6 +407,7 @@ In some scenarios the proposal or target density is only known up to a constant,
 \end{equation}
 
 This is known as self normalizing importance sampling.  Traditional importance sampling can be applied in this case since $h$ and $\tilde{h}$ are properly normalized density functions in this hi2lo application which integrate to 1 over their respective support.
+
 
 \section{Propagating CRUD Through Time}
 
@@ -502,15 +511,19 @@ The time stepping, importance sampling and surface sample remapping strategies c
         $L(\mathcal{F}_M (\mathbf p, \mathbf z| \gamma), \theta(\mathbf p, \mathbf z)) $
         \FOR {VERA State, $v$}
         \FOR {CTF face, $j$}
-          \STATE Evaluate ML model $\hat \theta_j \leftarrow \hat{\mathcal F_M}(\mathbf p_j, \mathbf z_j)$ \;
+          \STATE Evaluate ML model $\hat \theta_j \leftarrow \hat{\mathcal F_M}(\mathbf p_j, \mathbf z_j)$ \\
+               $\ \ \hat \theta_j = \{\hat \theta_{j,c}, \hat \theta_{j,\tau} \}$
           \STATE Reconstruct margins (CDFs) from quantiles  \\
-            $\ \ F_T= Q^{-1}(T; \{\hat{\theta}_\tau\})$ , $F_k= Q^{-1}(k; \{\hat{\theta}_\tau\})$
-          \STATE Def $q''$ margin  $f_{q''} = \delta_{(q''_\mathrm{j,ctf})}$
-          \STATE Reconstruct joint distribution $\hat h_j(\cdot |\hat \theta_j) = \hat f_T \hat f_k f_{q''} c(T, k; \hat \theta_c)$ \;
+            $\ \ \hat F_{j,T}= Q^{-1}(T; \{\hat{\theta}_{j,\tau} \})$ , $\hat F_{j,k}= Q^{-1}(k; \{\hat{\theta}_{j,\tau} \})$
+          \STATE Def $q''$ margin  $f_{j,q''} = \delta_{(q''_\mathrm{j,ctf})}$
+          \STATE Reconstruct joint distribution $\hat h_j(\cdot |\hat \theta_j) = \hat f_{j,T} \hat f_{j,k} f_{j,q''} c(T, k; \hat \theta_{j,c})$ \;
         \ENDFOR
           \FOR {Resample time step, $\Delta t_s$}
             \FOR {CTF face, $j$}
-              \STATE Def importance sampling distribution $\tilde h = \tilde f_T(T; \beta_T) \tilde f_k(k; \beta_k)c(T, k; \hat \theta_c) $
+              \STATE Def importance  mixture densities \\
+                $\ \ \tilde f_{j,k} = \lambda_0 \hat f_{j,k}  + \lambda_1 \beta_k(k; \vartheta_k)$, 
+                $\ \ \tilde f_{j,T} = \lambda_0 \hat f_{j,T}  + \lambda_1 \beta_k(T; \vartheta_T);\ \ \sum_i \lambda_i = 1$
+              \STATE Def importance sampling distribution $\tilde h_j = \tilde f_{j,T} \tilde f_{j,k} c(T, k; \hat \theta_{j,c}) $
               \STATE Draw samples $\mathbf x \sim \tilde h_j$ \;
               \STATE Compute importance weights $\omega = \hat h_j(\mathbf x) /  \tilde h_j(\mathbf x) $
               \STATE Re-map samples  $\mathbf x', \omega' \xleftarrow[\text{ }]{\text{R}} \mathbf x, \omega $
@@ -543,11 +556,11 @@ All model variables which are set at runtime are provided in table \ref{tab:hi2l
             \hline
             $\omega_k$  & 0.6 & TKE weighting factor used to remap samples on the rod surface. \\ 
             \hline
-            $\omega_T$  & 0.6 & Temperature weighting factor used to remap samples on the rod surface. \\ 
+            $\omega_T$  & 0.4 & Temperature weighting factor used to remap samples on the rod surface. \\ 
             \hline
-            $\beta_T$  & $\{0.9, 1.0 \}$ & Beta distribution parameters for temperature importance distribution. \\ 
+            $\vartheta_T$  & $\{0.9, 1.0 \}$ & Beta distribution parameters for temperature importance distribution. \\ 
             \hline
-            $\beta_k$  & $\{0.9, 0.8 \}$ & Beta distribution parameters for TKE importance distribution. \\ 
+            $\vartheta_k$  & $\{0.9, 0.8 \}$ & Beta distribution parameters for TKE importance distribution. \\ 
             \hline
         \end{tabular}
         \label{tab:hi2lo_params}
