@@ -299,14 +299,14 @@ The modern gradient boosting algorithm was developed by Friedman et. al. (1998) 
 \end{equation}
 Where $L(\cdot)$ is a differentiable loss function.  $\mathbf p$ are known as predictive features and $y$ is the response.  The paired set $\{\mathbf p, y \}$ is referred to as the training data set.  In the standard gradient boosting algorithm the functional form of $F$ is chosen to be an additive model of the form \ref{eq:single_cart_model}:
 \begin{equation}
-F(\mathbf p; \mathbf{b}, \mathbf a) = \sum_{m=0}^M b_m h(\mathbf p; a_m)
+F(\mathbf p; \mathbf{\gamma}, \mathbf a) = \sum_{m=0}^M \gamma_m h_m(\mathbf p, a_m, b_m)
 \label{eq:single_cart_model}
 \end{equation} 
-Where $M$ is the number of constituent sub-models and $\{b_m, a_m\}$ are coefficients and free parameters requiring fitting in each sub-model.
+Where $M$ is the number of constituent sub-models and $\{\gamma_m, a_m\}$ are coefficients and free parameters requiring fitting in each sub-model.  $b_m$ represents sub model hyper parameters that are fixed at user set values.
 Rather than fitting all sub-models simultaneously, 
 gradient tree boosting greedily fits decision trees to the gradient of the loss function in a stage wise fashion as shown in algorithm \ref{alg:boosting}.  In the literature the vector of gradients is sometimes referred to as the pseudo residuals vector since if the loss function is taken to be the L2 loss, the gradient of the loss is proportional to the residual vector, $(y - \hat {\mathcal F_{m}})$.  
 
-Each sub-model is referred to as a weak learner and is defined to be a typical classification or regression tree (CART) depending on the problem context.  Methods for pruning the decision trees and optimizing the numerical implementation of finding the best splits when fitting the tree to the pseudo-residuals are left to Friedman et. al. \cite{friedman2002}.  Examples of single fitted CART trees with a depth of 1 and 2 are shown in figure \ref{fig:cart}.  Decision trees produce a piecewise constant prediction.  
+Each sub-model, $h_m$, is referred to as a weak learner and is defined to be a typical classification or regression tree (CART) depending on the problem context.  Methods for pruning the decision trees and optimizing the numerical implementation of finding the best splits when fitting the tree to the pseudo-residuals are left to Friedman et. al. \cite{friedman2002}.  Examples of single fitted CART trees with a depth of 1 and 2 are shown in figure \ref{fig:cart}.  Decision trees produce a piecewise constant prediction, and therefore since the final boosted model is a linear combination of decision tree models (weak learners), the fitted boosted model is piecewise constant.  
 
 \begin{algorithm}[H]
     \captionsetup{labelfont={sc,bf}, labelsep=newline}
@@ -339,9 +339,9 @@ Each sub-model is referred to as a weak learner and is defined to be a typical c
     \end{algorithmic}
 \label{alg:boosting}
 \end{algorithm}
-Where $\nu$ is a tunable constant in $[0, 1]$ called the learning rate.  The learning rate reduces the contribution of each weak learner in the final model.  Reducing the learning rate increases resilience to over fitting but results in a proportional increase in the number of boosted iterations to achieve the same level of convergence of the boosted tree chain.  Smaller values for the learning rate result in performing smaller steps in function space so we are less likely to overshoot the optimal function - since this is a stage-wise additive model overshoots are problematic since the final model ``remembers" mistakes made in previous iterations.  A typical learning rate is $\nu\leq 0.05$.
+Where $\nu$ is a tunable constant in $(0, 1]$ called the learning rate.  A value of $\nu < 1$ reduces the contribution of each weak learner in the final model.  Reducing the learning rate increases resilience to over fitting but results in a proportional increase in the number of boosted iterations to achieve the same level of convergence of the boosted tree chain.  Smaller values for the learning rate result in performing smaller steps in function space so we are less likely to overshoot the optimal function - since this is a stage-wise additive model overshoots are problematic since the final model ``remembers" mistakes made in previous iterations.  A typical learning rate is $\nu\leq 0.05$ but a balance between computation time and model prediction accuracy on a testing set should be considered when setting this value.
 
-For quantile regression, the loss function is given by equation \ref{eq:qloss_fn} is substituted into algorithm \ref{alg:boosting}:
+For gradient boosted quantile regression, the loss function given by equation \ref{eq:qloss_fn} is substituted into algorithm \ref{alg:boosting}.
 \begin{equation}
 L(y, F(p);\tau) = \left[ (1-\tau) \sum_{y \leq F(p)}( y_i - F(p) ) \right] - \left[ \tau \sum_{y > F(p)} (y_i - F(p)) \right]
 \end{equation}
@@ -530,7 +530,7 @@ The time stepping, importance sampling and surface sample remapping strategies c
               \STATE Evaluate equation \ref{eq:expected_crud} via importance sampling \\
                 $\ \ \mathbf C_s = \mathcal G(x'_i; \mathbf C_{s-1}, \mathbf I, \Delta t_s)$ \\
               \STATE Crud mass at step $s$ in patch $j$:
-                $\ \ C_{s,j,m} = \frac{A_j}{N} \sum_i^N C_{s,i,j,m} \omega'_i$
+                $\ \ C_{s,j,m} = \left( \frac{A_j}{\sum_i^M \bar \omega'_i} \right) \sum_i^M C_{s,i,j,m} \bar \omega'_i$
           \ENDFOR
         \ENDFOR
         \ENDFOR
@@ -568,9 +568,13 @@ All model variables which are set at runtime are provided in table \ref{tab:hi2l
             \hline
             $\lambda_{0,k},\lambda_{1,k}$  & $\{0.7, 0.3 \}$ & Mixture weighting parameters for TKE importance distribution. \\ 
             \hline
-
             \hline
-
+            $b_m$  & 4  & Gradient boosting model parameter: Max CART tree depth.  A larger value can improve the quality of fit of each weak-learner but can increase overfitting. \\
+            \hline
+            $\nu$ & 0.01  & Gradient boosting model parameter:  Learning rate. \\
+            \hline
+            $M$  & 4000 & Gradient boosting model parameter:  Number of boosted iterations. \\
+            \hline
         \end{tabular}
         \label{tab:hi2lo_params}
     \end{center}

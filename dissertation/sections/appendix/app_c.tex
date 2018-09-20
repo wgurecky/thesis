@@ -19,7 +19,7 @@
     \label{fig:gb1}%
 \end{figure}
 
-Two candidate gradient boosting implementations were evaluated for use in this work.  A test problem was constructed to check that the standard gradient boosting regression technique is resilient to discontinuities in the data since the response fields are expected to abruptly change when moving across a spacer grid.  The function $y = x \mathrm{sin}(x) +12 \mathcal H(x-5)+\varepsilon$ with $x\in [0,10]$ was used for testing.  $\mathcal H$ denotes the Heaviside function. Synthetic noise, $\varepsilon \sim \mathcal N(0,2)$, was applied to the piecewise smooth test function.   5000 total samples were drawn from the test function. The test data was spatially aggregated to 100 axial levels to mimic CTF axial grid spacing.  Four separate quantile regressions ($\tau = \{0.5, 0.75, 0.9, 0.95 \})$ were then fit to the data by algorithm \ref{alg:boosting}. The predicted quantiles, conditioned on $x$, were compared to the expected results, as shown in figure \ref{fig:gb1}. For this problem, results from the Scikit-Learn gradient boosting implementation are compared to a custom boosting implementation developed specifically to solve the classification and quantile regression problems in this work.  The residuals provided figure \ref{fig:gb2} show that the custom implementation performs similarly to the well-tested scikit-learn implementation with both models agreeing with the theoretical large-sample quantile distributions provided by equation \ref{eq:theory_qdist_1}.
+Two candidate gradient boosting implementations were evaluated for use in this work.  A test problem was constructed to check that the standard gradient boosting regression technique is resilient to discontinuities in the data since the response fields are expected to abruptly change when moving across a spacer grid.  The function $y = x \mathrm{sin}(x) +12 \mathcal H(x-5)+\varepsilon$ with $x\in [0,10]$ was used for testing.  $\mathcal H$ denotes the Heaviside function. Synthetic noise, $\varepsilon \sim \mathcal N(0,2)$, was applied to the piecewise smooth test function.   5000 total samples were drawn from the test function. The test data was spatially aggregated to 100 axial levels to mimic CTF axial grid spacing.  Four separate quantile regressors ($\tau = \{0.5, 0.75, 0.9, 0.95 \})$ were then fit to the data by algorithm \ref{alg:boosting}. The predicted quantiles, conditioned on $x$, were compared to the expected results, as shown in figure \ref{fig:gb1}. For this problem results from the Scikit-Learn gradient boosting implementation are compared to a custom boosting implementation, named $pCRTree$, developed specifically to solve the classification and quantile regression problems in this work.  The residuals provided figure \ref{fig:gb2} show that the custom implementation performs similarly to the well-tested scikit-learn implementation with both models agreeing with the theoretical large-sample quantile distributions provided by equation \ref{eq:theory_qdist_1}.
 
 \begin{figure}[H]%
     \centering
@@ -31,7 +31,7 @@ Two candidate gradient boosting implementations were evaluated for use in this w
     \qquad
     \subfloat[$\tau = 0.95$ model residuals.]{{\includegraphics[width=0.45\linewidth]{figs/grad_boost/1d_boosted_regression_quantile_resid_0_95} }}%
     \qquad
-    \caption[Gradient boosted quantile regression residual summary.]{Gradient boosted quantile regression residual summary.  Theoretical residual distribution computed according to \ref{eq:theory_qdist_1}.} %
+    \caption[Gradient boosted quantile regression residual summary.]{Gradient boosted quantile regression residual summary.  The theoretical residual distribution were computed according to equation \ref{eq:theory_qdist_1}.} %
     \label{fig:gb2}%
 \end{figure}
 
@@ -43,7 +43,7 @@ L(y, F(\mathbf p)) = \E \left[ e^{-yF(\mathbf p)}\right]
 \end{equation} 
 Where $y$ takes on integer values in $\{-1, 1\}$ for the classification problem.
 
-Classifier predictions are made by tallying the weighted predictions of each constituent fitted classification tree stump in the boosted model.  By tallying the predictions of all trees in the model one can obtain a probability mass function over all possible classes.  The most likely class at each requested point is taken as the output of the classification model.
+Classifier predictions are made by tallying the weighted predictions of each constituent fitted classification weak learner (tree stump) in the boosted model.  By tallying the predictions of all trees in the model one can obtain a probability mass function over all possible classes.  The most likely class at each requested point is taken as the output of the classification model.
 
 \begin{figure}[H]%
     \centering
