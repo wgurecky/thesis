@@ -299,12 +299,18 @@ The modern gradient boosting algorithm was developed by Friedman et. al. (1998) 
 \end{equation}
 Where $L(\cdot)$ is a differentiable loss function.  $\mathbf p$ are known as predictive features and $y$ is the response.  The paired set $\{\mathbf p, y \}$ is referred to as the training data set.  In the standard gradient boosting algorithm the functional form of $F$ is chosen to be an additive model of the form \ref{eq:single_cart_model}:
 \begin{equation}
-F(\mathbf p; \mathbf{\gamma}, \mathbf a) = \sum_{m=0}^M \gamma_m h_m(\mathbf p, a_m, b_m)
+F(\mathbf p, \mathbf{\gamma}, \mathbf a; \mathbf b) = \sum_{m=0}^M \gamma_m h_m(\mathbf p, a_m; b_m)
 \label{eq:single_cart_model}
 \end{equation} 
-Where $M$ is the number of constituent sub-models and $\{\gamma_m, a_m\}$ are coefficients and free parameters requiring fitting in each sub-model.  $b_m$ represents sub model hyper parameters that are fixed at user set values.
+Where $M$ is the number of constituent sub-models and $\{\gamma_m, a_m\}$ are coefficients and free parameters requiring fitting in each sub-model.  $b_m$ represent sub-model hyper parameters that are fixed at user set values.
 Rather than fitting all sub-models simultaneously, 
-gradient tree boosting greedily fits decision trees to the gradient of the loss function in a stage wise fashion as shown in algorithm \ref{alg:boosting}.  In the literature the vector of gradients is sometimes referred to as the pseudo residuals vector since if the loss function is taken to be the L2 loss, the gradient of the loss is proportional to the residual vector, $(y - \hat {\mathcal F_{m}})$.  
+gradient boosting greedily fits the sub-models to the gradient of the loss function in a stage wise fashion as shown in algorithm \ref{alg:boosting}.  In the literature the vector of gradients is sometimes referred to as the pseudo residuals vector since if the loss function is taken to be the L2 loss, the gradient of the loss is proportional to the residual vector as shown in equation \ref{eq:l2_loss_pseudo_r}.
+
+\begin{align}
+    (y_i - \mathcal F_{m}(x_i)) & \propto \frac{\partial [(y_i - \hat y_i)^2]}{\partial \hat y_i} \nonumber \\
+     & \propto \frac{\partial (y_i^2 + \hat y_i^2 - 2y_i \hat y_i)}{\partial \hat y_i} = 2 \hat y_i - 2 y_i
+    \label{eq:l2_loss_pseudo_r}
+\end{align}
 
 Each sub-model, $h_m$, is referred to as a weak learner and is defined to be a typical classification or regression tree (CART) depending on the problem context.  Methods for pruning the decision trees and optimizing the numerical implementation of finding the best splits when fitting the tree to the pseudo-residuals are left to Friedman et. al. \cite{friedman2002}.  Examples of single fitted CART trees with a depth of 1 and 2 are shown in figure \ref{fig:cart}.  Decision trees produce a piecewise constant prediction, and therefore since the final boosted model is a linear combination of decision tree models (weak learners), the fitted boosted model is piecewise constant.  
 
