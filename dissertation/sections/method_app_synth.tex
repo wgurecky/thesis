@@ -43,7 +43,7 @@ $\bm \theta$ represents user specified distribution parameters.
 Equation \ref{eq:synth_aug} represents three continuous random surface fields.  In practice a large number of independent and identically distributed samples are drawn in each CTF face from the underlaying random field.  Individual surface samples can be specified by equation \ref{eq:synth_aug_discrete}.
 
 \begin{equation}
-    X_{ij} = \mu_{j,\ ctf} + b_j + \varepsilon_{ij};\ \   \varepsilon_{ij} \sim h_j
+    X_{ij} = \mu_{j,\mathrm{ctf}} + b_j + \varepsilon_{ij};\ \   \varepsilon_{j} \sim h_j
     \label{eq:synth_aug_discrete}
 \end{equation}
 Where the index $j$ represents the $j^{th}$ CTF face on the rod, and the index $i$ is the sample index within the $j^{th}$ CTF face.  The distribution parameters are constant over a given CTF face and give by $\bm \theta = \{\theta_c, \{\theta_x\}\}$ where $\theta_c$ is the copula parameter and  $\{\theta_x\}$ are marginal parameters, 
@@ -320,27 +320,27 @@ Here, the design of the sampling routines and the physics of crud growth is inte
 
 \begin{figure}[H]%
     \centering
-    \subfloat[Crud boron deposition sensitivity to temperature with TKE held fixed at $0.05 J/kg$]{{\includegraphics[width=0.45\linewidth]{../proposal/slides/seminar_slides/figs/dboron_dt_t} }}%
+    \subfloat[Crud boron deposition sensitivity to temperature with TKE held fixed at $0.05$ {[J/kg]}]{{\includegraphics[width=0.45\linewidth]{../proposal/slides/seminar_slides/figs/dboron_dt_t} }}%
     \qquad
-    \subfloat[Crud boron deposition sensitivity to TKE with temperature held fixed at $620 K$]{{\includegraphics[width=0.45\linewidth]{../proposal/slides/seminar_slides/figs/dboron_dt_tke} }}%
+    \subfloat[Crud boron deposition sensitivity to TKE with temperature held fixed at $620$ {[K]}]{{\includegraphics[width=0.45\linewidth]{../proposal/slides/seminar_slides/figs/dboron_dt_tke} }}%
     \caption[]{Crud marginal response to varying temperature and TKE.}%
     \label{fig:crud_sensi1}%
 \end{figure}
 
 \begin{figure}[H]%
     \centering
-    \subfloat[Crud boron deposition sensitivity with $q''=80 W/cm^2$.]{{\includegraphics[width=0.45\linewidth]{figs/crud/crud_t_tke_boron_response_80} }}%
+    \subfloat[Crud boron deposition sensitivity with $q''=80 {[W/cm^2]}$.]{{\includegraphics[width=0.45\linewidth]{figs/crud/crud_t_tke_boron_response_80} }}%
     \qquad
-    \subfloat[Crud boron deposition sensitivity $q''=120 W/cm^2$.]{{\includegraphics[width=0.45\linewidth]{figs/crud/crud_t_tke_boron_response_120} }}%
+    \subfloat[Crud boron deposition sensitivity $q''=120 {[W/cm^2]}$.]{{\includegraphics[width=0.45\linewidth]{figs/crud/crud_t_tke_boron_response_120} }}%
     \caption[]{Crud boron response surface to varying temperature and TKE.}%
     \label{fig:crud_sensi2}%
 \end{figure}
 
 \begin{figure}[H]%
     \centering
-    \subfloat[Crud mass deposition sensitivity$q''=80 W/cm^2$.]{{\includegraphics[width=0.45\linewidth]{figs/crud/crud_t_tke_mass_response_bhf_80} }}%
+    \subfloat[Crud mass deposition sensitivity$q''=80 {[W/cm^2]}$.]{{\includegraphics[width=0.45\linewidth]{figs/crud/crud_t_tke_mass_response_bhf_80} }}%
     \qquad
-    \subfloat[Crud mass deposition sensitivity $q''=120 W/cm^2$.]{{\includegraphics[width=0.45\linewidth]{figs/crud/crud_t_tke_mass_response_bhf_120} }}%
+    \subfloat[Crud mass deposition sensitivity $q''={[120 W/cm^2]}$.]{{\includegraphics[width=0.45\linewidth]{figs/crud/crud_t_tke_mass_response_bhf_120} }}%
     \caption[]{Crud mass response surface to varying temperature and TKE.}%
     \label{fig:crud_sensi3}%
 \end{figure}
