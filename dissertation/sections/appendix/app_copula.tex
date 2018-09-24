@@ -148,7 +148,7 @@ A wide range of copula functions are available in the literature.  In order to s
 	\begin{equation}
 	C(u_1, u_2, ... 0, ... u_d) = 0
 	\end{equation}
-	\item When one argument to the joint copula CDF is $u\in[0,1]$ and all other arguments are one, the CFD is takes a value equal to $u$:
+	\item When one argument to the joint copula CDF is $u\in[0,1]$ and all other arguments are one, the CFD takes a value equal to $u$:
 	\begin{equation}
 	C(1, 1, ... u, ... 1) = u
 	\end{equation}
@@ -178,7 +178,7 @@ Typically the negative log-likelihood, $-\mathrm{ln}\mathcal{L}$, is used in whe
 \hat \theta_{ML} = \mathrm{argmin}_{\theta_c}[-\mathrm{ln}\mathcal{L}(\theta_{c} ; \mathbf w, \mathbf v)]
 \label{eq:nlog_lik}
 \end{equation}
-To minimize the negative log likelihood in equation \ref{eq:nlog_lik}  one computes the partial derivative with respect to $\theta$ and finds the value $\hat \theta_{ML}$ for which this expression reaches zero.  This can carried out by newtons method.  If the partial derivatives of the copula's negative log likelihood are difficult to compute one can estimate them by finite difference. 
+To minimize the negative log likelihood in equation \ref{eq:nlog_lik}  one computes the partial derivative with respect to $\theta$ and finds the value $\hat \theta_{ML}$ for which this expression reaches zero.  This can be carried out by Newton's method.  If the partial derivatives of the copula's negative log likelihood are difficult to compute one can estimate them by finite difference. 
 
 In order to determine which copula family best represents the data, an arsenal of statistical tests can be applied to select the copula which best fits the data.  Here, we consider two methods:  (1) Comparing Akaike information criterion (AIC) and (2) graphically comparing each fitted copula.  
 
@@ -207,7 +207,7 @@ K_c(t; C) = \mathrm P \left[C(\mathbf U) \leq t; \mathbf{U} \sim\ C\right]
 	\begin{minipage}{.45\textwidth}
 		%
 		\includegraphics[width=9cm]{images/ktau_function_plot1.png}
-		\caption{Graphical comparison of  \\ kendall's distribution for \\ several fitted copula.}
+		\caption{Graphical comparison of  \\ Kendall's distribution for \\ several fitted copula.}
 		\label{fig:kc_fn_compare}
 	\end{minipage}
 \end{figure}

@@ -189,18 +189,18 @@ In order to estimate a sample quantile, $\hat q_\tau$, given the empirical CDF $
     \label{fig:qloss}
 \end{figure}
 
-In this work, a set of sample quantiles, $\hat \theta_\tau = \{q_{\tau_0}, \dots, q_{\tau_i}, \dots q_{N_Q} \}$, are used to construct step-wise cumulative distributions, $\hat F$.  $N_Q$ denotes the number of quantiles used in the CDF reconstruction. The stepwise quantile function can be reoved by equation \ref{eq:cdf_from_qtau}.
+In this work, a set of sample quantiles, $\hat \theta_\tau = \{q_{\tau_0}, \dots, q_{\tau_i}, \dots q_{N_Q} \}$, are used to construct step-wise cumulative distributions, $\hat F$.  $N_Q$ denotes the number of quantiles used in the CDF reconstruction. The stepwise quantile function can be recoved by equation \ref{eq:cdf_from_qtau}.
 
 \begin{equation}
 \hat F_{T}= Q^{-1}(T; \{\hat{\theta}_{\tau} \})
 \label{eq:cdf_from_qtau}
 \end{equation}
-The reconstructed CDF can then in turn be used to build a histogram.  In place of the stepwise representation, a piecewise cubic hermite interpolating polynomial (PHCIP) can be fit to the stepwise conditional quantile distribution to generate a differentiable CDF.
+The reconstructed CDF can then in turn be used to build a histogram.  In place of the stepwise representation, a piecewise cubic hermite interpolating polynomial (PCHIP) can be fit to the stepwise conditional quantile distribution to generate a differentiable CDF.
 The PCHIP interpolation preserves monotonicity of the CDF if the provided quantiles are strictly monotone \cite{Fritsch80}.  This condition is enforced in the software; any violation of the monotone restriction would indicate a software bug in the quantile regression code.  Inverse transform sampling is used to draw samples from the univariate distributions.
 
 Other strategies to model univariate density functions are abundant.  One alternative is to use a set of sample moments.  Next, a set of moment conditions is defined for the target parametric model.  Then the method of moments can be used to fit the parametric model to sample moments.  Non-parametric extensions of the method of moments exist (refs).  
 
-Another possibility is to compute the sample cumulants.  The sample cumulants can be used to build an Edgeworth series expansion. It remains as future word to determine if cumulants or traditional moments behave in a predictable manner as a function of local core conditions.
+Another possibility is to compute the sample cumulants.  The sample cumulants can be used to build an Edgeworth series expansion. It remains as future work to determine if cumulants or traditional moments behave in a predictable manner as a function of local core conditions.
         
 It can be shown that the sample quantiles are distributed according to \ref{eq:theory_qdist_1} [ref].  This directly follows from the distribution of the order statistics.
 
@@ -213,13 +213,13 @@ It can be shown that the sample quantiles are distributed according to \ref{eq:t
 
 \begin{figure}[]%
     \centering
-    \subfloat[Emperical quantiles for a normal distrubtion. 500 trials shown. $0.1, 0.5, 0.9$ quantiles denoted by dashed verticle lines.]{{\includegraphics[width=0.3\linewidth]{figs/quantile_theory/q_gauss_residual} }}%
+    \subfloat[Empirical quantiles for a normal distrubtion. 500 trials shown. $0.1, 0.5, 0.9$ quantiles denoted by dashed verticle lines.]{{\includegraphics[width=0.3\linewidth]{figs/quantile_theory/q_gauss_residual} }}%
     \qquad
-        \subfloat[Emperical vs theoredical $0.1$ quantile distribution.]{{\includegraphics[width=0.3\linewidth]{figs/quantile_theory/q_gauss_residual_conditional_0_1} }}%
+        \subfloat[Empirical vs theoretical $0.1$ quantile distribution.]{{\includegraphics[width=0.3\linewidth]{figs/quantile_theory/q_gauss_residual_conditional_0_1} }}%
     \qquad
-        \subfloat[Emperical vs theoredical $0.5$ quantile distribution.]{{\includegraphics[width=0.3\linewidth]{figs/quantile_theory/q_gauss_residual_conditional_0_5} }}%
+        \subfloat[Empirical vs theoretical $0.5$ quantile distribution.]{{\includegraphics[width=0.3\linewidth]{figs/quantile_theory/q_gauss_residual_conditional_0_5} }}%
     \qquad
-        \subfloat[Emperical vs theoredical $0.9$ quantile distribution.]{{\includegraphics[width=0.3\linewidth]{figs/quantile_theory/q_gauss_residual_conditional_0_9} }}%
+        \subfloat[Empirical vs theoretical $0.9$ quantile distribution.]{{\includegraphics[width=0.3\linewidth]{figs/quantile_theory/q_gauss_residual_conditional_0_9} }}%
     \qquad
     \caption[Distribution of quantiles for a normally distributed RV.]{Distribution of quantiles for a normally distributed RV: $X \sim \mathcal{N}(0, 1)$.  Theoretical quantile standard deviation given by equation \ref{eq:theory_qdist_1}.}%
     \label{fig:normal_q_theory}%
@@ -227,13 +227,13 @@ It can be shown that the sample quantiles are distributed according to \ref{eq:t
 
 \begin{figure}[H]%
     \centering
-    \subfloat[Emperical quantiles for a beta distrubtion. 500 trials shown. $0.1, 0.5, 0.9$ quantiles denoted by dashed verticle lines.]{{\includegraphics[width=0.3\linewidth]{figs/quantile_theory/q_beta_residual} }}%
+    \subfloat[Empirical quantiles for a beta distrubtion. 500 trials shown. $0.1, 0.5, 0.9$ quantiles denoted by dashed verticle lines.]{{\includegraphics[width=0.3\linewidth]{figs/quantile_theory/q_beta_residual} }}%
     \qquad
-    \subfloat[Emperical vs theoredical $0.1$ quantile distribution.]{{\includegraphics[width=0.3\linewidth]{figs/quantile_theory/q_beta_residual_conditional_0_1} }}%
+    \subfloat[Empirical vs theoretical $0.1$ quantile distribution.]{{\includegraphics[width=0.3\linewidth]{figs/quantile_theory/q_beta_residual_conditional_0_1} }}%
     \qquad
-    \subfloat[Emperical vs theoredical $0.5$ quantile distribution.]{{\includegraphics[width=0.3\linewidth]{figs/quantile_theory/q_beta_residual_conditional_0_5} }}%
+    \subfloat[Empirical vs theoretical $0.5$ quantile distribution.]{{\includegraphics[width=0.3\linewidth]{figs/quantile_theory/q_beta_residual_conditional_0_5} }}%
     \qquad
-    \subfloat[Emperical vs theoredical $0.9$ quantile distribution.]{{\includegraphics[width=0.3\linewidth]{figs/quantile_theory/q_beta_residual_conditional_0_9} }}%
+    \subfloat[Empirical vs theoretical $0.9$ quantile distribution.]{{\includegraphics[width=0.3\linewidth]{figs/quantile_theory/q_beta_residual_conditional_0_9} }}%
     \qquad
     \caption[Distribution of quantiles for a beta distributed RV.]{Distribution of quantiles for a beta distributed RV: $X \sim \beta(1, 2)$}%
     \label{fig:ctf_twall_aug}%
@@ -345,7 +345,7 @@ Each sub-model, $h_m$, is referred to as a weak learner and is defined to be a t
     \end{algorithmic}
 \label{alg:boosting}
 \end{algorithm}
-Where $\nu$ is a tunable constant in $(0, 1]$ called the learning rate.  A value of $\nu < 1$ reduces the contribution of each weak learner in the final model.  Reducing the learning rate increases resilience to over fitting but results in a proportional increase in the number of boosted iterations to achieve the same level of convergence of the boosted tree chain.  Smaller values for the learning rate result in performing smaller steps in function space so we are less likely to overshoot the optimal function - since this is a stage-wise additive model overshoots are problematic since the final model ``remembers" mistakes made in previous iterations.  A typical learning rate is $\nu\leq 0.05$ but a balance between computation time and model prediction accuracy on a testing set should be considered when setting this value.
+Where $\nu$ is a tunable constant in $(0, 1]$ called the learning rate.  A value of $\nu < 1$ reduces the contribution of each weak learner in the final model.  Reducing the learning rate increases resilience to over fitting but results in a proportional increase in the number of boosted iterations to achieve the same level of convergence of the boosted tree chain.  Smaller values for the learning rate result in performing smaller steps in function space so we are less likely to overshoot the optimal function. Provided boosting produces is a stage-wise additive model, overshoots are problematic since the final model carries memory of previous iterations.  A typical learning rate is $\nu\leq 0.05$ but a balance between computation time and model prediction accuracy on a testing set should be considered when setting this value.
 
 For gradient boosted quantile regression, the loss function given by equation \ref{eq:qloss_fn} is substituted into algorithm \ref{alg:boosting}.
 \begin{equation}
