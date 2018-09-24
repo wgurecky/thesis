@@ -83,10 +83,13 @@ The objective of feature engineering is to select a predictive variable set that
 \end{center}
 \end{table}
 
-The predictive variables given in table \ref{tab:features} were selected based on two criteria:  Availability and orthogonality.  In order to evaluate the trained machine learning model at some TH state point the model, each conditioning variable should be made available by VERA or must be computable from CTF results alone.  
-This has to be true since when evaluating the hi2lo model the inputs to the hi2lo model are required to be derived from either previously stored information or information made available by CTF at runtime.  At this juncture, this criteria precludes using information such as geometric orientation of a given spacer grid since it is not possible to extract or infer this information from the CTF output.
+The predictive variables given in table \ref{tab:features} were selected based on two criteria:  Availability and orthogonality.  In order to evaluate the trained machine learning model at some TH state point the model, each conditioning variable should be made available by VERA or must be computable from CTF results alone.   The predictive exogenous variable set given in table \ref{tab:features} comprise the local core conditions.  Since the model uses the local core conditions as the conditioning set, these must be supplied to the hi2lo model in order to evaluate the model.
 
-It is not useful to include attributes which are co-linear. The bulk fluid density was not included in the predictive variable set as it strongly depends on the local temperature. Likewise the local static pressure was not used as a predictive variable since this would be one-to-one with the axial position.  The exclusion of this TH information is primarily done for computational saving when training the boosted models since, as opposed to other machine learning algorithms and statistical inference techniques, gradient boosting is robust to collinearity of features in the input space.
+% This has to be true since when evaluating the hi2lo model the inputs to the hi2lo model are required to be derived from either previously stored information or information made available by CTF at runtime.
+
+At this juncture, this criteria precludes using information such as geometric orientation of a given spacer grid since it is not possible to extract or infer this information from the CTF output.  Including additional geometric information into the exogenos variable set is postulated to increase the ability of the machine learning models to distinguish unique CTF faces in the core though testing of this hypothesis is left to a potential future investigation.
+
+It is not useful to include features which are co-linear into the explanatory feature set. The bulk fluid density was not included in the predictive variable set as it strongly depends on the local temperature. Likewise the local static pressure was not used as a predictive variable since this would be one-to-one with the axial position.  The exclusion of this TH information is primarily done for computational saving when training the boosted models since, as opposed to other machine learning algorithms and statistical inference techniques, gradient boosting is robust to collinearity of features in the input space.
 
 In the case of gradient boosting the inclusion of nuisance or collinear exogenous variables in the model will not necessarily reduce the model's ability to generalize to unseen data, only hamper computational efficiency.  The resulting feature importance plot shown in figure \ref{fig:ktauregfeatureimp} suggests that the relative axial position within a span does not provide predictive power since this information is redundant provided the absolute axial position and the nearest upstream spacer grid.
 
@@ -97,10 +100,12 @@ In the case of gradient boosting the inclusion of nuisance or collinear exogenou
     \label{fig:ktauregfeatureimp}
 \end{figure}
 
+Since the boosted regression (and classification) models are insensitive to multi-collinearity in the feature space, the application of principal component analysis to the training data set was not pursued.
+
 
 \subsection{Cross Validation}
 
-An estimate of the interpolation error incurred when evaluating the trained models at unknown CFD states can be made by performing a leave one out (LOO) cross validation study.
+An estimate of the interpolation error incurred when evaluating the trained models at unknown CFD states can be made by performing a leave one out (LOO) cross validation study.  Cross validation is used to estimate how well the machine learning models employed in this work generalized to previously unseen local core conditions; i.e. core conditions that are not included in the training data set.
 
 \begin{figure}[h]
     \centering
@@ -109,10 +114,10 @@ An estimate of the interpolation error incurred when evaluating the trained mode
     \label{fig:5x5loo}
 \end{figure}
 
-The leave-one-out cross validation procedure is depicted in figure \ref{fig:5x5loo}.  In this procedure a single CFD/CTF pin pair is removed from the database and then the model is retrained on remaining data.  Following this retraining, a crud prediction is made
-at the missing pin's TH conditions.  The predicted crud results are compared against crud results generated using the original CFD data as the crud TH boundary conditions for the missing pin.  This process is repeated by sequentially for each pin in the 5x5 set.  The differences are summarized and averaged to obtain a measure of model's predictive performance when applied to TH conditions that reside in the TH envelope included in the training set.
+The leave-one-out cross validation procedure is depicted in figure \ref{fig:5x5loo}.  In this procedure a single CFD-CTF pin pair is removed from the database and then the model is trained on remaining data.  Following data culling and training, the machine learning model is evaluated and crud predictions are made
+at the missing pin's TH conditions.  The predicted crud results are compared against crud results generated using the original CFD data for the missing pin.  This process is repeated by sequentially for each pin in the 5x5 pin set.  The differences are summarized and averaged to obtain a measure of model's predictive performance when applied to TH conditions that reside in the TH envelope included in the training set.
 
-This cross validation technique only ascertains interpolation errors within the TH envelope enclosed by the original full training set.  The resulting interpolation error estimates cannot be extrapolated to core conditions that lay outside of the training set.  For a robust interpolation error analysis, a much larger training data set is required which would essentially span all possible TH conditions encountered in an operational PWR.  This will require large scale CFD runs and is left as a avenue for future uncertainty quantification work.
+This cross validation technique only ascertains interpolation errors within the TH envelope enclosed by the original full 25 pin training set.  The resulting interpolation error estimates cannot be extrapolated to core conditions that lay outside of the training set.  For a robust interpolation error analysis, a much larger training data set is required which would essentially span all possible TH conditions encountered in an operational PWR.  This will require large scale CFD runs and is left as a avenue for future uncertainty quantification work.  A larger training set could also enable other multi-fold cross validation techniques to become viable.
 
 \subsection{Quantile Regressors}
 
@@ -232,16 +237,15 @@ A complementary strategy to transforming the original data set as a preprocessin
 Though improvements are possible, it should also be noted that section \ref{sec:crud_copula_sensi} and table \ref{tab:crud_totals_copula} show that the copula family does not significantly influence overall pin integrated crud results.  Gains in the copula classifier accuracy will not translate to a large improvement in crud prediction accuracy.
 
 \section{Single Pin Comparisons}
+\label{sec:single_pin_result}
 
-\begin{itemize}
-    \item (\checkmark-) Show Kendall's tau vs Axial position for a single pin.  The rank correlation coefficient shows
-    the influence of spacer grids on the joint distribution of temperature and turbulent kinetic energy.
-    \item ($\cdot$) Show predicted Copula as a function of axial position.  Is there a clear trend here (i.e. is a guassian copula
-    a good fit far away from spacer grids and the clayton copula a better fit near spacer grids?  (TODO: create this plot functionality - capability to compute best-fit copula already exists)
-    \item (\checkmark-) Compare Gaussian vs best-fit copula crud results.
-    \item (\checkmark-) Show axial crud comparisons for a single hi2lo, CFD and CTF pin.
-    \item (\checkmark-) Show integrated crud comparisons for a single hi2lo, CFD and CTF pin.
-\end{itemize}
+The presented benchmark problem considers a single thermal hydrualic state (power profile and flow conditions) was held for 300 days.  The hi2lo model was stepped forward in time using a resampling step size of 50 days.  400 samples were used to estimate the crud distribution in each CTF face.  The importance sampling distribution parameters were set to values given in table ().  The default remapping
+weights were used.
+
+A single pin is selected from the 25 pin array for detailed comparison between the CFD, CTF, and hi2lo crud models.  Axial crud distrubtion comparisons were made at 300 $[days]$ of simulation time.  A summary of all pins included in this study is provided in section \ref{sec:multi_pin_result} and in appendices A \& B.
+
+The comparisons presented are the result of the LOO cross validation study.  The hi2lo crud predictions were generated for the missing pin.
+
 
 \begin{figure}[H]
     \centering
@@ -268,19 +272,25 @@ Though improvements are possible, it should also be noted that section \ref{sec:
     \label{fig:15pincmasstime}
 \end{figure}
 
+Figures \ref{fig:2d_hi2loimppinbmass} and \ref{fig:2d_hi2loimppincmass} show the hi2lo predicted crud surface distributions at 300 days.  The result of re-ordering samples onto each CTF face to preserve hot spot stationarity in time is visible.  The stripped patterns are non-physical and are an artifact of the remapping procedure.  Recall that the overarching goal is not to reproduce the detailed inter-CTF face spatial crud distributions rather the model specifically attempts to reproduce the correct average crud behavior on each CTF face, even in regions near spacer grids, and estimate the frequency of extreem crud events so to be relevant for CILC risk estimates.
+
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\linewidth]{figs/5x5/imp/tstep_5/pin_1/hi2lo_imp_pin_bmass}
     \caption{Pin 1 hi2lo 2D surface map of crud boron mass density.}
-    \label{fig:hi2loimppinbmass}
+    \label{fig:2d_hi2loimppinbmass}
 \end{figure}
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\linewidth]{figs/5x5/imp/tstep_5/pin_1/hi2lo_imp_pin_cmass}
     \caption{Pin 1 hi2lo 2D surface map of crud mass density.}
-    \label{fig:hi2loimppincmass}
+    \label{fig:2d_hi2loimppincmass}
 \end{figure}
 
+When the crud surface fields are spatially aggregated to the coarse CTF grid, the crud distribution over each CTF face are approximately consistent with the gold-standard CFD result as shown in figures \ref{fig:dist_hi2loimppinzcthick}.  The average crud behavior as a function of axial position along the rod is given in figures \ref{fig:15axialbmass} and \ref{fig:15axialcmass}.  The axial crud root-mean-squared error is given in table \ref{tab:loo_crud_bmass} alongside other pins in the assembly.  Pin 1 exhibits good agreement between the hi2lo model's crud preditions and the CFD results.
+
+The ability of the hi2lo model to accurately predict extreme crud thickness events is significant hampered by limitations of the quantile regression and the relative sparsity of the available training data.  According to equation \ref{eq:theory_qdist_1}, estimates for extreme crud distribution quantiles (i.e. estimates of how much of the rod surface experiences crud with a thickness exceeding some critical CILC crud threshold) will have high varience.  To the authors knowlege, using standard quantile regression techniques, estimating the extreme quantiles will be fraught with high relative uncertainty as dictated by equation \ref{eq:theory_qdist_1}.  Circumventing this issue will require an investigation of alternative representations of the marginal temperature and TKE distributions.
 
 \begin{figure}[H]%
     \centering
@@ -288,7 +298,7 @@ Though improvements are possible, it should also be noted that section \ref{sec:
     \qquad
     \subfloat[CFD pin boron mass.]{{\includegraphics[width=0.46\linewidth]{figs/5x5/cfd/tstep_5/pin_1/CFD_pin_z_bmass} }}%
     \caption{Pin 1 crud boron mass results at 300 days.}%
-    \label{fig:hi2loimppinzbmass}
+    \label{dist_fig:hi2loimppinzbmass}
 \end{figure}
 
 
@@ -298,7 +308,7 @@ Though improvements are possible, it should also be noted that section \ref{sec:
     \qquad
     \subfloat[CFD pin crud thickness.]{{\includegraphics[width=0.46\linewidth]{figs/5x5/cfd/tstep_5/pin_1/CFD_pin_z_cthick} }}%
     \caption{Pin 1 crud thickness results at 300 days.}%
-    \label{fig:hi2loimppinzcthick}
+    \label{fig:dist_hi2loimppinzcthick}
 \end{figure}
 
 
@@ -317,48 +327,49 @@ Though improvements are possible, it should also be noted that section \ref{sec:
 % \end{figure}
 
 \section{Multi Pin Comparisons}
+\label{sec:multi_pin_result}
 
-\begin{itemize}
-    \item (\checkmark-) Exercise hi2lo method with 5x5 CFD data set.
-    \item (\checkmark-) Show pin-by-pin statistics to show if a geometric bias is present.  Are we always over predicting crud
-    in pins near the edge of the assembly?
-    \item (\checkmark-) Show axial CFD vs CTF vs hi2lo results for each pin.
-    \item (\checkmark-) Compare total integrated assembly crud mass and boron bass for CFD vs CTF vs hi2lo.
-\end{itemize}
+Results for each pin in the LOO cross validation study are presented here.  There was random variation in the prediction accuracy of the model accross the 5x5 assembly with no apparent spatial bias in the model prediction errors towards the edge of the assembbly, as one may expect.  This would indicate that some pins in the 5x5 assembly are, in a sense, more unique with respect to thermal hydraulic flow conditions than others.  Pins where a small difference between the hi2lo model predictions and the gold-standard CFD result show that the pin's thermal hydraulic conditions are well represented in the training set.
+
+In table \ref{tab:loo_crud_bmass} and \ref{tab:loo_crud_cmass} rod integrated crud results for each pin are given at 300 days of simulation time.  The worst performing pin with respect to boron deposition prediction was pin 4 by relative percent difference between the hi2lo result and the CFD driven crud result.  The Kendall's $\tau$ boosted regressor produced large prediction errors as measured by the LOO cross validation for this pin, as shown in table \ref{tab:loo_rms}.  Incorrect predictions made for the correlation coefficient act in concert with a net under-prediction of the temperature quantiles, as shown in figure (), giving rise to a significant ($\approx -48\%$) net under prediction of the total crud mass on pin 4.
+
+The error estimates provided by the present LOO cross validation study can be viewed as slighly conservative.  The present case of expunging an entire pin from an already limited trining pool of only 25 pins is not representative a production-ready training data set.  A training set to be used in production will have all possible pin geomotries included - that is all possible pin configurations within a bundle.  Not all combination of inlet and power conditions will be available, however.  If the shape of the flow fields are primarily driven, to $1^{st}$ order, by geometric factors, missing thermal hydraulic conditions is a less impactful a hole in the parameter space than a pin-geometry hole.
 
 % Hi2lo Bmass results
 \begin{table}[h]
     \begin{center}
     \caption[Hi2lo crud boron mass results]{Crud boron mass hi2lo LOO result summary at 300 days.}
-    \begin{tabular}[h]{|c|c|c|c|}
+    \begin{tabular}[h]{|c|c|c|c|c|c|}
         \hline
-Pin & CTF Bmass Tot & CFD Bmass Tot & Hi2lo Bmass Tot  \\
+        Pin & CTF Bmass $[g]$ & CFD Bmass $[g]$ & Hi2lo Bmass $[g]$ & Hi2lo-CFD $[g]$ & Relative Diff \% \\
 \hline
-1  & 1.2940e-07 & 7.5489e-08 & 6.3163e-08 \\
-2  & 1.1458e-07 & 5.1953e-08 & 3.1487e-08 \\
-3  & 1.0265e-07 & 3.2678e-08 & 3.4192e-08 \\
-4  & 1.0111e-07 & 5.6847e-08 & 2.9848e-08 \\
-5  & 9.5319e-08 & 1.8974e-08 & 2.2723e-08 \\
-6  & 4.0505e-08 & 9.1686e-09 & 1.0065e-08 \\
-7  & 8.0907e-09 & 4.0210e-09 & 3.7515e-09 \\
-8  & 6.5705e-09 & 2.9861e-09 & 3.3475e-09 \\
-9  & 6.7204e-09 & 3.3324e-09 & 3.3063e-09 \\
-10  & 6.6850e-09 & 3.5892e-09 & 2.8171e-09 \\
-11  & 8.7449e-09 & 4.0316e-09 & 3.7932e-09 \\
-12  & 4.6693e-08 & 1.1722e-08 & 8.2669e-09 \\
-13  & 1.0616e-07 & 2.2909e-08 & 2.6878e-08 \\
-14  & 1.0617e-07 & 2.7471e-08 & 3.9548e-08 \\
-15  & 1.0366e-07 & 4.5067e-08 & 3.3163e-08 \\
-16  & 1.1594e-07 & 2.9707e-08 & 4.3385e-08 \\
-17  & 9.1090e-08 & 2.6739e-08 & 2.6569e-08 \\
-18  & 7.1616e-08 & 2.3468e-08 & 2.0092e-08 \\
-19  & 6.1329e-08 & 1.1289e-08 & 1.4341e-08 \\
-20  & 1.6370e-08 & 7.2277e-09 & 4.8991e-09 \\
-21  & 1.2524e-08 & 4.5454e-09 & 4.4092e-09 \\
-22  & 1.7007e-08 & 4.4576e-09 & 6.1729e-09 \\
-23  & 6.2594e-08 & 1.5092e-08 & 1.1521e-08 \\
-24  & 7.1144e-08 & 1.8479e-08 & 2.1561e-08 \\
-25  & 4.1668e-08 & 1.3290e-08 & 8.6106e-09 \\
+1  & 1.2940e-03 & 7.5489e-04 & 6.3163e-04 & -1.2326e-04 &  -16.3 \\
+2  & 1.1458e-03 & 5.1953e-04 & 3.1487e-04 & -2.0466e-04 &  -39.4 \\
+3  & 1.0265e-03 & 3.2678e-04 & 3.4192e-04 & 1.5140e-05 &  4.6 \\ 
+4  & 1.0111e-03 & 5.6847e-04 & 2.9848e-04 & -2.6999e-04 &  $\bf{-47.5}$ \\
+5  & 9.5319e-04 & 1.8974e-04 & 2.2723e-04 & 3.7490e-05 &  19.8 \\ 
+6  & 4.0505e-04 & 9.1686e-05 & 1.0065e-04 & 8.9640e-06 &  9.8 \\ 
+7  & 8.0907e-05 & 4.0210e-05 & 3.7515e-05 & -2.6950e-06 &  -6.7 \\
+8  & 6.5705e-05 & 2.9861e-05 & 3.3475e-05 & 3.6140e-06 &  12.1 \\ 
+9  & 6.7204e-05 & 3.3324e-05 & 3.3063e-05 & -2.6100e-07 &  -0.8 \\
+10  &6.6850e-05 & 3.5892e-05 & 2.8171e-05 & -7.7210e-06 &  -21.5 \\
+11  &8.7449e-05 & 4.0316e-05 & 3.7932e-05 & -2.3840e-06 &  -5.9 \\
+12  &4.6693e-04 & 1.1722e-04 & 8.2669e-05 & -3.4551e-05 &  -29.5 \\
+13  &1.0616e-03 & 2.2909e-04 & 2.6878e-04 & 3.9690e-05 &  17.3 \\ 
+14  &1.0617e-03 & 2.7471e-04 & 3.9548e-04 & 1.2077e-04 &  44.0 \\ 
+15  &1.0366e-03 & 4.5067e-04 & 3.3163e-04 & -1.1904e-04 &  -26.4 \\
+16  &1.1594e-03 & 2.9707e-04 & 4.3385e-04 & 1.3678e-04 &  46.0 \\ 
+17  &9.1090e-04 & 2.6739e-04 & 2.6569e-04 & -1.7000e-06 &  -0.6 \\
+18  &7.1616e-04 & 2.3468e-04 & 2.0092e-04 & -3.3760e-05 &  -14.4 \\
+19  &6.1329e-04 & 1.1289e-04 & 1.4341e-04 & 3.0520e-05 &  27.0 \\ 
+20  &1.6370e-04 & 7.2277e-05 & 4.8991e-05 & -2.3286e-05 &  -32.2 \\
+21  &1.2524e-04 & 4.5454e-05 & 4.4092e-05 & -1.3620e-06 &  -3.0 \\
+22  &1.7007e-04 & 4.4576e-05 & 6.1729e-05 & 1.7153e-05 &  38.5 \\ 
+23  &6.2594e-04 & 1.5092e-04 & 1.1521e-04 & -3.5710e-05 &  -23.7 \\
+24  &7.1144e-04 & 1.8479e-04 & 2.1561e-04 & 3.0820e-05 &  16.7 \\ 
+25  &4.1668e-04 & 1.3290e-04 & 8.6106e-05 & -4.6794e-05 &  -35.2 \\
+\hline \hline
+Totals & 1.5443e-02 & 5.2453e-03 & 4.7791e-03 & -4.6623e-04   & -8.88 \\
 \hline
 \end{tabular}
 \label{tab:loo_crud_bmass}
@@ -443,6 +454,8 @@ Pin  & RMS & RMS & RMS & RMS & RMS & RMS & RMS \\
 \label{tab:loo_rms}
 \end{center}
 \end{table}
+
+At each resampling step the crud mass was summed over all pins in the assembly and presented in figure \ref{fig:asmcmasstime}.  The total crud predicted by CFD and the hi2lo model are in in close agreement.
 
 \begin{figure}[H]
     \centering

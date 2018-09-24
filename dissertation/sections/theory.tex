@@ -421,7 +421,7 @@ In the construction of the hi2lo method an assumption is made about the location
 
 This assumption leads to the notion of hot spot stationarity in time since the geometry of the core does not change throughout a cycle.  In the context of the statistically based hi2lo approach to achieve a stable location of hot and cold spots one establish a mapping from sample space to a location on the rod surface.  To accomplish this, the order statistics of the joint temperate and turbulent kinetic energy distribution in each CTF patch are computed and the condition that the highest order statistic always falls on the same location within a given CTF patch is enforced.
 
-Order statistics are well defined for a single dimensional random variable but in higher dimensions a consistent ordering is not possible.  Therefore, as shown in equation \ref{eq:weighting}, a weighting procedure is used to reduce the random vector of T, TKE, and $q''$ samples on any given CTF patch into a univariate random variable denoted by $\mathbf{m}=\{m_0, m_1, ... m_N\}$.
+Order statistics are well defined for a single dimensional random variable but in higher dimensions a consistent ordering is not possible.  Therefore, as shown in equation \ref{eq:weighting} a convex combination of the surface fields with user specified weights is used to reduce the random vector of T, TKE, and $q''$ samples on any given CTF patch into a univariate random variable denoted by $\mathbf{m}=\{m_0, m_1, ... m_N\}$.
 
 \begin{equation}
     m_i = w_T \left( \frac{T_i - T_{min}}{T_{max} - T_{min}} \right) + w_k \left( \frac{k_i - k_{min}}{k_{max} - k_{min}} \right) +  w_q'' \left( \frac{q^{''}_i - q^{''}_{min}}{q_{max} - q_{min}} \right)
