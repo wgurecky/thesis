@@ -41,7 +41,7 @@ The aggregated CFD data fields are then associated with their corrosponding feat
 In each face, the aggregated CFD field distributions are subtracted from the mean CTF predictions and the resultant (CFD-CTF) residual distributions are stored in a HDF5 table along with the ascsociated predictive variables.
 
 Next, correlation statistics are computed from the residual distributions.
-Copula fitting by the maximum likelihood method with AIC model selection is carried out on each CTF face.  Additionally, the empirical Kendall's $\tau$ rank correlation coefficient is computed from the raw CFD data on each CTF face. Figure \ref{fig:copula_predicted} shows the copula parameters estimated from the raw CFD data on each pin as a function of axial position for the first 4 pins in the 5x5 CFD model.  There is a marked change in behavior of the copula between the pins.  This was an unexpected find since the flow patterns were speculated to be reasonably consistent from pin to pin.  Also, the influence of spacer grids on the correlation coefficient between the temperature and TKE fields is visible.  Across spacer grids the correlation coefficient first sharply falls indicating a tighter coupling between the TKE and temperature surface fields as the flow necks down when entering a grid.  This is followed by a sharp change in Kendall's $\tau$ towards unity indicating the temperature and TKE surface fields become less correlated immediately following the mixing vanes.  This change in correlation behavior is posited to be due to turbulent mixing effects.  The computed copula parameters are also stored alongside the raw temperature, TKE, and boundary heat flux aggregated residual distribution data in the HDF5 table.
+Copula fitting by the maximum likelihood method with AIC model selection is carried out on each CTF face.  Additionally, the empirical Kendall's $\tau$ rank correlation coefficient is computed from the raw CFD data on each CTF face. Figure \ref{fig:copula_predicted} shows the copula parameters estimated from the raw CFD data on each pin as a function of axial position for the first 4 pins in the 5x5 CFD model.  There is a marked change in behavior of the copula between the pins.  This was an unexpected find since the flow patterns were speculated to be reasonably consistent from pin to pin.  Also, the influence of spacer grids on the correlation coefficient between the temperature and TKE fields is visible.  Across spacer grids the correlation coefficient first sharply falls indicating a tighter coupling between the TKE and temperature surface fields as the flow necks down when entering a grid.  This is followed by a sharp change in Kendall's $\tau$ towards zero indicating the temperature and TKE surface fields become less correlated immediately following the mixing vanes.  This change in correlation behavior is posited to be due to turbulent mixing effects.  The computed copula parameters are also stored alongside the raw temperature, TKE, and boundary heat flux aggregated residual distribution data in the HDF5 table.
 
 \begin{figure}[H]%
     \centering
@@ -242,7 +242,7 @@ machine learning technique known as stacking [ref].  Stacking combines the predi
 Stacking greatly increases model complexity since each classifier in the ensemble contains hyperparameters which require tuning.
 Since ML model tuning and performance is not a focus of this work, the application of this technique to improve copula classification results is left as future work.
 
-Though improvements are possible, it should also be noted that section \ref{sec:crud_copula_sensi} and table \ref{tab:crud_totals_copula} show that the copula family does not substsantially influence pin integrated crud results.  Gains in the copula classifier accuracy will not translate to a large improvement in crud prediction accuracy.
+Though improvements are possible, it should also be noted that section \ref{sec:crud_copula_sensi} and table \ref{tab:crud_totals_copula} show that the copula family does not substantially influence pin integrated crud results.  Due to this, gains in the copula classifier accuracy will not necessarily translate to a large improvement in crud prediction accuracy.
 
 \section{Results}
 
@@ -251,7 +251,9 @@ The presented case results considered the 5x5 array operating at a single state 
 The comparisons presented are the result of the LOO cross validation study.
 Ergo the hi2lo model was used in a properly predictive manner since distribution parametes had to be inferered from the machine learning model at local core conditions outside of the training set.
 
-The error estimates provided by the present LOO cross validation study can be viewed as conservative.  The LOO strategy required expunging an entire pin from an already limited trining pool of only 25 pins . This is not representative a production-ready training data set.  A training set to be used in production will have all possible pin geomotries included; that is all possible pin configurations within a bundle.  Not all combinations of inlet and power conditions will be simulated by CFD, however, and therefore interpolation error can be expected even if a provided a geometrically rich training set.
+The error estimates provided by the present LOO cross validation study can be viewed as conservative.  The LOO strategy expunged an entire pin from an already limited trining pool of only 25 pins . This is not representative a production-ready training data set.  A training set to be used in production environment will have all possible pin geometries represented within it; that is all possible pin configurations within a bundle.  Not all combinations of inlet and power conditions will be simulated by CFD due to computational time limitations and so interpolation error can be expected even if a provided a geometrically rich training set.  
+
+% If the flow fields are principally governed by geometric factors the 
 
 % A question for future invesigation is decomposing the interpolation error into parts:  how much interpolation error is attributed to geometric factors vs thermal hydraulic ones.
 
@@ -260,9 +262,7 @@ The error estimates provided by the present LOO cross validation study can be vi
 \subsection{Single Pin Comparisons}
 \label{sec:single_pin_result}
 
-A single pin was selected from the 25 pin array for detailed comparison of the CFD, CTF, and hi2lo models.  For this pin, axial crud distribution comparisons were made at 300 $[days]$ of simulation time are shown in figures \ref{fig:15axialbmass} and \ref{fig:15axialcmass}.  Axial crud distributions of all pins are provided in appendix B.  
-
-
+A single pin was selected from the 25 pin array for detailed comparison of the CFD, CTF, and hi2lo models.  For this pin, axial crud distribution comparisons were made at 300 $[days]$ of simulation time are shown in figures \ref{fig:15axialbmass} and \ref{fig:15axialcmass}.  Axial crud distributions of all pins are provided in appendix B.  The CTF stantalone case generally predicts a greater amount of crud at all axial positions.  Since the CTF model did not include any grid-enhanced heat transfer model it is to be expected that surface temperature downstream spacer grids would be over-predicted since the influence of the mixing vanes on the rod surface temperature distributions are partially neglected.  The Hi2lo model preserves the influence of the spacer grids on the crud distribibutions predicted by CFD computations.
 
 \begin{figure}[H]
     \centering
@@ -276,6 +276,11 @@ A single pin was selected from the 25 pin array for detailed comparison of the C
     \caption{Pin 1 CTF vs CFD vs Hi2lo axial crud mass distribution at 300 days.}
     \label{fig:15axialcmass}
 \end{figure}
+
+The total crud mass and total boron hideout mass were computed at each resampling step and presented in figures \ref{fig:15pinbmasstime} and \ref{fig:15pincmasstime}.  The time evolution of the crud total mass for all pins is given in appendix B.  The hi2lo model underpredicted the crud mass on pin 1 when compared to the CFD model.
+
+This underprediction is not uniform accross all pins in the model, as seen in figures () and ().  The hi2lo model overpredicts the total amount of crud for some pins in the assembly.  This high varience in the prediction errors can be partially atributed to small sample size
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\linewidth]{figs/5x5/imp/1_5_pin_bmass_time}
@@ -317,7 +322,7 @@ Circumventing these difficulties is a non-trivial undertaking.  Without making a
     \subfloat[Hi2lo pin boron mass.]{{\includegraphics[width=0.46\linewidth]{figs/5x5/imp/tstep_5/pin_1/hi2lo_imp_pin_z_bmass} }}%
     \qquad
     \subfloat[CFD pin boron mass.]{{\includegraphics[width=0.46\linewidth]{figs/5x5/cfd/tstep_5/pin_1/CFD_pin_z_bmass} }}%
-    \caption{Pin 1 crud boron mass results at 300 days.}%
+    \caption[Pin 1 crud boron mass density results at 300 days]{Pin 1 crud boron mass density results at 300 days.  Select crud quantiles are indicated via colored bands.}%
     \label{fig:dist_hi2loimppinzbmass}
 \end{figure}
 
@@ -327,7 +332,7 @@ Circumventing these difficulties is a non-trivial undertaking.  Without making a
     \subfloat[Hi2lo pin crud thickness.]{{\includegraphics[width=0.46\linewidth]{figs/5x5/imp/tstep_5/pin_1/hi2lo_imp_pin_z_cthick} }}%
     \qquad
     \subfloat[CFD pin crud thickness.]{{\includegraphics[width=0.46\linewidth]{figs/5x5/cfd/tstep_5/pin_1/CFD_pin_z_cthick} }}%
-    \caption{Pin 1 crud thickness results at 300 days.}%
+    \caption[Pin 1 crud thickness results at 300 days]{Pin 1 crud thickness results at 300 days.  Select crud quantiles are indicated via colored bands.}%
     \label{fig:dist_hi2loimppinzcthick}
 \end{figure}
 
