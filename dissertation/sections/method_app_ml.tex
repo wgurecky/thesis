@@ -3,7 +3,7 @@
 
 For deployment as an in-line statistically based downscaling tool which sits between a subchannel code and a crud simulation code in a core simulator such as VERA the model is required to perform the hi2lo mapping for all pins in the core at any operating condition.  In other words, the model must be evaluable at any local core conditions typical of an operating PWR.  Since the training data set cannot contain all possible pin geometries, loading configurations and operating conditions due to computational expense, the model produces a prediction for the copula and marginal distribution parameters between known states.
 
-One might envision a table-lookup approach where high fidelity CFD flow field maps are pre-computed and stored for a wide array of flow and power conditions.  A nearest neighbor interpolation scheme could then be applied to extract the best-matching CFD map provided some local core state by VERA.  This is not tractable since the number of CFD computations to build the data base would be prohibitively large.  Instead of storing spatial CFD hi2lo maps, CFD data is distilled into a set of statistics and tabulated as a function of local core state.
+One might envision a table-lookup approach where high fidelity CFD flow field maps are pre-computed and stored for a wide array of flow and power conditions.  A nearest neighbor interpolation scheme could then be applied to extract the best-matching CFD map provided some local core state by VERA.  This is not tractable since the number of CFD computations to build the data base would be prohibitively large.  Instead of storing spatial CFD hi2lo maps, CFD data is distilled into a set of statistics tabulated as a function of local core state.
 
 % It is appealing to transform the problem of hi2lo construction from performing spatial flow map prediction into one of summary statistics prediction where much less information is required adequately fill out the operating envelope.
 
@@ -37,7 +37,7 @@ For this rod configuration, the axial pin power, total power and CFD simulation 
 
 Pre-processing requires paired CFD and CTF results for a given pin generated with consistent boundary conditions between the codes.  This requires consistent geometry, inlet, outlet and power distributions between the codes.
 
-Each of the CFD rod surface $\{T,k,q''\}$ fields are aggregated onto the CTF face centers.  The aggregation requires that the location and extent of each CTF face is known.  These CTF face attributes are easily acessible from a CTF output file.  In the aggregation procedure spatial information is discarded within each CTF patch.
+The cladding surface temperature and near-wall TKE CFD fields are spatially aggregated onto the CTF face centers.  The aggregation requires that the location and extent of each CTF face is known.  These CTF face attributes are accessible from a CTF output file.  In the aggregation procedure spatial information is discarded within each CTF patch as the spatial fields are agglomerated into sample distributions.
 In each CTF face each of the features given in table \ref{tab:features} are computed from the available CTF (or VERA) results.
 The aggregated CFD data fields are then associated with their corrosponding feature set.
 In each face, the aggregated CFD field distributions are subtracted from the mean CTF predictions and the resultant (CFD-CTF) residual distributions are stored in a HDF5 table along with the ascsociated predictive variables.
@@ -238,9 +238,9 @@ Figure \ref{fig:confusionmatrixavg} summarizes the LOO cross validation results 
 \end{figure}
 
 
-The copula classifiers performance averaged over all pins is shown in figure \ref{fig:confusionmatrixavg}. The copula classifier struggles to predict the correct copula class given the local TH state and axial core position.  As indicated in figure \ref{fig:copula_predicted}, the behavior of the copula as a function of axial rod position are erratic and inconsistent from pin to pin.  Introducing other TH exogenous variables in addition to the axial position did not increase the classification score.  We can conclude that the copula are not well described by local core condition and axial position.  It remains as future work to investigate if including additional geometric pin and grid attributes could improve the classification results.  Additional software infrastructure would be required to both write geometric pin and grid features from CTF and to utilize the geometric features in the current model.
+It is clear that the copula classifier struggles to predict the correct copula class given the local TH conditions.  As previously indicated in figure \ref{fig:copula_predicted}, the behavior of the copula as a function of axial rod position is erratic and inconsistent from pin to pin.  This erratic behavior proved too difficult to capture provided the limited training data set.  It is not possible to conclude that the copula are well-described by the local thermal hydraulic conditions and axial position.  It remains as future work to investigate if including additional geometric pin and grid attributes could improve the classification results.  Additional software infrastructure would be required to both write geometric pin and grid features from the CTF code and to utilize these geometric features in the current model.
 
-Future work could include performing a transformation of the input space so that the copula labels are separable in the transformed space.  A Potential candidate for building this transformation is the UMAP manifold learning algorithm \cite{UMAP18}.
+Future work could include performing a transformation of the input space so that the copula family labels are separable in the transformed space.  A Potential candidate for building this transformation is the UMAP manifold learning algorithm \cite{UMAP18}.
 
 Further improvements in prediction accuracy are possible by applying an ensemble
 machine learning technique known as stacking [ref].  Stacking combines the predictions of multiple classifiers using a meta-classifier.
@@ -534,11 +534,12 @@ At each resampling step the crud mass was summed over all pins in the assembly a
     \label{fig:totcmassrelasmerrorshmap}
 \end{figure}
 
-The correlation between errors committed by the multiple quantile and $\rho_\tau$ regressors on the errors seen in the crud results was investigated in an attempt to establish performance metrics.  If a statistically significant trend can be drawn between the ML model performance and predicted crud accuracy results then the trend could be used as an indicative tool for testing the a.  To do this, one could first compute the ML regression errors via a cross validation strategy.  Provided these error estimates and known sensitivities of the crud results to the ML errors one can estimate the expected accuracy of the crud predictions obtained via the hi2lo model.  This allows a user of the hi2lo tool to detect problems with the ML models before using the model to make crud predictions.
+The correlations between crud prediction errors and errors committed by the quantile regressors were investigated in an attempt to establish performance metrics.  Understanding the correlation of errors between the machine learning model predictions and the crud prediciton errors is helpful when identifying the relative importantance of the predicted quantities.
 
-As shown in the upper-triangle of figure \ref{fig:asmerrorcorr} a Student-T test was conducted on the slope of each fitted linear trend model.  The null hypothesis was taken to be a slope of 0.  One can conclude that a  sample size greater than 25 pins should be used in future work to investigate the relative influence of machine learning errors on the predicted crud errors.  The standard deviation of the computed sensitivities is high when using a small sample size making it difficult to rigorously conclude that errors made by the machine learning models correspond to errors in the crud predictions.
+Provided these error estimates and known sensitivities of the crud results to the ML errors one can estimate the expected accuracy of the crud predictions obtained via the hi2lo model.  This allows a user of the hi2lo tool to detect problems with the ML models before using the model to make crud predictions.
 
-Statistically significant trends were found between the RMS error committed by the TKE quantile regressors and the crud boron and mass distribution errors, as measured by root-mean-squared error.
+A Student-T test was conducted on the slope of each fitted linear trend lines. The results of the Student-T tests are shown in the upper-triangle of figure \ref{fig:asmerrorcorr}.  The null hypothesis was taken to be a slope of zero.  The standard deviation of the computed sensitivities is high when using a small sample size making it difficult to rigorously conclude that errors made by the machine learning models correspond to errors in the crud predictions.
+% One can conclude that a  sample size greater than 25 pins should be used in future work to investigate the relative influence of machine learning errors on the predicted crud errors
 
 \begin{figure}[H]
     \centering
@@ -546,6 +547,11 @@ Statistically significant trends were found between the RMS error committed by t
     \caption{Correlation of ML errors with crud prediction errors.}
     \label{fig:asmerrorcorr}
 \end{figure}
+
+Statistically significant trends were found between the RMS error committed by the TKE quantile regressors and the crud boron and mass distribution errors, as measured by root-mean-squared error.  This suggests there is a link between being able to accurately predict the conditional quantiles of the TKE distributions and obtaining accurate crud estimates.  
+
+A strong positive correlation was observed between the root-mean-squared crud errors and the total crud mass prediction errors.  This is a trivial result since one expects pins which exhibited large axial crud distriubtion RMS errors would also be likely to experience a large total integrated crud mass error unless, by happenstance, there was a cancellation of errors.
+
 
 \section{Section Takeaways}
 
