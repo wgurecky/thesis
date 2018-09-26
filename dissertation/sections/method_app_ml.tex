@@ -13,7 +13,7 @@ In this chapter the hi2lo methodology introduced in this work is exercised again
 \section{CFD Data Source}
 \label{sec:cfd_data_source}
 
-For the generation of high fidelity CFD data sets the Westinghouse 5x5 test stand shown in figures \ref{fig:5x5topdown} and \ref{fig:5x5side} was used to prepare the CAD geometry.  The CFD mesh consisted of approximately 25 million cells and 1e5 surface elements per pin.  A matching CTF input deck for the 5x5 assembly was also constructed with 100 axial zones.  The CTF and CFD codes were then executed for a variety of flow conditions and power levels.
+For the generation of high fidelity CFD data sets the Westinghouse 5x5 test stand shown in figures \ref{fig:5x5topdown} and \ref{fig:5x5side} was used to prepare the CAD geometry.  The CFD mesh consisted of approximately 25 million cells and 1e5 surface elements per pin.  A matching CTF input deck for the 5x5 assembly was also constructed with 100 axial zones.  The CTF and CFD codes were then executed for a variety of flow conditions and power levels.  StarCCM+ was utilized for the CFD simulations in this work.
 
 \begin{figure}[H]
     \centering
@@ -29,6 +29,8 @@ For the generation of high fidelity CFD data sets the Westinghouse 5x5 test stan
     \label{fig:5x5side}
 \end{figure}
 
+For this rod configuration, the axial pin power, total power and CFD simulation rod surface temperature distributions are available in external references.  This information is purposely witheld from this document to protect the intellectual property of the Westinghouse electric company.
+
 
 \subsection{Preprocessing}
 \label{sec:preprocessing}
@@ -41,7 +43,7 @@ The aggregated CFD data fields are then associated with their corrosponding feat
 In each face, the aggregated CFD field distributions are subtracted from the mean CTF predictions and the resultant (CFD-CTF) residual distributions are stored in a HDF5 table along with the ascsociated predictive variables.
 
 Next, correlation statistics are computed from the residual distributions.
-Copula fitting by the maximum likelihood method with AIC model selection is carried out on each CTF face.  Additionally, the empirical Kendall's $\tau$ rank correlation coefficient is computed from the raw CFD data on each CTF face. Figure \ref{fig:copula_predicted} shows the copula parameters estimated from the raw CFD data on each pin as a function of axial position for the first 4 pins in the 5x5 CFD model.  There is a marked change in behavior of the copula between the pins.  This was an unexpected find since the flow patterns were speculated to be reasonably consistent from pin to pin.  Also, the influence of spacer grids on the correlation coefficient between the temperature and TKE fields is visible.  Across spacer grids the correlation coefficient first sharply falls indicating a tighter coupling between the TKE and temperature surface fields as the flow necks down when entering a grid.  This is followed by a sharp change in Kendall's $\tau$ towards zero indicating the temperature and TKE surface fields become less correlated immediately following the mixing vanes.  This change in correlation behavior is posited to be due to turbulent mixing effects.  The computed copula parameters are also stored alongside the raw temperature, TKE, and boundary heat flux aggregated residual distribution data in the HDF5 table.
+Copula fitting by the maximum likelihood method with AIC model selection is carried out on each CTF face.  Additionally, the empirical Kendall's $\tau$ rank correlation coefficient is computed from the raw CFD data on each CTF face. Figure \ref{fig:copula_predicted} shows the copula parameters estimated from the raw CFD data on each pin as a function of axial position for the first 4 pins in the 5x5 CFD model.  There is a marked change in behavior of the copula between the pins.  This was an unexpected find since the flow patterns were speculated to be reasonably consistent from pin to pin.  Also, the influence of spacer grids on the correlation coefficient between the temperature and TKE fields is visible.  Across spacer grids the correlation coefficient sharply falls indicating a tighter coupling between the TKE and temperature surface fields as the flow necks down when entering a grid.  This is followed by a sharp change in Kendall's $\tau$ towards zero indicating the temperature and TKE surface fields become less correlated immediately following the mixing vanes.  This change in correlation behavior is posited to be due to turbulent mixing effects.  The computed copula parameters are also stored alongside the raw temperature, TKE, and boundary heat flux aggregated residual distribution data in the HDF5 table.
 
 \begin{figure}[H]%
     \centering
@@ -57,7 +59,7 @@ Copula fitting by the maximum likelihood method with AIC model selection is carr
     \label{fig:copula_predicted}%
 \end{figure}
 
-After pre-processing, the HDF5 table includes a list of predictive scalar values, $\mathbf p$, which are shown in table \ref{tab:features}, and a list of associated response variables; the copula parameters and residual sample distribution for $\{T,k,q''\}$ on each CTF face.
+After pre-processing, the HDF5 table includes a list of predictive scalar values, which are shown in table \ref{tab:features}, and a list of associated response variables comprised of the copula parameters and residual sample distribution for $\{T,k,q''\}$ on each CTF face.
 
 \subsection{Feature Engineering}
 
@@ -88,15 +90,15 @@ The objective of feature engineering is to select a predictive variable set that
 \end{center}
 \end{table}
 
-The predictive variables given in table \ref{tab:features} were selected based on two criteria:  Availability and orthogonality.  In order to evaluate the trained machine learning model at some TH state point the model, each conditioning variable should be made available by VERA or must be computable from CTF results alone.   The predictive exogenous variable set given in table \ref{tab:features} comprise the local core conditions.  Since the model uses the local core conditions as the conditioning set, these must be supplied to the hi2lo model in order to evaluate the model.
+The predictive variables given in table \ref{tab:features} were selected based on two criteria:  Availability and orthogonality.  In order to evaluate the trained machine learning model at a TH state point each conditioning variable should be made available by VERA or must be computable from CTF results and supplied as input to the trained machine learning models.   The exogenous variable set given in table \ref{tab:features} comprise the local core conditions, or TH conditions at any given CTF face.  The machine learning model uses the local core conditions as the exogenous feature set, thus these features must be supplied to the fitted gradient boosted regressors at runtime in order to evaluate the model.
 
 % This has to be true since when evaluating the hi2lo model the inputs to the hi2lo model are required to be derived from either previously stored information or information made available by CTF at runtime.
 
-At this juncture, this criteria precludes using information such as geometric orientation of a given spacer grid since it is not possible to extract or infer this information from the CTF output.  Including additional geometric information into the exogenos variable set is postulated to increase the ability of the machine learning models to distinguish unique CTF faces in the core though testing of this hypothesis is left to a potential future investigation.
+At this juncture, the availability criteria precludes using some geometric information such as the orientation of a given spacer grid since it is not possible to extract or infer this information from the CTF output.  Including additional geometric information into the exogenous variable set could potentially increase the ability of the machine learning models to distinguish unique CTF faces in the core though testing of this hypothesis is left to a future investigation.  Additional software infrastructure is required to include and extract additional features from the CTF or VERA output files.
 
-It is not useful to include features which are co-linear into the explanatory feature set. The bulk fluid density was not included in the predictive variable set as it strongly depends on the local temperature. Likewise the local static pressure was not used as a predictive variable since this would be one-to-one with the axial position.  The exclusion of this TH information is primarily done for computational saving when training the boosted models since, as opposed to other machine learning algorithms and statistical inference techniques, gradient boosting is robust to collinearity of features in the input space.
+It is not useful to include features which are co-linear into the explanatory feature set. The bulk fluid density was not included in the predictive variable set as it strongly depends on the local temperature. Likewise the local static pressure was not used as a predictive variable since this would be approximately one-to-one with the axial position.  The exclusion of this TH information is primarily done for computational saving when training the boosted models since, as opposed to other machine learning algorithms and statistical inference techniques, gradient boosting is robust to collinearity of features in the input space.
 
-In the case of gradient boosting the inclusion of nuisance or collinear exogenous variables in the model will not necessarily reduce the model's ability to generalize to unseen data, only hamper computational efficiency.  The resulting feature importance plot shown in figure \ref{fig:ktauregfeatureimp} suggests that the relative axial position within a span does not provide predictive power since this information is redundant provided the absolute axial position and the nearest upstream spacer grid.
+In the case of gradient boosting the inclusion of nuisance or collinear exogenous variables in the model will not necessarily reduce the model's ability to generalize to unseen data, only hamper computational efficiency.  The resulting feature importance plot shown in figure \ref{fig:ktauregfeatureimp} suggests that the relative axial position within a span does not provide predictive power since this information is redundant provided the absolute axial position and the nearest upstream spacer grid are included in the feature set.
 
 \begin{figure}[H]
     \centering
@@ -110,7 +112,7 @@ Since the boosted regression (and classification) models are insensitive to mult
 
 \subsection{Cross Validation}
 
-An estimate of the interpolation error incurred when evaluating the trained models at unknown CFD states can be made by performing a leave one out (LOO) cross validation study.  Cross validation is used to estimate how well the machine learning models employed in this work generalized to previously unseen local core conditions; i.e. core conditions that are not included in the training data set.
+An estimate of the crud prediction error incurred when evaluating the trained models at unknown CFD states can be made by performing a leave one out (LOO) cross validation study.  Cross validation is used to estimate how well the machine learning models employed in this work generalized to previously unseen local core conditions; i.e. core conditions that are not included in the training data set.
 
 \begin{figure}[h]
     \centering
@@ -119,23 +121,24 @@ An estimate of the interpolation error incurred when evaluating the trained mode
     \label{fig:5x5loo}
 \end{figure}
 
-The leave-one-out cross validation procedure is depicted in figure \ref{fig:5x5loo}.  In this procedure a single CFD-CTF pin pair is removed from the database and then the model is trained on remaining data.  Following data culling and training, the machine learning model is evaluated and crud predictions are made
-at the missing pin's TH conditions.  The predicted crud results are compared against crud results generated using the original CFD data for the missing pin.  This process is repeated by sequentially for each pin in the 5x5 pin set.  The differences are summarized and averaged to obtain a measure of model's predictive performance when applied to TH conditions that reside in the TH envelope included in the training set.
+The LOO cross validation procedure is depicted in figure \ref{fig:5x5loo}.  In this procedure a single CFD-CTF pin pair is removed from the database and then the model is trained on remaining data.  Following data culling and training, the machine learning model is evaluated and crud predictions are made at the missing pin's TH conditions.
+The predicted crud results are compared against crud results generated using the original CFD data for the missing pin.  This process is repeated for each pin in the 5x5 assembly.
+% The differences are summarized and averaged to obtain a measure of model's predictive performance when applied to TH conditions that reside in the TH envelope included in the training set.
 
-This cross validation technique only ascertains interpolation errors within the TH envelope enclosed by the original full 25 pin training set.  The resulting interpolation error estimates cannot be extrapolated to core conditions that lay outside of the training set.  For a robust interpolation error analysis, a much larger training data set is required which would essentially span all possible TH conditions encountered in an operational PWR.  This will require large scale CFD runs and is left as a avenue for future uncertainty quantification work.  A larger training set could also enable other multi-fold cross validation techniques to become viable.
+This cross validation technique ascertains crud prediction errors within the TH envelope enclosed by the original full 25 pin training set.  The resulting crud prediction error estimates cannot be extrapolated to core conditions that lay outside of the thermal hydraulic envelope formed by the training set.  For a robust crud prediction error analysis, a much larger training data set is required which would essentially span all possible TH conditions encountered in an operational PWR.  This will require large scale CFD runs and is left as a avenue for future uncertainty quantification work.  A larger training set would also increase the viability of other multi-fold cross validation techniques which require permutations of stratified chunks to be excised from the training pool in their application.  This would involve removing multiple pins from the training set.
 
 \subsection{Quantile Regressors}
 
-A principal goal of the machine learning model is to predict the shape of the conditional teperature and TKE distributions as a function of local core conditions.
+A principal goal of the machine learning model is to predict the conditional quantiles of the temperature and TKE distributions as a function of local core conditions.  In this light, the trained quantile regression models are compared against the left-out CFD data set on each pin.  The accuracy of both the TKE and tempearture quantile regressors is assessed using both quantile-quantile plots and quantile vs axial rod position comparisons.
 
-Quantile-quantile (Q-Q) plots of the  temperature and TKE residual distributions are used to elucidate bias introduced by the machine learning model in the conditional quantiles at a variety of axial positions and local core conditions.  Estimated quantiles are obtained for the left-out pin by evaluating the trained reduced LOO model and are compared to the expected CFD result.
+Quantile-quantile (Q-Q) plots of the temperature and TKE residual distributions are used to elucidate bias introduced by the machine learning model in the conditional quantiles at a variety of axial positions and local core conditions.  Estimated quantiles are obtained for the left-out pin by evaluating the trained reduced LOO model and are compared to the expected CFD result.
 A subset of the TKE residual quantile regression results are given in figure \ref{fig:tkepin1} to \ref{fig:tkepin3}.  A complete set of quantile regression results are provide in chapter \ref{chap:app_ml}, Appendix A. The Q-Q plots summarize the biases in the conditional quantile distributions when compared to the target golden standard CFD data.  The maximum and average Kolmogorov–Smirnov (KS) statistic is provided in the Q-Q figures for each pin which can be computed by equation \ref{eq:ks_stat}.
 \begin{equation}
-KS = \mathrm{sup}(\{\hat F(\tau_i) - F(\tau_i)\})
+    KS = \mathrm{sup}(\{\hat F(q_{\tau}) - F(q_{\tau})\})
 \label{eq:ks_stat}
 \end{equation}
-Where $\mathrm{sup}(\cdot)$ is the supremum of the set of distances between the predicted and empirical cumulative densities $\{\hat F(\tau_i) - F(\tau_i)\}$.
-This statistic was computed at each axial level on the CTF grid.
+Where $\mathrm{sup}(\cdot)$ is the supremum of the set of distances between the predicted and empirical cumulative densities.  The cumulative densities are supported at the specified quantile levels: $\{\mathbf \tau\} = \{0.000, 0.0526, 0.1052, ... 1.000 \}$ since the number of quantiles used in the reconstruction of the marginal temperature and TKE distributions was set to be 20 and were evenly spaced.
+The KS statistic was computed at each axial level on the CTF grid.
 
 \begin{figure}[H]%
     \centering
@@ -164,8 +167,9 @@ This statistic was computed at each axial level on the CTF grid.
     \label{fig:tkepin3}%
 \end{figure}
 
+Shown in the axial plots, the TKE distribution is drastically influenced by spacer grids.  The maximum near-wall TKE sharply increases following a spacer grid followed by a decay towards a more orderly flow.  Also notable is the location of minimum predicted near wall TKE which immediately follows spacer grids.  In addition to increasing the net turbulent kenetic energy of the flow, mixing vanes can also produce eddy regions of realative stagnant flow thus giving rise to these regions of low near wall TKE.  The Hi2lo model retains both of these properties of the flow field resolved by CFD.  The prediction accuarcy of the quantile regressors as measured by LOO cross validation is striking considering the limited 24 pin training set used in these cases.  Good overall performance of the machine lerning models to predict the quantiles of the TKE distributions can be attributed to high pin-to-pin similarity of the surface TKE distributions. High span to span repeatability of the TKE distributions were also observed.  This observation is consistent with those found in other hi2lo studies by Salko et. al \cite{salko18}.
 
-A subset of the Temperature residual quantile regression results are given in figure \ref{fig:temppin1} to \ref{fig:temppin3}.  Similar to the TKE conditional quantiles, the conditional temperature distribution exhibits sharp changes in behavior across the spacer grids.  Discontinuities enforced the choice of a machine learning algorithm which is resilient to extremely sharp gradients in the response surface.
+Temperature residual quantile regression results are given in figures \ref{fig:temppin1} to \ref{fig:temppin3}.  Similar to the TKE conditional quantiles, the conditional temperature distribution exhibits sharp changes in behavior across the spacer grids.  Discontinuities enforced the choice of the gradient boosted tree machine learning algorithm which is resilient to steep gradients in the response surface.
 
 \begin{figure}[H]%
     \centering
@@ -194,7 +198,8 @@ A subset of the Temperature residual quantile regression results are given in fi
     \label{fig:temppin3}%
 \end{figure}
 
-The ability of the gradient boosting method to predict conditional quantiles is
+Inspecting the axial quantile difference figures \ref{fig:temppin1}a to \ref{fig:temppin3}a, on average the extreme quantiles exhibit the largest axial RMS prediction errors.  This is expected behavior since the estimates the extreme quantiles from a sample population is naturally fraught with high variance as described by equation \ref{eq:theory_qdist_1}.  This fact was experimentally demonstrated using a simple test quantile regression problem in section \ref{chap:GBRT}.
+
 
 \subsection{Kendall's $\tau$ Regression}
 
@@ -244,9 +249,9 @@ Since ML model tuning and performance is not a focus of this work, the applicati
 
 Though improvements are possible, it should also be noted that section \ref{sec:crud_copula_sensi} and table \ref{tab:crud_totals_copula} show that the copula family does not substantially influence pin integrated crud results.  Due to this, gains in the copula classifier accuracy will not necessarily translate to a large improvement in crud prediction accuracy.
 
-\section{Results}
+\section{Crud Results}
 
-The presented case results considered the 5x5 array operating at a single state with fixed power profile and flow conditions for 300 days.  The hi2lo model was stepped forward in time using a resampling step size of 50 days.  400 samples were used to estimate the crud distribution in each CTF face.  The importance sampling distribution parameters were set to values given in table \ref{tab:hi2lo_params}.  The default remapping weights of $w_T=0.4, \ w_k=0.6$ were used in this case.
+The presented case considered the 5x5 array operating at a single state with fixed power profile and flow conditions for 300 days.  The hi2lo model was marched forward in time using a re-sampling step size of 50 days.  A sample size of 400 was used to estimate the crud distribution in each CTF face.  The importance sampling distribution parameters were set to values given in table \ref{tab:hi2lo_params}.  The default remapping weights of $w_T=0.4, \ w_k=0.6$ were used in this case.
 
 The comparisons presented are the result of the LOO cross validation study.
 Ergo the hi2lo model was used in a properly predictive manner since distribution parametes had to be inferered from the machine learning model at local core conditions outside of the training set.
@@ -547,8 +552,8 @@ Statistically significant trends were found between the RMS error committed by t
 
 \begin{itemize}
     \item Crud predictions made by the hi2lo model were compared against CFD/crud coupled results and stanalone CTF/crud results.  The Hi2lo model produced crud results closer to the CFD result than the CTF result, as anticipated.  The overall crud mass results for the 5x5 assembly favorably compared against the gold-standard CFD assembly integrated results.
-    \item A leave one out cross validation strategy was utilized to quantify the predictive performance of the model.
+    \item A leave-one-out cross validation strategy was utilized to estimate the predictive performance of the model.
     \item The prediction accuracy of the temperature and TKE quantile regression models was summarized though Q-Q plots for each pin in the LOO cross validation study.
     \item The prediction accuracy of the Kendall's $\tau$ regression model was assessed using the root-mean-square error for each pin in the LOO cross validation study.  \item Correlations between the errors committed by the machine learning models and the crud prediction errors were computed.  High uncertainty associated with these correlation measures did not permit a statistically significant link between poor Kendall's $\tau$ predictive performance and poor crud predictions to be drawn.
-        \item The copula classifier performed poorly given the current set of considered explanatory variables and limited size of the training data set.  A Gaussian copula was assumed on each CTF face in place of the poorly predicted copula family from the classifier.  Recalling the results shown in \ref{sec:crud_copula_sensi}, this is not expected to reduce crud prediction accuracy.
+        \item The copula classifier performed poorly given the current set of considered explanatory variables and limited size of the training data set.  A Gaussian copula was assumed on each CTF face in place of the poorly predicted copula family from the classifier.  Recalling the results shown in section \ref{sec:crud_copula_sensi}, this is not expected to reduce crud prediction accuracy.
 \end{itemize}
