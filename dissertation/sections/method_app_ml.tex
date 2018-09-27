@@ -154,7 +154,7 @@ The KS statistic was computed at each axial level on the CTF grid.
     \subfloat[TKE quantile regression results. CFD in solid line.  Predicted values as dashed.]{{\includegraphics[width=0.45\linewidth]{figs/ml_fit/q_tke_regression_2} }}%
     \qquad
     \subfloat[Q-Q plot of TKE quantile regression predictions from LOO cross validation study]{{\includegraphics[width=0.45\linewidth]{figs/ml_fit/qq_tke_pin_2} }}%
-    \caption[Q-Q LOO TKE pin 2 results.]{Pin 1 TKE quantile regression predictions from LOO cross validation study.}%
+    \caption[Q-Q LOO TKE pin 2 results.]{Pin 2 TKE quantile regression predictions from LOO cross validation study.}%
     \label{fig:tkepin2}%
 \end{figure}
 
@@ -163,7 +163,7 @@ The KS statistic was computed at each axial level on the CTF grid.
     \subfloat[TKE quantile regression results. CFD in solid line.  Predicted values as dashed.]{{\includegraphics[width=0.45\linewidth]{figs/ml_fit/q_tke_regression_3} }}%
     \qquad
     \subfloat[Q-Q plot of TKE quantile regression predictions from LOO cross validation study]{{\includegraphics[width=0.45\linewidth]{figs/ml_fit/qq_tke_pin_3} }}%
-    \caption[Q-Q LOO TKE pin 3 results.]{Pin 1 TKE quantile regression predictions from LOO cross validation study.}%
+    \caption[Q-Q LOO TKE pin 3 results.]{Pin 3 TKE quantile regression predictions from LOO cross validation study.}%
     \label{fig:tkepin3}%
 \end{figure}
 
@@ -207,7 +207,7 @@ The rank correlation coefficient, Kendall's $\tau$ ($\rho_\tau$), is used to qua
 
 A subset of the 5x5 assembly's Kendall's $\tau$ regression results are given in figure \ref{fig:ktauregression} and the complete 5x5 $\rho_\tau$ LOO cross validation results are given in figure \ref{fig:ktauregressionmontage}.  There is a marked change in behavior of the rank correlation coefficient as a function of axial position in the core from pin to pin.  The influence of Kendall's $\tau$ on the CTF face-integrated crud results was discussed in section \ref{sec:crud_copula_sensi}, and it was shown to be an important parameter to accurately predict via the machine learning model.  Pins with large relative errors for Kendall's $\tau$ are expected to produce anomalously poor crud predictions.
 
-The worst performing pin with respect to $\hat \rho_\tau$ prediction was pin 8, as indicated in table () and figure \ref{fig:ktauregressionmontage}.  Interestingly, this pin exhibited relatively good agreement between the predicted crud distribution and the expected CFD crud distribution as indicated in table \ref{tab:loo_crud_bmass} and figure \ref{fig:montageaxialbmasssm}.  This pin, however, was relatively cold in comparison to the others in the fuel bundle, growing only $5.9$e-2 $[g]$ of crud in 300 days when the hotest rods grew $1.4$e0 $[g]$ in the same time.  In the case of pin 8, since the majority of the rod surface exists below the saturation point the crud is not sensitive to the shape of the joint temperature and TKE distributions.
+The worst performing pin with respect to $\hat \rho_\tau$ prediction was pin 8, as indicated in figure \ref{fig:ktauregressionmontage}.  Interestingly, this pin exhibited relatively good agreement between the predicted crud distribution and the expected CFD crud distribution as indicated in table \ref{tab:loo_crud_bmass} and figure \ref{fig:montageaxialbmasssm}.  This pin, was relatively cold in comparison to the others in the fuel bundle which resulted growing only $5.9$e-2 $[g]$ of crud in 300 days when the hotest rods grew $\approx 1.4$e0 $[g]$ in the same time.  In the case of pin 8, since the majority of the rod surface exists below the saturation point the crud result was not sensitive to the shape of the joint temperature and TKE distributions, and thus, even with poor $\rho_\tau$ predictions the axial and integrated crud results agree with the original CFD result.
 
 \begin{figure}[H]%
     \centering
@@ -243,8 +243,8 @@ It is clear that the copula classifier struggles to predict the correct copula c
 Future work could include performing a transformation of the input space so that the copula family labels are separable in the transformed space.  A Potential candidate for building this transformation is the UMAP manifold learning algorithm \cite{UMAP18}.
 
 Further improvements in prediction accuracy are possible by applying an ensemble
-machine learning technique known as stacking [ref].  Stacking combines the predictions of multiple classifiers using a meta-classifier.
-Stacking greatly increases model complexity since each classifier in the ensemble contains hyperparameters which require tuning.
+machine learning technique known as stacking.  Stacking combines the predictions of multiple classifiers using a meta-classifier.
+Stacking increases model complexity since each classifier in the ensemble contains hyperparameters which require tuning.
 Since ML model tuning and performance is not a focus of this work, the application of this technique to improve copula classification results is left as future work.
 
 Though improvements are possible, it should also be noted that section \ref{sec:crud_copula_sensi} and table \ref{tab:crud_totals_copula} show that the copula family does not substantially influence pin integrated crud results.  Due to this, gains in the copula classifier accuracy will not necessarily translate to a large improvement in crud prediction accuracy.
@@ -300,7 +300,7 @@ This underprediction is not uniform accross all pins in the model, as seen in fi
 \end{figure}
 
 Figures \ref{fig:2d_hi2loimppinbmass} and \ref{fig:2d_hi2loimppincmass} show the hi2lo predicted crud surface distributions at 300 days.  The result of re-ordering samples onto each CTF face to preserve hot spot stationarity in time is visible.  The stripped patterns are non-physical and are an artifact of the remapping procedure.  Recall that the overarching goal is not to reproduce the detailed inter-CTF face spatial crud distributions rather the model specifically attempts to reproduce the correct average crud behavior on each CTF face, even in regions near spacer grids, and estimate the frequency of extreme crud events so to be relevant for CILC risk estimates.
-
+Note that the crud surface field results are left in the area-normalized form with units of $[g/cm^2]$ which is the natural result from the 1D crud growth package.
 
 \begin{figure}[H]
     \centering
@@ -361,7 +361,7 @@ Circumventing these difficulties is a non-trivial undertaking.  Without making a
 
 Results for each pin in the LOO cross validation study are presented here.  There was random variation in the prediction accuracy of the model accross the 5x5 assembly with no apparent spatial bias in the model prediction errors towards the edge of the assembbly, as one may expect.  This would indicate that some pins in the 5x5 assembly are, in a sense, more unique with respect to thermal hydraulic flow conditions than others.  Pins where a small difference between the hi2lo model predictions and the gold-standard CFD result show that the pin's thermal hydraulic conditions are well represented in the training set.
 
-In table \ref{tab:loo_crud_bmass} and \ref{tab:loo_crud_cmass} rod integrated crud results for each pin are given at 300 days of simulation time.  The worst performing pin with respect to boron deposition prediction was pin 4 by relative percent difference between the hi2lo result and the CFD driven crud result.  The Kendall's $\tau$ boosted regressor produced large prediction errors as measured by the LOO cross validation for this pin, as shown in table \ref{tab:loo_rms}.  Incorrect predictions made for the correlation coefficient act in concert with a net under-prediction of the temperature quantiles, as shown in figure (), giving rise to a significant ($\approx -48\%$) net under prediction of the total crud mass on pin 4.
+In table \ref{tab:loo_crud_bmass} and \ref{tab:loo_crud_cmass} rod integrated crud results for each pin are given at 300 days of simulation time.  The worst performing pin with respect to boron deposition prediction was pin 4 by relative percent difference between the hi2lo result and the CFD driven crud result.  The Kendall's $\tau$ boosted regressor produced large prediction errors as measured by the LOO cross validation for this pin, as shown in table \ref{tab:loo_rms}.  Incorrect predictions made for the correlation coefficient act in concert with a net under-prediction of the temperature quantiles, as shown in figure \ref{fig:qqtwallmontagesm}, giving rise to a significant ($\approx -48\%$) net under prediction of the total crud mass on pin 4.
 
 
 % Hi2lo Bmass results
@@ -447,46 +447,8 @@ Totals	 & 2.9128e+01 & 9.9713e+00 & 9.0877e+00 & -8.8360e-01  & -8.9\\
 \end{center}
 \end{table}
 
-% RMS error table
-\begin{table}[h]
-    \begin{center}
-        \caption[Hi2lo crud RMS summary.]{Hi2lo crud RMS summary.}
-    \begin{tabular}[h]{|c|c|c|c|c|c|c|c|}
-        \hline
-Pin  & RMS & RMS & RMS & RMS & RMS & RMS & RMS \\
-\hline
-1  & 6.2482e-04 & -2.3332e-05 & 3.3009e-07 & -1.2326e-08 & 7.5489e-08 & 1.4232e-04 & 0.0000e+00 \\
-2  & 8.1392e-04 & -3.8562e-05 & 4.3183e-07 & -2.0466e-08 & 5.1953e-08 & 9.8041e-05 & 0.0000e+00 \\
-3  & 2.0189e-04 & 2.7399e-06 & 1.0731e-07 & 1.5140e-09 & 3.2678e-08 & 6.1962e-05 & 0.0000e+00 \\
-4  & 1.0737e-03 & -5.0812e-05 & 5.7008e-07 & -2.6998e-08 & 5.6847e-08 & 1.0737e-04 & 0.0000e+00 \\
-5  & 2.2335e-04 & 7.0283e-06 & 1.1847e-07 & 3.7498e-09 & 1.8974e-08 & 3.6318e-05 & 0.0000e+00 \\
-6  & 6.5623e-05 & 1.7178e-06 & 3.4608e-08 & 8.9595e-10 & 9.1686e-09 & 1.7713e-05 & 0.0000e+00 \\
-7  & 2.1295e-05 & -5.2469e-07 & 1.0898e-08 & -2.6945e-10 & 4.0210e-09 & 7.9597e-06 & 0.0000e+00 \\
-8  & 1.8572e-05 & 7.2717e-07 & 9.4019e-09 & 3.6144e-10 & 2.9861e-09 & 5.9122e-06 & 0.0000e+00 \\
-9  & 1.0839e-05 & -5.1974e-08 & 5.4659e-09 & -2.6075e-11 & 3.3324e-09 & 6.6094e-06 & 0.0000e+00 \\
-10  & 2.4348e-05 & -1.5296e-06 & 1.2298e-08 & -7.7213e-10 & 3.5892e-09 & 7.1162e-06 & 0.0000e+00 \\
-11  & 2.9659e-05 & -4.4282e-07 & 1.5478e-08 & -2.3832e-10 & 4.0316e-09 & 7.9487e-06 & 0.0000e+00 \\
-12  & 1.9073e-04 & -6.5447e-06 & 1.0111e-07 & -3.4547e-09 & 1.1722e-08 & 2.2533e-05 & 0.0000e+00 \\
-13  & 3.9831e-04 & 7.4119e-06 & 2.1135e-07 & 3.9690e-09 & 2.2909e-08 & 4.3636e-05 & 0.0000e+00 \\
-14  & 5.0327e-04 & 2.2589e-05 & 2.6950e-07 & 1.2076e-08 & 2.7471e-08 & 5.2130e-05 & 0.0000e+00 \\
-15  & 5.5978e-04 & -2.2242e-05 & 2.9813e-07 & -1.1904e-08 & 4.5067e-08 & 8.4999e-05 & 0.0000e+00 \\
-16  & 5.6026e-04 & 2.5707e-05 & 2.9830e-07 & 1.3678e-08 & 2.9707e-08 & 5.6215e-05 & 0.0000e+00 \\
-17  & 1.2664e-04 & -3.6509e-07 & 6.6854e-08 & -1.7016e-10 & 2.6739e-08 & 5.0727e-05 & 0.0000e+00 \\
-18  & 1.8205e-04 & -6.4199e-06 & 9.5976e-08 & -3.3756e-09 & 2.3468e-08 & 4.4664e-05 & 0.0000e+00 \\
-19  & 1.2838e-04 & 5.7381e-06 & 6.8271e-08 & 3.0523e-09 & 1.1289e-08 & 2.1674e-05 & 0.0000e+00 \\
-20  & 9.7915e-05 & -4.4377e-06 & 5.1674e-08 & -2.3286e-09 & 7.2277e-09 & 1.4063e-05 & 0.0000e+00 \\
-21  & 1.7636e-05 & -2.6016e-07 & 9.2180e-09 & -1.3620e-10 & 4.5454e-09 & 8.9271e-06 & 0.0000e+00 \\
-22  & 6.7042e-05 & 3.2845e-06 & 3.5199e-08 & 1.7153e-09 & 4.4576e-09 & 8.7701e-06 & 0.0000e+00 \\
-23  & 1.7096e-04 & -6.7350e-06 & 9.0595e-08 & -3.5703e-09 & 1.5092e-08 & 2.8810e-05 & 0.0000e+00 \\
-24  & 1.5885e-04 & 5.7841e-06 & 8.4133e-08 & 3.0827e-09 & 1.8479e-08 & 3.5204e-05 & 0.0000e+00 \\
-25  & 1.9995e-04 & -8.8282e-06 & 1.0617e-07 & -4.6799e-09 & 1.3290e-08 & 2.5506e-05 & 0.0000e+00 \\
-\hline
-\end{tabular}
-\label{tab:loo_rms}
-\end{center}
-\end{table}
 
-At each resampling step the crud mass was summed over all pins in the assembly and presented in figure \ref{fig:asmcmasstime}.  The total crud predicted by CFD and the hi2lo model are in in close agreement.
+At each re-sample step the crud mass was summed over all pins in the assembly and presented in figure \ref{fig:asmcmasstime}.  The total assembly crud mass predicted by CFD and the hi2lo model are in in close agreement.  At 300 days simulation time the relative difference in the crud mass results between the hi2lo and the CFD model was -8.9\%, as shown in table \ref{tab:loo_crud_cmass}.
 
 \begin{figure}[H]
     \centering
@@ -494,6 +456,47 @@ At each resampling step the crud mass was summed over all pins in the assembly a
     \caption{Assembly integrated CTF vs CFD vs Hi2lo crud mass as a function of time.}
     \label{fig:asmcmasstime}
 \end{figure}
+
+The RMS axial crud distribution errors are sumarrized in table \ref{tab:loo_rms}.  To facilitate examination of the hi2lo model predictions for gemoetric biases across the assembly top-down views of the RMS crud mass and boron mass error distributions were generated and presented in figure \ref{fig:l2boronasmerrorshmap} and \ref{fig:l2cmassasmerrorshmap} respectively.  The pins which reside on the edge of the assembly did not exhibit any increase in crud error on average.  The root mean squared error is given by: $RMS = \sqrt{\sum_j(\mathrm{Hi2lo}_j - \mathrm{CFD}_j)^2}$ where $j$ is the CTF face index on a given pin.  
+
+% RMS error table
+\begin{table}[h]
+    \begin{center}
+        \caption[Hi2lo crud RMS summary.]{Hi2lo vs CFD crud RMS summary.}
+    \begin{tabular}[h]{|c|C|C|}
+        \hline
+        Pin  & Axial RMS Error Crud Mass $[g/cm^2]$ & Axial RMS Error Crud Boron Mass $[g/cm^2]$ \\
+\hline \hline
+1  & 6.2482e-04 &  3.3009e-07  \\
+2  & 8.1392e-04 &  4.3183e-07  \\
+3  & 2.0189e-04 &  1.0731e-07  \\
+4  & $\mathbf{1.0737\mathrm{\bf e-}03}$ &  5.7008e-07  \\
+5  & 2.2335e-04 &  1.1847e-07  \\
+6  & 6.5623e-05 &  3.4608e-08  \\
+7  & 2.1295e-05 &  1.0898e-08  \\
+8  & 1.8572e-05 &  9.4019e-09  \\
+9  & 1.0839e-05 &  5.4659e-09  \\
+10 & 2.4348e-05 &  1.2298e-08  \\
+11 & 2.9659e-05 &  1.5478e-08  \\
+12 & 1.9073e-04 &  1.0111e-07  \\
+13 & 3.9831e-04 &  2.1135e-07  \\
+14 & 5.0327e-04 &  2.6950e-07  \\
+15 & 5.5978e-04 &  2.9813e-07  \\
+16 & 5.6026e-04 &  2.9830e-07  \\
+17 & 1.2664e-04 &  6.6854e-08  \\
+18 & 1.8205e-04 &  9.5976e-08  \\
+19 & 1.2838e-04 &  6.8271e-08  \\
+20 & 9.7915e-05 &  5.1674e-08  \\
+21 & 1.7636e-05 &  9.2180e-09  \\
+22 & 6.7042e-05 &  3.5199e-08  \\
+23 & 1.7096e-04 &  9.0595e-08  \\
+24 & 1.5885e-04 &  8.4133e-08  \\
+25 & 1.9995e-04 &  1.0617e-07  \\
+\hline
+\end{tabular}
+\label{tab:loo_rms}
+\end{center}
+\end{table}
 
 \begin{figure}[H]
     \centering
@@ -534,9 +537,15 @@ At each resampling step the crud mass was summed over all pins in the assembly a
     \label{fig:totcmassrelasmerrorshmap}
 \end{figure}
 
-The correlations between crud prediction errors and errors committed by the quantile regressors were investigated in an attempt to establish performance metrics.  Understanding the correlation of errors between the machine learning model predictions and the crud prediciton errors is helpful when identifying the relative importantance of the predicted quantities.
+The correlations between crud prediction errors and errors committed by the quantile regressors were investigated in an attempt to establish performance metrics.  Understanding the correlation of errors between the machine learning model predictions and the crud prediction errors is helpful when identifying the relative importantance of the quantities predicted by the machine learning models with respect to crud growth.
 
-Provided these error estimates and known sensitivities of the crud results to the ML errors one can estimate the expected accuracy of the crud predictions obtained via the hi2lo model.  This allows a user of the hi2lo tool to detect problems with the ML models before using the model to make crud predictions.
+Provided sensitivities of the crud results to the ML errors one can estimate the expected accuracy of the crud predictions obtained via the hi2lo model by:
+
+\begin{equation} \nonumber
+    E_{c_j} \approx \sum_l \frac{\partial E_{c,j}}{\partial E_{l,j}}E_{l,j}$
+\end{equation}
+Where $E_{c,j}$ is the $j^{th}$ pin crud mass error and $E_l$ is the error associated with the $l^{th}$ component of the ML model predictions.  $E_{l,j}$ can be computed at training time, before crud growth simulations are performed.
+This allows a user of the hi2lo model to detect problems with the trained quantile regression and copula models prior to employing the model to make crud predictions.
 
 A Student-T test was conducted on the slope of each fitted linear trend lines. The results of the Student-T tests are shown in the upper-triangle of figure \ref{fig:asmerrorcorr}.  The null hypothesis was taken to be a slope of zero.  The standard deviation of the computed sensitivities is high when using a small sample size making it difficult to rigorously conclude that errors made by the machine learning models correspond to errors in the crud predictions.
 % One can conclude that a  sample size greater than 25 pins should be used in future work to investigate the relative influence of machine learning errors on the predicted crud errors
@@ -548,7 +557,7 @@ A Student-T test was conducted on the slope of each fitted linear trend lines. T
     \label{fig:asmerrorcorr}
 \end{figure}
 
-Statistically significant trends were found between the RMS error committed by the TKE quantile regressors and the crud boron and mass distribution errors, as measured by root-mean-squared error.  This suggests there is a link between being able to accurately predict the conditional quantiles of the TKE distributions and obtaining accurate crud estimates.  
+Statistically significant trends were found between the RMS error committed by the TKE quantile regressors and the crud boron and mass distribution errors, as measured by root-mean-squared error.  This suggests there is a link between being able to accurately predict the conditional quantiles of the TKE distributions and obtaining accurate crud estimates.
 
 A strong positive correlation was observed between the root-mean-squared crud errors and the total crud mass prediction errors.  This is a trivial result since one expects pins which exhibited large axial crud distriubtion RMS errors would also be likely to experience a large total integrated crud mass error unless, by happenstance, there was a cancellation of errors.
 
