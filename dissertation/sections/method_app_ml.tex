@@ -537,12 +537,12 @@ The RMS axial crud distribution errors are summarized in table \ref{tab:loo_rms}
     \label{fig:totcmassrelasmerrorshmap}
 \end{figure}
 
-The correlations between crud prediction errors and errors committed by the quantile regressors were investigated in an attempt to establish performance metrics.  Understanding the correlation of errors between the machine learning model predictions and the crud prediction errors is helpful when identifying the relative importantance of the quantities predicted by the machine learning models with respect to crud growth.
+The correlations between crud prediction errors and errors committed by the quantile regressors were investigated in an attempt to establish performance metrics.  Understanding the correlation of errors between the machine learning model predictions and the crud prediction errors is helpful when identifying the relative importance of the quantities predicted by the machine learning models with respect to crud growth.
 
 Provided sensitivities of the crud results to the ML errors one can estimate the expected accuracy of the crud predictions obtained via the hi2lo model by:
 
 \begin{equation} \nonumber
-    E_{c_j} \approx \sum_l \frac{\partial E_{c,j}}{\partial E_{l,j}}E_{l,j}$
+    E_{c_j} \approx \sum_l \frac{\partial E_{c,j}}{\partial E_{l,j}}E_{l,j}
 \end{equation}
 Where $E_{c,j}$ is the $j^{th}$ pin crud mass error and $E_l$ is the error associated with the $l^{th}$ component of the ML model predictions.  $E_{l,j}$ can be computed at training time, before crud growth simulations are performed.
 This allows a user of the hi2lo model to detect problems with the trained quantile regression and copula models prior to employing the model to make crud predictions.

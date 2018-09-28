@@ -1,5 +1,5 @@
 \documentclass[12pt,a4paper]{report}
-\usepackage[a4paper, total={6.25in, 9in}]{geometry}
+\usepackage[a4paper, total={6.00in, 9in}]{geometry}
 \usepackage{pdflscape}
 \usepackage{setspace}
 \usepackage[utf8]{inputenc}
@@ -29,6 +29,9 @@
 \usepackage{siunitx} % Provides the \SI{}{} and \si{}
 \usepackage[normalem]{ulem}  % stike-through by \sout{}
 
+
+
+
 % image paths
 \graphicspath{{../proposal/}{./}{./figs/crud}}
 
@@ -41,7 +44,7 @@
 \title{CFD Informed Subchannel}
 
 \begin{document}
-
+\renewcommand{\thepage}{\roman{page}}
 %=================================TITLE=======================================%
 %-----------------------------------------------------------------------------%
 \input{./sections/title.tex}
@@ -50,11 +53,18 @@
 
 \input{./sections/abstract.tex}
 
+\pagebreak
+\tableofcontents
+\pagebreak
+
 %-----------------------------------------------------------------------------%
 \input{./sections/acryn.tex}
 
 %=================================BODY========================================%
+\renewcommand{\thepage}{\arabic{page}} % Arabic numerals for page counter
+\setcounter{page}{1}
 \onehalfspacing
+% \doublespacing  % UT formatting spec
 %-----------------------------------------------------------------------------%
 \chapter{Introduction}
 \label{chap:intro}
