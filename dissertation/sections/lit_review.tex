@@ -23,7 +23,7 @@ Besides the BCSD based tools, other bias-correction and statistical augmentation
 \section{Subchannel Hi2lo}
 
 \begin{itemize}
-    \item (\checkmark) M. Avramova.  CFD informed grid mixing coefficients in CTF.  This work leveraged CFD results to improve the momentum balance (grid mixing models) in CTF. \cite{avramova2007}
+    \item  M. Avramova.  CFD informed grid mixing coefficients in CTF.  This work leveraged CFD results to improve the momentum balance (grid mixing models) in CTF. \cite{avramova2007}
     
     \begin{itemize}
     	
@@ -51,10 +51,10 @@ Besides the BCSD based tools, other bias-correction and statistical augmentation
     	
     \end{itemize}
     
-    \item (\checkmark) T. Blyth.  Development of CFD informed models for the advanced subchannel code CTF.  This work presented strategies for CFD informed model of grid enhanced heat transfer and for computing the form loss coefficient across spacer grids from CFD.  Blyth's work served as a precursor to Salko's CFD informed method for developing HTC and TKE maps.
+    \item  Blyth produced CFD informed grid enhanced heat transfer models for the advanced subchannel code, CTF.  This work presented strategies for processing CFD data for use in generating enhanced heat transfer maps and for computing the form loss coefficient across spacer grids.  Blyth's work served as a precursor to Salko's CFD informed method for developing HTC and TKE maps.
     
     
-    \item (\checkmark) S. Yao.  Empirical model of heat transfer coefficient downstream of spacer grids. \cite{yao82}
+    \item S. Yao developed an empirical model of the heat transfer coefficient downstream of spacer grids. \cite{yao82}
     An empirical relationship between the Nusselt number ratio and the vane angle, $\phi$, blockage ratio $\epsilon$, dimensionless distance from the grid, $x/D$, and fraction of flow area impeded by the vanes, $A$, was developed by S. C. Yao et al. (1982) [ref].
 \begin{equation}
 \frac{Nu}{Nu_0}  = \left[ 1 + 5.55 \epsilon^2 e^{-0.13(x/D)}\right] + \left[ 1 + A^2\mathrm{tan}^2\phi e^{-0.034(x/D)} \right]
@@ -68,7 +68,7 @@ Where the first term is accounts for the effect of grid flow restriction and the
     \label{fig:gridnueff}
 \end{figure}
 
-    \item (\checkmark) B. Salko et al. developed a CFD-Informed hi2lo spatial remapping procedure for CILC/CIPS screening. \cite{salko17}
+    \item  B. Salko et al. developed a CFD-Informed hi2lo spatial remapping procedure for CILC/CIPS screening. \cite{salko17}
     Similar to Yao apporach.  Additionally developed a TKE remap.
     The multiplier maps capture the ratio of the CFD predicted HTC and TKE surface distributions to the same surface distributions on a bare rod with no spacer grids present.
     Convective HTC remap:
@@ -94,6 +94,7 @@ Where the first term is accounts for the effect of grid flow restriction and the
     \begin{algorithm}[H]
         \captionsetup{labelfont={sc,bf}, labelsep=newline}
         \caption{Heat transfer coefficient map based hi2lo method for crud prediction (Salko. et. al.).}
+    \setstretch{0.8}  % reduce spacing in algo sec
     \begin{algorithmic}
     \STATE \textbf{Initialization} 
     \STATE Guess $T^{i=0}_s=T_0$.  Maximum number, $N$ iterations.
@@ -152,9 +153,8 @@ Where the first term is accounts for the effect of grid flow restriction and the
 
      \item The multiplier map may not be transferable to other assemblies in the core due to geometric effects including the orientation of neighboring assemblies and TH/neutronics feedbacks.  This represents a limitation to the spatial mapping procedure as unique maps must be generated for different assemblies in the core.
     \end{itemize}
-    \item (\checkmark) T. Hengal. Regression Kriging application to soil composition prediction as function of elevation, distance to river, ect. \cite{Hengl07}
-    \item (\checkmark) Boosted regression and classification applications. \cite{moisen2006}, \cite{friedman2002}
-    \item ($\cdot$) Other hi2lo approaches?
+    \item  T. Hengal. Regression Kriging application to soil composition prediction as function of elevation, distance to river, ect. \cite{Hengl07}
+    \item  Boosted regression and classification applications. \cite{moisen2006}, \cite{friedman2002}
 \end{itemize}
 
 
