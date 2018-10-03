@@ -1,14 +1,29 @@
 %! TEX root = ../dissertation_gurecky.tex
 
-\subsection*{Abstract}
+\begin{center}
+	\large{
+		\bf{A CFD-Informed Model for Improving Subchannel Resolution Crud Prediction}
+	}
+	\vspace{1cm}
+	
+	\small{	
 
+	William Ladd Gurecky, Ph.D. \\
+	The University of Texas at Austin, 2018
+   
+    \vspace{1cm} 
+   	Supervisor:  Derek Haas
+    }
+\end{center}
+\vspace{1cm}
+
+% \section*{Abstract}
 \small{
-
 This work describes the development of a physics-directed, statistically based,
-surrogate model of the small scale flow features that impact CRUD growth. The objective of the surrogate
-is to provide CFD-informed boundary conditions to the CRUD model. The surface temperature, heat
+surrogate model of the small scale flow features that impact crud growth. The objective of the surrogate
+is to provide CFD-informed boundary conditions to the crud model. The surface temperature, heat
 flux and turbulent kinetic energy, henceforth referred to as the Fields of Interest (FOI),
-govern the growth rate of CRUD on the surface of the rod and the
+govern the growth rate of crud on the surface of the rod and the
 precipitation of boron in the porous crud layer. Therefore the surrogate predicts the behavior of the
 fields of interest as a function of position in the core and local thermal-hydraulic conditions.
 
@@ -18,12 +33,12 @@ the core. The role of the CFD solution is to provide higher order moments of the
 given by CTF. In other words, the solution provided by CTF is augmented by a predicted stochastic
 component of the FOI informed by CFD results to provide a more detailed description of the target
 FOIs than CTF can provide alone. To this end, a novel method based on the marriage of copula and
-gradient boosting techniques is proposed. The proposed work forgoes a spatial interpolation approach
+gradient boosting techniques is proposed. This approach forgoes a spatial interpolation approach
 for a statistically driven approach which predicts the fractional area of a rod’s surface in excess of some
 critical temperature - but not precisely where such maxima occur on the rod surface.
 The resultant model retains the ability to account for the presence
 of hot and cold spots on the rod surface induced by turbulent flow downstream of spacer grids when
-producing CRUD estimates. Sklar’s theorem is leveraged to decompose multivariate probability densities
+producing crud estimates. Sklar’s theorem is leveraged to decompose multivariate probability densities
 of the FOI into independent copula and marginal models. The free parameters within the copula model
 are predicted using a combination of supervised regression and classification machine learning techniques
 with training data sets supplied by a suite of pre-computed CFD results spanning a typical PWR TH

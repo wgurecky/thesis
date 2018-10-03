@@ -1,5 +1,6 @@
 \documentclass[12pt,a4paper]{report}
-\usepackage[a4paper, total={6.25in, 9in}]{geometry}
+\usepackage[a4paper, total={6.00in, 9in}]{geometry}
+\usepackage{pdflscape}
 \usepackage{setspace}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
@@ -20,9 +21,16 @@
 \usepackage{subfig}
 \usepackage[]{algorithm}
 \usepackage{algorithmic}
+\usepackage{array}
+\newcolumntype{B}{>{\centering\arraybackslash}m{3cm}}
+\newcolumntype{C}{>{\centering\arraybackslash}m{4cm}}
+\newcolumntype{L}{>{\arraybackslash}m{8cm}}
 \usepackage[version=3]{mhchem} % Package for chemical equation typesetting \ce{}
 \usepackage{siunitx} % Provides the \SI{}{} and \si{}
 \usepackage[normalem]{ulem}  % stike-through by \sout{}
+
+
+
 
 % image paths
 \graphicspath{{../proposal/}{./}{./figs/crud}}
@@ -36,7 +44,7 @@
 \title{CFD Informed Subchannel}
 
 \begin{document}
-
+\renewcommand{\thepage}{\roman{page}}
 %=================================TITLE=======================================%
 %-----------------------------------------------------------------------------%
 \input{./sections/title.tex}
@@ -45,11 +53,18 @@
 
 \input{./sections/abstract.tex}
 
+\pagebreak
+\tableofcontents
+\pagebreak
+
 %-----------------------------------------------------------------------------%
 \input{./sections/acryn.tex}
 
 %=================================BODY========================================%
+\renewcommand{\thepage}{\arabic{page}} % Arabic numerals for page counter
+\setcounter{page}{1}
 \onehalfspacing
+% \doublespacing  % UT formatting spec
 %-----------------------------------------------------------------------------%
 \chapter{Introduction}
 \label{chap:intro}
@@ -66,13 +81,13 @@
 \input{./sections/theory.tex}
 
 %-----------------------------------------------------------------------------%
-\chapter{Method Exploration Under Synthetic Data Source}
+\chapter{Method Exploration Under a Synthetic Data Source}
 \label{chap:work}
 \input{./sections/method_app_synth.tex}
 \input{./sections/method_app_cfd.tex}
 
 %-----------------------------------------------------------------------------%
-\chapter{Model Performance Under CFD Data Source}
+\chapter{Model Performance Under a CFD Data Source}
 \label{chap:fw}
 \input{./sections/method_app_ml.tex}
 
@@ -90,16 +105,16 @@
 %=================================APPX========================================%
 %-----------------------------------------------------------------------------%
 \chapter{Appendix A}
-\label{chap:app}
-% \input{./sections/appendix/app_a.tex}
+\label{chap:app_ml}
+\input{./sections/appendix/app_ml_results.tex}
 
 \chapter{Appendix B}
 \label{chap:app_b}
 \input{./sections/appendix/app_b.tex}
 
 \chapter{Appendix C}
-\label{chap:app_b}
-% \input{./sections/appendix/app_c.tex}
+\label{chap:app_c}
+\input{./sections/appendix/app_e.tex}
 
 \chapter{Appendix D}
 \label{chap:app_d}

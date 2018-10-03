@@ -1,24 +1,29 @@
 %! TEX root = ../dissertation_gurecky.tex
 
+The problem of correcting thermal hydraulic predictions provided by a subchannel code using higher fidelity CFD results can be viewed from the perspective of statistical downscaling.  There are abundant examples of statistical downscaling techniques in the weather forecasting and geological interpolation and mapping literature.  One commonality across all studied procedures is the presence of a high and low fidelity data source and a goal to make credible predictions of the target field between known coarsely resolved sample locations.  The problem is one of data amalgamation, where the resultant downscaling model preserves some average aspects of the low fidelity model with the added benefits of uncertainty and spatial fidelity afforded by the finer scale data.
 
 \section{Statistical Downscaling}
 
-Statistical downscaling refers to generating a statistical link between a low and high fidelity models.
-The process of statistical downscaling and augmentation is not without precedent.  In particular, in the climate and weather data communities, it is common to perform local bias-correction on coarsely resolved weather models provided local weather station measurements [ref].  
+Statistical downscaling methods seek a statistical link between a low and high fidelity features. 
+In particular, in the climate and weather data communities, it is common to perform local bias-correction on coarsely resolved weather models provided local weather station measurements [ref].    A common situation which lends itself to SD methods is to have disparate resolution sample data, one set typically provided by a coarsely resolved global climate model and a secondary set of finely resolved local rain and wind field measurements, and to have a wide array of auxiliary predictive features at ones disposal such as the terrain height.
+
+Results from an SD model should be carefully interpreted since at fine scale resolutions point estimates for the fields represent a single realization of a random variable governed by a fitted underlaying distribution.  Depending on the models used to to capture statistical variation in the spatial and temporal trends it is sometimes necessary to draw many samples from the SD model to estimate the mean and higher moments.  These mean and variance estimates can then be compared against a historical validation data set.  In the case of a fully parametric SD model, the standard deviation and mean field estimate can analytically computed.
 
 A particular class of SD methods known as bias-corrected spatial disaggregation (BCSD) focus on establishing local area estimates of higher order moments about the mean from a coarse model given previous historical local station data.  These models have been used to forecast the probability of extreme precipitation events in a given local region which is important for flood risk assessment studies [ref].
+
+Several factors prohibit the application of BSCD techniques directly to the hi2lo problem at hand.  The majority of BSCD literature does not consider the simultaneous prediction of multiple correlated random fields.  Additionally, the BSCD models do not typically consider a large number of exogenous covariates in their construction - only the spatial and temporal coordinates are used which constrains the statistical downscaling maps which are produced to be nontransferable to other geographic locations.  Finally, resolving fine spatial detail of the temperature and TKE fields in a given CTF face isn't necessary for accurate crud prediction when using a single dimensional crud simulation code since no azimuthal or axial variation in these surface fields are utilized in the crud package.  Therefore, the problem of finding the fractional area of a CTF face which exists above a threshold is preferable to spatial disaggregation techniques in the current hi2lo crud application.
 
 
 It is also possible to nest a high fidelity simulation within a coarse fidelity weather simulation. Boundary conditions and constraints are supplied by the coarse fidelity model to the nested regional high resolution weather model.  The practice of coupling regional weather models with coarse scale global models is sometimes referred to as dynamical downscaling, though, this weather modeling strategy can also be viewed as a particular tightly coupled multi-scale model.  There are examples of such coupled simulation in reactor physics (see literature on coupled coarse RELAP and CFD models.  CFD is used where the flow is 'complicated' but RELAP handles the primary loop piping and heat exchanger)  The construction of dynamical downscaling models are not the focus of the current hi2lo work and will not be discussed further.
 
 \section{Kriging}
 
-Besides the BCSD based tools, other bias-correction and statistical augmentation techniques are well suited when the errors can be assumed to be normally distributed about some mean prediction.  Simple kriging assumes that the mean of the underlaying field does not drift as a function location in the input space and therefore only requires the fitting of a co-variogram which describes the statistical spatial autocorrelation between the known data.  More advanced kriging strategies such as regression kriging (RK) forgo this simplification decomposing the interpolation problem into one separate mean predicting and bias-correcting residual models.  In RK the spatial-autocorrelation in the residuals is modeled by a simple kriging model.  The mean response may be predicted by any regression strategy, with a common choice being an ordinary least squares model though works which investigate the use of random-forests or more advanced machine learning strategies in this role are pervasive [refs].
+Besides the BCSD based tools, other bias-correction and statistical augmentation techniques are well suited when the errors can be assumed to be normally distributed about some mean prediction.  Simple kriging assumes that the mean of the underlaying field does not drift as a function location in the input space and therefore only requires the fitting of a co-variogram which describes the statistical spatial autocorrelation between the known data.  More advanced kriging strategies such as regression kriging (RK) forgo this simplification decomposing the interpolation problem into mean predicting and bias-correcting residual models.  In RK the spatial-autocorrelation in the residuals is modeled by a simple kriging model.  The mean response may be predicted by any regression strategy, with a common choice being an ordinary least squares model though works which investigate the use of random-forests or more advanced machine learning strategies in this role are pervasive [refs].
 
-\section{Subchannel TH Hi2lo}
+\section{Subchannel Hi2lo}
 
 \begin{itemize}
-    \item (\checkmark) M. Avramova.  CFD informed grid mixing coefficients in CTF.  This work leveraged CFD results to improve the momentum balance (grid mixing models) in CTF. \cite{avramova2007}
+    \item  M. Avramova.  CFD informed grid mixing coefficients in CTF.  This work leveraged CFD results to improve the momentum balance (grid mixing models) in CTF. \cite{avramova2007}
     
     \begin{itemize}
     	
@@ -46,10 +51,10 @@ Besides the BCSD based tools, other bias-correction and statistical augmentation
     	
     \end{itemize}
     
-    \item (\checkmark) T. Blyth.  Development of CFD informed models for the advanced subchannel code CTF.  This work presented strategies for CFD informed model of grid enhanced heat transfer and for computing the form loss coefficient across spacer grids from CFD.  Blyth's work served as a precursor to Salko's CFD informed method for developing HTC and TKE maps.
+    \item  Blyth produced CFD informed grid enhanced heat transfer models for the advanced subchannel code, CTF.  This work presented strategies for processing CFD data for use in generating enhanced heat transfer maps and for computing the form loss coefficient across spacer grids.  Blyth's work served as a precursor to Salko's CFD informed method for developing HTC and TKE maps.
     
     
-    \item (\checkmark) S. Yao.  Empirical model of heat transfer coefficient downstream of spacer grids. \cite{yao82}
+    \item S. Yao developed an empirical model of the heat transfer coefficient downstream of spacer grids. \cite{yao82}
     An empirical relationship between the Nusselt number ratio and the vane angle, $\phi$, blockage ratio $\epsilon$, dimensionless distance from the grid, $x/D$, and fraction of flow area impeded by the vanes, $A$, was developed by S. C. Yao et al. (1982) [ref].
 \begin{equation}
 \frac{Nu}{Nu_0}  = \left[ 1 + 5.55 \epsilon^2 e^{-0.13(x/D)}\right] + \left[ 1 + A^2\mathrm{tan}^2\phi e^{-0.034(x/D)} \right]
@@ -63,7 +68,7 @@ Where the first term is accounts for the effect of grid flow restriction and the
     \label{fig:gridnueff}
 \end{figure}
 
-    \item (\checkmark) B. Salko et al. developed a CFD-Informed hi2lo spatial remapping procedure for CILC/CIPS screening. \cite{salko17}
+    \item  B. Salko et al. developed a CFD-Informed hi2lo spatial remapping procedure for CILC/CIPS screening. \cite{salko17}
     Similar to Yao apporach.  Additionally developed a TKE remap.
     The multiplier maps capture the ratio of the CFD predicted HTC and TKE surface distributions to the same surface distributions on a bare rod with no spacer grids present.
     Convective HTC remap:
@@ -89,6 +94,7 @@ Where the first term is accounts for the effect of grid flow restriction and the
     \begin{algorithm}[H]
         \captionsetup{labelfont={sc,bf}, labelsep=newline}
         \caption{Heat transfer coefficient map based hi2lo method for crud prediction (Salko. et. al.).}
+    \setstretch{0.8}  % reduce spacing in algo sec
     \begin{algorithmic}
     \STATE \textbf{Initialization} 
     \STATE Guess $T^{i=0}_s=T_0$.  Maximum number, $N$ iterations.
@@ -147,9 +153,8 @@ Where the first term is accounts for the effect of grid flow restriction and the
 
      \item The multiplier map may not be transferable to other assemblies in the core due to geometric effects including the orientation of neighboring assemblies and TH/neutronics feedbacks.  This represents a limitation to the spatial mapping procedure as unique maps must be generated for different assemblies in the core.
     \end{itemize}
-    \item (\checkmark) T. Hengal. Regression Kriging application to soil composition prediction as function of elevation, distance to river, ect. \cite{Hengl07}
-    \item (\checkmark) Boosted regression and classification applications. \cite{moisen2006}, \cite{friedman2002}
-    \item ($\cdot$) Other hi2lo approaches?
+    \item  T. Hengal. Regression Kriging application to soil composition prediction as function of elevation, distance to river, ect. \cite{Hengl07}
+    \item  Boosted regression and classification applications. \cite{moisen2006}, \cite{friedman2002}
 \end{itemize}
 
 

@@ -1,0 +1,88 @@
+%! TEX root = ../dissertation_gurecky.tex
+
+\section{Software Details}
+
+\subsection{Gradient Boosting Toolkit}
+
+A gradient boosting library was developed in the python programming language to support the hi2lo work.  This package provides an easily extensible loss function class that a user can use to implement arbitrary loss functions in the gradient boosting framework.  As required by the hi2lo work, both quantile and least squares loss functions are included.  The package is applicable to both regression and classification problems.  CART tree construction controls are also provided allowing fine grained control over the weak learners.
+The library interface was constructed to be similar to Scikit-learn's gradient boosting API so that the newly developed boosting algorithms can stand as drop in replacements for those available in Scikit-learn.
+
+The gradient boosting package \emph{pCRTree} is available at \url{https://github.com/wgurecky/pCRTree.git}.
+
+\subsection{Copula Toolkit}
+
+For copula simulation, the CDvine toolkit (GPLv3 licensed) is available for the R programming language. This packages does not implement all rotations of copula making it burdensome to handle negative dependence structures out-of-the-box.  Furthermore, the maximum likelihood fitting method included in CDVine does not allow the user to specify sample weights, a key feature for the CFD data under consideration since the CFD mesh cells vary in size.
+
+To circumvent these deficiencies and potential license compatibility issues with VERA, a new copula toolkit was developed in python and is BSD3 licensed.
+Careful attention was paid to develop a flexible abstract copula class which enables custom copula functions to be specified.  Importantly, all copula rotations are supported by default allowing one to model positive and negative dependence structures without duplication of code.
+Canonical vine-copula construction and sampling algorithms are included in this package to handle the decomposition of arbitrary joint density functions of any dimension.
+Copula parameters can be determined by a weighted maximum likelihood fit to empirically supplied data with included sample weights or by specifying a rank correlation coefficient in the case of Archimedean copula.  In the current hi2Low work, both capabilities are leveraged.
+
+The \emph{StarVine} copula package and documentation is available at \url{https://github.com/wgurecky/StarVine.git}.
+
+\subsection{Python Interfaces to CRUD Codes}
+
+As part of this work, python interfaces were developed for both the legacy CASL CRUD tool known as MAMBA1D and the state-of-the art CRUD package, Mongoose.  The python wrappers to these Fortran codes facilitate rapid prototyping of hi2lo procedures which provide boundary conditions to the CRUD codes.  Additionally, the high level interface simplifies the process of orchestrating large CRUD sensitivity studies.
+
+The python wrappers are available in the Virtual Environment for Reactor Analysis (VERA) developed by CASL \url{https://www.casl.gov}.
+
+\subsection{Hi2lo Code}
+
+A package that leverages all the aforementioned tools to produce estimates of crud growth rates was developed.  This high level package is the primary user facing result of the current work.  It should be noted this package is heavily dependent on CRUD simulation, copula construction, and gradient boosting technologies.
+This package orchestrates the construction and evaluation of gradient boosted regression trees which provide the copula and marginal distribution parameters as a function of local core conditions.
+Currently, multi pin, multi state point simulation is implemented with future work focused on parallelization, training data acquisition, and improvements to the machine learning model implementation.
+
+The hi2lo crud growth package and documentation is available at \url{https://github.com/wgurecky/crudBoost.git}.
+
+
+\subsection{Synthetic Training Data Generation}
+\label{chap:synth}
+
+A toolkit to overlay custom noise atop a CTF solution was developed to provide a secondary source of training data sets aside from running a CFD code.  The synthetic data generation tool provides training data sets with lower computational cost than CFD calculations.  Some properties of a true CFD solution field are preserved by the tool, namely that the shape of the marginal and copula distributions change as a function of position and local thermal hydraulic conditions in the core.  The synthetic data is not to be viewed as complete substitute for CFD data since it lacks the ability to capture spatial auto-correlation in the predicted spatial fields that arise naturally from the governing PDEs.  Neighboring points on the rod surface do not exchange any TH information in this tool.  Despite the unphysical nature of the synthetic data, the tool provides a means to verify that known relationships between the explanatory variables and the copula parameters are recovered by the gradient boosted regression model.  This is possible because the user specifies these relationships up-front as inputs to the surface field sampling routines. \\
+
+An excerpt of an input to generate a synthetic single pin data set is given below:
+\tiny
+\begin{lstlisting}[language=XML]
+{
+    "pinID": 1,
+    "chanID": 1,
+    "averageHeatFlux": 1.2e6,
+    "spans": {
+              "0.0": {"model": "lower", "samples": 1000},
+              "2.01": {"model": "upper", "samples": 4000},
+              "2.53": {"model": "upper", "samples": 4000},
+              "2.98": {"model": "upper", "samples": 4000}
+    },
+    "upper": {
+            "0.0": {"copula":  {"family": "gauss", "params": [-0.5], "rot": 0},
+                "tke": {"type": "gauss", "params": [0.001, 0.02]},
+                "temp": {"type": "beta", "params": [5.0, 2.7], "loc": -9.2, "scale": 12.0},
+                "bhf": {"type": "gauss", "params": [0.001, 2.6e4]}
+                },
+            "0.3": {"copula":  {"family": "gauss", "params": [-0.6], "rot": 0},
+                "tke": {"type": "gauss", "params": [0.01, 0.008]},
+                "temp": {"type": "beta", "params": [5.0, 1.7], "loc": -7.0, "scale": 8.0},
+                "bhf": {"type": "gauss", "params": [0.01, 1.1e4]}
+                },
+            "1.0": {"copula":  {"family": "frank", "params": [4.0], "rot": 1},
+                "tke": {"type": "gauss", "params": [0.01, 0.005]},
+                "temp": {"type": "beta", "params": [5.0, 1.5], "loc": -4.0, "scale": 5.0},
+                "bhf": {"type": "gauss", "params": [0.01, 0.9e4]}
+                }
+            },
+    "lower": {
+            "0.0": {"copula":  {"family": "gauss", "params": [-0.6]},
+                "tke": {"type": "gauss", "params": [0.001, 0.0001]},
+                "temp": {"type": "beta", "params": ["5.0*(t)/600.0", 5.0], "loc": -2.0, "scale": 4.0},
+                "bhf": {"type": "gauss", "params": [0.01, 1.0e3]}
+                },
+            "1.0": {"copula":  {"family": "gauss", "params": [-0.6]},
+                "tke": {"type": "gauss", "params": [0.001, 0.0002]},
+                "temp": {"type": "beta", "params": [5.0, 5.0], "loc": -2.0, "scale": 4.0},
+                "bhf": {"type": "gauss", "params": [0.01, 1.0e3]}
+                }
+            }
+}
+\end{lstlisting}
+\normalsize
+The synthetic data generation tool is available for download at \url{https://github.com/wgurecky/ctfpurt.git}

@@ -141,8 +141,7 @@ Given sample data $\{x_0, ... x_n\}$ (distributed according to $F_X$), the $\tau
 The quantile loss function is substituted for the squared-error loss function in the gradient boosting algorithm to regress on a qunatile of interest rather than on the mean.  
 
 % A one dimensional slice from the quantile regression is provided in figure ().
-The resulting quantiles are used to construct a step-wise cumulative distribution, which in turn is used to build a histogram. 
-In place of the stepwise representation, a piecewise cubic hermite interpolating polynomial (PHCIP) can be fit to the stepwise conditional quantile distribution to generate a differentiable CDF.
+The resulting quantiles are used to construct a step-wise cumulative distribution, which in turn is used to build a histogram.  In place of the stepwise representation, a piecewise cubic hermite interpolating polynomial (PHCIP) can be fit to the stepwise conditional quantile distribution to generate a differentiable CDF.
 The PCHIP interpolation preserves monotonicity of the CDF if the provided quantiles are strictly monotone.  This condition is enforced in the software; any violation of the monotone restriction would indicate a software bug in the quantile regression code.
 
 \subsection{Single State Point CRUD Prediction Algorithm}
