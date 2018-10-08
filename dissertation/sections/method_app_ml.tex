@@ -457,7 +457,7 @@ At each re-sample step the crud mass was summed over all pins in the assembly an
     \label{fig:asmcmasstime}
 \end{figure}
 
-The RMS axial crud distribution errors are summarized in table \ref{tab:loo_rms}.  To facilitate examination of the hi2lo model predictions for geometric biases across the assembly top-down views of the RMS crud mass and boron mass error distributions were generated and presented in figure \ref{fig:l2boronasmerrorshmap} and \ref{fig:l2cmassasmerrorshmap} respectively.  The pins which reside on the edge of the assembly did not exhibit any increase in crud error on average.  The root mean squared error is given by: $RMS = \sqrt{\sum_j(\mathrm{Hi2lo}_j - \mathrm{CFD}_j)^2}$ where $j$ is the CTF face index on a given pin.  
+The RMS axial crud distribution errors are summarized in table \ref{tab:loo_rms}.  To facilitate examination of the hi2lo model predictions for geometric biases across the assembly top-down views of the RMS crud mass and boron mass error distributions were generated and presented in figure \ref{fig:l2boronasmerrorshmap} and \ref{fig:l2cmassasmerrorshmap} respectively.  The pins which reside on the edge of the assembly did not exhibit any increase in crud error on average.  The root mean squared error is given by: $RMS = \sqrt{\frac{1}{J}\sum^J_j(\mathrm{Hi2lo}_j - \mathrm{CFD}_j)^2}$ where $j$ is the CTF face index on a given pin.
 
 % RMS error table
 \begin{table}[h]
