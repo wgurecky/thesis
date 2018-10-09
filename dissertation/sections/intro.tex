@@ -30,7 +30,7 @@ CASL's technical portfolio.  This meta-package integrates a variety of physics
 packages and multiphysics coupling options to form a robust reactor simulation
 capability.  For multi-cycle depletion computations, VERA relies upon MPACT, a
 2D-1D method of characteristics neutronics package, coupled with the subchannel
-thermal hydraulics code, CTF.  An integrated crud modeling capability
+thermal hydraulics code, Coolant Boiling in Two-Fluid (CTF).  An integrated crud modeling capability
 is provided by MAMBA to address the crud induced power shift challenge problem.
 
 To reduce computation times, the subchannel TH code discretizes the reactor
@@ -42,8 +42,7 @@ approximately accounted for in a variety of empirically derived closure
 relations.  In effect, a single constant estimate for the mean thermal
 hydraulic conditions are obtained in each finite volume.
 
-Previous hi2Lo focused work in CASL focused on utilizing experimental or CFD
-data sets to improve heat transfer and turbulent mixing models in CTF.  These studies focused on
+Previous hi2Lo focused work in CASL focused on utilizing experimental or computational fluid dynamics (CFD) data sets to improve heat transfer and turbulent mixing models in CTF.  These studies focused on
 correcting biases in the bulk-average behavior of the flow (due to the
 previously neglected physics).  Examples of such hi2lo models are given in
 \autoref{chap:lit}.
@@ -59,15 +58,15 @@ extreme TH events above a given threshold.
 
 \section{Significance and Novelty}
 
-Crud growth is dominated by threshold physics \cite{mongoose17}[refs].  Hot and cold spots
+Crud growth is dominated by threshold physics \cite{mongoose17}.  Hot and cold spots
 present downstream of spacer grids must be accurately resolved by the hi2lo model
 in order to predict the maximum crud
-thickness and boron precipitation within the crud layer.  
+thickness and boron precipitation within the crud layer.
 
 It is challenging to faithfully capture the peaks and valleys in
 rod surface temperature and TKE distribution by traditional interpolation
 techniques since such a model must guard against smearing out the sharp peaks
-present in the spatial distributions.  
+present in the spatial distributions.
 In the present method we forgo a spatial shape function mapping strategy
 for a statistically driven approach which predicts the fractional
 area of a rod's surface in excess of some critical temperature - but not
@@ -88,11 +87,11 @@ The buildup of crud results from the deposition of metal particulates and corros
 \label{eq:crud_nife}
 \end{equation}
 
-Where $N_{\mathrm{NiFe},c}$ is the concentration of Nickle Ferrite in the crud within a small finite volume on the cladding surface.  $N_{\mathrm{NiFe}, \mathrm{cool}}$ is the concentration of nickle and iron impurities in the coolant.  $\alpha_b$ and $\alpha_{nb}$ represent boiling and non-boiling rate constants respectively.  The boiling component of the boundary heat flux (BHF) on the outer cladding surface is given by $q''_b [W/m^2]$. $\gamma_k$ is an errosion multiplier and $k$ is the near-wall local TKE.  Crud typically forms where temperatures are high and where sub cooled boiling occurs on the rod surface.
+Where $N_{\mathrm{NiFe},c}$ is the concentration of Nickle Ferrite in the crud within a small finite volume on the cladding surface.  $N_{\mathrm{NiFe}, \mathrm{cool}}$ is the concentration of nickle and iron impurities in the coolant.  $\alpha_b$ and $\alpha_{nb}$ represent boiling and non-boiling rate constants respectively.  The boiling component of the boundary heat flux (BHF) on the outer cladding surface is given by $q''_b [W/m^2]$. $\gamma_k$ is an erosion multiplier and $k$ is the near-wall local TKE.  Crud typically forms where temperatures are high and where sub cooled boiling occurs on the rod surface.
 
 The primary porous matrix of crud is \ce{NiFe_2O_4}, however, there are other constituents such as Ni-B-O and Fe-B-O and \ce{Li_2B_4O_7} compounds \cite{mongoose17}. In particular, the porous matrix of \ce{NiFe_2O_4} can be filled in by precipitated  \ce{Li_2B_4O_7} in regions which experience boiling, thus trapping boron inside the crud layer.  The net result of the trapped boron in the crud layer is a shift in power towards the bottom of core.
 
-For the purpose of PWR core simulation crud is modeled at the core wide scale.  In this application, typically TH boundary conditions are supplied to the crud simulation code by subchannel models.  Some high fidelity CFD/crud coupling work has been conducted that predicted striping patterns, or high variations in azimuthal crud growth, downstream of spacer grids \cite{slattery16}.  The experimental crud scrape data also shows high azimuthal variation downstream spacer grids.
+For the purpose of pressurized water reactor (PWR) core simulation crud is modeled at the core wide scale.  In this application, typically TH boundary conditions are supplied to the crud simulation code by subchannel models.  Some high fidelity CFD/crud coupling work has been conducted that predicted striping patterns, or high variations in azimuthal crud growth, downstream of spacer grids \cite{slattery16}.  This work was consistent with the available experimental crud scrape data which also shows high azimuthal variation downstream spacer grids [ref].
 
 Three primary concerns were identified with the current state of the art crud models used in core simulators in multi-cycle depletion applications.
 The first concerns passing incorrect boundary conditions to the crud model.  Handing incorrect boundary conditions to the crud model will not produce the correct crud unless an a posteriori factor is applied to counteract the effects of poorly resolved boundary conditions supplied by the subchannel TH models.  This is most severe downstream of spacer grids in situations where a subchannel code cannot resolve fine scale flow features that influence crud growth.  This work  addresses this problem by improving the accuracy of the boundary conditions handed to the crud model by leveraging a suite of pre-computed CFD results.
