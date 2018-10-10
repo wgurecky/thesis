@@ -251,7 +251,7 @@ Table \label{tab:crud_totals_1} summarizes the hi2lo crud predictions for the sy
 \subsubsection{Crud Copula Parameter Sensitivity}
 \label{sec:crud_copula_sensi}
 
-Here the sensitivity of the crud result to the copula parameters is investigated.  Both the impact of the rank correlation coefficient, Kendall's $\tau$, and the Archimedean copula family are investigated.  The sensitivity results generated for the patch centered at $\{ \phi=3.14[rad], z=2.95[m]\}$ are shown in figure \ref{fig:patchcrudfit80}.  There is noise present in the crud predictions due to the Monte Carlo integration of equation \ref{eq:expected_crud} over the patch.  In this instance 2500 samples were used.  The crud is relatively insensitive to the choice of copula family, but the rank correlation coefficient is shown to have a significant influence on crud growth with an average boron deposition sensitivity of $\frac{\partial C_b}{\partial \rho_\tau} =$ -1.086e-7 $[g/cm^2/\tau]$ for this particular patch.  Accurately predicting Kendall's $\tau$ provided local core conditions is important.
+Here the sensitivity of the crud result to the copula parameters is investigated.  Both the impact of the rank correlation coefficient, Kendall's $\tau$, and the Archimedean copula family are investigated.  The sensitivity results generated for the patch centered at $\{ \phi=3.14[rad], z=2.95[m]\}$ are shown in figure \ref{fig:patchcrudfit80}.  There is noise present in the crud predictions due to the Monte Carlo integration of equation \ref{eq:expected_crud} over the patch.  In this instance 2500 samples were used in the computation of the integral.  The crud is relatively insensitive to the choice of copula family, but the rank correlation coefficient is shown to have a significant influence on crud growth with an average boron deposition sensitivity of $\frac{\partial C_b}{\partial \rho_\tau} =$ -1.086e-7 $[g/cm^2/\tau]$ for this particular patch.  Accurately predicting Kendall's $\tau$ provided local core conditions is important.
 
 \begin{figure}[H]
     \centering
@@ -445,7 +445,7 @@ The influence of hot-spot stationarity assumptions on the overall integrated cru
     \label{fig:cmprpintotalsnoremap}
 \end{figure}
 
-A spatial representation of the samples pre and post-remapping are shown in figure \ref{fig:remmap_comp}.  A visual representation of the remapping strategy presented is presented in figure \ref{fig:samplemapping}.
+A spatial representation of the samples pre and post-remapping are shown in figure \ref{fig:remmap_comp}.  A visual representation of the remapping strategy presented is presented in figure \ref{fig:samplemapping}.  While the spatial distribution of the temperature and TKE fields are distinctly different after the remapping procedure is applied, the joint density distributions formed by the sample population over the patch are identical. 
 
 \begin{figure}[H]%
     \centering
