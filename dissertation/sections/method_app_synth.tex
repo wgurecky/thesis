@@ -4,7 +4,7 @@ In this chapter the univariate distribution reconstruction from quantiles, copul
 
 The availability of synthetic data alleviates the need to generate comparatively expensive CFD results to test the hi2lo strategy.  Some aspects of CFD fields are preserved in the synthetic data, including expected biases between CFD and CTF results that arise due to discrepancies in wall heat transfer closure models, among other differences.  Turbulent dispersion of the temperature and near wall TKE distributions around spacer grids are emulated by the synthetic data model.  Additionally, the dependence structure between the cladding surface temperature, boundary heat flux, and near wall TKE can be enforced by the synthetic data generation tool.  Accounting for spatial auto-correlation in the surface fields was not pursued.  Spatial autocorrelation present in the surface fields within a CTF face is not captured, however.  Consequently the synthetic data is not a direct replacement to CFD data but serves as data source for method interrogation and integration testing.
 
-Semi-parametric copula and marginal distributions are fit to the synthetic data in each CTF face independently.  Samples are drawn from the fitted joint temperature, TKE and BHF density models on each patch using standard Monte Carlo methods or importance sampling.  The surface samples are provided to a crud simulation package as cladding-surface boundary conditions.  Additional required bulk coolant properties such as the bulk fluid temperature and bulk concentration of soluble boron are supplied by CTF.
+Semiparametric copula and marginal distributions are fit to the synthetic data in each CTF face independently.  Samples are drawn from the fitted joint temperature, TKE and BHF density models on each patch using standard Monte Carlo methods or importance sampling.  The surface samples are provided to a crud simulation package as cladding-surface boundary conditions.  Additional required bulk coolant properties such as the bulk fluid temperature and bulk concentration of soluble boron are supplied by CTF.
 
 Time dependent crud simulation is also discussed.  The interaction between the sample surface remapping strategy and the integrated crud results are discussed.  Furthermore, the process by which importance sample weights are averaged over discrete time steps is discussed.
 
@@ -40,7 +40,7 @@ shifted by a bias vector
 $\mathbf b$, where $\mathbf z=\{z, \varphi\}$ is the axial and azimuthal location on the rod surface.
 $\bm \theta$ represents user specified distribution parameters.
 
-Equation \ref{eq:synth_aug} represents three continuous random surface fields.  In practice a large number of independent and identically distributed samples are drawn in each CTF face from the underlaying random field.  Individual surface samples can be specified by equation \ref{eq:synth_aug_discrete}.
+Equation \ref{eq:synth_aug} represents three continuous random surface fields.  In practice a large number of independent and identically distributed samples are drawn in each CTF face from the underlying random field.  Individual surface samples can be specified by equation \ref{eq:synth_aug_discrete}.
 
 \begin{equation}
     X_{ij} = \mu_{j,\mathrm{ctf}} + b_j + \varepsilon_{ij};\ \   \varepsilon_{j} \sim h_j
@@ -57,7 +57,7 @@ Shown in equation \ref{eq:synth_aug_face}, according to Sklar's theorem the surf
 \end{equation}
 Where the copula parameter $\theta_{c_j}$ and the marginal temperature and TKE distribution parameters $\theta_{T_j}$ and $\theta_{k_j}$ are set at runtime of the synthetic data generation tool.
 
-To allow for a great deal of flexibility in the synthetic data the copula family, Kendall's $\tau$ rank correlation coefficient and marginal distribution parameters are specified as a function of axial location and local TH conditions supplied by CTF.  The copula's shape parameter, $\theta_c$ may be related to the rank correlation coefficient by equation \ref{eq:tauar} which is a one to one function for the Archimidean copula considered in this work.
+To allow for a great deal of flexibility in the synthetic data the copula family, Kendall's $\tau$ rank correlation coefficient and marginal distribution parameters are specified as a function of axial location and local TH conditions supplied by CTF.  The copula's shape parameter, $\theta_c$ may be related to the rank correlation coefficient by equation \ref{eq:tauar} which is a one to one function for the Archimedean copula considered in this work.
 
 
 \subsection{Single Pin Synthetic Data Set}
@@ -251,7 +251,7 @@ Table \label{tab:crud_totals_1} summarizes the hi2lo crud predictions for the sy
 \subsubsection{Crud Copula Parameter Sensitivity}
 \label{sec:crud_copula_sensi}
 
-Here the sensitivity of the crud result to the copula parameters is investigated.  Both the impact of the rank correlation coefficient, Kendall's $\tau$, and the Archimidean copula family are investigated.  The sensitivity results generated for the patch centered at $\{ \phi=3.14[rad], z=2.95[m]\}$ are shown in figure \ref{fig:patchcrudfit80}.  There is noise present in the crud predictions due to the Monte Carlo integration of equation \ref{eq:expected_crud} over the patch.  In this instance 2500 samples were used.  The crud is relatively insensitive to the choice of copula family, but the rank correlation coefficient is shown to have a significant influence on crud growth with an average boron deposition sensitivity of $\frac{\partial C_b}{\partial \rho_\tau} =$ -1.086e-7 $[g/cm^2/\tau]$ for this particular patch.  Accurately predicting Kendall's $\tau$ provided local core conditions is important.
+Here the sensitivity of the crud result to the copula parameters is investigated.  Both the impact of the rank correlation coefficient, Kendall's $\tau$, and the Archimedean copula family are investigated.  The sensitivity results generated for the patch centered at $\{ \phi=3.14[rad], z=2.95[m]\}$ are shown in figure \ref{fig:patchcrudfit80}.  There is noise present in the crud predictions due to the Monte Carlo integration of equation \ref{eq:expected_crud} over the patch.  In this instance 2500 samples were used.  The crud is relatively insensitive to the choice of copula family, but the rank correlation coefficient is shown to have a significant influence on crud growth with an average boron deposition sensitivity of $\frac{\partial C_b}{\partial \rho_\tau} =$ -1.086e-7 $[g/cm^2/\tau]$ for this particular patch.  Accurately predicting Kendall's $\tau$ provided local core conditions is important.
 
 \begin{figure}[H]
     \centering
@@ -297,7 +297,7 @@ The number of samples, $N$, used to estimate the integral given in equation \ref
 
 Figure \ref{fig:cmprpintotalsviolinnsample} shows the variance of the crud expectation value at 300 days of simulation time computed by the Monte Carlo approximation when using a sample sizes of 100, 400, and $800  [\frac{N}{\mathrm{CTF_{face}}}]$.  80 independent trials were conducted for each sample size to estimate the variance.
 
-To isolate the impact of increasing the sample size on the crud variance, a single 300 day time step was conducted without re-sampling the underlaying density functions during this period.  Importance sampling was not applied in this study.
+To isolate the impact of increasing the sample size on the crud variance, a single 300 day time step was conducted without re-sampling the underlying density functions during this period.  Importance sampling was not applied in this study.
 
 \begin{figure}[H]
     \centering
@@ -306,8 +306,23 @@ To isolate the impact of increasing the sample size on the crud variance, a sing
     \label{fig:cmprpintotalsviolinnsample}
 \end{figure}
 
-The standard deviation of the rod-integrated crud results at 300 days simulation time are summarized in table ().
+The standard deviation of the rod-integrated crud results at 300 days simulation time are summarized in table \ref{tab:crud_sample_size}.
 
+\begin{table}[h]
+	\begin{center}
+		\caption[Estimated sensitivity of the pin-integrated crud boron variance to the number of samples used per CTF face.]{Estimated sensitivity of the pin-integrated crud boron variance to the number of samples used per CTF face. Using 80 independent trials.}
+		\begin{tabular}[h]{| c | C | C |}
+			\hline
+			N  & Mean Pin Crud Boron Total $[g]$ & Pin Integrated Crud Boron Variance $[g]$ \\
+			\hline  \hline
+			100 &  2.78953e-04  & 3.80e-6  \\
+			400 &  2.78301e-04  & 1.69e-6  \\
+			800 & 2.78411e-04 & 8.93e-7 \\
+			\hline
+		\end{tabular}
+		\label{tab:crud_sample_size}
+	\end{center}
+\end{table}
 
 
 \subsubsection{Importance Sampling}
@@ -346,7 +361,15 @@ Here, the design of the sampling routines and the physics of crud growth is inte
 \end{figure}
 
 
-Though an optimal importance distribution can be found [ref], the requisite minimization problem is not solved in this work and is left as an avenue for future investigation.
+Though an optimal importance distribution, $\tilde{h}^* $, can be found by equation \ref{eq:optimal_imp}.
+
+\begin{equation}
+\tilde{h}^* = \mathrm{argmin}_{\tilde{h}}\mathrm{Var} \left[ \frac{\mathcal{G}(x)h(x)}{\tilde{h}(x)} \right] 
+\label{eq:optimal_imp}
+\end{equation}
+
+The requisite minimization problem is not solved in this work and is left as an avenue for future investigation. It can be shown that the optimal importance distribution follows the form: $\tilde{h}^* \propto |\mathcal{G}(x)|h(x)$, \cite{rubinstein2011}, \cite{mcbook}.
+
 Although the theoretically optimal importance distribution is not achieved in this work, a locally adaptive importance function was adopted based on a distribution mixing approach.  Through the mixture formulation, the importance distributions can be made to depend on the temperature and TKE marginal distributions in a particular CTF face.  The temperature and TKE distributions in each CTF face are mixed with a beta distribution who's parameters are set at runtime of the hi2lo tool.  
 
 The importance  mixture quantile functions are defined in equations \ref{eq:imp_mix_k} and \ref{eq:imp_mix_T}.

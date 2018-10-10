@@ -30,7 +30,7 @@ CASL's technical portfolio.  This meta-package integrates a variety of physics
 packages and multiphysics coupling options to form a robust reactor simulation
 capability.  For multi-cycle depletion computations, VERA relies upon MPACT, a
 2D-1D method of characteristics neutronics package, coupled with the subchannel
-thermal hydraulics code, Coolant Boiling in Two-Fluid (CTF).  An integrated crud modeling capability
+thermal hydraulics code, Coolant boiling in rod arrays–Two Fluid (CTF).  An integrated crud modeling capability
 is provided by MAMBA to address the crud induced power shift challenge problem.
 
 To reduce computation times, the subchannel TH code discretizes the reactor
@@ -83,7 +83,7 @@ Prior to this work, hi2lo efforts directed at improving subchannel thermal hydra
 The buildup of crud results from the deposition of metal particulates and corrosion products entrained in the primary coolant loop of a light water reactor.  These impurities arise from erosion and corrosion processes.  Of all the coolant impurities, the largest contributor the initial formation of a crud layer on the outer cladding surface is Nickle Ferrite.  The initial build up of Nickle Ferrite can be described by the ordinary differential equation (ODE) shown in equation \ref{eq:crud_nife}.
 
 \begin{equation}
-\frac{d N_{\mathrm{NiFe},c}}{dt} = (\alpha_{\mathrm{nb}} + \alpha_{{b}}}q''_{b} )N_{\mathrm{NiFe}, \mathrm{cool}} - \gamma_k k
+\frac{d N_{\mathrm{NiFe},c}}{dt} = (\alpha_{\mathrm{nb}} + \alpha_{b}q''_{b} )N_{\mathrm{NiFe}, \mathrm{cool}} - \gamma_k k
 \label{eq:crud_nife}
 \end{equation}
 
