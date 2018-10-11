@@ -69,13 +69,13 @@ Where the first term is accounts for the effect of grid flow restriction and the
 \end{figure}
 
     \item  B. Salko et al. developed a CFD-Informed hi2lo spatial remapping procedure for CILC/CIPS screening. \cite{salko17}
-    Similar to Yao apporach.  Additionally developed a TKE remap.
+    Similar to Yao approach.  Additionally developed a TKE remap.
     The multiplier maps capture the ratio of the CFD predicted HTC and TKE surface distributions to the same surface distributions on a bare rod with no spacer grids present.
     Convective HTC remap:
     \begin{equation}
         \mathbf m_h = \frac{(Nu)_{cfd}}{(Nu)_{0}} = \frac{h_{cfd} L_{cfd} k_{0} }{h_{0}k_{cfd} L_{0}}
     \end{equation}
-    Where $Nu$ is the nusselt number.  Assuming equal length scales and thermal conductivities:
+    Where $Nu$ is the Nusselt number.  Assuming equal length scales and thermal conductivities:
     \begin{equation}
         \mathbf m_h = \frac{h_{cfd}}{h_{0}} = \frac{q_{cfd}(T-T_\infty)_{0}}{q_{0}(T-T_\infty)_{cfd}}
     \end{equation}
@@ -95,7 +95,7 @@ Where the first term is accounts for the effect of grid flow restriction and the
         \captionsetup{labelfont={sc,bf}, labelsep=newline}
         \caption{Heat transfer coefficient map based hi2lo method for crud prediction (Salko. et. al.).}
     \setstretch{0.8}  % reduce spacing in algo sec
-    \begin{algorithmic}
+    \begin{algorithmic}[1]
     \STATE \textbf{Initialization} 
     \STATE Guess $T^{i=0}_s=T_0$.  Maximum number, $N$ iterations.
 

@@ -14,13 +14,13 @@ A fundamental difference between the CFD and CTF computations is the average siz
     \label{fig:cfd_ctf_mesh}
 \end{figure}
 
-Shown in figure \ref{fig:model_overview}, on a given CTF rod surface patch, a single point estimates for the surface temperature, TKE, and heat flux are predicted.  The predicted CTF quantities are an estimate for the average thermal hydraulic conditions over that coarse patch.   Consequentially, CTF CRUD predictions may significantly deviate from reality.  Since CRUD growth is highly sensitive to the presence of subcooled boiling on the rod surface; if CTF predicts a rod surface temperature less than the saturation point very little or no CRUD will form - when in reality, a small portion of that rod surface could exist above the saturation point and thus harbor CRUD.  Small localized mistakes in CRUD predictions compound throughout the core, leading to poor CIPS estimates. 
+Shown in figure \ref{fig:model_overview}, on a given CTF rod surface patch, a single point estimates for the surface temperature, TKE, and heat flux are predicted.  The predicted CTF quantities are an estimate for the average thermal hydraulic conditions over that coarse patch.   Consequentially, CTF crud predictions may significantly deviate from reality.  Since crud growth is highly sensitive to the presence of subcooled boiling on the rod surface; if CTF predicts a rod surface temperature less than the saturation point very little or no crud will form - when in reality, a small portion of that rod surface could exist above the saturation point and thus harbor crud.  Small localized mistakes in crud predictions compound throughout the core, leading to poor CIPS estimates. 
 
 In figure \ref{fig:model_overview}, $f$ denotes a probability density function.  Integration of this density function can be interpreted as computing a fractional area of the rod surface that exists within the specified integration limits.  
 \begin{figure}[!htbp]
     \centering
     \includegraphics[width=12cm]{../proposal/images/model_relations.png}
-    \caption{On a single coarse CTF patch: Differences in CRUD prediction between CFD and CTF models.}
+    \caption{On a single coarse CTF patch: Differences in crud prediction between CFD and CTF models.}
     \label{fig:model_overview}
 \end{figure}
 
@@ -62,7 +62,7 @@ Consider the hypothetical case where the CFD results are normally distributed ab
 \end{align}
 Where $\Sigma_{xx} = \sigma_x^2$ and $\Sigma_{xy} = cov(x,y)$.
 
-Equation \ref{eq:expected_crud} estimates the expected crud mass $C_m$ that accumulates on each CTF patch in time $\delta t$.  Let $\mathbf X= \{T, k, q''\}$ denote a random vector of temperature, TKE, and BHF. $\mathbf I$ represents additional known crud parameters, $\mathbf C_o$ is the crud state at the start of the time step and $\theta$ are distribution parameters.  Let the joint density function of $\bf X$ be denoted by $h$, and it's CDF be denoted by $H$.  The CRUD model, $\mathcal G(\cdot)$, is common to all CTF faces.  The joint cumulative density's parameters are predicted from the available high resolution CFD data in every CTF face.  In the case of an assumed normal distribution model there are nine unknowns:  $\{ \sigma^2_T, \sigma^2_k, \sigma^2_{q''}, \Sigma_{kT}, \Sigma_{q''T}, \Sigma_{q''k}, c_T, c_k, c_{q''} \}$.  In the subsequent sections we will seek to relax this normality assumption of the CFD residuals about the CTF result.
+Equation \ref{eq:expected_crud} estimates the expected crud mass $C_m$ that accumulates on each CTF patch in time $\delta t$.  Let $\mathbf X= \{T, k, q''\}$ denote a random vector of temperature, TKE, and BHF. $\mathbf I$ represents additional known crud parameters, $\mathbf C_o$ is the crud state at the start of the time step and $\theta$ are distribution parameters.  Let the joint density function of $\bf X$ be denoted by $h$, and it's CDF be denoted by $H$.  The crud model, $\mathcal G(\cdot)$, is common to all CTF faces.  The joint cumulative density's parameters are predicted from the available high resolution CFD data in every CTF face.  In the case of an assumed normal distribution model there are nine unknowns:  $\{ \sigma^2_T, \sigma^2_k, \sigma^2_{q''}, \Sigma_{kT}, \Sigma_{q''T}, \Sigma_{q''k}, c_T, c_k, c_{q''} \}$.  In the subsequent sections we will seek to relax this normality assumption of the CFD residuals about the CTF result.
 
 \begin{align}
         C_m &= A \mu_{m} \nonumber \\
@@ -76,13 +76,13 @@ A strategy to compute the unknowns of the joint distribution on each CTF face is
 \begin{algorithm}[H]
     \captionsetup{labelfont={sc,bf}, labelsep=newline}
     \caption{Generic hi2lo method for crud prediction.}
-    \begin{algorithmic}      
+    \begin{algorithmic}[1]     
     \STATE \textbf{Initialization}  
     \STATE (1) Pre-process training set.  
     \STATE $\ \ $   (1b) Fit the joint distribution parameters to known CFD data: $\theta(\mathbf p, \mathbf z)$.  
     \STATE $\ \ $   (1c) \textbf{def:}  $\ \theta \leftarrow \mathcal F_M(\mathbf p, \mathbf z | \gamma)$
     \STATE (2) Train model:  $\hat{\mathcal F_M} =  \mathrm{argmin}_{\mathcal F}$
-      $L(\mathcal{F}_M (\mathbf p, \mathbf z| \gamma), \theta(\mathbf p, \mathbf z)) $
+      $\E \left[ L(\mathcal{F}_M (\mathbf p, \mathbf z| \gamma), \theta(\mathbf p, \mathbf z)) \right]$
 \FOR {CTF face, $j$}
     \STATE Evaluate ML model $\hat \theta_j \leftarrow \hat{\mathcal F_M}(\mathbf p_j, \mathbf z_j)$ \;
     \STATE Reconstruct $\hat H_j(\cdot |\hat \theta_j)$ \;
@@ -308,7 +308,7 @@ F(\mathbf p, \mathbf{\gamma}, \mathbf a; \mathbf b) = \sum_{m=0}^M \gamma_m h_m(
 \end{equation} 
 Where $M$ is the number of constituent sub-models and $\{\gamma_m, a_m\}$ are coefficients and free parameters requiring fitting in each sub-model.  $b_m$ represent sub-model hyper parameters that are fixed at user set values.
 Rather than fitting all sub-models simultaneously, 
-gradient boosting greedily fits the sub-models to the gradient of the loss function in a stage wise fashion as shown in algorithm \ref{alg:boosting}.  In the literature the vector of gradients is sometimes referred to as the pseudo residuals vector since if the loss function is taken to be the L2 loss, the gradient of the loss is proportional to the residual vector as shown in equation \ref{eq:l2_loss_pseudo_r}.
+gradient boosting greedily fits the sub-models to the gradient of the loss function in a stage wise fashion as shown in algorithm \ref{alg:boosting}.  The loop depicted in line number 8-10 performs the computation of the loss function gradient at each boosted iteration $m$ in the algorithm.  In the literature the vector of gradients is sometimes referred to as the pseudo residuals vector since if the loss function is taken to be the L2 loss, the gradient of the loss is proportional to the residual vector as shown in equation \ref{eq:l2_loss_pseudo_r}.
 
 \begin{align}
     (y_i - \mathcal F_{m}(x_i)) & \propto \frac{\partial [(y_i - \hat y_i)^2]}{\partial \hat y_i} \nonumber \\
@@ -321,7 +321,7 @@ Each sub-model, $h_m$, is referred to as a weak learner and is defined to be a t
 \begin{algorithm}[H]
     \captionsetup{labelfont={sc,bf}, labelsep=newline}
     \caption{Gradient boosting algorithm \cite{friedman2002}.}
-    \begin{algorithmic}
+    \begin{algorithmic}[1]
     \STATE \textbf{Initialization} 
     \STATE (1) Training set $\{(p_i, y_i)\}_{i=1}^n$. 
     \STATE (2) Differentiable loss function $L(y, F(p))$. 
@@ -510,7 +510,7 @@ The time stepping, importance sampling and surface sample remapping strategies c
 \begin{algorithm}[H]
     \captionsetup{labelfont={sc,bf}, labelsep=newline}
     \caption{Statistically based hi2lo method for time dependent crud prediction.}
-    \begin{algorithmic}      
+    \begin{algorithmic}[1]      
         \STATE \textbf{Initialization}  
         \STATE (1) Pre-process training set.  
         \STATE $\ \ $   (1b) Fit the joint distribution parameters to known CFD data: $\theta(\mathbf p, \mathbf z)$.  
