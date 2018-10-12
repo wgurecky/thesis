@@ -4,8 +4,8 @@ The problem of correcting thermal hydraulic predictions provided by a subchannel
 
 \section{Statistical Downscaling}
 
-Statistical downscaling methods seek a statistical link between a low and high fidelity features. 
-In particular, in the climate and weather data communities, it is common to perform local bias-correction on coarsely resolved weather models provided local weather station measurements [ref].    A common situation which lends itself to SD methods is to have disparate resolution sample data, one set typically provided by a coarsely resolved global climate model and a secondary set of finely resolved local rain and wind field measurements, and to have a wide array of auxiliary predictive features at ones disposal such as the terrain height.
+Statistical downscaling (SD) methods seek a statistical link between a low and high fidelity features. 
+In particular, in the climate and weather data communities, it is common to perform local bias-correction on coarsely resolved weather models provided local weather station measurements [ref].    A common situation which lends itself to SD methods is to have disparate resolution sample data, one set typically provided by a coarsely resolved global climate model (GCM) and a secondary set of finely resolved local rain and wind field measurements, and to have a wide array of auxiliary predictive features at ones disposal such as the terrain height.
 
 Results from an SD model should be carefully interpreted since at fine scale resolutions point estimates for the fields represent a single realization of a random variable governed by a fitted underlaying distribution.  Depending on the models used to to capture statistical variation in the spatial and temporal trends it is sometimes necessary to draw many samples from the SD model to estimate the mean and higher moments.  These mean and variance estimates can then be compared against a historical validation data set.  In the case of a fully parametric SD model, the standard deviation and mean field estimate can analytically computed.
 
@@ -22,42 +22,42 @@ Besides the BCSD based tools, other bias-correction and statistical augmentation
 
 \section{Subchannel Hi2lo}
 
-\begin{itemize}
-    \item  M. Avramova.  CFD informed grid mixing coefficients in CTF.  This work leveraged CFD results to improve the momentum balance (grid mixing models) in CTF. \cite{avramova2007}
-    
-    \begin{itemize}
-    	
-    	\item The lateral momentum equations implemented in CTF are as follows:
+The utilization of CFD data to improve subchannel thermal hydraulic models does not necessarily take on a statistical downscaling characteristic.  Oftentimes the strategy by which one uses CFD data to improve a subchannel model can be developed using standard Bayesian inference techniques in which model parameters are inferred through comparing the low fidelity model to high fidelity experimental or CFD data.  This flavor of inverse problem oftentimes involves  model calibration, model selection and experimental design aspects.  A wide array of lituratue exists on each of these topics and will not be interrogated here.  Instead, a pointed literature reiview of the latest CFD-informed subchannel work is considered.
+
+ M. Avramova developed CFD informed grid mixing models in CTF.  This work leveraged CFD results to improve the momentum balance and grid mixing models in CTF \cite{avramova2007}.  The lateral momentum equations implemented in CTF are provided in equation \ref{eq:ctf_lat_mom}.
+
     	\begin{align}
     	& \frac{\partial }{\partial t}(\alpha_l \rho_l \mathbf U_l)
     	+ \nabla \cdot (\alpha_l \rho_l \mathbf U_l \mathbf U_l) \nonumber \\
     	&= \alpha_l \rho_l \mathbf{g} - \alpha_l \nabla P + 
     	\nabla \cdot (\alpha_l \bm{\tau}_l) \nonumber \\
     	&+ M^L_l + M^d_l + M^T_l + M_l^{GDXF}
+        \label{eq:ctf_lat_mom}
     	\end{align}
-    	Where $l$ denotes the liquid phase and $\alpha$ is the volume fraction liquid.  The coefficients $M^L, M^d, M^T, M_l^{GDXF}$ account for droplet or bubble entrainment, phase interfacial drag, turbulent mixing and grid directed cross flow.  Avramova devised a method to use CFD computations to obtain an accurate prediction for $M_l^{GDXF}$ for a variety of grid designs.
+        
+Where $l$ denotes the liquid phase and $\alpha$ is the volume fraction liquid.  The terms $M^L, M^d, M^T, M_l^{GDXF}$ account for droplet or bubble entrainment, phase interfacial drag, turbulent mixing and grid directed cross flow respectively.  Avramova devised a method to use CFD computations to obtain an accurate prediction of $M_l^{GDXF}$ for a variety of grid designs.
     	
-    	\item The grid directed cross flow source term is defined as:
+The grid directed cross flow momentum source term used in Avramova's model is defined by equation \ref{eq:grid_en_xflow_coeff}.
     	\begin{equation}
     	M_l^{GDXF} = f^2_{sg}(z) u_l^2 \rho_l A_g S_g
+        \label{eq:grid_en_xflow_coeff}
     	\end{equation}
-    	Where $w_l$ is the axial liquid velocity.
-    	With
+    	Where $u_l$ is the axial liquid velocity. 
     	\begin{equation}
     	f_{sg}(z) = \frac{V^{CFD}_l(z-z_{in})}{U^{CFD}_{in}}
     	\end{equation}
     	
-    	\item The effectiveness of the grid enhanced cross flow model was determined by comparing exit bulk temperature profiles across a variety of assembly designs against experimental and CFD results.
-    	
-    \end{itemize}
+ The effectiveness of the grid enhanced cross flow model was determined by comparing exit bulk temperature profiles across a variety of assembly designs against experimental and CFD results.  The results indicated a marked improvement in the rod-assembly outlet temperature distribution at little additional computational cost as compared to CTF without CFD informed grid enhanced cross flow corrections.  
+ 
+ The next bodies of work are closer in alignment with traditional downscaling techniques.  These class of hi2lo procedures are not statistical in nature, but rather seek to correct spatial biases in the field predictions made by a low fidelity subchannel code.
+
     
-    \item  Blyth produced CFD informed grid enhanced heat transfer models for the advanced subchannel code, CTF.  This work presented strategies for processing CFD data for use in generating enhanced heat transfer maps and for computing the form loss coefficient across spacer grids.  Blyth's work served as a precursor to Salko's CFD informed method for developing HTC and TKE maps.
+S. Yao et al. developed an empirical model of the heat transfer coefficient downstream of spacer grids \cite{yao82}.
+    An empirical relationship between the Nusselt number ratio and the vane angle, $\phi$, blockage ratio $\epsilon$, dimensionless distance from the grid, $x/D$, and fraction of flow area impeded by the vanes, $A$, was produced.  This relationship is provided in equation \ref{eq:yao_htc}.
     
-    
-    \item S. Yao developed an empirical model of the heat transfer coefficient downstream of spacer grids. \cite{yao82}
-    An empirical relationship between the Nusselt number ratio and the vane angle, $\phi$, blockage ratio $\epsilon$, dimensionless distance from the grid, $x/D$, and fraction of flow area impeded by the vanes, $A$, was developed by S. C. Yao et al. (1982) [ref].
 \begin{equation}
 \frac{Nu}{Nu_0}  = \left[ 1 + 5.55 \epsilon^2 e^{-0.13(x/D)}\right] + \left[ 1 + A^2\mathrm{tan}^2\phi e^{-0.034(x/D)} \right]
+\label{eq:yao_htc}
 \end{equation}
 Where the first term is accounts for the effect of grid flow restriction and the second term represents the contribution of vane induced swirl on the heat transfer.
 
@@ -68,21 +68,27 @@ Where the first term is accounts for the effect of grid flow restriction and the
     \label{fig:gridnueff}
 \end{figure}
 
-    \item  B. Salko et al. developed a CFD-Informed hi2lo spatial remapping procedure for CILC/CIPS screening. \cite{salko17}
-    Similar to Yao approach.  Additionally developed a TKE remap.
+    Similar to Yao's approach for capturing rod-enhanced heat transfer,  B. Salko et al. developed a CFD-Informed hi2lo spatial remapping procedure for CILC/CIPS screening \cite{salko17}.  Rather than establishing a general empirical relationship between grid geometric features and the flow field, Salko developed grid-specific maps.  The developed multiplier maps are applicable only to the grid designed on which they are based.  In contrast to Yao's approach, this enables a much higher resolution flow field effects on the surface temperature distribution to be retained in the multiplier maps.  In addition to generating heat transfer multiplier maps, this method developed a TKE mapping procedure since both fields are required for accurate crud predictions.  Both maps are applied in conjunction to a baseline CTF result to produce grid enhanced surface temperature and TKE distributions at runtime of the CTF model.
+    
+    First, an intermediate coupling mesh is constructed on the surface rods with a resolution between the CFD mesh and the CTF grid is defined.  Next, the raw CFD surface fields are then mapped to the coupling mesh.  In this approach crud is to be grown on the intermediate coupling grid.  In theory, this grid can be refined to be equivalent to the CFD mesh size and indeed this would reduce interpolation error in the hi2lo procedure \cite{salko17}.
+       
     The multiplier maps capture the ratio of the CFD predicted HTC and TKE surface distributions to the same surface distributions on a bare rod with no spacer grids present.
-    Convective HTC remap:
+    Convective HTC remap is described by equations \label{eq:htc_remap_ctf_1} and \label{eq:htc_remap_ctf_2}.
+    
     \begin{equation}
         \mathbf m_h = \frac{(Nu)_{cfd}}{(Nu)_{0}} = \frac{h_{cfd} L_{cfd} k_{0} }{h_{0}k_{cfd} L_{0}}
+         \label{eq:htc_remap_ctf_1}
     \end{equation}
     Where $Nu$ is the Nusselt number.  Assuming equal length scales and thermal conductivities:
     \begin{equation}
         \mathbf m_h = \frac{h_{cfd}}{h_{0}} = \frac{q_{cfd}(T-T_\infty)_{0}}{q_{0}(T-T_\infty)_{cfd}}
+        \label{eq:htc_remap_ctf_2}
     \end{equation}
     It is important to note that a uniform heat flux is used in both the bare and full rod case so that $q_{cfd}/q_0 =1 $.
-    Apply HTC remap:
+    Apply HTC remap to the original CTF HTC by equation \ref{eq:htc_remap_ctf_3}.
     \begin{equation}
         \hat h_{l} = \mathbf m_h h_{ctf}
+        \label{eq:htc_remap_ctf_3}
     \end{equation}
     $\hat h_l$ is the hi2lo remapped convective heat transfer coefficient.  In CTF the wall heat transfer is split between phases:
     \begin{equation}
@@ -110,25 +116,25 @@ Where the first term is accounts for the effect of grid flow restriction and the
     \end{algorithm}
     Where $h_{ctf}(\cdot)$ is a callable CTF function that returns and effective multiphase HTC, $h_{eff}$.
 
-    TKE remap:
+    The TKE remap is constructed by evaluation the ratio given in equation \ref{eq:tke_map} on all CTF faces.
     \begin{equation}
        \mathbf m_{k} = \frac{k_{cfd}}{k_{0}}
+       \label{eq:tke_map}
     \end{equation}
     Where $k_0$ is the TKE distribution for a bare rod without spacer grids.
-    Apply TKE remap:
+    The TKE multiplier map is applied in the same manner as the HTC map.
        \begin{equation}
        \hat k = \mathbf m_k k_{ctf}
        \end{equation}
-     Grow crud using augmented temperature and tke surface fields and compute average crud results over the CTF face:
+    Crud is grown on the coupling mesh using augmented temperature and TKE surface fields. By this method the integrated crud mass over a CTF face is given by equation \ref{eq:ctf_hi2lo_crud_est}.
      \begin{equation}
-     \mu_g = \frac{1}{A} \sum_i^N g(\hat T_{s_i}, \hat k_i, q''_i) a_i
+     C_m = \frac{1}{A} \sum_i^N \mathcal G(\hat T_{s_i}, \hat k_i, q''_i) a_i
+     \label{eq:ctf_hi2lo_crud_est}
      \end{equation}
-    Where $A$ is the area of the CTF face and $a_i$ is the area of each cell face on the CRUD coupling mesh.
+    Where $A$ is the area of the CTF face and $a_i$ is the area of each cell face on the crud coupling mesh.
 
-    \begin{itemize}
-    \item \textbf{Claim:} The multiplier maps are insensitive flow rate.  An additive model is sensitive to the inlet flow conditions.
-
-     The claim is not strictly true: The multiplier maps carry some dependence on the inlet flow conditions.  An increase in flow rate changes the shape and extent of the wake region downstream of spacer grids which impacts the rod surface temperature and TKE fields.
+    
+    A key assumption that the multiplier maps are insensitive flow rate was made in the first implementation of this downscaling technique.  However this assumption is not strictly true: The multiplier maps carry some dependence on the inlet flow conditions.  An increase in flow rate changes the shape and extent of the wake region downstream of spacer grids which impacts the rod surface temperature and TKE fields.
 
     An extension of the multiplier map hi2lo procedure could linearly interpolate between multiplier maps developed at high and low inlet flow rate conditions.
     \begin{align*}
@@ -149,12 +155,15 @@ Where the first term is accounts for the effect of grid flow restriction and the
 \end{figure}
 
 
-     Some simplifications are made in this mapping.  For a given assembly, the multiplier maps have been shown to have a high span to span repeatability.  Therefore, a representative map is derived from a single span in a fully developed flow field.  This representative map is then applied to all other spans in the model.
+    Some simplifications are made in this mapping.  For a given assembly, the multiplier maps have been shown to have a high span to span repeatability.  Therefore, a representative map is derived from a single span in a fully developed flow field.  This representative map is then applied to all other spans in the model.
 
-     \item The multiplier map may not be transferable to other assemblies in the core due to geometric effects including the orientation of neighboring assemblies and TH/neutronics feedbacks.  This represents a limitation to the spatial mapping procedure as unique maps must be generated for different assemblies in the core.
-    \end{itemize}
-    \item  T. Hengal. Regression Kriging application to soil composition prediction as function of elevation, distance to river, ect. \cite{Hengl07}
-    \item  Boosted regression and classification applications. \cite{moisen2006}, \cite{friedman2002}
-\end{itemize}
+    The multiplier map may not be transferable to other assemblies in the core due to geometric effects including the orientation of neighboring assemblies and TH/neutronics feedbacks.  This represents a limitation to the spatial mapping procedure as unique maps must be generated for different assemblies in the core.
+     
+    Blyth produced CFD informed grid enhanced heat transfer models for the advanced subchannel code, CTF.  This work presented strategies for processing CFD data for use in generating enhanced heat transfer maps and for computing the form loss coefficient across spacer grids.  Blyth's work served as a precursor to Salko's CFD informed method for developing HTC and TKE maps.
+
+    T. Hengal. Regression Kriging application to soil composition prediction as function of elevation, distance to river, ect. \cite{Hengl07}
+    
+    Boosted regression and classification applications. \cite{moisen2006}, \cite{friedman2002}
+
 
 
