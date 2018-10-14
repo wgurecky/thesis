@@ -5,7 +5,8 @@ The section culminates in an integration of the copula, quantile regression, and
 
 \section{Model Approach}
 
-A fundamental difference between the CFD and CTF computations is the average size of the mesh cells.  In the azimuthal coordinate, CTF decomposes a single rod surface into four patches.  An example top down view of typical CFD and CTF meshes for a single pin are given in figure \ref{fig:cfd_ctf_mesh}.  Though both codes employ a finite volume spatial discretization CFD can resolve the flow at much smaller length scales.  Additionally, each code employs a different set of closure models to the underlying set of coupled energy, mass, and momentum balances.  In practice these differences can lead to large discrepancies in boiling, turbulent mixing, and rod surface temperature predictions between the two codes [ref].
+A fundamental difference between the CFD and CTF computations is the average size of the mesh cells.  In the azimuthal coordinate, CTF decomposes a single rod surface into four patches.  An example top down view of typical CFD and CTF meshes for a single pin are given in figure \ref{fig:cfd_ctf_mesh}.  Though both codes employ a finite volume spatial discretization CFD can resolve the flow at much smaller length scales.  Additionally, each code employs a different set of closure models to the underlying set of coupled energy, mass, and momentum balances.  In practice these differences can lead to large discrepancies in boiling, turbulent mixing, and rod surface temperature predictions between the two codes.
+\index{Subchannel} \index{CFD} 
 
 \begin{figure}[!htbp]
     \centering
@@ -130,8 +131,8 @@ In this work it is assumed that the cladding surface temperature and near-wall T
 Relative variations in boundary heat flux are very small over a CTF face $(\pm 5\%)$ provided that a CTF face represents a small approximately $1 [cm^2]$ localized patch on the rod surface.  Large absolute heat fluxes of approximately $80 [W/cm^2]$ are possible on the cladding surface of fuel in a typical PWR.  However, high axial and azimuthal gradients of boundary heat flux on the rod surface are not typical under standard operation conditions.  High thermal gradients can lead to extra thermal induced stresses on the cladding which can promote rod bowing or, extreme in conditions, fuel failure.
 Additionally, figures \ref{fig:crud_sensi1} to \ref{fig:crud_sensi3} show that the sensitivity of crud growth rate to the boundary heat flux is small relative to sensitivity of curd to surface temperature and local turbulent kinetic energy.
 
-
 After applying the independence assumptions the original trivariate dependence model between the temperature, TKE, and boundary heat flux can be reduced to a bivariate model with the boundary heat flux being treated independently.  Applying the simplifying assumptions results in: $c_{T,q''}(u_T, u_{q''}) = 1$ and $c_{k,q''|T}(u_{k|T}, u_{q''|T}) = 1$. The simplified joint density can then be given by equation \ref{eq:simple_vine_model}:
+\index{Copula!Vine Copula}
 \begin{equation}
 h(T, k, q'') \approx  f_T f_k, f_{q''} c_{T,k}(u_{T}, u_{k})  \cdot 1 \cdot 1
 \label{eq:simple_vine_model}
@@ -146,6 +147,7 @@ f_{j,q''} = \delta_{(q''_{j, \mathrm{ctf}})}
 
 
 % ============ Copula Theory =============
+\index{Copula}
 \input{./sections/appendix/app_copula.tex}
 
 
@@ -154,9 +156,8 @@ f_{j,q''} = \delta_{(q''_{j, \mathrm{ctf}})}
 
 \subsubsection{Non Parametric Representations of Univariate Distributions}
 
-
-
 Let the quantile function be represented by $Q=F^{-1}$ where $F$ is a cumulative density function (CDF).
+\index{Cumulative density function}   
 
 \begin{figure}[H]
     \centering
@@ -165,7 +166,7 @@ Let the quantile function be represented by $Q=F^{-1}$ where $F$ is a cumulative
     \label{fig:marginscdf2}
 \end{figure}
 
-
+\index{Quantiles}
 The $\tau^{th}$ quantile is $q_\tau = F^{-1}(\tau); $ where $\ F(t)=P[T \leq t]$.
 $\tau \in [0, 1]$
 
@@ -184,6 +185,7 @@ In order to estimate a sample quantile, $\hat q_\tau$, given the empirical CDF $
             \end{aligned}\right.
             \label{eq:qtau_est}
 \end{equation}
+\index{Quantiles!Loss Function}
 
 \begin{figure}[H]
     \centering
@@ -193,6 +195,7 @@ In order to estimate a sample quantile, $\hat q_\tau$, given the empirical CDF $
 \end{figure}
 
 In this work, a set of sample quantiles, $\hat \theta_\tau = \{q_{\tau_0}, \dots, q_{\tau_i}, \dots q_{N_Q} \}$, are used to construct step-wise cumulative distributions, $\hat F$.  $N_Q$ denotes the number of quantiles used in the CDF reconstruction. The stepwise quantile function can be recoved by equation \ref{eq:cdf_from_qtau}.
+\index{Quantiles!Emperical}
 
 \begin{equation}
 \hat F_{T}= Q^{-1}(T; \{\hat{\theta}_{\tau} \})
@@ -201,11 +204,12 @@ In this work, a set of sample quantiles, $\hat \theta_\tau = \{q_{\tau_0}, \dots
 The reconstructed CDF can then in turn be used to build a histogram.  In place of the stepwise representation, a piecewise cubic hermite interpolating polynomial (PCHIP) can be fit to the stepwise conditional quantile distribution to generate a differentiable CDF.
 The PCHIP interpolation preserves monotonicity of the CDF if the provided quantiles are strictly monotone \cite{Fritsch80}.  This condition is enforced in the software; any violation of the monotone restriction would indicate a software bug in the quantile regression code.  Inverse transform sampling is used to draw samples from the univariate distributions.
 
-Other strategies to model univariate density functions are abundant.  One alternative is to use a set of sample moments.  Next, a set of moment conditions is defined for the target parametric model.  Then the method of moments can be used to fit the parametric model to sample moments.  Non-parametric extensions of the method of moments exist (refs).  
+Other strategies to model univariate density functions are abundant.  One alternative is to use a set of sample moments.  Next, a set of moment conditions is defined for the target parametric model.  Then the method of moments can be used to determine the parameters of the parametric model which satisfy the moment conditions in a norm sense.  
 
-Another possibility is to compute the sample cumulants.  The sample cumulants can be used to build an Edgeworth series expansion. It remains as future work to determine if cumulants or traditional moments behave in a predictable manner as a function of local core conditions.
+Another strategy to estimate a univariate density given some set of predictive features is to compute the sample cumulants.  The sample cumulants can be used to build an Edgeworth series expansion. It remains as future work to determine if cumulants or traditional moments behave in a predictable manner as a function of local core conditions.
         
 It can be shown that the sample quantiles are distributed according to \ref{eq:theory_qdist_1} [ref].  This directly follows from the distribution of the order statistics.
+\index{Quantiles!Theoretical distribution}  
 
 \begin{align}
     q_p &\sim \mathcal N \left( F_T^{-1}(p), \sigma^2_{q_p} \right) \nonumber \\
@@ -216,13 +220,13 @@ It can be shown that the sample quantiles are distributed according to \ref{eq:t
 
 \begin{figure}[]%
     \centering
-    \subfloat[Empirical quantiles for a normal distrubtion. 500 trials shown. $0.1, 0.5, 0.9$ quantiles denoted by dashed verticle lines.]{{\includegraphics[width=0.3\linewidth]{figs/quantile_theory/q_gauss_residual} }}%
+    \subfloat[Empirical quantiles for a normal distrubtion. 500 trials shown. $0.1, 0.5, 0.9$ quantiles denoted by dashed verticle lines.]{{\includegraphics[width=0.4\linewidth]{figs/quantile_theory/q_gauss_residual} }}%
     \qquad
-        \subfloat[Empirical vs theoretical $0.1$ quantile distribution.]{{\includegraphics[width=0.3\linewidth]{figs/quantile_theory/q_gauss_residual_conditional_0_1} }}%
+        \subfloat[Empirical vs theoretical $0.1$ quantile distribution.]{{\includegraphics[width=0.4\linewidth]{figs/quantile_theory/q_gauss_residual_conditional_0_1} }}%
     \qquad
-        \subfloat[Empirical vs theoretical $0.5$ quantile distribution.]{{\includegraphics[width=0.3\linewidth]{figs/quantile_theory/q_gauss_residual_conditional_0_5} }}%
+        \subfloat[Empirical vs theoretical $0.5$ quantile distribution.]{{\includegraphics[width=0.4\linewidth]{figs/quantile_theory/q_gauss_residual_conditional_0_5} }}%
     \qquad
-        \subfloat[Empirical vs theoretical $0.9$ quantile distribution.]{{\includegraphics[width=0.3\linewidth]{figs/quantile_theory/q_gauss_residual_conditional_0_9} }}%
+        \subfloat[Empirical vs theoretical $0.9$ quantile distribution.]{{\includegraphics[width=0.4\linewidth]{figs/quantile_theory/q_gauss_residual_conditional_0_9} }}%
     \qquad
     \caption[Distribution of quantiles for a normally distributed RV.]{Distribution of quantiles for a normally distributed RV: $X \sim \mathcal{N}(0, 1)$.  Theoretical quantile standard deviation given by equation \ref{eq:theory_qdist_1}.}%
     \label{fig:normal_q_theory}%
@@ -230,19 +234,17 @@ It can be shown that the sample quantiles are distributed according to \ref{eq:t
 
 \begin{figure}[H]%
     \centering
-    \subfloat[Empirical quantiles for a beta distrubtion. 500 trials shown. $0.1, 0.5, 0.9$ quantiles denoted by dashed verticle lines.]{{\includegraphics[width=0.3\linewidth]{figs/quantile_theory/q_beta_residual} }}%
+    \subfloat[Empirical quantiles for a beta distrubtion. 500 trials shown. $0.1, 0.5, 0.9$ quantiles denoted by dashed verticle lines.]{{\includegraphics[width=0.4\linewidth]{figs/quantile_theory/q_beta_residual} }}%
     \qquad
-    \subfloat[Empirical vs theoretical $0.1$ quantile distribution.]{{\includegraphics[width=0.3\linewidth]{figs/quantile_theory/q_beta_residual_conditional_0_1} }}%
+    \subfloat[Empirical vs theoretical $0.1$ quantile distribution.]{{\includegraphics[width=0.4\linewidth]{figs/quantile_theory/q_beta_residual_conditional_0_1} }}%
     \qquad
-    \subfloat[Empirical vs theoretical $0.5$ quantile distribution.]{{\includegraphics[width=0.3\linewidth]{figs/quantile_theory/q_beta_residual_conditional_0_5} }}%
+    \subfloat[Empirical vs theoretical $0.5$ quantile distribution.]{{\includegraphics[width=0.4\linewidth]{figs/quantile_theory/q_beta_residual_conditional_0_5} }}%
     \qquad
-    \subfloat[Empirical vs theoretical $0.9$ quantile distribution.]{{\includegraphics[width=0.3\linewidth]{figs/quantile_theory/q_beta_residual_conditional_0_9} }}%
+    \subfloat[Empirical vs theoretical $0.9$ quantile distribution.]{{\includegraphics[width=0.4\linewidth]{figs/quantile_theory/q_beta_residual_conditional_0_9} }}%
     \qquad
     \caption[Distribution of quantiles for a beta distributed RV.]{Distribution of quantiles for a beta distributed RV: $X \sim \beta(1, 2)$}%
     \label{fig:ctf_twall_aug}%
 \end{figure}
-
-
 
 The sampled temperatures may be tallied over each CTF face to estimate the fractional area that exceeds some threshold temperature.  The probability of exceeding a threshold temperature is shown in equation \ref{eq:pr_thresh}.
     
@@ -297,6 +299,7 @@ The sampled temperatures may be tallied over each CTF face to estimate the fract
 \end{figure}
 
 The modern gradient boosting algorithm was developed by Friedman et. al. (1998) \cite{friedman1998}, \cite{friedman2001}.  This work was significant because it re-envisioned previous boosting algorithms such as AdaBoost as special cases of gradient boosting with specific loss functions.  Gradient boosting is a numerical optimization procedure in function space with the goal of finding a function $\mathcal F_M$ that maps the inputs $\mathbf p$ to $y$ where $\mathcal F_M$ is given by:
+\index{Gradient Boosting}
 
 \begin{equation}
 \mathcal F_M = \text{argmin}_F \E_{y, \mathbf p} (L(y, F(\mathbf p)))
@@ -349,6 +352,8 @@ Each sub-model, $h_m$, is referred to as a weak learner and is defined to be a t
     \end{algorithmic}
 \label{alg:boosting}
 \end{algorithm}
+\index{Gradient Boosting!Algorithm}
+
 Where $\nu$ is a tunable constant in $(0, 1]$ called the learning rate.  A value of $\nu < 1$ reduces the contribution of each weak learner in the final model.  Reducing the learning rate increases resilience to over fitting but results in a proportional increase in the number of boosted iterations to achieve the same level of convergence of the boosted tree chain.  Smaller values for the learning rate result in performing smaller steps in function space so we are less likely to overshoot the optimal function. Provided boosting produces is a stage-wise additive model, overshoots are problematic since the final model carries memory of previous iterations.  A typical learning rate is $\nu\leq 0.05$ but a balance between computation time and model prediction accuracy on a testing set should be considered when setting this value.
 
 For gradient boosted quantile regression, the loss function given by equation \ref{eq:qloss_fn} is substituted into algorithm \ref{alg:boosting}.
@@ -364,6 +369,7 @@ Where $\tau$ is the user set quantile of interest. For instance, if the 95\% qua
 \label{chap:mc_crud}
 
 First the goal is to reconstruct the joint density function from copula and marginal distributions.  The margins are defined by their quantile functions as shown in section ().  Equation () defines the joint density. After reconstruction of the joint temperature, boundary heat flux and turbulent kinetic energy distribution on each patch, one draws samples via methods outlined in section (), or in particular equation ().  This leads to the Monte Carlo approximation of integral shown previously in equation \ref{eq:expected_crud} shown in equation \ref{eq:mc_expected_crud}.
+\index{Monte Carlo Sampling}
 
 \begin{equation}
 \E(\mathcal G(x)) \approx \frac{1}{N} \sum_i^N \mathcal G(x_i) h(x_i), \ x \sim {h}
@@ -376,6 +382,7 @@ Rather than sampling from the density function $h$, one may draw samples from an
 \E(\mathcal G(x)) \approx \frac{1}{N} \sum_i^N \mathcal G(x_i) \frac{h(x_i)}{\tilde h(x_i)}, \ x \sim \tilde{h}
 \label{eq:mc_imp_expected_crud}
 \end{equation}
+\index{Importance Sampling}
 
 Substituting the joint density function defined by \ref{eq:sklar2} in to () yields:
 
