@@ -1,6 +1,7 @@
 %\documentclass[12pt,a4paper]{report}
 \documentclass[12pt]{report}
-% \usepackage[a4paper, total={6.00in, 9in}]{geometry}
+\usepackage[right=1.125in, left=1.125in, top=1.125in, bottom=0.815in]{geometry}
+%\usepackage{geometry}
 \usepackage{pdflscape}
 \usepackage{setspace}
 \usepackage[utf8]{inputenc}
@@ -23,113 +24,45 @@
 \usepackage[]{algorithm}
 \usepackage{algorithmic}
 \usepackage{array}
+\usepackage{makeidx}
 \newcolumntype{B}{>{\centering\arraybackslash}m{3cm}}
 \newcolumntype{C}{>{\centering\arraybackslash}m{4cm}}
 \newcolumntype{L}{>{\arraybackslash}m{8cm}}
 \usepackage[version=3]{mhchem} % Package for chemical equation typesetting \ce{}
-\usepackage{siunitx} % Provides the \SI{}{} and \si{}
+\usepackage{siunitx} % Provides the \SI{}{} and \si{} and \num{}
 \usepackage[normalem]{ulem}  % stike-through by \sout{}
 
-% diss template
+% UT diss template setup
 \usepackage{utdiss2}
-\author{William Ladd Gurecky}  	% Required
+\usepackage[T1]{fontenc}
+\usepackage{titlesec, blindtext, color}
+\definecolor{gray75}{gray}{0.75}
+\newcommand{\hsp}{\hspace{20pt}}
 
-\address{9905 Chukar Circle\\ Austin, Texas 78758}  % Required
-
+\author{William Ladd Gurecky}
+\address{9905 Chukar Circle\\ Austin, Texas 78758}
 \title{ A CFD-Informed Model for Improving Subchannel Resolution Crud Prediction}
-% Required
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% NOTICE: The total number of supervisors and other members %%%%%%%%%%
-%%%%%%%%%%%%%%% MUST be seven (7) or less! If you put in more, %%%%%%%
-%%%%%%%%%%%%%%% they are put on the page after the Committee %%%%%%%%%
-%%%%%%%%%%%%%%% Certification of Approved Version page. %%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-% Enter names of the supervisor and co-supervisor(s), if any,
-% of your dissertation committee. Put one name per line with
-% the name in square brackets. The name on the last line, however,
-% must be in curly braces.
-%
-% If you have only one supervisor, the entry below will read:
-%
-%	\supervisor
-%		{Supervisor's Name}
-%
-% NOTE: Maximum three supervisors. Minimum one supervisor.
-% NOTE: The Office of Graduate Studies will accept only two supervisors!
-% 
-%
-\supervisor
-{Derek Haas}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-% Enter names of the other (non-supervisor) members(s) of your
-% dissertation committee. Put one name per line with the name
-% in square brackets. The name on the last line, however, must
-% be in curly braces.
-%
-% NOTE: Maximum six other members. Minimum zero other members.
-% NOTE: The Office of Graduate Studies may restrict you to a total
-%	of six committee members.
-%
-%
+\supervisor{Derek Haas}
 \committeemembers
-[Ben Leibowicz]
+[Benjamin Leibowicz]
 [Sheldon Landsberger]
 [Kevin Clarno]
 {Stuart Slattery}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\previousdegrees{}
-% \previousdegrees{B.S., M.S.}
-% The abbreviated form of your previous degree(s).
-% E.g., \previousdegrees{B.S., MBA}.
-%
-% The default value is `B.S., M.S.'
-
-%\graduationmonth{...}      
-% Graduation month, either May, August, or December, in the form
-% as `\graduationmonth{May}'. Do not abbreviate.
-%
-% The default value (either May, August, or December) is guessed
-% according to the time of running LaTeX.
-
-%\graduationyear{...}   
-% Graduation year, in the form as `\graduationyear{2001}'.
-% Use a 4 digit (not a 2 digit) number.
-%
-% The default value is guessed according to the time of 
-% running LaTeX.
-
-%\typist{...}       
-% The name(s) of typist(s), put `the author' if you do it yourself.
-% E.g., `\typist{Maryann Hersey and the author}'.
-%
-% The default value is `the author'.
-
-
+% \previousdegrees{}
+\previousdegrees{B.S., M.S.}
 
 % image paths
 \graphicspath{{../proposal/}{./}{./figs/crud}}
 
-
 %===========================CUSTOM CMDS=======================================%
 \DeclareMathOperator*{\E}{\mathbb{E}}
 \newcommand{\xmark}{\ding{55}}%
-
-\author{William Ladd Gurecky}
+\makeindex
 
 \begin{document}
 \copyrightpage          % Produces the copyright page.
 \commcertpage           % Produces the Committee Certification
-%   of Approved Version page (doctoral)
-%   or Signature page (masters).
-%		20 Mar 2002	cwm
-
 \titlepage              % Produces the title page.
 	
 \renewcommand{\thepage}{\roman{page}}
@@ -149,10 +82,11 @@
 \input{./sections/acryn.tex}
 
 %=================================BODY========================================%
+\titleformat{\chapter}[hang]{\Huge\bfseries}{\thechapter\hsp\textcolor{gray75}{|}\hsp}{0pt}{\Huge\bfseries}
 \renewcommand{\thepage}{\arabic{page}} % Arabic numerals for page counter
 \setcounter{page}{1}
-\onehalfspacing
-% \doublespacing  % UT formatting spec
+% \onehalfspacing
+\doublespacing  % UT formatting spec
 %-----------------------------------------------------------------------------%
 \chapter{Introduction}
 \label{chap:intro}
@@ -206,6 +140,8 @@
 \chapter{Appendix D}
 \label{chap:app_d}
 \input{./sections/appendix/app_d.tex}
+
+\printindex
 
 \input{./sections/references.tex}
 
