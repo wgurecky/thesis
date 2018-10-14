@@ -11,6 +11,7 @@ Time dependent crud simulation is also discussed.  The interaction between the s
 Speedups afforded by importance sampling are presented and contrasted against standard Monte Carlo sampling results.  The sampling distributions utilized in importance sampling are informed by the physics of crud growth.
 
 \section{Generating Synthetic Data}
+\index{Synthetic CFD Data}
 
 Synthetic data generation begins by running standalone CTF on a single quarter symmetric pin.   The CTF result is then augmented with tailored noise.  The augmented synthetic surface fields can be constructed by equation \ref{eq:synth_aug}.
 \begin{align}
@@ -252,6 +253,7 @@ Table \label{tab:crud_totals_1} summarizes the hi2lo crud predictions for the sy
 \label{sec:crud_copula_sensi}
 
 Here the sensitivity of the crud result to the copula parameters is investigated.  Both the impact of the rank correlation coefficient, Kendall's $\tau$, and the Archimedean copula family are investigated.  The sensitivity results generated for the patch centered at $\{ \phi=3.14[rad], z=2.95[m]\}$ are shown in figure \ref{fig:patchcrudfit80}.  There is noise present in the crud predictions due to the Monte Carlo integration of equation \ref{eq:expected_crud} over the patch.  In this instance 2500 samples were used in the computation of the integral.  The crud is relatively insensitive to the choice of copula family, but the rank correlation coefficient is shown to have a significant influence on crud growth with an average boron deposition sensitivity of $\frac{\partial C_b}{\partial \rho_\tau} =$ -1.086e-7 $[g/cm^2/\tau]$ for this particular patch.  Accurately predicting Kendall's $\tau$ provided local core conditions is important.
+\index{Copula!Crud Sensitivity}
 
 \begin{figure}[H]
     \centering
@@ -407,18 +409,19 @@ In figure \ref{fig:importancettkebmassscatter} the relative importance weight is
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.99\linewidth]{figs/imp_patch/importance_t_tke_bmass_scatter}
-    \caption[Importance sampled single patch crud result.]{Importance sampled single patch crud result. Key: \textbf{quant\_t\_imp}: Importance samples from quantile-reconstructed patch temperature $[K]$ distribution with $N_Q=20$,  \textbf{quant\_tke\_imp}: Importance samples from quantile-reconstructed patch TKE $[J/kg]$ distribution with $N_Q=20$,  \textbf{bmass}:  Resultant crud boron mass density samples in $[g/m^2]$. Relative importance weights are denoted by the point size.}
+    \caption[Importance sampled single patch crud result.]{Importance sampled single patch crud result. Key: \textbf{quant\_t\_imp}: Importance samples from quantile-reconstructed patch temperature $[K]$ distribution with $N_{Q_T}=20$,  \textbf{quant\_tke\_imp}: Importance samples from quantile-reconstructed patch TKE $[J/kg]$ distribution with $N_{Q_k}=20$,  \textbf{bmass}:  Resultant crud boron mass density samples in $[g/cm^2]$. Relative importance weights are denoted by the point size.}
     \label{fig:importancettkebmassscatter}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.99\linewidth]{figs/imp_patch/original_t_tke_bmass_scatter}
-    \caption[Standard Monte Carlo sampled patch crud result.]{Standard Monte Carlo sampled patch crud result. Key: \textbf{quant\_t}: Samples from quantile-reconstructed patch temperature $[K]$ distribution with $N_Q=20$,  \textbf{quant\_tke}: Samples from quantile-reconstructed patch TKE $[J/kg]$ distribution with $N_Q=20$,  \textbf{bmass}: Resultant crud boron mass density samples in $[g/m^2]$.  }
+    \caption[Standard Monte Carlo sampled patch crud result.]{Standard Monte Carlo sampled patch crud result. Key: \textbf{quant\_t}: Samples from quantile-reconstructed patch temperature $[K]$ distribution with $N_{Q_T}=20$,  \textbf{quant\_tke}: Samples from quantile-reconstructed patch TKE $[J/kg]$ distribution with $N_{Q_k}=20$,  \textbf{bmass}: Resultant crud boron mass density samples in $[g/cm^2]$.  }
     \label{fig:originalttkebmassscatter}
 \end{figure}
+\index{Importance Sampling!Application}
 
-The importance sampling efficiency can be estimated by computing the variance ratio:  $\frac{\sigma^2_{MC}}{\sigma^2_{I}}$.  The variance of the patch-integrated crud result for the Monte Carlo and importance sampling schemes are provided figure \ref{fig:imp_sample1}.  The variance estimates were computed by running 1000 independent trials in which crud was grown on the patch for 300 days.  A total of 100 samples per patch per trial were used.  For the case studied, the application of importance sampling reduced the crud mass and boron mass sample variance by a factor of 2.02. $\frac{\sigma^2_{MC}}{\sigma^2_{I}} \approx (4.979e-6)^2 / (3.503e-6)^2  \approx 2.02$.  The mean crud predictions did not significantly deviate between two sampling schemes indicating that importance sampling does not introduce any bias in the evaluation of the integral in equation \ref{eq:expected_crud}.
+The importance sampling efficiency can be estimated by computing the variance ratio:  $\sigma^2_{MC}/\sigma^2_{I}$.  The variance of the patch-integrated crud result for the Monte Carlo and importance sampling schemes are provided figure \ref{fig:imp_sample1}.  The variance estimates were computed by running 1000 independent trials in which crud was grown on the patch for 300 days.  A total of 100 samples per patch per trial were used.  For the case studied, the application of importance sampling reduced the crud mass and boron mass sample variance by a factor of 2.02. $\frac{\sigma^2_{MC}}{\sigma^2_{I}} \approx (\num{4.979e-6})^2 / (\num{3.503e-6})^2  \approx 2.02$.  The mean crud predictions did not significantly deviate between two sampling schemes indicating that importance sampling does not introduce any bias in the evaluation of the integral in equation \ref{eq:expected_crud}.
 
 The improvement in performance afforded by importance sampling can be attributed to expending a larger proportion of the total available samples in the upper tail of the temperature distribution as this is a region which strongly contributes to crud growth.  Some samples are necessarily expended in cold regions of the rod surface but occur with less frequency when compared to a standard Monte Carlo sampling routine and the samples are appropriately weighted to avoid biasing the integrated result.
 

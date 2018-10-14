@@ -434,10 +434,10 @@
 
 \def\ishort@page{%
     \setlength{\textheight}{\s@short@textheight}
-    \addtolength{\footskip}{\footskip}
-    \global \@colht\textheight
-    \global \@colroom\textheight
-    \global \vsize\textheight}
+    % \addtolength{\footskip}{\footskip}
+    \global \@colht\textwidth
+    \global \@colroom\textwidth
+    \global \vsize\textwidth}
 
 \newcounter{regular@short@col}
 
