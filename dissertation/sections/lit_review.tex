@@ -21,10 +21,64 @@ It is also possible to nest a high fidelity simulation within a coarse fidelity 
 
 \section{Kriging}
 
-Kriging or Gaussian process regression techniques are well suited when the errors can be assumed to be normally distributed about some mean prediction.  Simple kriging assumes that the mean of the underlaying field does not drift as a function location in the input space and therefore only requires the fitting of a co-variogram which describes the statistical spatial autocorrelation between the known data.  More advanced kriging strategies such as regression kriging (RK) forgo this simplification decomposing the interpolation problem into mean predicting and bias-correcting residual models.  In RK the spatial-autocorrelation in the residuals is modeled by a simple kriging model.  The mean response may be predicted by any regression strategy, with a common choice being an ordinary least squares model though works which investigate the use of random-forests or more advanced machine learning strategies in this role are pervasive [refs].
-
+The term kriging was coined by Danie G. Krige in his master's thesis in an effort to model the spatial distribution of gold ore concentrations given sparse, uncertain estimates (1951) \cite{krige51}, \cite{Krige51a}. Following kriging's introduction, the technique has propagated through the geostatistics community.  Kriging is applicable when estimates of the mean and variance of a random field are desired in between sparse training data samples.  The technique can be viewed as a special case of Gaussian process regression \cite{Williams96}.  Kriging is related to Gaussian process regression since the underlying goal of both approaches is to model the spatial autocorrelation of a random field.  An example of application of kriging to a soil quality data set is left to Hengl et. al \cite{Hengl07}.
 \index{Kriging}
+
+Kriging or Gaussian process regression techniques are well suited when the errors can be assumed to be normally distributed about some mean prediction.  Simple kriging assumes that the mean of the underlaying field does not drift as a function location in the input space and therefore only requires the fitting of a co-variogram which describes the statistical spatial autocorrelation between the known data.  More advanced kriging strategies such as regression kriging (RK) forgo this simplification decomposing the interpolation problem into mean predicting and bias-correcting residual models.  In RK the spatial-autocorrelation in the residuals is modeled by a simple kriging model.  The mean response may be predicted by any regression strategy, with a common choice being an ordinary least squares model though works which investigate the use of random-forests or more advanced machine learning strategies in this role are pervasive [refs].
 \index{Kriging!Regression Kriging}
+
+The initial approach taken to construct a RK model shown in equation \ref{eq:decomp} shows strong parallels to the hi2lo method developed in the current work.  A key difference is that the primary focus of an RK model is to capture spatial auto-correlations in the field data where the current work does not seek to model spatial-autocorrelation of a random field since such information is extraneous when making crud prediction with a one-dimensional crud simulation package.   If the ability to predict the full 2D distributions of the FOI are desired, an RK model could yeild the requisite fine scale surface distributions with uncertainty estimates with future study.
+
+First the target FOI is decomposed into a deterministic and stochastic component, as in equation \ref{eq:decomp}.
+Let the spatial coordiantes, $\mathbf{s} = \{z, \theta\}$,
+where $z$ is the axial position and $\theta$ is the azimuthal coordinate on the rod surface. Let the FOI be denoted as $T$.
+\begin{equation}
+T(\mathbf s) = \mu(\mathbf s) + \varepsilon(\mathbf s)
+\label{eq:decomp}
+\end{equation}
+
+First, the mean field behavior must be estimated by either a least squares fit to the sampled CFD data, or by using the CTF result directly as the mean predictor.
+Additionally, the CTF results enter the kriging model as auxiliary predictive variables.  These variables would serve as predictors of spatial auto-correlation.
+
+The following example examines case of kriging the surface temperature field, $\hat T_\mathtt{RK}$.
+Let $\mathbf{q}$ represent a predictive feature array comprised of the temperature,
+TKE, and boundary heat flux from CTF.  Also included in this fictitious example, is a parameter $\Delta z$ which represents the axial distance to the nearest upstream spacer grid.
+
+\begin{equation}
+\mathbf{q} = \{TKE, q'', T, \Delta z \}_{CTF}
+\end{equation}
+
+In matrix form, the RK model evaluated at a point $\mathbf{s}_0 $ on the rod surface is given by equation \ref{eq:rk_eval} \cite{Hengl07}.
+
+\begin{equation}
+\hat T_\mathtt{RK}(\mathbf{s}_0 ) = \mathbf{q}_\mathbf{0}^\mathbf{T} \cdot \mathbf{\hat \beta}_\mathtt{OLS} + \mathbf{\lambda }_\mathbf{0}^\mathbf{T} \cdot (\mathbf T_{CFD}
+- \mathbf{q} \cdot \mathbf{\hat \beta }_\mathtt{OLS} )
+\label{eq:rk_eval}
+\end{equation}
+Where $\mathbf{q}_\mathbf{0}= \mathbf{q}(\mathbf s_0)$. The kriging weights at the sample location, $\mathbf{\lambda_0}$, are estimated by \ref{eq:simple_krige_weights} with the covariance function: $c(q_i, q_0)= \mathrm{Cov}(\mathbf e(q_i), \mathbf e(q_0))$ where $\mathbf e = (\mathbf T_{CFD} - \mathbf{q} \cdot \mathbf{\hat \beta }_\mathtt{OLS}$). 
+\begin{equation}
+\begin{pmatrix}\lambda_{0_1} \\ \vdots \\ \lambda_{0_n} \end{pmatrix}=
+\begin{pmatrix}c(q_1,q_1) & \cdots & c(q_1,q_n) \\
+\vdots & \ddots & \vdots  \\
+c(q_n,q_1) & \cdots & c(q_n,q_n) 
+\end{pmatrix}^{-1}
+\begin{pmatrix}c(q_1,q_0) \\ \vdots \\ c(q_n,q_0) \end{pmatrix}
+\label{eq:simple_krige_weights}
+\end{equation}
+
+The covariances must be estimated from the available CFD data.
+
+The residual vector, $\mathbf e$, naively includes all available CFD data points, but in practice a cut-off distance from the sample location, $\mathbf s_0$, can be specified to drastically reduce the amount of information required to construct and evaluate a covariance model.  This effectively reduces the length of the vectors $\mathbf{\lambda_0}$ and $\mathbf e$.
+
+\begin{figure}[hbtp]
+\centering
+\includegraphics[scale=.3]{images/rk_example.png}
+\caption{Regression kriging example \cite{Hengl07}.}
+\label{fit:rk}
+\end{figure}
+
+One may expect that the subchannel code could provide mean predictions of relevant TH surface fields and residual distributions could be developed from the CFD data about.  A kriging model could then be fit to the residual distributions, in effect supplying a bias correction to the subchannel predictions with the added benifit of supplying varience.  In the case of simple kringing this varience estimate assumes that errors are normally distributed which is not necissarily the case for CFD-Subchannel rod-surface field residual distributions.
+
 
 \section{Subchannel Hi2lo}
 
@@ -40,19 +94,19 @@ The utilization of CFD data to improve subchannel thermal hydraulic models does 
     	&+ M^L_l + M^d_l + M^T_l + M_l^{GDXF}
         \label{eq:ctf_lat_mom}
     	\end{align}
-        
 Where $l$ denotes the liquid phase and $\alpha$ is the volume fraction liquid.  The terms $M^L, M^d, M^T, M_l^{GDXF}$ account for droplet or bubble entrainment, phase interfacial drag, turbulent mixing and grid directed cross flow respectively.  Avramova devised a method to use CFD computations to obtain an accurate prediction of $M_l^{GDXF}$ for a variety of grid designs.
-    	
 The grid directed cross flow momentum source term used in Avramova's model is defined by equation \ref{eq:grid_en_xflow_coeff}.
     	\begin{equation}
     	M_l^{GDXF} = f^2_{sg}(z) u_l^2 \rho_l A_g S_g
         \label{eq:grid_en_xflow_coeff}
     	\end{equation}
-    	Where $u_l$ is the axial liquid velocity. 
+        Where $u_l$ is the axial liquid velocity and the cross flow factor was given by equation \ref{eq:f_factor}.
     	\begin{equation}
     	f_{sg}(z) = \frac{V^{CFD}_l(z-z_{in})}{U^{CFD}_{in}}
+        \label{eq:f_factor}
     	\end{equation}
-    	
+        $U^{CFD}_{in}$ is the subchannel average axial inlet velocity to the spacer grid under consideration and $V^{CFD}_l(z-z_{in})$ is the suchannel averaged CFD predicted lateral velocity downstream from the spacer grid.
+
  The effectiveness of the grid enhanced cross flow model was determined by comparing exit bulk temperature profiles across a variety of assembly designs against experimental and CFD results.  The results indicated a marked improvement in the rod-assembly outlet temperature distribution at little additional computational cost as compared to CTF without CFD informed grid enhanced cross flow corrections.  
  
  The next bodies of work are closer in alignment with traditional downscaling techniques.  These class of hi2lo procedures are not statistical in nature, but rather seek to correct spatial biases in the field predictions made by a low fidelity subchannel code.
@@ -132,15 +186,15 @@ Where the first term is accounts for the effect of grid flow restriction and the
        \begin{equation}
        \hat k = \mathbf m_k k_{ctf}
        \end{equation}
-    Crud is grown on the coupling mesh using augmented temperature and TKE surface fields. By this method the integrated crud mass over a CTF face is given by equation \ref{eq:ctf_hi2lo_crud_est}.
-     \begin{equation}
-     C_m = \frac{1}{A} \sum_i^N \mathcal G(\hat T_{s_i}, \hat k_i, q''_i) a_i
-     \label{eq:ctf_hi2lo_crud_est}
-     \end{equation}
-    Where $A$ is the area of the CTF face and $a_i$ is the area of each cell face on the crud coupling mesh.
+Crud is grown on the coupling mesh using augmented temperature and TKE surface fields. By this method the integrated crud mass over a CTF face is given by equation \ref{eq:ctf_hi2lo_crud_est}.
 
-    
-    A key assumption that the multiplier maps are insensitive flow rate was made in the first implementation of this downscaling technique.  However this assumption is not strictly true: The multiplier maps carry some dependence on the inlet flow conditions.  An increase in flow rate changes the shape and extent of the wake region downstream of spacer grids which impacts the rod surface temperature and TKE fields.
+ \begin{equation}
+     C_m = \frac{1}{A} \sum_i^N \mathcal G(\hat T_{s_i}, \hat k_i, q''_i) a_i
+ \label{eq:ctf_hi2lo_crud_est}
+ \end{equation}
+Where $A$ is the area of the CTF face and $a_i$ is the area of each cell face on the crud coupling mesh.
+
+A key assumption that the multiplier maps are insensitive flow rate was made in the first implementation of this downscaling technique.  However this assumption is not strictly true: The multiplier maps carry some dependence on the inlet flow conditions.  An increase in flow rate changes the shape and extent of the wake region downstream of spacer grids which impacts the rod surface temperature and TKE fields.
 
     An extension of the multiplier map hi2lo procedure could linearly interpolate between multiplier maps developed at high and low inlet flow rate conditions.
     \begin{align*}
@@ -161,15 +215,27 @@ Where the first term is accounts for the effect of grid flow restriction and the
 \end{figure}
 
 
-    Some simplifications are made in this mapping.  For a given assembly, the multiplier maps have been shown to have a high span to span repeatability.  Therefore, a representative map is derived from a single span in a fully developed flow field.  This representative map is then applied to all other spans in the model.
+Some simplifications are made in the application of this mapping.  For a given assembly, the multiplier maps have been shown to have a high span to span repeatability.  Therefore, a representative map is derived from a single span in a fully developed flow field.  This representative map is then applied to all other spans in the model.
 
-    The multiplier map may not be transferable to other assemblies in the core due to geometric effects including the orientation of neighboring assemblies and TH/neutronics feedbacks.  This represents a limitation to the spatial mapping procedure as unique maps must be generated for different assemblies in the core.
-     
-    Blyth produced CFD informed grid enhanced heat transfer models for the advanced subchannel code, CTF.  This work presented strategies for processing CFD data for use in generating enhanced heat transfer maps and for computing the form loss coefficient across spacer grids.  Blyth's work served as a precursor to Salko's CFD informed method for developing HTC and TKE maps.
+The multiplier map may not be transferable to other assemblies in the core due to geometric effects including the orientation of neighboring assemblies and TH/neutronics feedbacks.  This represents a limitation to the spatial mapping procedure as unique maps must be generated for different assemblies in the core.
 
-    T. Hengal. Regression Kriging application to soil composition prediction as function of elevation, distance to river, ect. \cite{Hengl07}
-    
-    Boosted regression and classification applications. \cite{moisen2006}, \cite{friedman2002}
+Blyth produced CFD informed grid enhanced heat transfer models for the advanced subchannel code, CTF \cite{blyth2014} \cite{blyth2017}.  This work presented strategies for processing CFD data for use in generating enhanced heat transfer maps and for computing the form loss coefficient across spacer grids.  Blyth's work served as a precursor to Salko's CFD informed method for developing HTC and TKE maps.
 
 
+\section{Copula}
 
+Formally introduced by Sklar in 1959 \cite{Sklar1959}, a copula is a function which relates marginal probability distributions to a multidimensional joint distribution.  Copula provide a flexible alternative to multidimensional Gaussian based models.  Copula are utilized in this work because of their ability to capture non-Gaussian dependence structure between two or more correlated random variables, for instance temperature and the TKE at a given point on a rod's surface.  Furthermore, Sklar's theorem is used in this work in order to decompose joint distributions into a product of uni-variate marginal distributions and a copula function.  
+
+Copula have seen historical use in the finance industry to
+predict correlated extreme value risks in credit portfolios
+\cite{Geidosch2016}.  Copula have received additional attention in financial and mathematics communities since 
+simpler Gaussian based dependence modeling techniques were revealed to make erroneous expected CDO portfolio loss predictions under the market conditions present in the financial crisis of
+2008-2009 \cite{MacKenzie2013}, \cite{Li2000}.  Despite the widespread adoption of copula models in financial risk assesment community, only recently have copula been applied to flood risk
+models \cite{Dupuis2007}, \cite{Ganguli2012}, and reliability analysis in nuclear plants
+\cite{Kelly2007}.  The delayed adoption of the copula in the
+engineering realm is speculated to be due to a substantial increase in computational
+complexity required to construct and evaluate high dimensional copula over
+incumbent Bayesian network and multidimensional Gaussian based methods.  
+Though higher dimensional copula do pose significant challenges in fitting and sampling, it is straightforward to fit low dimensional copula models to empirical data
+using a maximum likelihood or Markov Chain Monte Carlo approach \cite{Jouini1996}.
+A method for drawing correlated samples from a copula is provided in section \ref{sec:fitting_copula}.
