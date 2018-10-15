@@ -154,8 +154,7 @@ f_{j,q''} = \delta_{(q''_{j, \mathrm{ctf}})}
 \subsection{Sample Quantiles}
 \label{chap:quantiles}
 
-\subsubsection{Non Parametric Representations of Univariate Distributions}
-
+Here a non parametric representation of univariate distributions is given by considering a set of sample quantiles.  
 Let the quantile function be represented by $Q=F^{-1}$ where $F$ is a cumulative density function (CDF).
 \index{Cumulative density function}   
 
@@ -194,7 +193,7 @@ In order to estimate a sample quantile, $\hat q_\tau$, given the empirical CDF $
     \label{fig:qloss}
 \end{figure}
 
-In this work, a set of sample quantiles, $\hat \theta_\tau = \{q_{\tau_0}, \dots, q_{\tau_i}, \dots q_{N_Q} \}$, are used to construct step-wise cumulative distributions, $\hat F$.  $N_Q$ denotes the number of quantiles used in the CDF reconstruction. The stepwise quantile function can be recoved by equation \ref{eq:cdf_from_qtau}.
+In this work, a set of sample quantiles, $\hat \theta_\tau = \{q_{\tau_0}, \dots, q_{\tau_i}, \dots q_{N_Q} \}$, are used to construct step-wise cumulative distributions, $\hat F$, for the cladding outer temperature and near-wall TKE surface fields.  $N_Q$ denotes the number of quantiles used in the CDF reconstruction and is a user set parameter. The stepwise quantile function can be recoved by equation \ref{eq:cdf_from_qtau}.
 \index{Quantiles!Emperical}
 
 \begin{equation}
@@ -204,7 +203,7 @@ In this work, a set of sample quantiles, $\hat \theta_\tau = \{q_{\tau_0}, \dots
 The reconstructed CDF can then in turn be used to build a histogram.  In place of the stepwise representation, a piecewise cubic hermite interpolating polynomial (PCHIP) can be fit to the stepwise conditional quantile distribution to generate a differentiable CDF.
 The PCHIP interpolation preserves monotonicity of the CDF if the provided quantiles are strictly monotone \cite{Fritsch80}.  This condition is enforced in the software; any violation of the monotone restriction would indicate a software bug in the quantile regression code.  Inverse transform sampling is used to draw samples from the univariate distributions.
 
-Other strategies to model univariate density functions are abundant.  One alternative is to use a set of sample moments.  Next, a set of moment conditions is defined for the target parametric model.  Then the method of moments can be used to determine the parameters of the parametric model which satisfy the moment conditions in a norm sense.  
+Other strategies to model univariate density functions are abundant.  One alternative is to use a set of sample moments.  Next, a set of moment conditions is defined for the target parametric model.  Then the method of moments can be used to determine the parameters of the parametric model which best satisfy the moment conditions in the L2 norm sense.
 
 Another strategy to estimate a univariate density given some set of predictive features is to compute the sample cumulants.  The sample cumulants can be used to build an Edgeworth series expansion. It remains as future work to determine if cumulants or traditional moments behave in a predictable manner as a function of local core conditions.
         
@@ -290,6 +289,8 @@ The sampled temperatures may be tallied over each CTF face to estimate the fract
 
 \subsection{Gradient Boosted Regression Trees}
 \label{chap:GBRT}
+
+A data driven machine learning model is considered to predict quantiles required to reconstruct cumulative density functions as in equation \ref{eq:cdf_from_qtau}.  The desired quantiles of the cladding surface temperature and TKE fields are conditioned upon the local core conditions.  The problem is then of conditional quantile prediction and this is performed by gradient boosted regression trees in this work.
 
 \begin{figure}[H]
     \centering
