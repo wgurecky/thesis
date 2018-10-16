@@ -175,7 +175,7 @@ The quantile loss function is given by equation \ref{eq:qloss_fn}.
 \label{eq:qloss_fn}
 \end{equation}
 Where $\mathbb{I}$ is the indicator function which returns 1 if the argument is true and 0 otherwise.
-In order to estimate a sample quantile, $\hat q_\tau$, given the empirical CDF $F$, minimize: $\E[\rho_\tau(T - q_\tau)]$ where $T$ is a random variable distributed according to $F_T$.  Considering a sample set $\{T_0, \dots T_N \}$ the desired quantile $q_\tau$ may be estimated by equation \ref{eq:qtau_est}.
+In order to estimate a sample quantile, $\hat q_\tau$, given the empirical CDF $F$, minimize: $\E[\rho_\tau(T - q_\tau)]$ where $T$, the temperature, is treated as a random variable distributed according to $F_T$.  Considering a sample set $\{T_0, \dots T_N \}$ the desired quantile $q_\tau$ may be estimated by equation \ref{eq:qtau_est}.
 \begin{equation}
             \left.\begin{aligned}
             \hat q_{\tau} &= argmin_{q_\tau} \E[\rho(u)];\ \  u = T - q_\tau  \\
@@ -193,22 +193,23 @@ In order to estimate a sample quantile, $\hat q_\tau$, given the empirical CDF $
     \label{fig:qloss}
 \end{figure}
 
-In this work, a set of sample quantiles, $\hat \theta_\tau = \{q_{\tau_0}, \dots, q_{\tau_i}, \dots q_{N_Q} \}$, are used to construct step-wise cumulative distributions, $\hat F$, for the cladding outer temperature and near-wall TKE surface fields.  $N_Q$ denotes the number of quantiles used in the CDF reconstruction and is a user set parameter. The stepwise quantile function can be recoved by equation \ref{eq:cdf_from_qtau}.
+In this work, a set of sample quantiles, $\hat \theta_\tau = \{q_{\tau_0}, \dots, q_{\tau_i}, \dots q_{N_Q} \}$, are used to construct step-wise cumulative distributions, $\hat F$, for the cladding outer temperature and near-wall TKE surface fields.  $N_Q$ denotes the number of quantiles used in the CDF reconstruction and is a user set parameter. The stepwise quantile function can be recovered by equation \ref{eq:cdf_from_qtau}.
 \index{Quantiles!Emperical}
 
 \begin{equation}
 \hat F_{T}= Q^{-1}(T; \{\hat{\theta}_{\tau} \})
 \label{eq:cdf_from_qtau}
 \end{equation}
-The reconstructed CDF can then in turn be used to build a histogram.  In place of the stepwise representation, a piecewise cubic hermite interpolating polynomial (PCHIP) can be fit to the stepwise conditional quantile distribution to generate a differentiable CDF.
+The reconstructed CDF can then in turn be used to build a histogram.  In place of the stepwise representation, a monotone piecewise cubic hermite interpolating polynomial (PCHIP) can be fit to the stepwise conditional quantile distribution to generate a differentiable CDF.
 The PCHIP interpolation preserves monotonicity of the CDF if the provided quantiles are strictly monotone \cite{Fritsch80}.  This condition is enforced in the software; any violation of the monotone restriction would indicate a software bug in the quantile regression code.  Inverse transform sampling is used to draw samples from the univariate distributions.
 
 Other strategies to approximate univariate density functions from a set of sample statistics are abundant.  One alternative to quantile regression is to relate sample moments to the parameters of some parametric distribution.  In this procedure a set of moment conditions is defined for the target parametric model.  Then the method of moments (MoM) can be used to determine the parameters of the parametric model which best satisfy the moment conditions in the L2 norm sense.  The MoM can be employed when the number of defined moment conditions is greater than or equal to the number of free distribution parameters.
 
 Alternatively, one may construct a non-parametric univariate density given some set of predictive features by utilizing a set of predicted distribution cumulants.  The estimated cumulants, produced by evaluating some trained model, can be used to build an Edgeworth series expansion \cite{hall1997}.  It remains as future work to determine if cumulants or traditional moments behave in a predictable manner as a function of local core conditions.
+
 % If the sample moments or cumulants cannot be acurately predicted by a data driven machine learning model, or some physical model linking the sample moments of the temperature and TKE fields to local core conditons cannot be found, it becomes intractable to use either the MoM or Edgworth series expansion approach.   Furthermore, if there exists a high sensitivity to purtibations in the transfer function relating the sample moments to the distribution paramters.  In simple cases method of moments can be understood by studying the linear operator in equation ().  If this operator has a large condition number then small errors made in the prediction of the momments will corrospond to large errors in the prediction of the model distribution parameters.  For these reasons, it is left as future work to investigate these strategies for marginal distribution recovery from moments or cumulents.  Instead, this work employes a forward quantile regression strategy for which the uncertainties in the predicted quantiles can be quantified in a straight forward manner.
 
-It can be shown that the sample quantiles are distributed according to \ref{eq:theory_qdist_1} \cite{mosteller1946}.  This directly follows from the distribution of the order statistics.  The theoredical distribution of the quantiles is Gaussian in the large sample limit.  When benchmarking or validating quantile predictions it is essential to check that the predictions follow the expected Gaussian behavior.  For the quantile regression procedures employed in this work, this check is performed in section \ref{chap:GBRT}.  In the current application it is important to estimate uncertainties inherent to sample quantiles so such uncertainties may be propogated into the crud integration procedures.
+It can be shown that the sample quantiles are distributed according to equation \ref{eq:theory_qdist_1}.  This directly follows from the distribution of the order statistics \cite{mosteller1946}.  The theoretical distribution of the quantiles is Gaussian in the large sample limit.  This large sample behavior of the quantiles is demonstrated for a normal random variable in figure \ref{fig:normal_q_theory} and a beta random variable in figure \ref{fig:beta_g_theory}.  When benchmarking or validating quantile predictions it is essential to check that the predictions follow the expected Gaussian behavior.  For the quantile regression procedures employed in this work, this check is performed in section \ref{chap:GBRT}.  In the current application it is important to estimate uncertainties inherent to sample quantiles so such uncertainties may be propagated into the crud integration procedures.
 \index{Quantiles!Theoretical distribution}
 
 \begin{align}
@@ -218,7 +219,7 @@ It can be shown that the sample quantiles are distributed according to \ref{eq:t
 \end{align}
 
 
-\begin{figure}[]%
+\begin{figure}[H]%
     \centering
     \subfloat[Empirical quantiles for a normal distrubtion. 500 trials shown. $0.1, 0.5, 0.9$ quantiles denoted by dashed verticle lines.]{{\includegraphics[width=0.4\linewidth]{figs/quantile_theory/q_gauss_residual} }}%
     \qquad
@@ -243,7 +244,7 @@ It can be shown that the sample quantiles are distributed according to \ref{eq:t
     \subfloat[Empirical vs theoretical $0.9$ quantile distribution.]{{\includegraphics[width=0.4\linewidth]{figs/quantile_theory/q_beta_residual_conditional_0_9} }}%
     \qquad
     \caption[Distribution of quantiles for a beta distributed RV.]{Distribution of quantiles for a beta distributed RV: $X \sim \beta(1, 2)$}%
-    \label{fig:ctf_twall_aug}%
+    \label{fig:beta_g_theory}%
 \end{figure}
 
 The sampled temperatures may be tallied over each CTF face to estimate the fractional area that exceeds some threshold temperature.  The probability of exceeding a threshold temperature is shown in equation \ref{eq:pr_thresh}.

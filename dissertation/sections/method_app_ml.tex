@@ -35,12 +35,12 @@ For this rod configuration, the axial pin power, total power and CFD simulation 
 \subsection{Preprocessing}
 \label{sec:preprocessing}
 
-Pre-processing requires paired CFD and CTF results for a given pin generated with consistent boundary conditions between the codes.  This requires consistent geometry, inlet, outlet and power distributions between the codes.
+Preprocessing requires paired CFD and CTF results for a given pin generated with consistent boundary conditions between the codes.  This requires consistent geometry, inlet, outlet and power distributions between the codes.
 
 The cladding surface temperature and near-wall TKE CFD fields are spatially aggregated onto the CTF face centers.  The aggregation requires that the location and extent of each CTF face is known.  These CTF face attributes are accessible from a CTF output file.  In the aggregation procedure spatial information is discarded within each CTF patch as the spatial fields are agglomerated into sample distributions.
 In each CTF face each of the features given in table \ref{tab:features} are computed from the available CTF (or VERA) results.
-The aggregated CFD data fields are then associated with their corrosponding feature set.
-In each face, the aggregated CFD field distributions are subtracted from the mean CTF predictions and the resultant (CFD-CTF) residual distributions are stored in a HDF5 table along with the ascsociated predictive variables.
+The aggregated CFD data fields are then associated with their corresponding feature set.
+In each face, the aggregated CFD field distributions are subtracted from the mean CTF predictions and the resultant (CFD-CTF) residual distributions are stored in a HDF5 table along with the associated predictive variables.
 
 Next, correlation statistics are computed from the residual distributions.
 Copula fitting by the maximum likelihood method with AIC model selection is carried out on each CTF face.  Additionally, the empirical Kendall's $\tau$ rank correlation coefficient is computed from the raw CFD data on each CTF face. Figure \ref{fig:copula_predicted} shows the copula parameters estimated from the raw CFD data on each pin as a function of axial position for the first 4 pins in the 5x5 CFD model.  There is a marked change in behavior of the copula between the pins.  This was an unexpected find since the flow patterns were speculated to be reasonably consistent from pin to pin.  Also, the influence of spacer grids on the correlation coefficient between the temperature and TKE fields is visible.  Across spacer grids the correlation coefficient sharply falls indicating a tighter coupling between the TKE and temperature surface fields as the flow necks down when entering a grid.  This is followed by a sharp change in Kendall's $\tau$ towards zero indicating the temperature and TKE surface fields become less correlated immediately following the mixing vanes.  This change in correlation behavior is posited to be due to turbulent mixing effects.  The computed copula parameters are also stored alongside the raw temperature, TKE, and boundary heat flux aggregated residual distribution data in the HDF5 table.
@@ -129,7 +129,7 @@ This cross validation technique ascertains crud prediction errors within the TH 
 
 \subsection{Quantile Regressors}
 
-A principal goal of the machine learning model is to predict the conditional quantiles of the temperature and TKE distributions as a function of local core conditions.  In this light, the trained quantile regression models are compared against the left-out CFD data set on each pin.  The accuracy of both the TKE and tempearture quantile regressors is assessed using both quantile-quantile plots and quantile vs axial rod position comparisons.
+A principal goal of the machine learning model is to predict the conditional quantiles of the temperature and TKE distributions as a function of local core conditions.  In this light, the trained quantile regression models are compared against the left-out CFD data set on each pin.  The accuracy of both the TKE and temperature quantile regressors is assessed using both quantile-quantile plots and quantile vs axial rod position comparisons.
 
 Quantile-quantile (Q-Q) plots of the temperature and TKE residual distributions are used to elucidate bias introduced by the machine learning model in the conditional quantiles at a variety of axial positions and local core conditions.  Estimated quantiles are obtained for the left-out pin by evaluating the trained reduced LOO model and are compared to the expected CFD result.
 A subset of the TKE residual quantile regression results are given in figure \ref{fig:tkepin1} to \ref{fig:tkepin3}.  A complete set of quantile regression results are provide in chapter \ref{chap:app_ml}, Appendix A. The Q-Q plots summarize the biases in the conditional quantile distributions when compared to the target golden standard CFD data.  The maximum and average Kolmogorov–Smirnov (KS) statistic is provided in the Q-Q figures for each pin which can be computed by equation \ref{eq:ks_stat}.
@@ -167,9 +167,11 @@ The KS statistic was computed at each axial level on the CTF grid.
     \label{fig:tkepin3}%
 \end{figure}
 
-Shown in the axial plots, the TKE distribution is drastically influenced by spacer grids.  The maximum near-wall TKE sharply increases following a spacer grid followed by a decay towards a more orderly flow.  Also notable is the location of minimum predicted near wall TKE which immediately follows spacer grids.  In addition to increasing the net turbulent kenetic energy of the flow, mixing vanes can also produce eddy regions of realative stagnant flow thus giving rise to these regions of low near wall TKE.  The Hi2lo model retains both of these properties of the flow field resolved by CFD.  The prediction accuarcy of the quantile regressors as measured by LOO cross validation is striking considering the limited 24 pin training set used in these cases.  Good overall performance of the machine lerning models to predict the quantiles of the TKE distributions can be attributed to high pin-to-pin similarity of the surface TKE distributions. High span to span repeatability of the TKE distributions were also observed.  This observation is consistent with those found in other hi2lo studies by Salko et. al \cite{salko18}.
+Shown in the axial plots, the TKE distribution is drastically influenced by spacer grids.  The maximum near-wall TKE sharply increases following a spacer grid followed by a decay towards a more orderly flow.  Also notable is the location of minimum predicted near wall TKE which immediately follows spacer grids.  In addition to increasing the net turbulent kinetic energy of the flow, mixing vanes can also produce eddy regions of stagnant flow thus giving rise to regions of low near wall TKE.  The hi2lo model retains both of these properties of the flow field resolved by CFD.    
 
-Temperature residual quantile regression results are given in figures \ref{fig:temppin1} to \ref{fig:temppin3}.  Similar to the TKE conditional quantiles, the conditional temperature distribution exhibits sharp changes in behavior across the spacer grids.  Discontinuities enforced the choice of the gradient boosted tree machine learning algorithm which is resilient to steep gradients in the response surface.
+Good overall performance TKE quantile regression models can be attributed to high pin-to-pin and span-to-span similarities of the surface TKE distributions. The observation of high span-to-span repeatability of the TKE distributions is consistent with those found in other hi2lo studies by Salko et. al \cite{salko17}.
+
+Temperature residual quantile regression results are given in figures \ref{fig:temppin1} to \ref{fig:temppin3}.  Similar to the TKE conditional quantiles, the conditional temperature distribution exhibits sharp changes in behavior across the spacer grids. Unlike the TKE residual distribution the surface temperature distributions do not exhibit the same degree of similarity from span to span or from pin to pin.  The presence of discontinuities in the temperature distributions enforced the choice of the gradient boosted tree machine learning algorithm which is resilient to steep gradients in the response surface.
 
 \begin{figure}[H]%
     \centering
@@ -198,7 +200,7 @@ Temperature residual quantile regression results are given in figures \ref{fig:t
     \label{fig:temppin3}%
 \end{figure}
 
-Inspecting the axial quantile difference figures \ref{fig:temppin1}a to \ref{fig:temppin3}a, on average the extreme quantiles exhibit the largest axial RMS prediction errors.  This is expected behavior since the estimates the extreme quantiles from a sample population is naturally fraught with high variance as described by equation \ref{eq:theory_qdist_1}.  This fact was experimentally demonstrated using a simple test quantile regression problem in section \ref{chap:GBRT}.
+Inspecting the axial quantile difference figures \ref{fig:temppin1}a to \ref{fig:temppin3}a, on average the extreme quantiles exhibit the largest axial RMS prediction errors.  This is expected behavior since the estimates the extreme quantiles from a sample population is naturally fraught with high variance as described by equation \ref{eq:theory_qdist_1}.  Recall that this fact was also experimentally demonstrated using a simple test quantile regression problem in section \ref{chap:GBRT}.  In both cases the distribution of the residuals between the gradient boosted quantile predictions and the empirical sample quantiles increased in variance when estimating the more extreme conditional quantiles.
 
 
 \subsection{Kendall's $\tau$ Regression}
@@ -207,7 +209,7 @@ The rank correlation coefficient, Kendall's $\tau$ ($\rho_\tau$), is used to qua
 
 A subset of the 5x5 assembly's Kendall's $\tau$ regression results are given in figure \ref{fig:ktauregression} and the complete 5x5 $\rho_\tau$ LOO cross validation results are given in figure \ref{fig:ktauregressionmontage}.  There is a marked change in behavior of the rank correlation coefficient as a function of axial position in the core from pin to pin.  The influence of Kendall's $\tau$ on the CTF face-integrated crud results was discussed in section \ref{sec:crud_copula_sensi}, and it was shown to be an important parameter to accurately predict via the machine learning model.  Pins with large relative errors for Kendall's $\tau$ are expected to produce anomalously poor crud predictions.
 
-The worst performing pin with respect to $\hat \rho_\tau$ prediction was pin 8, as indicated in figure \ref{fig:ktauregressionmontage}.  Interestingly, this pin exhibited relatively good agreement between the predicted crud distribution and the expected CFD crud distribution as indicated in table \ref{tab:loo_crud_bmass} and figure \ref{fig:montageaxialbmasssm}.  This pin, was relatively cold in comparison to the others in the fuel bundle which resulted growing only $5.9$e-2 $[g]$ of crud in 300 days when the hotest rods grew $\approx 1.4$e0 $[g]$ in the same time.  In the case of pin 8, since the majority of the rod surface exists below the saturation point the crud result was not sensitive to the shape of the joint temperature and TKE distributions, and thus, even with poor $\rho_\tau$ predictions the axial and integrated crud results agree with the original CFD result.
+The worst performing pin with respect to $\hat \rho_\tau$ prediction was pin 8, as indicated in figure \ref{fig:ktauregressionmontage}.  Interestingly, this pin exhibited relatively good agreement between the predicted crud distribution and the expected CFD crud distribution as indicated in table \ref{tab:loo_crud_bmass} and figure \ref{fig:montageaxialbmasssm}.  This pin, was relatively cold in comparison to the others in the fuel bundle which resulted growing only $5.9$e-2 $[g]$ of crud in 300 days when the hottest rods grew $\approx 1.4$e0 $[g]$ in the same time.  In the case of pin 8, since the majority of the rod surface exists below the saturation point the crud result was not sensitive to the shape of the joint temperature and TKE distributions, and thus, even with poor $\rho_\tau$ predictions the axial and integrated crud results agree with the original CFD result.
 
 \begin{figure}[H]%
     \centering
@@ -244,7 +246,7 @@ Future work could include performing a transformation of the input space so that
 
 Further improvements in prediction accuracy are possible by applying an ensemble
 machine learning technique known as stacking.  Stacking combines the predictions of multiple classifiers using a meta-classifier.
-Stacking increases model complexity since each classifier in the ensemble contains hyperparameters which require tuning.
+Stacking increases model complexity since each classifier in the ensemble contains hyper-parameters which require tuning.
 Since ML model tuning and performance is not a focus of this work, the application of this technique to improve copula classification results is left as future work.
 
 Though improvements are possible, it should also be noted that section \ref{sec:crud_copula_sensi} and table \ref{tab:crud_totals_copula} show that the copula family does not substantially influence pin integrated crud results.  Due to this, gains in the copula classifier accuracy will not necessarily translate to a large improvement in crud prediction accuracy.
@@ -254,9 +256,9 @@ Though improvements are possible, it should also be noted that section \ref{sec:
 The presented case considered the 5x5 array operating at a single state with fixed power profile and flow conditions for 300 days.  The hi2lo model was marched forward in time using a re-sampling step size of 50 days.  A sample size of 400 was used to estimate the crud distribution in each CTF face.  The importance sampling distribution parameters were set to values given in table \ref{tab:hi2lo_params}.  The default remapping weights of $w_T=0.4, \ w_k=0.6$ were used in this case.
 
 The comparisons presented are the result of the LOO cross validation study.
-Ergo the hi2lo model was used in a properly predictive manner since distribution parametes had to be inferered from the machine learning model at local core conditions outside of the training set.
+Ergo the hi2lo model was used in a properly predictive manner since distribution parameters had to be inferred from the machine learning model at local core conditions outside of the training set.
 
-The error estimates provided by the present LOO cross validation study can be viewed as conservative.  The LOO strategy expunged an entire pin from an already limited trining pool of only 25 pins . This is not representative a production-ready training data set.  A training set to be used in production environment will have all possible pin geometries represented within it; that is all possible pin configurations within a bundle.  Not all combinations of inlet and power conditions will be simulated by CFD due to computational time limitations and so interpolation error can be expected even if a provided a geometrically rich training set.  
+The error estimates provided by the present LOO cross validation study can be viewed as conservative.  The LOO strategy expunged an entire pin from an already limited training pool of only 25 pins . This is not representative a production-ready training data set.  A training set to be used in production environment will have all possible pin geometries represented within it; that is all possible pin configurations within a bundle.  Not all combinations of inlet and power conditions will be simulated by CFD due to computational time limitations and so interpolation error can be expected even if a provided a geometrically rich training set.  
 
 % If the flow fields are principally governed by geometric factors the 
 
@@ -267,7 +269,7 @@ The error estimates provided by the present LOO cross validation study can be vi
 \subsection{Single Pin Comparisons}
 \label{sec:single_pin_result}
 
-A single pin was selected from the 25 pin array for detailed comparison of the CFD, CTF, and hi2lo models.  For this pin, axial crud distribution comparisons were made at 300 $[days]$ of simulation time are shown in figures \ref{fig:15axialbmass} and \ref{fig:15axialcmass}.  Axial crud distributions of all pins are provided in appendix B.  The CTF stantalone case generally predicts a greater amount of crud at all axial positions.  Since the CTF model did not include any grid-enhanced heat transfer model it is to be expected that surface temperature downstream spacer grids would be over-predicted since the influence of the mixing vanes on the rod surface temperature distributions are partially neglected.  The Hi2lo model preserves the influence of the spacer grids on the crud distribibutions predicted by CFD computations.
+A single pin was selected from the 25 pin array for detailed comparison of the CFD, CTF, and hi2lo models.  For this pin, axial crud distribution comparisons were made at 300 $[days]$ of simulation time are shown in figures \ref{fig:15axialbmass} and \ref{fig:15axialcmass}.  Axial crud distributions of all pins are provided in appendix B.  The CTF standalone case generally predicts a greater amount of crud at all axial positions.  Since the CTF model did not include any grid-enhanced heat transfer model it is to be expected that surface temperature downstream spacer grids would be over-predicted since the influence of the mixing vanes on the rod surface temperature distributions are partially neglected.  The Hi2lo model preserves the influence of the spacer grids on the crud distributions predicted by CFD computations.
 
 \begin{figure}[H]
     \centering
@@ -282,9 +284,9 @@ A single pin was selected from the 25 pin array for detailed comparison of the C
     \label{fig:15axialcmass}
 \end{figure}
 
-The total crud mass and total boron hideout mass were computed at each resampling step and presented in figures \ref{fig:15pinbmasstime} and \ref{fig:15pincmasstime}.  The time evolution of the crud total mass for all pins is given in appendix B.  The hi2lo model underpredicted the crud mass on pin 1 when compared to the CFD model.
+The total crud mass and total boron hideout mass were computed at each re-sampling step and presented in figures \ref{fig:15pinbmasstime} and \ref{fig:15pincmasstime}.  The time evolution of the crud total mass for all pins is given in appendix B.  The hi2lo model under predicted the crud mass on pin 1 when compared to the CFD model.
 
-This underprediction is not uniform accross all pins in the model, as seen in figures () and ().  The hi2lo model overpredicts the total amount of crud for some pins in the assembly.  This high varience in the prediction errors can be partially atributed to small sample size
+Consistent under prediction of crud across the assembly was not observed. As seen in figures () and () the distribution of the differences between the hi2lo model predictions and the high fidelity CFD/Crud result does not exhibit tilt or a geometric pattern.  The hi2lo model over predicts the total amount of crud for some pins in the assembly, particularly pins 14 and 16.  This high variance in the prediction errors can be partially attributed to small training sample size, however a more in depth cross validation should be conducted as part of a future study in which a larger CFD training pool is available.  
 
 \begin{figure}[H]
     \centering
@@ -320,7 +322,7 @@ The average crud behavior as a function of axial position along the rod is given
 The crud density distributions predicted by the Hi2lo procedure are approximately consistent with the gold-standard CFD result as shown in figures \ref{fig:dist_hi2loimppinzbmass} and \ref{fig:dist_hi2loimppinzcthick}. Some difficulty in capturing the extreme quantiles of the crud distributions as a function of axial position along the pin is shown in the figures. 
 
 The ability of the hi2lo model to accurately predict the fraction of the rod surface which experiences extreme crud thickness, a precursor quantity to CILC risk estimation, is hampered by limitations of the quantile regression and the relative sparsity of the available training data.  Recall that a given large-sample quantile follows a Gaussian distribution according to equation \ref{eq:theory_qdist_1}. By the propagation of uncertainty to upper tail integrals of the probability density detailed in equations \ref{eq:pr_thresh} and \ref{eq:pr_thresh_uncert}, estimates for extreme crud distribution quantiles (i.e. estimates of how much of the rod surface experiences crud with a thickness exceeding some critical CILC crud threshold) will have high variance.  Difficulty in predicting extreme quantiles by standard quantile regression reflects basic facts about the large sample limit of extreme quantiles.
-Circumventing these difficulties is a non-trivial undertaking.  Without making assumptions for the functional form of the surface temperature distribution, thereby adopting a parametric model, it is difficult to estimate the likelyhood of extreme crud events.
+Circumventing these difficulties is a non-trivial undertaking.  Without making assumptions for the functional form of the surface temperature distribution, thereby adopting a parametric model, it is difficult to estimate the likelihood of extreme crud events.
 
 \begin{figure}[H]%
     \centering
@@ -450,7 +452,7 @@ Totals	 & 2.9128e+01 & 9.9713e+00 & 9.0877e+00 & -8.8360e-01  & -8.9\\
 
 At each re-sample step the crud mass was summed over all pins in the assembly and presented in figure \ref{fig:asmcmasstime}.  The total assembly crud mass predicted by CFD and the hi2lo model are in in close agreement.  At 300 days simulation time the relative difference in the crud mass results between the hi2lo and the CFD model was -8.9\%, as shown in table \ref{tab:loo_crud_cmass}.
 
-\begin{figure}[H]
+\begin{figure}[]
     \centering
     \includegraphics[width=0.7\linewidth]{figs/5x5/imp/asm_cmass_time}
     \caption{Assembly integrated CTF vs CFD vs Hi2lo crud mass as a function of time.}
