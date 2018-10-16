@@ -21,41 +21,50 @@ It is also possible to nest a high fidelity simulation within a coarse fidelity 
 
 \section{Kriging}
 
-The term kriging was coined by Danie G. Krige in his master's thesis in an effort to model the spatial distribution of gold ore concentrations given sparse, uncertain estimates \cite{krige51}, \cite{Krige51a}. Following kriging's introduction, the technique has propagated through the geostatistics community.  Kriging is applicable when estimates of the mean and variance of a random field are desired in between sparse training data samples.  The technique can be viewed as a special case of Gaussian process regression \cite{Williams96}.  Kriging is related to Gaussian process regression since the underlying goal of both approaches is to model the spatial autocorrelation of a random field.  An example of application of kriging to a soil quality data set is left to Hengl et. al \cite{Hengl07}.
+Danie G. Krige developed an interpolation scheme centered around modeling the spatial-autocorrelation of a random field in an effort to make credible predictions of the spatial distribution of gold ore concentrations given sparse, uncertain estimates \cite{krige51}, \cite{Krige51a}.  This particular interpolation procedure came to bare his name. Following kriging's introduction, the technique has propagated through the geostatistics community.  Kriging is applicable when estimates of the mean and variance of a random field are desired in between sparse training data samples.  The technique can be viewed as a special case of Gaussian process regression \cite{Williams96}.  Kriging is related to Gaussian process regression since the underlying goal of both approaches is to model the spatial autocorrelation of a random field.  An example of application of kriging to a soil quality data set is left to Hengl et. al \cite{Hengl07}.
 \index{Kriging}
 
-Kriging or Gaussian process regression techniques are well suited when the errors can be assumed to be normally distributed about some mean prediction.  Simple kriging assumes that the mean of the underlaying field does not drift as a function location in the input space and therefore only requires the fitting of a co-variogram which describes the statistical spatial autocorrelation between the known data.  More advanced kriging strategies such as regression kriging (RK) forgo this simplification decomposing the interpolation problem into mean predicting and bias-correcting residual models.  In RK the spatial-autocorrelation in the residuals is modeled by a simple kriging model.  The mean response may be predicted by any regression strategy, with a common choice being an ordinary least squares model though works which investigate the use of random-forests or more advanced machine learning strategies in this role are pervasive [refs].
+Kriging or Gaussian process regression techniques are well suited when the distribution of residual about the interpolating model can be assumed to be normally distributed.  Simple kriging assumes that the mean of the underlaying field does not drift as a function location in the input space and therefore only requires the fitting of a variogram which describes the statistical spatial autocorrelation between the known data.  More advanced kriging strategies such as regression kriging (RK) forgo this simplification decomposing the interpolation problem into mean predicting and bias-correcting residual models.  In RK the spatial-autocorrelation in the residuals is modeled by a simple kriging model.  The mean response may be predicted by a variety of regression strategies, with a common choice being an ordinary least squares model though works which investigate the use of random forests or more advanced machine learning strategies in this role are pervasive \cite{LI20111647} \cite{LI2017112}.
 \index{Kriging!Regression Kriging}
 
-The initial approach taken to construct a RK model shown in equation \ref{eq:decomp} shows strong parallels to the hi2lo method developed in the current work.  A key difference is that the primary focus of an RK model is to capture spatial auto-correlations in the field data where the current work does not seek to model spatial-autocorrelation of a random field since such information is extraneous when making crud predictions with a one-dimensional crud model.   If the ability to predict the full 2D surface distributions of the FOI are desired, an RK model could yield the requisite fine scale surface distributions with uncertainty estimates with future study.
+The initial approach taken to construct a RK model shown in equation \ref{eq:decomp} shows strong parallels to the hi2lo method developed in the current work.  A key difference is that the primary focus of an RK model is to capture spatial auto-correlations in the field data where the current work does not seek to model spatial-autocorrelation of a random field since such information is extraneous when making crud predictions with a one-dimensional crud model.   If the ability to predict the full 2D surface distributions of the FOI are desired then a RK model could yield the requisite fine scale surface distributions with uncertainty estimates provided future study.
+
+The following example examines case of kriging the surface temperature field, $\hat T_\mathtt{RK}$.
+Let $\mathbf{q}$ represent a predictive feature array comprised of the local subchannel axial velocity,
+TKE, and boundary heat flux from CTF.  Also included in the feature array is the spatial coordinates, $\mathbf s$.  The set $\{u, k, q'' \}$ are referred to as auxiliary features since they are functions of $\mathbf s$.
+
+\begin{equation}
+    \mathbf{q} = \{u(\mathbf s), k(\mathbf s), q''(\mathbf s), \mathbf s \}_{\mathrm{ctf}}
+\end{equation}
 
 First the target FOI is decomposed into a deterministic and stochastic component, as in equation \ref{eq:decomp}.
-Let the spatial coordiantes, $\mathbf{s} = \{z, \varphi\}$,
-where $z$ is the axial position and $\varphi$ is the azimuthal coordinate on the rod surface. Let the FOI be denoted as $T$.
 \begin{equation}
-T(\mathbf s) = \mu(\mathbf s) + \varepsilon(\mathbf s)
+    T(\mathbf s) = \mu_{\mathrm{ctf}}(\mathbf s) + \varepsilon(\mathbf s)
 \label{eq:decomp}
 \end{equation}
 
-First, the mean field behavior is estimated by either a least squares fit to the sampled CFD data, or by using the CTF result directly.
-Additionally, the CTF results enter the kriging model as auxiliary predictive variables.  These variables would serve as predictors of spatial auto-correlation.
-
-The following example examines case of kriging the surface temperature field, $\hat T_\mathtt{RK}$.
-Let $\mathbf{q}$ represent a predictive feature array comprised of the temperature,
-TKE, and boundary heat flux from CTF.  Also included in the feature array is the spatial coordinates, $\mathbf s$.  The set $\{T, k, q'' \}$ are referred to as auxiliary features since they are functions of $\mathbf s$.
+First, the mean surface temperature field behavior is estimated by either a least squares fit to the CTF result, or by using the CTF result directly.  The least squares problem involves solving the linear system shown in equation \ref{eq:lin_ctf_reg} for the coefficients $\hat{\beta}_{\mathrm{ctf}}$.
 
 \begin{equation}
-\mathbf{q} = \{T, k, q'', \mathbf s \}_{\mathrm{ctf}}
+    \hat \beta_{\mathrm{ctf}} = \mathrm{argmin}_{\beta_{\mathrm{ctf}}} ||\mathbf T_{\mathrm{ctf}} - \mathbf q \beta_{\mathrm{ctf}}||^2
+\label{eq:lin_ctf_reg}
+\end{equation}
+
+Substituting the ordinary least squares coefficients into equation \ref{eq:decomp} the random field can be expressed by equation \ref{eq:decomp_2}.
+
+\begin{equation}
+    T(\mathbf s) = \mathbf q(\mathbf s) \hat \beta_{\mathrm{ctf}} + \varepsilon(\mathbf s)
+\label{eq:decomp_2}
 \end{equation}
 
 In matrix form, the RK model evaluated at a point $\mathbf{s}_0 $ on the rod surface is given by equation \ref{eq:rk_eval} \cite{Hengl07}.
 
 \begin{equation}
-\hat T_\mathtt{RK}(\mathbf{s}_0 ) = \mathbf{q}_\mathbf{0}^\mathbf{T} \cdot \mathbf{\hat \beta}_\mathtt{OLS} + \mathbf{\lambda }_\mathbf{0}^\mathbf{T} \cdot (\mathbf T_{CFD}
-- \mathbf{q} \cdot \mathbf{\hat \beta }_\mathtt{OLS} )
+    \hat T_\mathtt{RK}(\mathbf{s}_0 ) = \mathbf{q}_\mathbf{0}^\mathbf{T} \cdot \mathbf{\hat \beta}_\mathtt{ctf} + \mathbf{\lambda }_\mathbf{0}^\mathbf{T} \cdot (\mathbf T_{\mathrm{cfd}}
+- \mathbf{q} \cdot \mathbf{\hat \beta }_\mathtt{ctf} )
 \label{eq:rk_eval}
 \end{equation}
-Where $\mathbf{q}_\mathbf{0}= \mathbf{q}(\mathbf s_0)$. The kriging weights at the sample location, $\mathbf{\lambda_0}$, are estimated by \ref{eq:simple_krige_weights} with the covariance matrix generation function: $c(q_i, q_0)= \mathrm{Cov}(\mathbf e(q_i), \mathbf e(q_0))$ also known as a covariagram kernel.  where $\mathbf e = (\mathbf T_{CFD} - \mathbf{q} \cdot \mathbf{\hat \beta }_\mathtt{OLS}$). 
+Where $\mathbf{q}_\mathbf{0}= \mathbf{q}(\mathbf s_0)$. The kriging weights at the sample location, $\mathbf{\lambda_0}$, are estimated by \ref{eq:simple_krige_weights} with the covariance matrix generation function: $c(q_i, q_0)= \mathrm{Cov}(\mathbf e(q_i), \mathbf e(q_0))$ also known as a kriging kernel.  The residual vector between the CFD surface field estimates and the CTF prediction is given by $\mathbf e = (\mathbf T_{\mathrm{cfd}} - \mathbf{q} \cdot \mathbf{\hat \beta }_\mathtt{ctf}$). 
 \begin{equation}
 \begin{pmatrix}\lambda_{0_1} \\ \vdots \\ \lambda_{0_n} \end{pmatrix}=
 \begin{pmatrix}c(q_1,q_1) & \cdots & c(q_1,q_n) \\
@@ -66,7 +75,13 @@ c(q_n,q_1) & \cdots & c(q_n,q_n)
 \label{eq:simple_krige_weights}
 \end{equation}
 
-The covariances must be estimated from the available CFD data.
+A common choice for the kernel is the squared-exponential covariance function provied in equation \ref{eq:cov_kernel}.
+\begin{equation}
+    c(d) = e^{-(d/v)^2}
+    \label{eq:cov_kernel}
+\end{equation}
+Where $v$ is scaling parameter and $d$ is the euclidean distance between points: $d=||q_0 - q_n||$.
+The parameters of the kernel, or $v$ in this case, are estimated from the available CFD data.
 
 The residual vector, $\mathbf e$, naively includes all available CFD data points, but in practice a cut-off distance from the sample location, $\mathbf s_0$, can be specified to drastically reduce the amount of information required to construct and evaluate a covariance model.  This effectively reduces the length of the vectors $\mathbf{\lambda_0}$ and $\mathbf e$.
 
@@ -77,7 +92,7 @@ The residual vector, $\mathbf e$, naively includes all available CFD data points
 \label{fit:rk}
 \end{figure}
 
-In this RK approach, the subchannel code could provide mean predictions of relevant TH surface fields and residual distributions could be developed from the CFD data about.  A kriging model could then be fit to the residual distributions, in effect supplying a bias correction to the subchannel predictions with the added benefit of supplying uncertainty estimates.  However variance estimate made by the RK model assumes that residuals are normally distributed which is not necessarily the case for CFD-Subchannel rod-surface fields.
+In this RK approach, the subchannel code could provide mean predictions of relevant TH surface fields and residual distributions could be developed from the CFD data.  A kriging model could then be fit to the residual distributions, in effect supplying a bias correction to the subchannel predictions with the added benefit of supplying uncertainty estimates.  However, variance estimates made by the RK model assume that residuals are normally distributed which is not necessarily the case for CFD-Subchannel rod-surface fields.
 
 
 \section{Subchannel Hi2lo}
