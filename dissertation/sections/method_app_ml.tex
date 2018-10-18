@@ -142,14 +142,14 @@ A subset of the TKE residual quantile regression results are given in figures \r
 Where $\mathrm{sup}(\cdot)$ is the supremum of the set of distances between the predicted and empirical cumulative densities.  The cumulative densities are supported at the specified quantile levels: $\{\mathbf \tau\} = \{0.000, 0.0526, 0.1052, ... 1.000 \}$ since the number of quantiles used in the reconstruction of the marginal temperature and TKE distributions was set to be 20 and were evenly spaced.
 The KS statistic was computed at each axial level on the CTF grid.
 
-A two sample KS test was performed on the temperature and TKE distribution reconstructions from predicted quantiles on each CTF axial edit for every pin in the assembly. The null hypothesis is that the predicted and empirical (CFD derived) distributions are the same on the CTF axial edit.  To reject the null hypothesis the KS distance must satisfy the inequality presented in equation \ref{eq:ks_crit}.
+A two sample KS test was performed on the temperature and TKE distribution reconstructions from predicted quantiles on each CTF axial edit for every pin in the assembly. The null hypothesis is that the predicted and empirical (CFD derived) distributions are the same on a given CTF axial zone.  To reject the null hypothesis the KS distance must satisfy the inequality  \ref{eq:ks_crit}.
 
 \begin{equation}
     KS_D^* > c(\alpha) \sqrt{\frac{n+m}{nm}}
 \label{eq:ks_crit}
 \end{equation}
 
-Where $n=20$ in this case since the predicted CDFs are supported at 20 locations. The number of samples available to construct the empirical distribution, $m$, on each axial edit was $\approx800$, though this varied slightly from face to face.  In general $c(\alpha) = \sqrt{-\frac{1}{2} \mathrm{ln}\alpha}$, therefore at $\alpha=0.1$, $KS_D^* \approx 0.243$.  A summary of the KS distances and test results are provided in table \ref{tab:ks_temp} for the temperature quantiles and in table \ref{tab:ks_tke} for the predicted TKE quantiles.
+Where $n=20$ in this case since the predicted CDFs are supported at 20 locations. The number of CFD surface samples available to construct the empirical distribution, $m$, on each axial edit was approximately $800$, though this varied slightly from zone to zone and is dependent on the CFD mesh density on the rod surface.  In general $c(\alpha) = \sqrt{-\frac{1}{2} \mathrm{ln}\alpha}$, therefore at $\alpha=0.1$, $KS_D^* \approx 0.243$.  A summary of the KS distances and test results are provided in table \ref{tab:ks_temp} for the temperature quantiles and in table \ref{tab:ks_tke} for the predicted TKE quantiles.
 
 \begin{table}[h]
     \begin{center}
@@ -456,7 +456,7 @@ Circumventing these difficulties is a non-trivial undertaking.  Without making a
 \subsection{Multi Pin Comparisons}
 \label{sec:multi_pin_result}
 
-Results for each pin in the LOO cross validation study are presented here.  There was random variation in the prediction accuracy of the model accross the 5x5 assembly with no apparent spatial bias in the model prediction errors towards the edge of the assembbly, as one may expect.  This would indicate that some pins in the 5x5 assembly are, in a sense, more unique with respect to thermal hydraulic flow conditions than others.  Pins where a small difference between the hi2lo model predictions and the gold-standard CFD result show that the pin's thermal hydraulic conditions are well represented in the training set.
+Results for each pin in the LOO cross validation study are presented here.  There was random variation in the prediction accuracy of the model across the 5x5 assembly with no apparent spatial bias in the model prediction errors towards the edge of the assembly, as one may expect.  This would indicate that some pins in the 5x5 assembly are, in a sense, more unique with respect to thermal hydraulic flow conditions than others.  Pins where a small difference between the hi2lo model predictions and the gold-standard CFD result show that the pin's thermal hydraulic conditions are well represented in the training set.
 
 In table \ref{tab:loo_crud_bmass} and \ref{tab:loo_crud_cmass} rod integrated crud results for each pin are given at 300 days of simulation time.  The worst performing pin with respect to boron deposition prediction was pin 4 by relative percent difference between the hi2lo result and the CFD driven crud result.  The Kendall's $\tau$ boosted regressor produced large prediction errors as measured by the LOO cross validation for this pin, as shown in table \ref{tab:loo_rms}.  Incorrect predictions made for the correlation coefficient act in concert with a net under-prediction of the temperature quantiles, as shown in figure \ref{fig:qqtwallmontagesm}, giving rise to a significant ($\approx -48\%$) net under prediction of the total crud mass on pin 4.
 
@@ -664,7 +664,8 @@ A strong positive correlation was observed between the root-mean-squared crud er
 
 
 \begin{itemize}
-    \item Crud predictions made by the hi2lo model were compared against CFD/crud coupled results and stanalone CTF/crud results.  The Hi2lo model produced crud results closer to the CFD result than the CTF result, as anticipated.  The overall crud mass results for the 5x5 assembly favorably compared against the gold-standard CFD assembly integrated results.
+    \item Crud predictions made by the hi2lo model were compared against CFD/crud coupled results and stanalone CTF/crud results.  The Hi2lo model produced crud results closer to the CFD result than the CTF result.  
+    \item Shown in figure \ref{fig:asmcmasstime}, the assembly integrated crud mass results for the 5x5 assembly differed from the gold-standard CFD assembly integrated results by -8.8360e-01 $[g]$ for a relative difference of -8.9\%.
     \item A leave-one-out cross validation strategy was utilized to estimate the predictive performance of the model.
     \item The prediction accuracy of the temperature and TKE quantile regression models was summarized though Q-Q plots for each pin in the LOO cross validation study.
     \item The prediction accuracy of the Kendall's $\tau$ regression model was assessed using the root-mean-square error for each pin in the LOO cross validation study.  \item Correlations between the errors committed by the machine learning models and the crud prediction errors were computed.  High uncertainty associated with these correlation measures did not permit a statistically significant link between poor Kendall's $\tau$ predictive performance and poor crud predictions to be drawn.
