@@ -132,94 +132,99 @@ This cross validation technique ascertains crud prediction errors within the TH 
 A principal goal of the machine learning model is to predict the conditional quantiles of the temperature and TKE distributions as a function of local core conditions.  In this light, the trained quantile regression models are compared against the left-out CFD data set on each pin.  The accuracy of both the TKE and temperature quantile regressors is assessed using both quantile-quantile plots and quantile vs axial rod position comparisons.
 
 Quantile-quantile (Q-Q) plots of the temperature and TKE residual distributions are used to elucidate bias introduced by the machine learning model in the conditional quantiles at a variety of axial positions and local core conditions.  Estimated quantiles are obtained for the left-out pin by evaluating the trained reduced LOO model and are compared to the expected CFD result.
-A subset of the TKE residual quantile regression results are given in figure \ref{fig:tkepin1} to \ref{fig:tkepin3}.  A complete set of quantile regression results are provide in chapter \ref{chap:app_ml}, Appendix A. The Q-Q plots summarize the biases in the conditional quantile distributions when compared to the target golden standard CFD data.  The maximum and average Kolmogorov–Smirnov (KS) statistic is provided in the Q-Q figures for each pin which can be computed by equation \ref{eq:ks_stat}.
+A subset of the TKE residual quantile regression results are given in figures \ref{fig:tkepin1} to \ref{fig:tkepin3}.  A complete set of quantile regression results are provide in chapter \ref{chap:app_ml}, Appendix A. The Q-Q plots summarize the biases in the conditional quantile distributions when compared to the target golden standard CFD data.  The maximum and average Kolmogorov–Smirnov (KS) statistic is provided in the Q-Q figures for each pin which can be computed by equation \ref{eq:ks_stat}.
 \begin{equation}
     KS = \mathrm{sup}(\{\hat F(q_{\tau}) - F(q_{\tau})\})
 \label{eq:ks_stat}
 \end{equation}
+\index{Kolmogorov–Smirnov Testing}
+
 Where $\mathrm{sup}(\cdot)$ is the supremum of the set of distances between the predicted and empirical cumulative densities.  The cumulative densities are supported at the specified quantile levels: $\{\mathbf \tau\} = \{0.000, 0.0526, 0.1052, ... 1.000 \}$ since the number of quantiles used in the reconstruction of the marginal temperature and TKE distributions was set to be 20 and were evenly spaced.
 The KS statistic was computed at each axial level on the CTF grid.
 
-A two sample KS test was performed on the temperature and TKE reconstructions from predicted quantiles on each CTF face. The null hypothesis is that the predicted and empirical (CFD derived) quantiles are the same on CTF face.  To reject the null hypothesis the KS distance must satisfy the inequality presented in equation \ref{eq:ks_crit}.
+A two sample KS test was performed on the temperature and TKE distribution reconstructions from predicted quantiles on each CTF face. The null hypothesis is that the predicted and empirical (CFD derived) distributions are the same on the CTF face.  To reject the null hypothesis the KS distance must satisfy the inequality presented in equation \ref{eq:ks_crit}.
 
 \begin{equation}
-    $KS_D^* > c(\alpha) \sqrt{\frac{n+m}{nm}}$.
+    KS_D^* > c(\alpha) \sqrt{\frac{n+m}{nm}}
 \label{eq:ks_crit}
 \end{equation}
-Where $n=m=20$ in this case since the empirical and predicted CDFs are suported at 20 locations.  In general $c(\alpha) = \sqrt{-1/2 \mathrm{ln}\alpha}$, therefore at $\alpha=0.1$, $KS_D^* \apporx 0.339$.  A summary of the KS distances and test results are provided in table \ref{tab:ks_temp} for the temperature quantiles and in table \ref{tab:ks_tke} for the predicted TKE quantiles.
+
+Where $n=20$ in this case since the predicted CDFs are supported at 20 locations. The number of samples available to construct the empirical distribution, $m$, on each face was $\approx200$, though this varied slightly from face to face.  In general $c(\alpha) = \sqrt{-\frac{1}{2} \mathrm{ln}\alpha}$, therefore at $\alpha=0.1$, $KS_D^* \approx 0.253$.  A summary of the KS distances and test results are provided in table \ref{tab:ks_temp} for the temperature quantiles and in table \ref{tab:ks_tke} for the predicted TKE quantiles.
 
 \begin{table}[h]
     \begin{center}
-    \caption[KS statistic TKE summary.]{KS statistic TKE summary. Values in bold result in rejection of the null hypothesis.}
+    \caption[KS statistic TKE summary.]{TKE distribution KS statistic summary. Values in bold result in rejection of the null hypothesis at significance level $\alpha=0.1$.}
     \begin{tabular}[h]{|c|c|c|}
         \hline
         Pin & $KS_\mu$ & $KS_{max}$ \\
 \hline
-1 &  2.5023e-02 &  \textbf{3.7027e-01} \\
-2 &  1.6431e-01 &  \textbf{3.7030e-01} \\
-3 &  6.6810e-02 &  1.9407e-01 \\
-4 &  2.1517e-01 &  5.5811e-01 \\
-5 &  9.4099e-03 &  1.8512e-01 \\
-6 &  3.2973e-02 &  2.3469e-01 \\
-7 &  2.2389e-02 &  2.2317e-01 \\
-8 &  9.1711e-02 &  3.2113e-01 \\
-9 &  2.7185e-03 &  1.3405e-01 \\
-10 & 7.5726e-02 & 2.8362e-01 \\
-11 & 4.9473e-02 & 1.5097e-01 \\
-12 & 7.6152e-02 & \textbf{4.3280e-01} \\
-13 & 4.1978e-02 & 2.3050e-01 \\
-14 & 1.0930e-01 & \textbf{3.5174e-01} \\
-15 & 1.3278e-01 & 2.7588e-01 \\
-16 & 1.7548e-01 & \textbf{4.1846e-01} \\
-17 & 2.1712e-02 & 2.0583e-01 \\
-18 & 4.1251e-02 & 1.7656e-01 \\
-19 & 3.3835e-02 & 1.5939e-01 \\
-20 & 2.2695e-02 & 1.8140e-01 \\
-21 & 6.6702e-02 & 2.3890e-01 \\
-22 & 2.8400e-02 & 1.6278e-01 \\
-23 & 1.1666e-02 & 1.4727e-01 \\
-24 & 1.3447e-02 & 1.3258e-01 \\
-25 & 2.2725e-02 & 1.5842e-01 \\
+1 &  2.949e-02 &  \textbf{3.7027e-01} \\
+2 &  8.487e-02 &  \textbf{3.7030e-01} \\
+3 &  2.999e-02 &  1.9407e-01 \\
+4 &  1.111e-01 &  5.5811e-01 \\
+5 &  3.175e-02 &  1.8512e-01 \\
+6 &  2.891e-02 &  2.3469e-01 \\
+7 &  4.466e-02 &  2.2317e-01 \\
+8 &  5.642e-02 &  \textbf{3.2113e-01} \\
+9 &  1.943e-02 &  1.3405e-01 \\
+10 & 5.650e-02 & \textbf{2.8362e-01} \\
+11 & 3.155e-02 & 1.5097e-01 \\
+12 & 6.701e-02 & \textbf{4.3280e-01} \\
+13 & 3.847e-02 & 2.3050e-01 \\
+14 & 4.220e-02 & \textbf{3.5174e-01} \\
+15 & 5.040e-02 & 2.7588e-01 \\
+16 & 9.001e-02 & \textbf{4.1846e-01} \\
+17 & 2.129e-02 & 2.0583e-01 \\
+18 & 2.702e-02 & 1.7656e-01 \\
+19 & 2.959e-02 & 1.5939e-01 \\
+20 & 3.804e-02 & 1.8140e-01 \\
+21 & 3.092e-02 & 2.3890e-01 \\
+22 & 2.263e-02 & 1.6278e-01 \\
+23 & 2.181e-02 & 1.4727e-01 \\
+24 & 3.227e-02 & 1.3258e-01 \\
+25 & 2.728e-02 & 1.5842e-01 \\
 \hline
 \end{tabular}
 \label{tab:ks_tke}
 \end{center}
 \end{table}
 
-By inspecting the KS test results presented in tables \ref{tab:ks_tke} and \ref{tab:ks_temp} it can be concluded that the prediction of the conditional temperature distributions on each CTF face was far more difficult than predicting the conditional TKE distribution.  A large maximum KS temperature distribution distance was seen for the majority of the pins in the assembly. The worst performing pins were pin 4, pin 9, and pin 20. This is due to the aformentioned high span-to-span and pin-to-pin repeatability of the TKE distributions and conversely the low repeatability of the temperature distribution.  Since the maximum KS distance can occur in CTF faces which do not contain temperatures in excess of the saturation point, the maximum KS distance is not an indicator of poor crud predictive performance.  The presented KS tests only serve to quantify the ability of the gradient boosted quantile regressors to reproduce the expected distributions.
+By inspecting the KS test results presented in tables \ref{tab:ks_tke} and \ref{tab:ks_temp} it can be concluded that the prediction of the conditional temperature distribution on each CTF face was far more difficult than predicting the conditional TKE distribution.  A large maximum KS temperature distribution distance was seen for the majority of the pins in the assembly. The worst performing pins in this respect were pin 4, pin 9, and pin 20. This is due to the aforementioned high span-to-span and pin-to-pin repeatability of the TKE distributions and conversely the low repeatability of the temperature distribution.  Since the maximum KS distance can occur in CTF faces which do not contain temperatures in excess of the saturation point, the maximum KS distance is not an indicator of poor crud predictive performance.  The presented KS tests only serve to quantify the ability of the gradient boosted quantile regressors to reproduce the expected distributions.
+
+Pin-average KS distances indicate that the the null hypothesis was not rejected in the majority of CTF faces, however.  This indicates that the distributions predicted by the gradient boosted quantile regressors were, on average, statistically indistinguishable from the empirical CFD distributions. 
 
 \begin{table}[h]
     \begin{center}
-    \caption[KS statistic temperature sumarry.]{KS statistic temperature summary. Values in bold result in rejection of the null hypothesis.}
+    \caption[KS statistic temperature sumarry.]{Temperature distribution KS statistic summary. Values in bold result in rejection of the null hypothesis at significance level $\alpha=0.1$.}
     \begin{tabular}[h]{|c|c|c|}
         \hline
         Pin & $KS_\mu$ & $KS_{max}$ \\
 \hline
-1 &  5.3968e-02 &  \textbf{3.2094e-01} \\
-2 &  1.8341e-01 &  \textbf{3.9065e-01} \\
-3 &  1.8078e-01 &  \textbf{4.4959e-01} \\
-4 &  3.0297e-01 &  \textbf{6.0957e-01} \\
-5 &  5.8864e-02 &  2.7359e-01 \\
-6 &  2.3215e-01 &  \textbf{4.4920e-01} \\
-7 &  1.5573e-01 &  3.2938e-01 \\
-8 &  6.9622e-02 &  \textbf{4.2560e-01} \\
-9 &  1.1065e-01 &  \textbf{6.3407e-01} \\
-10 & 2.6324e-01 &  \textbf{4.6647e-01} \\
-11 & 1.5760e-01 &\textbf{ 3.5969e-01} \\
-12 & 2.4490e-01 & \textbf{4.9874e-01} \\
-13 & 1.8250e-02 & 3.2152e-01 \\
-14 & 2.0991e-01 & \textbf{4.7099e-01} \\
-15 & 2.9585e-01 &\textbf{ 5.4111e-01} \\
-16 & 1.6427e-01 & \textbf{3.9793e-01} \\
-17 & 9.0740e-02 & 2.3933e-01 \\
-18 & 1.2921e-02 & 2.5577e-01 \\
-19 & 1.5794e-01 &\textbf{ 3.7904e-01} \\
-20 & 2.6412e-01 &\textbf{ 8.3754e-01} \\
-21 & 5.6723e-02 &\textbf{ 3.8896e-01} \\
-22 & 2.4063e-01 &\textbf{ 6.6852e-01} \\
-23 & 1.3329e-01 &\textbf{ 4.6728e-01} \\
-24 & 7.6849e-02 &\textbf{ 4.7225e-01} \\
-25 & 1.0577e-01 & 3.3235e-01 \\
+1 &  4.329e-02 &  \textbf{3.2094e-01} \\
+2 &  8.477e-02 &  \textbf{3.9065e-01} \\
+3 &  6.725e-02 &  \textbf{4.4959e-01} \\
+4 &  1.509e-01 &  \textbf{6.0957e-01} \\
+5 &  4.483e-02 &  \textbf{2.7359e-01} \\
+6 &  8.718e-02 &  \textbf{4.4920e-01} \\
+7 &  8.848e-02 &  \textbf{3.2938e-01} \\
+8 &  5.668e-02 &  \textbf{4.2560e-01} \\
+9 &  7.273e-02 &  \textbf{6.3407e-01} \\
+10 & 1.292e-01 &  \textbf{4.6647e-01} \\
+11 & 6.765e-02 &\textbf{ 3.5969e-01} \\
+12 & 1.124e-01 & \textbf{4.9874e-01} \\
+13 & 5.064e-02 & \textbf{3.2152e-01} \\
+14 & 6.728e-02 & \textbf{4.7099e-01} \\
+15 & 1.429e-01 &\textbf{ 5.4111e-01} \\
+16 & 7.260e-02 & \textbf{3.9793e-01} \\
+17 & 3.975e-02 & 2.3933e-01 \\
+18 & 3.209e-02 & 2.5577e-01 \\
+19 & 6.852e-02 &\textbf{ 3.7904e-01} \\
+20 & 1.273e-01 &\textbf{ 8.3754e-01} \\
+21 & 3.059e-02 &\textbf{ 3.8896e-01} \\
+22 & 1.147e-01 &\textbf{ 6.6852e-01} \\
+23 & 6.098e-02 &\textbf{ 4.6728e-01} \\
+24 & 6.525e-02 &\textbf{ 4.7225e-01} \\
+25 & 4.811e-02 & \textbf{ 3.3235e-01} \\
 \hline
 \end{tabular}
 \label{tab:ks_temp}
@@ -228,9 +233,9 @@ By inspecting the KS test results presented in tables \ref{tab:ks_tke} and \ref{
 
 
 Caution should be observed when drawing conclusions from this goodness-of-fit study.
-The two sample KS test is generally regarded as a statistically weak, requiring a relatively large number of samples and high KS distance to reject the null hypothesis \cite{KHAMIS1990317}.  The statistical power of a hypothesis test is defined as the proability of avoiding a type II error.  In the currently considered case there is high probability of committing type II errors, or in other words, failing to reject the null hypothesis.  For this reason and provided only 20 quantiles available for use in the KS test there is insufficient evidence to conclude the gradient boosted quantile regression models properly reproduced the expected temperature and TKE distributions on each face.  In future work, a larger number of CFD data points and larger number of quantile regressors should be used to improve the ability of the KS test to identify incongruence between the model predictions and the expected distributions.
+The two sample KS test is generally regarded as a statistically weak, requiring a relatively large number of samples and high KS distance to reject the null hypothesis \cite{ks_power} \cite{KHAMIS1990317}.  The statistical power of a hypothesis test is defined as the probability of avoiding a type II error.  In the currently considered case there is high probability of committing type II errors, or in other words, failing to reject the null hypothesis.  For this reason and provided only 20 quantiles available for use in the KS test there is insufficient evidence to conclude the gradient boosted quantile regression models properly reproduced the expected temperature and TKE distributions on each face.  In future work, a larger number of CFD data points and larger number of quantile regressors should be used to improve the ability of the KS test to identify incongruence between the model predictions and the expected distributions.
 
-Note that since a LOO CV technique was used for comparing the predicted distributions to the empirical CFD distributions complications in the KS test which arise when the parameters of the predicted distribution are estimated from the target emperical data set were avoided \cite{kstestInfo}.   Under these circumstances the KS test would no longer be valid though methods based on bootstrap resampling have been proposed to resolve this specific limitation of the traditional KS test \cite{kstestIn}.
+Note that since a LOO CV technique was used for comparing the predicted distributions to the empirical CFD distributions complications in the KS test which arise when the parameters of the predicted distribution are estimated from the target empirical data set were avoided \cite{kstestInfo}.   Under these circumstances the KS test would no longer be valid though methods based on bootstrap resampling have been proposed to resolve this specific limitation of the traditional KS test \cite{kstestInfo}.
 
 
 \begin{figure}[H]%
@@ -260,7 +265,7 @@ Note that since a LOO CV technique was used for comparing the predicted distribu
     \label{fig:tkepin3}%
 \end{figure}
 
-Shown in the axial plots, the TKE distribution is drastically influenced by spacer grids.  The maximum near-wall TKE sharply increases following a spacer grid followed by a decay towards a more orderly flow.  Also notable is the location of minimum predicted near wall TKE which immediately follows spacer grids.  In addition to increasing the net turbulent kinetic energy of the flow, mixing vanes can also produce eddy regions of stagnant flow thus giving rise to regions of low near wall TKE.  The hi2lo model retains both of these properties of the flow field resolved by CFD.    
+Shown in the axial plots in figure \ref{fig:tkepin1} to \ref{fig:tkepin3}, the TKE distribution is drastically influenced by spacer grids.  The maximum near-wall TKE sharply increases following a spacer grid followed by a decay towards a more orderly flow.  The location of minimum predicted near wall TKE also immediately follows the spacer grids.  In addition to increasing the net turbulent kinetic energy of the flow, mixing vanes can also produce eddy regions of stagnant flow thus giving rise to regions of low near wall TKE.  The hi2lo model retains both of these properties of the flow field resolved by CFD.    
 
 Good overall performance TKE quantile regression models can be attributed to high pin-to-pin and span-to-span similarities of the surface TKE distributions. The observation of high span-to-span repeatability of the TKE distributions is consistent with those found in other hi2lo studies by Salko et. al \cite{salko17}.
 
@@ -379,7 +384,7 @@ A single pin was selected from the 25 pin array for detailed comparison of the C
 
 The total crud mass and total boron hideout mass were computed at each re-sampling step and presented in figures \ref{fig:15pinbmasstime} and \ref{fig:15pincmasstime}.  The time evolution of the crud total mass for all pins is given in appendix B.  The hi2lo model under predicted the crud mass on pin 1 when compared to the CFD model.
 
-Consistent under prediction of crud across the assembly was not observed. As seen in figures () and () the distribution of the differences between the hi2lo model predictions and the high fidelity CFD/Crud result does not exhibit tilt or a geometric pattern.  The hi2lo model over predicts the total amount of crud for some pins in the assembly, particularly pins 14 and 16.  This high variance in the prediction errors can be partially attributed to small training sample size, however a more in depth cross validation should be conducted as part of a future study in which a larger CFD training pool is available.  
+
 
 \begin{figure}[H]
     \centering
@@ -394,7 +399,7 @@ Consistent under prediction of crud across the assembly was not observed. As see
     \label{fig:15pincmasstime}
 \end{figure}
 
-Figures \ref{fig:2d_hi2loimppinbmass} and \ref{fig:2d_hi2loimppincmass} show the hi2lo predicted crud surface distributions at 300 days.  The result of re-ordering samples onto each CTF face to preserve hot spot stationarity in time is visible.  The stripped patterns are non-physical and are an artifact of the remapping procedure.  Recall that the overarching goal is not to reproduce the detailed inter-CTF face spatial crud distributions rather the model specifically attempts to reproduce the correct average crud behavior on each CTF face, even in regions near spacer grids, and estimate the frequency of extreme crud events so to be relevant for CILC risk estimates.
+Figures \ref{fig:2d_hi2loimppinbmass} and \ref{fig:2d_hi2loimppincmass} show the hi2lo predicted crud surface distributions at 300 days.  The result of re-ordering samples onto each CTF face to preserve hot spot stationarity in time is visible.  The stripped patterns are non-physical and are an artifact of the remapping procedure.  Recall that the overarching goal is not to reproduce the detailed intra-CTF face spatial crud distributions rather the model specifically attempts to reproduce the correct average crud behavior on each CTF face, even in regions near spacer grids, and estimate the frequency of extreme crud events so to be relevant for CILC risk estimates.
 Note that the crud surface field results are left in the area-normalized form with units of $[g/cm^2]$ which is the natural result from the 1D crud growth package.
 
 \begin{figure}[H]
@@ -606,6 +611,7 @@ The RMS axial crud distribution errors are summarized in table \ref{tab:loo_rms}
     \label{fig:l2cmassasmerrorshmap}
 \end{figure}
 
+Consistent under prediction of crud across the assembly was not observed. The top down assembly view of the crud prediction error distribution provided in figures \ref{fig:totbmassrelasmerrorshmap} and \ref{fig:totcmassrelasmerrorshmap} do not exhibit a tilt or other regular geometric pattern.  The hi2lo model over predicts the total amount of crud for some pins in the assembly, particularly pins 14 and 16 but strongly under predicts the total crud in pin 4.  This high variance in the prediction errors can be partially attributed to small training sample size, however a more in depth cross validation should be conducted as part of a future study in which a larger CFD training pool is available.  
 
 \begin{figure}[H]
     \centering
