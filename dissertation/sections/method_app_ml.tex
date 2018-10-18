@@ -142,14 +142,14 @@ A subset of the TKE residual quantile regression results are given in figures \r
 Where $\mathrm{sup}(\cdot)$ is the supremum of the set of distances between the predicted and empirical cumulative densities.  The cumulative densities are supported at the specified quantile levels: $\{\mathbf \tau\} = \{0.000, 0.0526, 0.1052, ... 1.000 \}$ since the number of quantiles used in the reconstruction of the marginal temperature and TKE distributions was set to be 20 and were evenly spaced.
 The KS statistic was computed at each axial level on the CTF grid.
 
-A two sample KS test was performed on the temperature and TKE distribution reconstructions from predicted quantiles on each CTF face. The null hypothesis is that the predicted and empirical (CFD derived) distributions are the same on the CTF face.  To reject the null hypothesis the KS distance must satisfy the inequality presented in equation \ref{eq:ks_crit}.
+A two sample KS test was performed on the temperature and TKE distribution reconstructions from predicted quantiles on each CTF axial edit for every pin in the assembly. The null hypothesis is that the predicted and empirical (CFD derived) distributions are the same on the CTF axial edit.  To reject the null hypothesis the KS distance must satisfy the inequality presented in equation \ref{eq:ks_crit}.
 
 \begin{equation}
     KS_D^* > c(\alpha) \sqrt{\frac{n+m}{nm}}
 \label{eq:ks_crit}
 \end{equation}
 
-Where $n=20$ in this case since the predicted CDFs are supported at 20 locations. The number of samples available to construct the empirical distribution, $m$, on each face was $\approx200$, though this varied slightly from face to face.  In general $c(\alpha) = \sqrt{-\frac{1}{2} \mathrm{ln}\alpha}$, therefore at $\alpha=0.1$, $KS_D^* \approx 0.253$.  A summary of the KS distances and test results are provided in table \ref{tab:ks_temp} for the temperature quantiles and in table \ref{tab:ks_tke} for the predicted TKE quantiles.
+Where $n=20$ in this case since the predicted CDFs are supported at 20 locations. The number of samples available to construct the empirical distribution, $m$, on each axial edit was $\approx800$, though this varied slightly from face to face.  In general $c(\alpha) = \sqrt{-\frac{1}{2} \mathrm{ln}\alpha}$, therefore at $\alpha=0.1$, $KS_D^* \approx 0.243$.  A summary of the KS distances and test results are provided in table \ref{tab:ks_temp} for the temperature quantiles and in table \ref{tab:ks_tke} for the predicted TKE quantiles.
 
 \begin{table}[h]
     \begin{center}
@@ -172,7 +172,7 @@ Where $n=20$ in this case since the predicted CDFs are supported at 20 locations
 12 & 6.701e-02 & \textbf{4.3280e-01} \\
 13 & 3.847e-02 & 2.3050e-01 \\
 14 & 4.220e-02 & \textbf{3.5174e-01} \\
-15 & 5.040e-02 & 2.7588e-01 \\
+15 & 5.040e-02 & \textbf{2.7588e-01} \\
 16 & 9.001e-02 & \textbf{4.1846e-01} \\
 17 & 2.129e-02 & 2.0583e-01 \\
 18 & 2.702e-02 & 1.7656e-01 \\
@@ -189,13 +189,13 @@ Where $n=20$ in this case since the predicted CDFs are supported at 20 locations
 \end{center}
 \end{table}
 
-By inspecting the KS test results presented in tables \ref{tab:ks_tke} and \ref{tab:ks_temp} it can be concluded that the prediction of the conditional temperature distribution on each CTF face was far more difficult than predicting the conditional TKE distribution.  A large maximum KS temperature distribution distance was seen for the majority of the pins in the assembly. The worst performing pins in this respect were pin 4, pin 9, and pin 20. This is due to the aforementioned high span-to-span and pin-to-pin repeatability of the TKE distributions and conversely the low repeatability of the temperature distribution.  Since the maximum KS distance can occur in CTF faces which do not contain temperatures in excess of the saturation point, the maximum KS distance is not an indicator of poor crud predictive performance.  The presented KS tests only serve to quantify the ability of the gradient boosted quantile regressors to reproduce the expected distributions.
+By inspecting the KS test results presented in tables \ref{tab:ks_tke} and \ref{tab:ks_temp} it can be concluded that the prediction of the conditional temperature distribution on each CTF axial edit was far more difficult than predicting the conditional TKE distribution.  A large maximum KS temperature distribution distance was seen for the majority of the pins in the assembly. The worst performing pins in this respect were pin 4, pin 9, and pin 20. This is due to the aforementioned high span-to-span and pin-to-pin repeatability of the TKE distributions and conversely the low repeatability of the temperature distribution.  Since the maximum KS distance can occur in CTF axial edit which do not contain temperatures in excess of the saturation point, the maximum KS distance is not an indicator of poor crud predictive performance.  The presented KS tests only serve to quantify the ability of the gradient boosted quantile regressors to reproduce the expected distributions.
 
-Pin-average KS distances indicate that the the null hypothesis was not rejected in the majority of CTF faces, however.  This indicates that the distributions predicted by the gradient boosted quantile regressors were, on average, statistically indistinguishable from the empirical CFD distributions. 
+Pin-average KS distances indicate that the the null hypothesis was not rejected in the majority of CTF axial zones, however.  This indicates that the distributions predicted by the gradient boosted quantile regressors were, on average, statistically indistinguishable from the empirical CFD distributions. 
 
 \begin{table}[h]
     \begin{center}
-    \caption[KS statistic temperature sumarry.]{Temperature distribution KS statistic summary. Values in bold result in rejection of the null hypothesis at significance level $\alpha=0.1$.}
+    \caption[KS statistic temperature summary.]{Temperature distribution KS statistic summary. Values in bold result in rejection of the null hypothesis at significance level $\alpha=0.1$.}
     \begin{tabular}[h]{|c|c|c|}
         \hline
         Pin & $KS_\mu$ & $KS_{max}$ \\
@@ -237,10 +237,9 @@ The two sample KS test is generally regarded as a statistically weak, requiring 
 
 Note that since a LOO CV technique was used for comparing the predicted distributions to the empirical CFD distributions complications in the KS test which arise when the parameters of the predicted distribution are estimated from the target empirical data set were avoided \cite{kstestInfo}.   Under these circumstances the KS test would no longer be valid though methods based on bootstrap resampling have been proposed to resolve this specific limitation of the traditional KS test \cite{kstestInfo}.
 
-
 \begin{figure}[H]%
     \centering
-    \subfloat[TKE quantile regression results. CFD in dashed line.  Predicted values as solid.]{{\includegraphics[width=0.45\linewidth]{figs/ml_fit/q_tke_regression_1} }}%
+    \subfloat[TKE quantile regression results. CFD in dashed line.  Predicted values as solid. Azimuthally integrated.]{{\includegraphics[width=0.45\linewidth]{figs/ml_fit/q_tke_regression_1} }}%
     \qquad
     \subfloat[Q-Q plot of TKE quantile regression predictions from LOO cross validation study]{{\includegraphics[width=0.45\linewidth]{figs/ml_fit/qq_tke_pin_1} }}%
     \caption[Q-Q LOO TKE pin 1 results.]{Pin 1 TKE quantile regression predictions from LOO cross validation study.}%
@@ -249,7 +248,7 @@ Note that since a LOO CV technique was used for comparing the predicted distribu
 
 \begin{figure}[H]%
     \centering
-    \subfloat[TKE quantile regression results. CFD in dashed line.  Predicted values as solid.]{{\includegraphics[width=0.45\linewidth]{figs/ml_fit/q_tke_regression_2} }}%
+    \subfloat[TKE quantile regression results. CFD in dashed line.  Predicted values as solid. Azimuthally integrated.]{{\includegraphics[width=0.45\linewidth]{figs/ml_fit/q_tke_regression_2} }}%
     \qquad
     \subfloat[Q-Q plot of TKE quantile regression predictions from LOO cross validation study]{{\includegraphics[width=0.45\linewidth]{figs/ml_fit/qq_tke_pin_2} }}%
     \caption[Q-Q LOO TKE pin 2 results.]{Pin 2 TKE quantile regression predictions from LOO cross validation study.}%
@@ -258,7 +257,7 @@ Note that since a LOO CV technique was used for comparing the predicted distribu
 
 \begin{figure}[H]%
     \centering
-    \subfloat[TKE quantile regression results. CFD in dashed line.  Predicted values as solid.]{{\includegraphics[width=0.45\linewidth]{figs/ml_fit/q_tke_regression_3} }}%
+    \subfloat[TKE quantile regression results. CFD in dashed line.  Predicted values as solid. Azimuthally Integrated.]{{\includegraphics[width=0.45\linewidth]{figs/ml_fit/q_tke_regression_3} }}%
     \qquad
     \subfloat[Q-Q plot of TKE quantile regression predictions from LOO cross validation study]{{\includegraphics[width=0.45\linewidth]{figs/ml_fit/qq_tke_pin_3} }}%
     \caption[Q-Q LOO TKE pin 3 results.]{Pin 3 TKE quantile regression predictions from LOO cross validation study.}%
@@ -273,7 +272,7 @@ Temperature residual quantile regression results are given in figures \ref{fig:t
 
 \begin{figure}[H]%
     \centering
-    \subfloat[Temperature quantile regression results. CFD in dashed line.  Predicted values as solid.]{{\includegraphics[width=0.45\linewidth]{figs/ml_fit/q_twall_regression_1} }}%
+    \subfloat[Temperature quantile regression results. CFD in dashed line.  Predicted values as solid. Azimuthally integrated.]{{\includegraphics[width=0.45\linewidth]{figs/ml_fit/q_twall_regression_1} }}%
     \qquad
     \subfloat[Q-Q plot of Temperature quantile regression predictions from LOO cross validation study]{{\includegraphics[width=0.45\linewidth]{figs/ml_fit/qq_twall_pin_1} }}%
     \caption[Q-Q LOO Temperature pin 1 results.]{Pin 1 Temperature quantile regression predictions from LOO cross validation study.}%
@@ -282,7 +281,7 @@ Temperature residual quantile regression results are given in figures \ref{fig:t
 
 \begin{figure}[H]%
     \centering
-    \subfloat[Temperature quantile regression results. CFD in dashed line.  Predicted values as solid.]{{\includegraphics[width=0.45\linewidth]{figs/ml_fit/q_twall_regression_2} }}%
+    \subfloat[Temperature quantile regression results. CFD in dashed line.  Predicted values as solid. Azimuthally integrated.]{{\includegraphics[width=0.45\linewidth]{figs/ml_fit/q_twall_regression_2} }}%
     \qquad
     \subfloat[Q-Q plot of Temperature quantile regression predictions from LOO cross validation study]{{\includegraphics[width=0.45\linewidth]{figs/ml_fit/qq_twall_pin_2} }}%
     \caption[Q-Q LOO Temperature pin 2 results.]{Pin 2 Temperature quantile regression predictions from LOO cross validation study.}%
@@ -291,7 +290,7 @@ Temperature residual quantile regression results are given in figures \ref{fig:t
 
 \begin{figure}[H]%
     \centering
-    \subfloat[Temperature quantile regression results. CFD in dashed line.  Predicted values as solid.]{{\includegraphics[width=0.45\linewidth]{figs/ml_fit/q_twall_regression_3} }}%
+    \subfloat[Temperature quantile regression results. CFD in dashed line.  Predicted values as solid. Azimuthally integrated.]{{\includegraphics[width=0.45\linewidth]{figs/ml_fit/q_twall_regression_3} }}%
     \qquad
     \subfloat[Q-Q plot of Temperature quantile regression predictions from LOO cross validation study]{{\includegraphics[width=0.45\linewidth]{figs/ml_fit/qq_twall_pin_3} }}%
     \caption[Q-Q LOO Temperature pin 3 results.]{Pin 3 Temperature quantile regression predictions from LOO cross validation study.}%
@@ -319,7 +318,7 @@ The worst performing pin with respect to $\hat \rho_\tau$ prediction was pin 8, 
     \qquad
     \subfloat[Pin 4]{{\includegraphics[width=0.45\linewidth]{figs/ml_fit/ktau_regression_4} }}%
     \qquad
-    \caption[Kendall's $\tau$ regression LOO results.]{Kendall's $\tau$ regression results from LOO cross validation study.}%
+    \caption[Kendall's $\tau$ regression LOO results.]{Azimuthally integrated Kendall's $\tau$ regression results from LOO cross validation study.}%
     \label{fig:ktauregression}%
 \end{figure}
 To improve the performance of the Kendall's $\tau$ regressors, a larger training set could be generated in future work.  For this limited 25 pin data set, it is hypothesized that each pin has a substantially unique flow field when compared to the other 24 pins.  Expelling a pin from the training data set for cross validation causes the predictive performance of the model to suffer since the remaining pins in the training set do not provide the requisite information about the local core conditions vs. Kendall's $\tau$ relationship for the missing pin.
@@ -383,8 +382,6 @@ A single pin was selected from the 25 pin array for detailed comparison of the C
 \end{figure}
 
 The total crud mass and total boron hideout mass were computed at each re-sampling step and presented in figures \ref{fig:15pinbmasstime} and \ref{fig:15pincmasstime}.  The time evolution of the crud total mass for all pins is given in appendix B.  The hi2lo model under predicted the crud mass on pin 1 when compared to the CFD model.
-
-
 
 \begin{figure}[H]
     \centering
