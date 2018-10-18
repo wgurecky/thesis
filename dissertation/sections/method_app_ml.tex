@@ -140,6 +140,98 @@ A subset of the TKE residual quantile regression results are given in figure \re
 Where $\mathrm{sup}(\cdot)$ is the supremum of the set of distances between the predicted and empirical cumulative densities.  The cumulative densities are supported at the specified quantile levels: $\{\mathbf \tau\} = \{0.000, 0.0526, 0.1052, ... 1.000 \}$ since the number of quantiles used in the reconstruction of the marginal temperature and TKE distributions was set to be 20 and were evenly spaced.
 The KS statistic was computed at each axial level on the CTF grid.
 
+A two sample KS test was performed on the temperature and TKE reconstructions from predicted quantiles on each CTF face. The null hypothesis is that the predicted and emperical (CFD derived) quantiles are the same on CTF face.  To reject the null hypothesis the KS distance must satisfy the inequality presented in equation ().
+
+\begin{equation}
+    $KS_D^* > c(\alpha) \sqrt{\frac{n+m}{nm}}$.
+\end{equation}
+Where $n=m=20$ in this case since the emperical and predicted CDFs are suported at 20 locations.  In general $c(\alpha) = \sqrt{-1/2 \mathrm{ln}\alpha}$, therefore at $\alpha=0.1$, $KS_D^* \apporx 0.339$.  A summary of the KS distances and test results are provided in table \ref{tab:ks_temp} for the temperature quantiles and in table \ref{tab:ks_tke} for the predicted TKE quantiles.
+
+\begin{table}[h]
+    \begin{center}
+    \caption[KS statistic TKE summary.]{KS statistic TKE summary. Values in bold result in rejection of the null hypothesis.}
+    \begin{tabular}[h]{|c|c|c|}
+        \hline
+        Pin & $KS_\mu$ & $KS_{max}$ \\
+\hline
+1 & 2.502301636136984933e-02 &  \textbf{3.7027e-01} \\
+    2 & 1.643118363234738477e-01 &  \textbf{3.7030e-01} \\
+3 & 6.681070738098483786e-02 &  1.9407e-01 \\
+4 & 2.151763821718455649e-01 &  5.5811e-01 \\
+5 & 9.409993021128808949e-03 &  1.8512e-01 \\
+6 & 3.297383012009370146e-02 &  2.3469e-01 \\
+7 & 2.238963914013246750e-02 &  2.2317e-01 \\
+8 & 9.171107415049961631e-02 &  3.2113e-01 \\
+9 & 2.718536551244109950e-03 &  1.3405e-01 \\
+10 & 7.572681027227762263e-02 & 2.8362e-01 \\
+11 & 4.947369742150829752e-02 & 1.5097e-01 \\
+12 & 7.615220235325070863e-02 & \textbf{4.3280e-01} \\
+13 & 4.197898964575417363e-02 & 2.3050e-01 \\
+14 & 1.093029154257484509e-01 & \textbf{3.5174e-01} \\
+15 & 1.327808926337999684e-01 & 2.7588e-01 \\
+16 & 1.754879044645852038e-01 & \textbf{4.1846e-01} \\
+17 & 2.171293542215345374e-02 & 2.0583e-01 \\
+18 & 4.125169985708093678e-02 & 1.7656e-01 \\
+19 & 3.383529557186835957e-02 & 1.5939e-01 \\
+20 & 2.269599832130195574e-02 & 1.8140e-01 \\
+21 & 6.670232603708302344e-02 & 2.3890e-01 \\
+22 & 2.840067029517922073e-02 & 1.6278e-01 \\
+23 & 1.166625521605174284e-02 & 1.4727e-01 \\
+24 & 1.344769908437783330e-02 & 1.3258e-01 \\
+25 & 2.272573059372577295e-02 & 1.5842e-01 \\
+\hline
+\end{tabular}
+\label{tab:ks_tke}
+\end{center}
+\end{table}
+
+By inspecting the KS test results presented in tables \ref{tab:ks_tke} and \ref{tab:ks_temp} it can be concluded that the prediction of the conditional temperature distributions on each CTF face was far more difficult than predicting the conditional TKE distribution.  A large maximum KS temperature distribution distance was seen for the majority of the pins in the assembly. The worst performing pins were pin 4, pin 9, and pin 20. This is due to the aformentioned high span-to-span and pin-to-pin repeatability of the TKE distributions and conversely the low repeatability of the temperature distribution.  Since the maximum KS distance can occur in CTF faces which do not contain temperatures in excess of the saturation point, the maximum KS distance is not an indicator of poor crud predictive performance.  This only serves to quantify the ability of the gradient boosted quantile regressors to reproduce the expected distributions.
+
+\begin{table}[h]
+    \begin{center}
+    \caption[KS statistic temperature sumarry.]{KS statistic temperature summary. Values in bold result in rejection of the null hypothesis.}
+    \begin{tabular}[h]{|c|c|c|}
+        \hline
+        Pin & $KS_\mu$ & $KS_{max}$ \\
+\hline
+1 & 5.396854492229265915e-02 &  \textbf{3.2094e-01} \\
+2 & 1.834110420261897412e-01 &  \textbf{3.9065e-01} \\
+3 & 1.807856766110249591e-01 &  \textbf{4.4959e-01} \\
+4 & 3.029715009670446157e-01 &  \textbf{6.0957e-01} \\
+5 & 5.886463687001225464e-02 &  2.7359e-01 \\
+6 & 2.321506905984060676e-01 &  \textbf{4.4920e-01} \\
+7 & 1.557315910334849396e-01 &  3.2938e-01 \\
+8 & 6.962215097048164714e-02 &  \textbf{4.2560e-01} \\
+9 & 1.106517290910224716e-01 &  \textbf{6.3407e-01} \\
+10 & 2.632479482947042704e-01 &  \textbf{4.6647e-01} \\
+11 & 1.576006430920219858e-01 &\textbf{ 3.5969e-01} \\
+12 & 2.449019302379361607e-01 & \textbf{4.9874e-01} \\
+13 & 1.825083330122560799e-02 & 3.2152e-01 \\
+14 & 2.099186478890365803e-01 & \textbf{4.7099e-01} \\
+15 & 2.958585806085559655e-01 &\textbf{ 5.4111e-01} \\
+16 & 1.642745644310976694e-01 & \textbf{3.9793e-01} \\
+17 & 9.074069648699842339e-02 & 2.3933e-01 \\
+18 & 1.292118747778127179e-02 & 2.5577e-01 \\
+19 & 1.579449178764983919e-01 &\textbf{ 3.7904e-01} \\
+20 & 2.641279566015465319e-01 &\textbf{ 8.3754e-01} \\
+21 & 5.672395215133330115e-02 &\textbf{ 3.8896e-01} \\
+22 & 2.406300177104297167e-01 &\textbf{ 6.6852e-01} \\
+23 & 1.332907207343562994e-01 &\textbf{ 4.6728e-01} \\
+24 & 7.684997990664529932e-02 &\textbf{ 4.7225e-01} \\
+25 & 1.057770055442121132e-01 & 3.3235e-01 \\
+\hline
+\end{tabular}
+\label{tab:ks_temp}
+\end{center}
+\end{table}
+
+
+Caution should be observed when drawing conclusions from this goodness-of-fit study.
+The two sample KS test is generally regarded as a statistically weak, requiring a relatively large number of samples and high KS distance to reject the null hypothisis \cite{KHAMIS1990317}.  The statistical power of a hypothesis test is defined as the proability of avoiding a type II error.  In the currently considered case there is high probability of committing type II errors, or in other words, failing to reject the null hypothisis.  For this reason and provided only 20 quantiles available for use in the KS test there is insufficient evidence to conclude the gradient boosted quantile regression models properly reproduced the expected temperature and TKE distributions on each face.  In future work, a larger number of CFD data points and larger number of quantile regressors should be used to improve the ability of the KS test to identify incongruence between the model predictions and the expected distributions.
+
+Note that since a LOO CV technique was used for comparing the predicted distriubtions to the emperical CFD distributions complications in the KS test which arise when the parameters of the predicted distribution are estimated from the target emperical data set were avoided \cite{kstestInfo}.   Under these circumstances the KS test would no longer be valid though methods based on bootstrap resampling have been proposed to resolve this specific limitation of the traditional KS test \cite{kstestIn}.
+
+
 \begin{figure}[H]%
     \centering
     \subfloat[TKE quantile regression results. CFD in dashed line.  Predicted values as solid.]{{\includegraphics[width=0.45\linewidth]{figs/ml_fit/q_tke_regression_1} }}%
