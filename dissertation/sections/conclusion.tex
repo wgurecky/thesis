@@ -16,17 +16,16 @@ The overarching task was to estimate the expected value of the crud mass (and cr
 
 Applying the hi2lo technique presented in this work preserves more information about the flow field around spacer grid into the computation of the expected value of crud on each CTF face when compared to subchannel/crud standalone estimates.  The presence of localized hot and cold spots on the rod surface were implicitly accounted for through the reconstruction of the joint density distributions of these fields.  Forgoing the prediction of fine scale spatial details of the surface fields is justified since the crud models employed in this work are one dimensional in nature and do not require intra-CTF face resolved surface fields.
 
-Employment of a Monte Carlo based crud estimation procedure allows for easy interpretation of.  Additional improvements in sampling efficiency are possible though other variance reduction techniques beyond importance sampling.  To the authors knowledge, this work demonstrates a fist-of-its-kind core-simulator scale Monte Carlo based crud estimation procedure.
+Employment of a Monte Carlo based crud estimation procedure allows for physical intuitions to be built between the sample weights and the physical area represented by a crud sample on the rod surface.  This intuition also applies to the interpretation of the importance weights which result from the application of the importance sampling variance reduction technique.  Additional improvements in sampling efficiency are possible though other variance reduction techniques beyond importance sampling.  To the authors knowledge, this work demonstrates a fist-of-its-kind core-simulator scale Monte Carlo based crud estimation procedure.
 
-Straight forward method to propogate hi2lo-model-induced uncertainties though time due to Monte Carlo nature.
-A Monte Carlo based approach also enables extreme value crud event estimation, although, these estimates are expected to carry large uncertainty since extreme upper and lower sample quantiles are plagued by high variance.  Overall this diminishes the applicability of this method to CILC.  
+One strength of the Monte Carlo based crud procedure is that it is straight forward to propagate hi2lo model uncertainties though time.  A Monte Carlo based approach also enables extreme value crud event estimation, although, these estimates are expected to carry large uncertainty since extreme upper and lower sample quantiles are plagued by high variance.  Overall this diminishes the applicability of this method to CILC.  
 
 It is not trivial to incorporate feedback between the crud layer and the hi2lo mapping since this would involve making the conditional surface temperature distribution depend on the current crud state.  This crud/thermal hydraulic feedback was presently missed in the current implementation.
 
 
 \section{Future Work}
 
-A starting point for future hi2lo efforts should be a data scalability study in which the models predictive performance is characterized as a function of the available training data set size.  Additionally,
+A starting point for future hi2lo efforts should be a data scalability study in which the model's predictive performance is characterized as a function of the available training data set size.  Additionally,
 the hi2lo model's performance under extrapolation was not investigated in the present work.  The boosted models should not be employed in an extrapolation mode and therefore it is of interest to identify core conditions which would result in evaluating the trained machine learning models outside of the training data envelope at runtime.  It is envisioned that a warning should be raised notifying the user that additional CFD data is required when attempting to evaluate the model outside of thermal-hydraulic zone of applicability.
 
 
