@@ -297,7 +297,7 @@ The choice of the copula family, $\Theta_c$, has a negligible impact on the inte
 
 The number of samples, $N$, used to estimate the integral given in equation \ref{eq:mc_expected_crud} is a parameter set at runtime of the hi2lo method.  Here, it is shown that the integrated crud variance is reduced by increasing the number of samples used per CTF face to estimate the integrated crud quantities of interest.   Furthermore, section \ref{sec:Importance Sampling} demonstrates that improvements in sampling efficiency are possible by way of importance sampling.
 
-Figure \ref{fig:cmprpintotalsviolinnsample} shows the variance of the crud expectation value at 300 days of simulation time computed by the Monte Carlo approximation when using a sample sizes of 100, 400, and $800  [\frac{N}{\mathrm{CTF_{face}}}]$.  80 independent trials were conducted for each sample size to estimate the variance.
+Figure \ref{fig:cmprpintotalsviolinnsample} shows the variance of the crud expectation value at 300 days of simulation time computed by the Monte Carlo approximation when using a sample sizes of 100, 400, and $800  [\frac{N}{\mathrm{CTF_{face}}}]$.  80 independent trials were conducted for each sample size to estimate the variance of the pin integrated crud results at 300 days.
 
 To isolate the impact of increasing the sample size on the crud variance, a single 300 day time step was conducted without re-sampling the underlying density functions during this period.  Importance sampling was not applied in this study.
 
@@ -363,7 +363,7 @@ Here, the design of the sampling routines and the physics of crud growth is inte
 \end{figure}
 
 
-Though an optimal importance distribution, $\tilde{h}^* $, can be found by equation \ref{eq:optimal_imp}.
+Though an optimal importance distribution, $\tilde{h}^* $, can be found by equation \ref{eq:optimal_imp},
 
 \begin{equation}
 \tilde{h}^* = \mathrm{argmin}_{\tilde{h}}\mathrm{Var} \left[ \frac{\mathcal{G}(x)h(x)}{\tilde{h}(x)} \right] 

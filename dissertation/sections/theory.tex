@@ -15,7 +15,7 @@ A fundamental difference between the CFD and CTF computations is the average siz
     \label{fig:cfd_ctf_mesh}
 \end{figure}
 
-Shown in figure \ref{fig:model_overview}, on a given CTF rod surface patch, a single point estimates for the surface temperature, TKE, and heat flux are predicted.  The predicted CTF quantities are an estimate for the average thermal hydraulic conditions over that coarse patch.   Consequentially, CTF crud predictions may significantly deviate from reality.  Since crud growth is highly sensitive to the presence of subcooled boiling on the rod surface; if CTF predicts a rod surface temperature less than the saturation point very little or no crud will form - when in reality, a small portion of that rod surface could exist above the saturation point and thus harbor crud.  Small localized mistakes in crud predictions compound throughout the core, leading to poor CIPS estimates. 
+Shown in figure \ref{fig:model_overview}, on a given CTF rod surface patch, a single point estimates for the surface temperature, TKE, and heat flux are predicted.  The predicted CTF quantities are an estimate for the average thermal hydraulic conditions over that coarse patch.   Consequentially, CTF crud predictions may significantly deviate from reality.  Since crud growth is highly sensitive to the presence of subcooled boiling on the rod surface; if CTF predicts a rod surface temperature less than the saturation point very little or no crud will form when in reality, a small portion of that rod surface could exist above the saturation point and thus harbor crud.  Small localized mistakes in crud predictions compound throughout the core, leading to poor CIPS estimates. 
 
 In figure \ref{fig:model_overview}, $f$ denotes a probability density function.  Integration of this density function can be interpreted as computing a fractional area of the rod surface that exists within the specified integration limits.  
 \begin{figure}[!htbp]
@@ -109,7 +109,7 @@ The result is a semi-parametric model of the conditional joint distribution of t
 
 Since the outer cladding temperature, near-wall TKE and boundary heat flux are used as boundary conditions to a crud growth package, it is particularly important to understand and capture the relationship between these fields in the hi2lo model.  The hi2lo model under consideration is not a dynamic model in the sense it is not a coupled system of differential equations.  Instead, in the purely data driven approach the relationships are established through standard statistical correlation measures.
 
-The coupled momentum, mass, and thermal balance in a core simulation along with the appropriate closure models dictate the rod outer cladding surface temperature.  The Dittus Boelter relationship is used to relate the surface heat transfer coefficient with the local Reynolds number (see chapter \ref{chap:app_d}).  According to this relationship larger Reynolds numbers corresponds to higher heat transfer coefficients.   Newtons law of cooling states $T_s = q''/h + T_{\infty}$ and $h$ may be computed via Dittus Boelter.  Therefore, the surface temperature $(T_s)$ is negatively correlated with the Reynolds number and where the local turbulent kinetic energy is large the rod surface temperature will be depressed if the local heat flux is held fixed.  It is also apparent that the surface temperature is positively correlated with the the local boundary heat flux.  In order to simplify the model only the dependency between the surface temperature and local turbulent kinetic energy is considered in hi2lo model.
+In a multiphysics simulation of a PWR core the coupled momentum, mass, and energy balances along with the appropriate closure models dictate the rod outer cladding surface temperature.  The Dittus Boelter relationship is used to relate the surface heat transfer coefficient with the local Reynolds number (see appendix \ref{chap:app_d}).  According to this relationship larger Reynolds numbers corresponds to higher heat transfer coefficients.   Newtons law of cooling states $T_s = q''/h + T_{\infty}$ and $h$ may be computed via Dittus Boelter.  Therefore, the surface temperature $(T_s)$ is negatively correlated with the Reynolds number and where the local turbulent kinetic energy is large the rod surface temperature will be depressed if the local heat flux is held fixed.  It is also apparent that the surface temperature is positively correlated with the the local boundary heat flux.  In order to simplify the model only the dependency between the surface temperature and local turbulent kinetic energy is considered in hi2lo model.
 
 A statistical relationship between the surface temperature, TKE, and boundary heat flux in each CTF face is sought.  To this end vine copula provide a flexible framework to model high dimensional dependence structures \cite{Joe2015}. Vine copula are hierarchical tree models in which the edges represent bivariate copula and the nodes are univariate distributions.  The canonical vine (C-vine) copula shown in equation \ref{eq:ori_vine_model} can be used to express the trivariate ($n=3$) distribution of temperature, TKE, and $q''$ on the rod surface. 
 \begin{equation}
@@ -124,7 +124,6 @@ Where $m$ denotes the tree level in the vine and each bivariate copula model, $c
     \caption{C-vine on 3 variables: $\{T,q'',k\}$.}
     \label{fig:cvine3var}
 \end{figure}
-
 
 In this work it is assumed that the cladding surface temperature and near-wall TKE are uncorrelated with the boundary heat flux.  The justification is as follows.
 
@@ -154,7 +153,7 @@ f_{j,q''} = \delta_{(q''_{j, \mathrm{ctf}})}
 \subsection{Sample Quantiles}
 \label{chap:quantiles}
 
-Here a non parametric representation of univariate distributions is given by considering a set of sample quantiles.  
+Here a non parametric representation of univariate distributions is given by utilizing a set of sample quantiles.  
 Let the quantile function be represented by $Q=F^{-1}$ where $F$ is a cumulative density function (CDF).
 \index{Cumulative density function}   
 
@@ -171,15 +170,15 @@ $\tau \in [0, 1]$
 
 The quantile loss function is given by equation \ref{eq:qloss_fn}.
 \begin{equation}
-\rho_\tau( u) = \mathbf u \cdot (\tau - \mathbb{I}_{( u < 0)})
+\rho_\tau( u) =  u \cdot (\tau - \mathbb{I}_{( u < 0)})
 \label{eq:qloss_fn}
 \end{equation}
 Where $\mathbb{I}$ is the indicator function which returns 1 if the argument is true and 0 otherwise.
-In order to estimate a sample quantile, $\hat q_\tau$, given the empirical CDF $F$, minimize: $\E[\rho_\tau(T - q_\tau)]$ where $T$, the temperature, is treated as a random variable distributed according to $F_T$.  Considering a sample set $\{T_0, \dots T_N \}$ the desired quantile $q_\tau$ may be estimated by equation \ref{eq:qtau_est}.
+In order to estimate a sample quantile, $\hat q_\tau$, given the empirical CDF $F$, minimize: $\E[\rho_\tau(T - q_\tau)]$ where $T$, the temperature, is treated as a random variable distributed according to $F_T$.  Considering a sample set $\{T_0, T_i, \dots T_N \}$ the desired quantile $q_\tau$ may be estimated by equation \ref{eq:qtau_est}.
 \begin{equation}
             \left.\begin{aligned}
-            \hat q_{\tau} &= argmin_{q_\tau} \E[\rho(u)];\ \  u = T - q_\tau  \\
-            \approx & argmin_{q_\tau}  \frac{1}{N} \sum_i^N \rho(u_i); \ u_i = T_i - q_\tau \\
+            \hat q_{\tau} &= argmin_{q_\tau} \E[\rho_\tau(u)];\ \  u = T - q_\tau  \\
+            \approx & argmin_{q_\tau}  \frac{1}{N} \sum_i^N \rho_\tau(u_i); \ u_i = T_i - q_\tau \\
             \approx & argmin_{q_\tau} \left[ (1-\tau) \sum_{T \leq q_\tau}( T_i - q_\tau ) - \tau \sum_{T > q_\tau} (T_i - q_\tau) \right]
             \end{aligned}\right.
             \label{eq:qtau_est}
@@ -205,7 +204,7 @@ The PCHIP interpolation preserves monotonicity of the CDF if the provided quanti
 
 Other strategies to approximate univariate density functions from a set of sample statistics are abundant.  One alternative to quantile regression is to relate sample moments to the parameters of some parametric distribution.  In this procedure a set of moment conditions is defined for the target parametric model.  Then the method of moments (MoM) can be used to determine the parameters of the parametric model which best satisfy the moment conditions in the L2 norm sense.  The MoM can be employed when the number of defined moment conditions is greater than or equal to the number of free distribution parameters.
 
-Alternatively, one may construct a non-parametric univariate density given some set of predictive features by utilizing a set of predicted distribution cumulants.  The estimated cumulants, produced by evaluating some trained model, can be used to build an Edgeworth series expansion \cite{hall1997}.  It remains as future work to determine if cumulants or traditional moments behave in a predictable manner as a function of local core conditions.
+Alternatively, one may construct a non-parametric univariate density given some set of predictive features by utilizing a set of predicted distribution cumulants.  The estimated cumulants, produced by evaluating a trained machine learning model, can be used to build an Edgeworth series expansion \cite{hall1997}.  It remains as future work to determine if cumulants or traditional moments behave in a predictable manner as a function of local core conditions.
 
 % If the sample moments or cumulants cannot be acurately predicted by a data driven machine learning model, or some physical model linking the sample moments of the temperature and TKE fields to local core conditons cannot be found, it becomes intractable to use either the MoM or Edgworth series expansion approach.   Furthermore, if there exists a high sensitivity to purtibations in the transfer function relating the sample moments to the distribution paramters.  In simple cases method of moments can be understood by studying the linear operator in equation ().  If this operator has a large condition number then small errors made in the prediction of the momments will corrospond to large errors in the prediction of the model distribution parameters.  For these reasons, it is left as future work to investigate these strategies for marginal distribution recovery from moments or cumulents.  Instead, this work employes a forward quantile regression strategy for which the uncertainties in the predicted quantiles can be quantified in a straight forward manner.
 
@@ -357,7 +356,7 @@ Each sub-model, $h_m$, is referred to as a weak learner and is defined to be a t
 \end{algorithm}
 \index{Gradient Boosting!Algorithm}
 
-Where $\nu$ is a tunable constant in $(0, 1]$ called the learning rate.  A value of $\nu < 1$ reduces the contribution of each weak learner in the final model.  Reducing the learning rate increases resilience to over fitting but results in a proportional increase in the number of boosted iterations to achieve the same level of convergence of the boosted tree chain.  Smaller values for the learning rate result in performing smaller steps in function space so we are less likely to overshoot the optimal function. Provided boosting produces is a stage-wise additive model, overshoots are problematic since the final model carries memory of previous iterations.  A typical learning rate is $\nu\leq 0.05$ but a balance between computation time and model prediction accuracy on a testing set should be considered when setting this value.
+Where $\nu$ is a tunable constant in $(0, 1]$ called the learning rate.  A value of $\nu < 1$ reduces the contribution of each weak learner in the final model.  Reducing the learning rate increases resilience to over fitting but results in a proportional increase in the number of boosted iterations to achieve the same level of convergence of the boosted tree chain.  Smaller values for the learning rate result in performing smaller steps in function space so we are less likely to overshoot the optimal function. Provided boosting produces a stage-wise additive model, overshoots are problematic since the final model carries memory of previous iterations.  A typical learning rate is $\nu\leq 0.05$ but a balance between computation time and model prediction accuracy on a testing set should be considered when setting this value.
 
 For gradient boosted quantile regression, the loss function given by equation \ref{eq:qloss_fn} is substituted into algorithm \ref{alg:boosting}.
 \begin{equation}
