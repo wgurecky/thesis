@@ -108,6 +108,7 @@ Next, we seek to relax the multivariate Gaussian assumption made to capture the 
 The result is a semi-parametric model of the conditional joint distribution of temperature, TKE, and boundary heat flux on the rod surface.  The model is semi-parametric because the copula is selected from a library of parametric distribution families while the marginal models are constructed using conditional quantile prediction, where the number of quantiles used in the reconstruction is set at runtime.  Quantile regression as applied in this work does not assume a priori the univariate distribution family.
 
 \subsection{Capturing Dependence Between Random Variables}
+\label{sec:dep_structure}
 
 Since the outer cladding temperature, near-wall TKE and boundary heat flux are used as boundary conditions to a crud growth package, it is particularly important to understand and capture the relationship between these fields in the hi2lo model.  The hi2lo model under consideration is not a dynamic model in the sense it is not a coupled system of differential equations.  Instead, in the purely data driven approach the relationships are established through standard statistical correlation measures.
 
@@ -446,6 +447,7 @@ This is known as self normalizing importance sampling.  Traditional importance s
 In the construction of the hi2lo method an assumption is made about the location of hot and cold spots on the rod surface as a function of time.   The presence of hot and cold spots downstream spacer grids and the location on the rod surface these spots occupy are assumed to be principally governed by the geometry of the mixing vanes and geometric layout of the fuel and guide tubes.  The influence of flow rate and core power on the relative location of the hot spots on the rod surface are assumed to be second order effects and are not explicitly captured by the hi2lo methodology at present.
 
 \subsection{Hot Spot Stationarity}
+\label{sec:hot_spot_stat}
 
 This assumption leads to the notion of hot spot stationarity in time since the geometry of the core does not change throughout a cycle.  In the context of the statistically based hi2lo approach to achieve a stable location of hot and cold spots one establish a mapping from sample space to a location on the rod surface.  To accomplish this, the order statistics of the joint temperate and turbulent kinetic energy distribution in each CTF patch are computed and the condition that the highest order statistic always falls on the same location within a given CTF patch is enforced.
 
@@ -472,6 +474,7 @@ Typical values for the remapping coefficients are $w_T=0.6, w_k=0.4, w_{q''}=0$.
 Note that since the crud simulation package utilized in this work is one-dimensional the pattern chosen for sample emplacement has no influence on the integrated crud result over a patch.  This would not be the case if the crud simulation package modeled a fully 3D crud layer as the state of the neighboring crud nodes in that case would matter.  Interestingly, since the hi2lo model user  can specify the sample remapping pattern at run time, a physically realistic pattern could be prescribed on the rod surface - even prescribed as a function of local core conditions leading to a hybrid strategy between the current pure statistical hi2lo procedure and the spatial remapping procedure implemented by Salko et. al \cite{salko17}.
 
 \subsection{Time Stepping Scheme}
+\label{sec:time_step_scheme}
 
 Careful treatment of the propagation importance weights through discrete re-sampling steps is necessary to ensure there is no bias in the crud results when moving through multiple time steps and VERA states.
 
@@ -530,6 +533,8 @@ The crud stepping strategy is explicit in time as the next crud samples can be d
 \section{Method Summary}
 
 The time stepping, importance sampling and surface sample remapping strategies can be included into algorithm \ref{algo:basic_crud_algo} to provide a detailed overview of the hi2lo procedure.  The expanded version of the hi2lo model is given in algorithm \ref{algo:hi2lo_crud_algo}.
+
+Algorithm \ref{algo:hi2lo_crud_algo} begins with the same pre-processing and machine learning procedure outlined in the generic hi2lo algorithm \ref{algo:basic_crud_algo}.  \emph{Lines 2-5:} An overview of the CFD data pre-processing procedure is given in section \ref{sec:preprocessing} and the gradient boosted quantile regression model fitting routine is discussed in section \ref{chap:GBRT}.  \emph{Line 9:} The details of reconstructing a cumulative density function using a set of predicted quantiles was discussed in section \ref{chap:quantiles}.  \emph{Line 10:} The simplified treatment of the boundary heat flux distribution was discussed in section \ref{sec:dep_structure} and the application of this simplification resulted in a compact representation of the joint distribution of temperature, TKE, and BHF in each CTF face given in equation \ref{eq:simple_vine_model}.   \emph{Lines 15-16:} Involves the construction of the importance sampling distributions.  The details of this procedure are given in section \ref{sec:Importance Sampling}.   \emph{Line 17-18:} Draws samples from the reconstructed joint distribution and follows the standard importance sampling procedure outlined in section \ref{chap:mc_crud}.  \emph{Line 19:} Performs the spatial remapping procedure required to preserve hot spot stationarity.  The details of this procedure can be found in section \ref{sec:hot_spot_stat}.  \emph{Line 20:} The importance weights are time averaged according to method provided in section \ref{sec:time_step_scheme} before the the crud distribution is integrated in each CTF face at each resampling step.
 
 \begin{algorithm}[H]
     \captionsetup{labelfont={sc,bf}, labelsep=newline}
