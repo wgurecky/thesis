@@ -228,7 +228,7 @@ After samples are independently drawn in each CTF face the temperature, TKE, and
 \end{figure}
 
 
-Table \label{tab:crud_totals_1} summarizes the hi2lo crud predictions for the synthetic single pin data set.  Good agreement is seen for the rod-integrated crud results.  Again, the hi2lo model was not used in a predictive manner and this represents a best-case scenario in which the copula and marginal distribution parameters can be directly estimated from the known (synthetic) CFD and CTF data sets.
+Table \ref{tab:crud_totals_2} summarizes the hi2lo crud predictions for the synthetic single pin data set.  Good agreement is seen for the rod-integrated crud results.  Again, the hi2lo model was not used in a predictive manner and this represents a best-case scenario in which the copula and marginal distribution parameters can be directly estimated from the known (synthetic) CFD and CTF data sets.
 
 \begin{table}[h]
     \begin{center}
@@ -243,7 +243,7 @@ Table \label{tab:crud_totals_1} summarizes the hi2lo crud predictions for the sy
             Rel Diff &  0.374 $[\%]$ & 0.377 $[\%]$ \\
             \hline
         \end{tabular}
-        \label{tab:crud_totals_1}
+        \label{tab:crud_totals_2}
     \end{center}
 \end{table}
 
@@ -477,7 +477,7 @@ This is in part due to the minimal computational requirements of sampling the jo
 
 \section{Section Takeaways}
 \begin{itemize}
-        \item  Good rod-integrated crud agreement between the synthetic source data and the predicted results.  The rod-integrated results were summarized in table \ref{tab:crud_totals_1}.  Fitting copula and marginal distributions to the sample data, re-sampling from these models, and then growing curd using these samples reproduces the correct total amount of crud at each time step and correctly reproduces the axial distribution of crud as shown in figure \ref{fig:hi2lopincmass}.
+        \item  Good rod-integrated crud agreement between the synthetic source data and the predicted results was observed.  The rod-integrated results were summarized in table \ref{tab:crud_totals_1}.  Fitting copula and marginal distributions to the sample data, re-sampling from these models, and then growing curd using these samples reproduces the correct total amount of crud at each time step and correctly reproduces the axial distribution of crud as shown in figure \ref{fig:hi2lopincmass}.
         \item Increasing the number of samples drawn per CTF patch decreases variance in total crud mass and total precipitated boron estimates.  The number of samples used is an adjustable runtime parameter and can be increased depending on the available computational resources and accuracy desired.
         \item Increasing the number of re-sampling steps per VERA state point reduces variance in the final integrated crud results. 
         \item After drawing samples from the joint density distribution a reordering of the samples on the rod surface is necessary to preserve hot spot stationarity.  Demonstrated in figure \ref{fig:cmprpintotals0406} and \ref{fig:cmprpintotalsnoremap}, sample remapping with weights of $w_T=0.4,\ w_k=0.6$ was performed to achieve an optimal time marching sampling strategy.
