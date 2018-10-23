@@ -3,20 +3,22 @@
 \utabstract
 \index{Abstract}%
 \indent
-This work describes the development of a physics-directed, statistically based,
-surrogate model of the small scale flow features that impact crud growth. The objective of the surrogate
-is to provide CFD-informed boundary conditions to the crud model. The surface temperature, heat
+The development of a physics-directed, statistically based,
+surrogate model of the small scale flow features that impact crud growth is presented in this work. 
+The objective of the surrogate is to provide additional details of the rod surface temperature, heat
+flux and near-wall turbulent kinetic energy field estimates which cannot be explicitly captured by the subchannel code, CTF. 
+
+Operating as a mapping from the high fidelity CFD data to the low fidelity subhcannel grid, the surrogate provides CFD-informed boundary conditions to the crud model executed on the subchannel pin surface mesh. The surface temperature, heat
 flux and turbulent kinetic energy, henceforth referred to as the Fields of Interest (FOI),
 govern the growth rate of crud on the surface of the rod and the
 precipitation of boron in the porous crud layer. Therefore the surrogate predicts the behavior of the
-fields of interest as a function of position in the core and local thermal-hydraulic conditions.
+fields of interest as a function of position in the core and local thermal-hydraulic (TH) conditions.
 
 The subchannel code is substantially faster to execute than CFD
 and produces an estimate for all the relevant TH quantities at a coarse spatial resolution everywhere in
-the core. The role of the CFD solution is to provide higher order moments of the about the mean field estimates
-given by CTF. In other words, the solution provided by CTF is augmented by a predicted stochastic
+the core.  The solution provided by CTF is augmented by a predicted stochastic
 component of the FOI informed by CFD results to provide a more detailed description of the target
-FOIs than CTF can provide alone. To this end, a novel method based on the marriage of copula and
+FOIs than CTF can provide alone.  To this end, a novel method based on the marriage of copula and
 gradient boosting techniques is proposed. This approach forgoes a spatial interpolation approach
 for a statistically driven approach which predicts the fractional area of a rod’s surface in excess of some
 critical temperature - but not precisely where such maxima occur on the rod surface.
