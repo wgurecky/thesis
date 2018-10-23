@@ -523,7 +523,7 @@ C_{m} = \left(\frac{A}{\sum_i^M \bar \omega'_i}\right) \sum_i^M C'_i \bar \omega
 \end{equation}
 Where $M$ is the number of samples drawn per CTF face and $A$ is the surface area of the $j^{th}$ CTF face.  The re-stepping index $n$ and the patch index $j$ are dropped to reduce clutter in equation \ref{eq:patch_sum_mass}.
 
-The crud stepping strategy is explicit in time as the next crud samples can be drawn from knowledge of the previous crud state and the current thermal hydraulic conditions.  Feedback between the crud state and the underlaying density functions is not captured in the hi2lo stepping scheme.  The presence of crud influences the rod surface temperature distribution due to two competing effects: Providing favorable conditions for bubble nucleation and an increased thermal resistance.  Though these effects are slight they impact not only the mean rod surface temperature but also higher moments about the mean of the probability densities of surface temperature.  These higher order feedbacks are not currently considered, however it is possible to incorporate the current crud state into the explanatory variable set used by the machine learning model to resolve this feedback between the crud thickness and the higher order moments of temperature and TKE about the CTF prediction.  This remains as future work as this impact is hypothesized to only significantly matter if the crud deposits significantly shifts the locations of the onset of nucleate boiling within the core.
+The crud stepping strategy is explicit in time as the next crud samples can be drawn from knowledge of the previous crud state and the current thermal hydraulic conditions.  Feedback between the crud state and the underlaying density functions are not captured in the hi2lo stepping scheme.  The presence of crud influences the rod surface temperature distribution due to two competing effects: Providing favorable conditions for bubble nucleation and an increased thermal resistance.  Though these effects are slight they impact not only the mean rod surface temperature but also higher moments about the mean of the probability densities of surface temperature.  These higher order feedbacks are not currently considered, however it is possible to incorporate the current crud state into the explanatory variable set used by the machine learning model to resolve this feedback between the crud thickness and the higher order moments of temperature and TKE about the CTF prediction.  This remains as future work as this impact is hypothesized to only significantly matter if the crud deposits significantly shifts the locations of the onset of nucleate boiling within the core.
 
 \begin{figure}[H]
     \centering
@@ -591,7 +591,7 @@ All model variables which are set at runtime are provided in table \ref{tab:hi2l
             \hline
             $\Delta t_s$ & 25 $[days]$ &  Resampling time step size. \\
             \hline
-            $M$ & 400 & Number of samples drawn per CTF face. \\
+            $N$ & 400 & Number of samples drawn per CTF face. \\
             \hline
             $N_{Q_{k}}$ & 20 & Number of quantiles used in TKE marginal distribution reconstruction. \\
             \hline

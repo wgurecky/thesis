@@ -47,8 +47,7 @@ Equation \ref{eq:synth_aug} represents three continuous random surface fields.  
     X_{ij} = \mu_{j,\mathrm{ctf}} + b_j + \varepsilon_{ij};\ \   \varepsilon_{j} \sim h_j
     \label{eq:synth_aug_discrete}
 \end{equation}
-Where the index $j$ represents the $j^{th}$ CTF face on the rod, and the index $i$ is the sample index within the $j^{th}$ CTF face.  The distribution parameters are constant over a given CTF face and give by $\bm \theta = \{\theta_c, \{\theta_x\}\}$ where $\theta_c$ is the copula parameter and  $\{\theta_x\}$ are marginal parameters, 
-
+Where the index $j$ represents the $j^{th}$ CTF face on the rod, and the index $i$ is the sample index within the $j^{th}$ CTF face.  The distribution parameters are constant over a given CTF face and are represented by $\bm \theta = \{\theta_c, \{\theta_x\}\}$ where $\theta_c$ is the copula parameter and  $\{\theta_x\}$ are the set of marginal distribution parameters.
 
 Shown in equation \ref{eq:synth_aug_face}, according to Sklar's theorem the surface residual temperature and TKE joint distribution may be decomposed into copula an marginal models on each CTF face:
 
@@ -173,7 +172,7 @@ The copula models were sampled in each span, the original CTF result was augment
     \label{fig:ctf_tke_aug}%
 \end{figure}
 
-The augmented surface temperature and turbulent kinetic energy fields shown if figures \ref{fig:ctf_twall_aug} and \ref{fig:ctf_tke_aug} can be compared against the original CTF results provided in figures \ref{fig:ctf_twall_orig} and \ref{fig:ctf_tke_orig} respectively.  No azimuthal variations are present in the augmented fields which would be present if a physics based model, such as CFD, were used.  Additionally, no spatial auto-correlation in the temperature and TKE cladding surface fields are included in the synthetic data.  Spatial autocorrelation could be captured with a kriging model in the future, however, the one dimensional nature of the crud simulation code used in this work dictates that the fine scale spatial detail in the surface fields are irrelevant when computing surface-integrated crud quantities.
+The augmented surface temperature and turbulent kinetic energy fields shown in figures \ref{fig:ctf_twall_aug} and \ref{fig:ctf_tke_aug} can be compared against the original CTF results provided in figures \ref{fig:ctf_twall_orig} and \ref{fig:ctf_tke_orig} respectively to qualitatively understand the fine scale surface variations introduced by the synthetic data model.  No azimuthal variations are present in the augmented fields which would be present if a physics based model, such as CFD, were used.  Additionally, no spatial auto-correlation in the temperature and TKE cladding surface fields are included in the synthetic data.  Spatial autocorrelation could be captured with a kriging model in the future, however, the one dimensional nature of the crud simulation code used in this work dictates that the fine scale spatial detail in the surface fields are irrelevant when computing surface-integrated crud quantities.
 
 
 \subsection{Single Pin Reconstruction}
