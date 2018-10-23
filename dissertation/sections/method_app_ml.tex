@@ -133,7 +133,7 @@ This cross validation technique ascertains crud prediction errors within the TH 
 A principal goal of the machine learning model is to predict the conditional quantiles of the temperature and TKE distributions as a function of local core conditions.  In this light, the trained quantile regression models are compared against the left-out CFD data set on each pin.  The accuracy of both the TKE and temperature quantile regressors is assessed using both quantile-quantile plots and quantile vs axial rod position comparisons.
 
 Quantile-quantile (Q-Q) plots of the temperature and TKE residual distributions are used to elucidate bias introduced by the machine learning model in the conditional quantiles at a variety of axial positions and local core conditions.  Estimated quantiles are obtained for the left-out pin by evaluating the trained reduced LOO model and are compared to the expected CFD result.
-A subset of the TKE residual quantile regression results are given in figures \ref{fig:tkepin1} to \ref{fig:tkepin3}.  A complete set of quantile regression results are provide in chapter \ref{chap:app_ml}, Appendix A. The Q-Q plots summarize the biases in the conditional quantile distributions when compared to the target golden standard CFD data.  The maximum and average Kolmogorov–Smirnov (KS) statistic is provided in the Q-Q figures for each pin which can be computed by equation \ref{eq:ks_stat}.
+A subset of the TKE residual quantile regression results are given in figures \ref{fig:tkepin1} to \ref{fig:tkepin3}.  A complete set of quantile regression results are provide in appendix \ref{chap:app_ml}. The Q-Q plots summarize the biases in the conditional quantile distributions when compared to the target golden standard CFD data.  The maximum and average Kolmogorov–Smirnov (KS) statistic is provided in the Q-Q figures for each pin which can be computed by equation \ref{eq:ks_stat}.
 \begin{equation}
     KS = \mathrm{sup}(\{\hat F(q_{\tau}) - F(q_{\tau})\})
 \label{eq:ks_stat}
@@ -340,12 +340,12 @@ Figure \ref{fig:confusionmatrixavg} summarizes the LOO cross validation results 
 
 It is clear that the copula classifier struggles to predict the correct copula class given the local TH conditions.  As previously indicated in figure \ref{fig:copula_predicted}, the behavior of the copula as a function of axial rod position is erratic and inconsistent from pin to pin.  This erratic behavior proved too difficult to capture provided the limited training data set.  It is not possible to conclude that the copula are well-described by the local thermal hydraulic conditions and axial position.  It remains as future work to investigate if including additional geometric pin and grid attributes could improve the classification results.  Additional software infrastructure would be required to both write geometric pin and grid features from the CTF code and to utilize these geometric features in the current model.
 
-Future work could include performing a transformation of the input space so that the copula family labels are separable in the transformed space.  A Potential candidate for building this transformation is the UMAP manifold learning algorithm \cite{UMAP18}.
+Future work could include performing a transformation of the input space so that the copula family labels are separable in the transformed space.  A potential candidate for building this transformation is the UMAP manifold learning algorithm \cite{UMAP18}.
 
 Further improvements in prediction accuracy are possible by applying an ensemble
 machine learning technique known as stacking.  Stacking combines the predictions of multiple classifiers using a meta-classifier.
 Stacking increases model complexity since each classifier in the ensemble contains hyper-parameters which require tuning.
-Since ML model tuning and performance is not a focus of this work, the application of this technique to improve copula classification results is left as future work.
+Since machine learning model tuning and performance is not a focus of this work, the application of this technique to improve copula classification results is left as future work.
 
 Though improvements are possible, it should also be noted that section \ref{sec:crud_copula_sensi} and table \ref{tab:crud_totals_copula} show that the copula family does not substantially influence pin integrated crud results.  Due to this, gains in the copula classifier accuracy will not necessarily translate to a large improvement in crud prediction accuracy.
 
@@ -636,12 +636,12 @@ Consistent under prediction of crud across the assembly was not observed. The to
     \label{fig:totcmassrelasmerrorshmap}
 \end{figure}
 
-The correlations between crud prediction errors and errors committed by the quantile regressors were investigated in an attempt to establish performance metrics.  Understanding the correlation of errors between the machine learning model predictions and the crud prediction errors is helpful when identifying the relative importance of the quantities predicted by the machine learning models with respect to crud growth.
+The correlations between crud prediction errors and errors committed by the quantile regressors were investigated in an attempt to establish performance metrics.  Understanding the correlation between the machine learning model prediction accuracy and the crud prediction errors is helpful if one wished to estimate the expect crud growth errors before employing the hi2lo model in a production setting.
 
-Provided sensitivities of the crud results to the ML errors one can estimate the expected accuracy of the crud predictions obtained via the hi2lo model by:
+Provided sensitivities of the crud results to the machine learning prediction errors one can estimate the expected accuracy of the crud predictions obtained via the hi2lo model by:
 
 \begin{equation} \nonumber
-    E_{c_j} \approx \sum_l \frac{\partial E_{c,j}}{\partial E_{l,j}}E_{l,j}
+    E_{c_j} \approx \sqrt{ \sum_l \left( \frac{\partial E_{c,j}}{\partial E_{l,j}}\right)^2 E_{l,j} }
 \end{equation}
 Where $E_{c,j}$ is the $j^{th}$ pin crud mass error and $E_l$ is the error associated with the $l^{th}$ component of the ML model predictions.  $E_{l,j}$ can be computed at training time, before crud growth simulations are performed.
 This allows a user of the hi2lo model to detect problems with the trained quantile regression and copula models prior to employing the model to make crud predictions.
