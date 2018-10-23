@@ -179,22 +179,22 @@ The augmented surface temperature and turbulent kinetic energy fields shown in f
 
 The rod surface is subdivided into CTF faces before fitting and reconstructing the synthetic data.  The location and extent of the CTF faces on the rod surface can be determined from a CTF output file.  
 
-In each face the empirical quantile distributions of temperature, turbulent kinetic energy, and boundary heat flux distributions were computed.  The number quantiles used in the empirical quantile distribution was set at 20.  A uniform spacing of quantiles was used.  Copula were fit to the synthetic data based on maximum likelihood and the Akaike information criterion (AIC) in each CTF face.  Maximum likelihood estimation is described in section \ref{sec:fitting_copula} and the AIC may be computed from equation \ref{eq:cop_aic}.
+In each face the empirical quantile distributions of temperature, turbulent kinetic energy, and boundary heat flux distributions were computed.  The number of quantiles used to construct the empirical quantile distributions was set at 20 and a uniform spacing of quantiles was used.  Copula were fit to the synthetic data based on maximum likelihood and the Akaike information criterion (AIC) in each CTF face.  The maximum likelihood estimation procedure for copula parameters is described in section \ref{sec:fitting_copula} and the AIC may be computed from equation \ref{eq:cop_aic}.
 
-For the synthetic single pin data the hi2lo predicted fractional surface area above a saturation temperature threshold ($T_{sat}$) is shown in figure \ref{fig:frac_a}.
+For the synthetic single pin data the hi2lo predicted fractional surface area above a saturation temperature threshold ($T_{sat}=618.1[K]$) in each CTF face is shown in figure \ref{fig:frac_a}.
 
 \begin{figure}[H]%
     \centering
     \subfloat[CTF predicted fractional area of each CTF face above the saturation point.]{{\includegraphics[width=0.45\linewidth]{figs/synth/hi2lo/ctf_pin_t_threshold} }}%
     \qquad
     \subfloat[Hi2lo predicted fractional area of each CTF face above the saturation point.]{{\includegraphics[width=0.45\linewidth]{figs/synth/hi2lo/hi2lo_pin_t_threshold} }}%
-    \caption[]{Fraction area above the saturation point prediction comparison for the synthetic data set.}%
+    \caption[]{Fraction of each CTF face above the saturation point predicted by CTF (left) and the hi2lo model (right).}%
     \label{fig:frac_a}%
 \end{figure}
 
 Provided that crud growth exhibits a temperature thresholding behavior about the saturation point it is important to predict the fractional area of the rod surface which exists above this critical temperature.  This can be performed by evaluating equation \ref{eq:pr_thresh} in each CTF face. Figure \ref{fig:frac_a} shows a substantial difference in the fractional area predicted above the saturation point in each CTF face when utilizing the hi2lo model rather than the predictions generated from a CTF computation alone.  The more significant the thresholding behavior of crud growth, the more important it becomes to accurately compute areas of the rod surface in excess of the saturation point.
 
-Figure \ref{fig:patchscatter} examines the surface frequency distributions of temperature, crud boron mass and TKE for the CTF patch denoted by the red box in figure \ref{fig:hi2lo_tke_t}.  A marked change in behavior of the crud boron mass vs cladding surface temperature scatter plot is exhibited at $\approx 619[K]$.  For samples which fell at or below this temperature, little crud was grown and thus the deposited crud boron mass is small.  Past this temperature threshold, there is an approximately linear relationship between the surface temperature and the crud deposition rate.  
+Figure \ref{fig:patchscatter} examines the surface frequency distributions of temperature, crud boron mass and TKE for the CTF patch denoted by the red box in figure \ref{fig:hi2lo_tke_t}.  A marked change in behavior of the crud boron mass vs cladding surface temperature scatter plot is exhibited at approximately $ 619[K]$.  For samples which fell at or below this temperature, little crud was grown and thus the deposited crud boron mass is small.  Past this temperature threshold, there is an approximately linear relationship between the surface temperature and the crud deposition rate.  
 
 An additional feature of note in figure  \ref{fig:patchscatter} is the shape of the TKE vs. surface temperature scatter plot.  The dependence structure exhibits tighter coupling between these two fields at lower TKE values and less correlation at higher TKE.  This behavior was imposed by specifying a clayton copula in this location on the rod surface with the copula parameters given in table \ref{tab:synth_settings}.  The ability of the copula fitting routines to correctly preserve this skewed dependence structure is demonstrated in the figure and could not be achieved with Gaussian models.
 
@@ -261,7 +261,7 @@ Here the sensitivity of the crud result to the copula parameters is investigated
     \label{fig:patchcrudfit80}
 \end{figure}
 
-Next, two full single pin scenarios were considered. In the first scenario, shown if figure \ref{fig:crud_copula_fam_sensi}a, the best-fit copula on each patch as determined by the AIC metric is applied on each CTF face.  The second pin scenario enforces that a Gaussian copula model is used on every CTF face.  The crud results from these scenarios were then compared.  The data shows the choice of copula (between Gaussian, Frank, and Clayton) has a small overall impact on the total integrated rod boron mass.   The total integrated crud mass and crud boron mass for these scenarios at 300 days simulation time are given in table \ref{tab:crud_totals_copula}.
+Next, two full single pin scenarios were considered. In the first scenario, shown in figure \ref{fig:crud_copula_fam_sensi}a, the best-fit copula on each patch as determined by the AIC metric is applied on each CTF face.  The second pin scenario enforces that a Gaussian copula model is used on every CTF face.  The crud results from these scenarios were then compared.  The data shows the choice of copula (between Gaussian, Frank, and Clayton) has a small overall impact on the total integrated rod boron mass.   The total integrated crud mass and crud boron mass for these scenarios at 300 days simulation time are given in table \ref{tab:crud_totals_copula}.
 
 \begin{figure}[H]%
     \centering
@@ -371,7 +371,7 @@ Though an optimal importance distribution, $\tilde{h}^* $, can be found by equat
 
 the requisite minimization problem is not solved in this work and is left as an avenue for future investigation. It can be shown that the optimal importance distribution follows the form: $\tilde{h}^* \propto |\mathcal{G}(x)|h(x)$, \cite{rubinstein2011}, \cite{mcbook}.
 
-Although the theoretically optimal importance distribution is not achieved in this work, a locally adaptive importance function was adopted based on a distribution mixing approach.  Through the mixture formulation, the importance distributions can be made to depend on the temperature and TKE marginal distributions in a particular CTF face.  The temperature and TKE distributions in each CTF face are mixed with a beta distribution who's parameters are set at runtime of the hi2lo tool.  
+Although the theoretically optimal importance distribution is not achieved in this work, a locally adaptive importance function was adopted based on a distribution mixing approach.  Through the mixture formulation, the importance distributions can be made to depend on the temperature and TKE marginal distributions in a particular CTF face.  The temperature and TKE distributions in each CTF face are mixed with a beta distribution whose parameters are set at runtime of the hi2lo tool.  
 
 The importance  mixture quantile functions are defined in equations \ref{eq:imp_mix_k} and \ref{eq:imp_mix_T}.
 
@@ -420,7 +420,7 @@ In figure \ref{fig:importancettkebmassscatter} the relative importance weight is
 \end{figure}
 \index{Importance Sampling!Application}
 
-The importance sampling efficiency can be estimated by computing the variance ratio:  $\sigma^2_{MC}/\sigma^2_{I}$.  The variance of the patch-integrated crud result for the Monte Carlo and importance sampling schemes are provided figure \ref{fig:imp_sample1}.  The variance estimates were computed by running 1000 independent trials in which crud was grown on the patch for 300 days.  A total of 100 samples per patch per trial were used.  For the case studied, the application of importance sampling reduced the crud mass and boron mass sample variance by a factor of 2.02. $\frac{\sigma^2_{MC}}{\sigma^2_{I}} \approx (\num{4.979e-6})^2 / (\num{3.503e-6})^2  \approx 2.02$.  The mean crud predictions did not significantly deviate between two sampling schemes indicating that importance sampling does not introduce any bias in the evaluation of the integral in equation \ref{eq:expected_crud}.
+The importance sampling efficiency can be estimated by computing the variance ratio:  $\sigma^2_{MC}/\sigma^2_{I}$.  The variance of the patch-integrated crud result for the Monte Carlo and importance sampling schemes are provided in figure \ref{fig:imp_sample1}.  The variance estimates were computed by running 1000 independent trials in which crud was grown on the patch for 300 days.  A total of 100 samples per patch per trial were used.  For the case studied, the application of importance sampling reduced the crud mass and boron mass sample variance by a factor of 2.02. $\frac{\sigma^2_{MC}}{\sigma^2_{I}} \approx (\num{4.979e-6})^2 / (\num{3.503e-6})^2  \approx 2.02$.  The mean crud predictions did not significantly deviate between two sampling schemes indicating that importance sampling does not introduce any bias in the evaluation of the integral in equation \ref{eq:expected_crud}.
 
 The improvement in performance afforded by importance sampling can be attributed to expending a larger proportion of the total available samples in the upper tail of the temperature distribution as this is a region which strongly contributes to crud growth.  Some samples are necessarily expended in cold regions of the rod surface but occur with less frequency when compared to a standard Monte Carlo sampling routine and the samples are appropriately weighted to avoid biasing the integrated result.
 
