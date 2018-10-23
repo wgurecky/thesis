@@ -116,12 +116,15 @@ Finally, the source and rate at which primary loop impurities buildup over time 
 \section{Hi2lo Discussion}
 
 Hi2lo, or high to low modeling, implies that a source of high fidelity gold standard data produced by an expensive to evaluate physics model is used to downscale and augment a low fidelity model of the same physics.
-Provided sparsely available high fidelity data, this mapping must be possible even in the case where matching high and low fidelity results do not exist.  The hi2lo strategy put forward in this work can be viewed as a particular implementation of a statistical downscaling (SD) based model, of which a large variety exist in the literature and some of which are described in chapter \ref{chap:lit}.  One interesting challenge in this work which is atypical of SD models is the requirement of co-prediction of multiple correlated fields, sometimes this is refereed to as multiple target regression.
+Provided sparsely available high fidelity data, this mapping must be possible even in the case where matching high and low fidelity results do not exist.  The hi2lo strategy put forward in this work can be viewed as a particular implementation of a statistical downscaling (SD) based model, of which a large variety exist in the literature and some of which are described in chapter \ref{chap:lit}.  One interesting challenge in this work which is atypical of SD models is the requirement of co-prediction of multiple correlated fields, sometimes this is referred to as multiple target regression.
 \index{Hi2lo}
 
-The hi2lo mapping, which includes downscaling and augmentation of the CTF-predicted low fidelity fuel rod surface temperature, TKE, and boundary heat flux surface fields, must possible given any CTF pin at any operating condition - even when only a relatively small number of high fidelity results are available.  Furthermore it is assumed that the flow of information is uni-directional from the high fidelity data to the low fidelity model.  Feedback between the disparate scale models is not included.
+% The hi2lo mapping, which includes downscaling and augmentation of the CTF-predicted low fidelity fuel rod surface temperature, TKE, and boundary heat flux surface fields, must possible given any CTF pin at any operating condition - even when only a relatively small number of high fidelity results are available.  
+
+It is assumed that the flow of information is unidirectional from the high fidelity data to the low fidelity model.  Feedback between the disparate scale models is not included.  This simplification is commonly made in the application of a statistical downscaling model.  A tight coupling between multiscale transport models is the subject of dynamical downscaling and is beyond the scope of this document.
 
 Generally, a surrogate model replaces expensive to evaluate physics with a quick to evaluate model that preserves some aspects of the physics. The hi2lo strategy seeks to capture the action of high fidelity CFD resolved flow phenomena on crud growth without having to run the CFD model outright.  However, a key difference between the hi2lo model pursued in this work and a canonical dynamical system surrogate is that the hi2lo model does not seek to behave as a stand-in for a differential equation and should not be confused as such.  
+
 
 \section{Document Layout}
 
