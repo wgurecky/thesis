@@ -81,20 +81,20 @@ h(u_1 | u_2) = \frac{\partial C(u_1, u_2)}{\partial u_2}
 \label{eq:cop_h}
 \end{equation}
 
-If the distribution $h$ is smooth and monotonic the inverse $h^{-1}$ exists.  For a bivariate Gaussian copula with a shape parameter $\theta=0.7$ the conditional distribution functions are shown in figures \ref{fig:gauss_h} and \ref{fig:gauss_hinv} for several values of the conditioning variable ($u_2$).  
+If the distribution $h$ is smooth and monotonic the inverse $h^{-1}$ exists.  For a bivariate Gaussian copula with a shape parameter $\theta_c=0.7$ the conditional distribution functions are shown in figures \ref{fig:gauss_h} and \ref{fig:gauss_hinv} for several values of the conditioning variable ($u_2$).  
 
 \begin{figure}[!htbp]
 	\centering
 	\begin{minipage}{.45\textwidth}
 		%
 		\includegraphics[width=7cm]{images/t_h_dist.png}
-		\caption{The conditional $h$ \\ function vs. value of the \\ conditioning variable $u_2$ \\ for a gaussian copula with $\theta=0.7$.}
+		\caption{The conditional $h$ \\ function vs. value of the \\ conditioning variable $u_2$ \\ for a Gaussian copula with $\theta_c=0.7$.}
 		\label{fig:gauss_h}
 	\end{minipage}%
 	\begin{minipage}{.45\textwidth}
 		%
 		\includegraphics[width=7cm]{images/t_hinv_dist.png}
-		\caption{$h^{-1}$ vs. value of the conditioning variable $u_2$ for a Gaussian copula with $\theta=0.7$.\\}
+		\caption{$h^{-1}$ vs. value of the conditioning variable $u_2$ for a Gaussian copula with $\theta_c=0.7$.\\}
 		\label{fig:gauss_hinv}
 	\end{minipage}
 \end{figure}
@@ -114,13 +114,13 @@ The resulting correlated sample vectors $\{\mathbf U_1, \mathbf U_2\} \in [0,1]^
 	\begin{minipage}{.45\textwidth}
 		%
 		\includegraphics[width=9.2cm]{images/gauss_copula_pdf.png}
-		\caption{Gaussian copula density\\ with $\theta=0.7$.}
+		\caption{Gaussian copula density\\ with $\theta_c=0.7$.}
 		\label{fig:gauss_pdf}
 	\end{minipage}%
 	\begin{minipage}{.45\textwidth}
 		%
 		\includegraphics[width=7cm]{images/gauss_samples.png}
-		\caption{Samples drawn from gaussian copula\\ with $\theta=0.7$.}
+		\caption{Samples drawn from Gaussian copula\\ with $\theta_c=0.7$.}
 		\label{fig:gauss_samples}
 	\end{minipage}
 \end{figure}
@@ -136,7 +136,7 @@ The samples vectors $\{\mathbf X, \mathbf Y\}$ are distributed according to the 
 \begin{figure}[!htbp]
 	\centering
 	\includegraphics[width=9cm]{images/gauss_samples_scaled.png}
-	\caption{Samples drawn from gaussian copula with exponential margins.}
+	\caption{Samples drawn from Gaussian copula with exponential margins.}
 	\label{fig:gauss_samples_scaled}
 \end{figure}
 
@@ -169,7 +169,7 @@ Examples of valid copula are given in figure \ref{fig:montage_cop}.  A wide rang
 \subsection{Fitting Copula}
 \label{sec:fitting_copula}
 
-Fitting copula to empirical data can be carried out by the method of maximum likelihood (ML).  Consider the bivariate case where there are $N$ data samples $\{w_i, v_i\}$ $\in [0,1]^2$ are known. The likelihood function for a copula is given by equation \ref{eq:lik}.  For any given sample pair, each term the likelihood function describes how probable it was for that sample originated from the underlying copula distribution with parameter $\theta$.
+Fitting copula to empirical data can be carried out by the method of maximum likelihood (ML).  Consider the bivariate case where there are $N$ data samples $\{w_i, v_i\}$ $\in [0,1]^2$ are known. The likelihood function for a copula is given by equation \ref{eq:lik}.  For any given sample pair, each factor in the likelihood function describes how probable it was for that sample originated from the underlying copula distribution with parameter $\theta_c$.
 \index{Copula!Fitting}
 
 \begin{equation}
@@ -185,7 +185,7 @@ Typically the negative log-likelihood, $-\mathrm{ln}\mathcal{L}$, is used in whe
 \end{equation}
 \index{Maximum Likelihood}
 
-To minimize the negative log likelihood in equation \ref{eq:nlog_lik}  one computes the partial derivative with respect to $\theta$ and finds the value $\hat \theta_{ML}$ for which this expression reaches zero.  This can be carried out by Newton's method.  If the partial derivatives of the copula's negative log likelihood are difficult to compute one can estimate them by finite difference. 
+To minimize the negative log likelihood in equation \ref{eq:nlog_lik}  one computes the partial derivative with respect to $\theta_c$ and finds the value $\hat \theta_{c,ML}$ for which this expression reaches zero.  This can be carried out by Newton's method.  If the partial derivatives of the copula's negative log likelihood are difficult to compute one can estimate them by finite difference. 
 
 In order to determine which copula family best represents the data, an arsenal of statistical tests can be applied to select the copula which best fits the data.  Here, we consider two methods:  (1) Comparing Akaike information criterion (AIC) and (2) graphically comparing each fitted copula.  
 
@@ -231,11 +231,11 @@ If a rank $x_i$ is drawn for the first variable, the likelihood that you will al
 \label{eq:ktau}
 \end{equation}
 
-In the case of Archimedean copula, $\rho_\tau$ is directly related to the copula's parameter, $\theta$.
+In the case of Archimedean copula, $\rho_\tau$ is directly related to the copula's parameter, $\theta_c$.
 Equation \ref{eq:tauar} relates an Archimedean copula's parameter to $\rho_\tau$.  This is useful since if one can estimate $\rho_\tau$ from the empirical data and the copula type is known, one can quickly compute the copula's shape parameter without resorting to the method of ML.
 
 \begin{equation}
-\rho_\tau = 1 + 4 \int_0^1 \frac{\varphi(\theta,t)}{\varphi'(\theta, t)}dt
+\rho_\tau = 1 + 4 \int_0^1 \frac{\varphi(\theta_c,t)}{\varphi'(\theta_c, t)}dt
 \label{eq:tauar}
 \end{equation}
 Where $\varphi(t)$ is the copula's generator function and $\varphi'(t)$ is the first derivative of the generator function with respect to $t$. A list of copula generator functions can be found in \cite{Nelsen2006}. 
@@ -246,5 +246,5 @@ Where $\varphi(t)$ is the copula's generator function and $\varphi'(t)$ is the f
 
 %Where $\psi$ is a monotonically decreasing and convex function.
 
-%A simplification can be made when fitting Archimedean copula since there is a one-to-one relationshipt between $\rho_\tau$ and the copula's shape parameter, $\theta$.
+%A simplification can be made when fitting Archimedean copula since there is a one-to-one relationshipt between $\rho_\tau$ and the copula's shape parameter, $\theta_c$.
 
