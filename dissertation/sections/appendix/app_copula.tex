@@ -103,7 +103,7 @@ Computing the inverse analytically is oftentimes not possible for some classes o
 A random vector of length $N$ is drawn from the uniform distribution $\in [0, 1]$:  $\{\mathbf U_2\}$.  For each sample, $u_{2_i}$ in $\{\mathbf U_2\}$ the 1D line search problem given in equation \ref{eq:h_inv_sample} is solved.  This produces a sample vector of length $N$: $\{\mathbf U_1\}$.
 
 \begin{equation}
-u_{1_i} = \mathrm{argmin}_{x} \left[ h(x|u_{2_i}) - u_{2_i} \right],\ \mathrm{with}\ 0 < x < 1
+u_{1_i} = \mathrm{argmin}_{u_1} \left[ h(u_1|u_{2_i}) - u_{2_i} \right],\ \mathrm{with}\ 0 < u_1 < 1
 \label{eq:h_inv_sample}
 \end{equation}
 
@@ -125,13 +125,13 @@ The resulting correlated sample vectors $\{\mathbf U_1, \mathbf U_2\} \in [0,1]^
 	\end{minipage}
 \end{figure}
 
-To apply arbitrary margins we employ, again, the inverse probability transform.  As before, the cumulative marginal densities are given to be $F_1$ and $F_2$.
+To apply arbitrary margins $F_1$ and $F_2$ we employ, again, the inverse probability transform. 
 Correlated samples are then drawn according to:
 \begin{eqnarray}
 \mathbf X = & F_1^{-1}(\mathbf U_1) \\
 \mathbf Y = & F_2^{-1}(\mathbf U_2)
 \end{eqnarray}
-The samples vectors $\{\mathbf X, \mathbf Y\}$ are distributed according to the joint density, $f(x,y)$.  An example bivariate sample set with exponentially distributed margins and a Gaussian copula is shown in figure \ref{fig:gauss_samples_scaled}.  In the example figure the exponential marginal distributions are given by $f(x)=\lambda e^{-\lambda x}$ with $\lambda=2\mathrm{E-}3$.
+The sample vectors $\{\mathbf X, \mathbf Y\}$ are distributed according to the joint density, $C(F_1, F_2)$.  An example bivariate sample set with exponentially distributed margins and a Gaussian copula is shown in figure \ref{fig:gauss_samples_scaled}.  In the example figure both margins follow an exponential distribution given by $f(x)=\lambda e^{-\lambda x}$ with $\lambda=2\mathrm{E-}3$.
 
 \begin{figure}[!htbp]
 	\centering
@@ -143,7 +143,7 @@ The samples vectors $\{\mathbf X, \mathbf Y\}$ are distributed according to the 
 
 \section*{Copula Families}
 
-A wide range of copula functions are available in the literature.  In order to satisfy the definition of a copula several criterion must be met:
+A wide range of copula functions are available in the literature.  In order to satisfy the definition of a copula several criteria must be met:
 \begin{enumerate}
 	\item Must integrate to one on $[0, 1]^n$
 	\item Must have uniform marginal distributions (as shown in figure \ref{fig:gauss_samples}).
@@ -169,18 +169,18 @@ Examples of valid copula are given in figure \ref{fig:montage_cop}.  A wide rang
 \subsection{Fitting Copula}
 \label{sec:fitting_copula}
 
-Fitting copula to empirical data can be carried out by the method of maximum likelihood (ML).  Consider the bivariate case where there are $N$ data samples $\{w_i, v_i\}$ $\in [0,1]^2$ are known. The likelihood function for a copula is given by equation \ref{eq:lik}.  For any given sample pair, each factor in the likelihood function describes how probable it was for that sample originated from the underlying copula distribution with parameter $\theta_c$.
+Fitting copula to empirical data can be carried out by the method of maximum likelihood (ML).  Consider the bivariate case where $N$ sample pairs, $\{w_i, v_i\}_{i\in [ 1,N ] }$  are known. The likelihood function for a copula is given by equation \ref{eq:lik}.  For any given sample pair, each factor in the likelihood function describes how probable it was for that sample originated from the underlying copula distribution with parameter $\theta_c$.
 \index{Copula!Fitting}
 
 \begin{equation}
-\mathcal{L}= \prod_{i=0}^N c(w_i, v_i|\theta_c)
+\mathcal{L}= \prod_{i=1}^N c(w_i, v_i|\theta_c)
 \label{eq:lik}
 \end{equation}
 
 Where $\theta$ is the free copula shape parameter.
 Typically the negative log-likelihood, $-\mathrm{ln}\mathcal{L}$, is used in when performing ML estimation of a distribution parameter since the problem is typically cast in terms of a minimization problem.  
 \begin{equation}
-\hat \theta_{ML} = \mathrm{argmin}_{\theta_c}[-\mathrm{ln}\mathcal{L}(\theta_{c} ; \mathbf w, \mathbf v)]
+\hat \theta_{c,ML} = \mathrm{argmin}_{\theta_c}[-\mathrm{ln}\mathcal{L}(\theta_{c} ; \mathbf w, \mathbf v)]
 \label{eq:nlog_lik}
 \end{equation}
 \index{Maximum Likelihood}
@@ -223,7 +223,8 @@ For example, by graphical inspection of figure \ref{fig:kc_fn_compare}, the Gumb
 \subsection*{Kendall's Tau}
 
 Kendall's tau is a measure of concordance.  Consider two correlated and ranked random variables, $X, Y$.
-If a rank $x_i$ is drawn for the first variable, the likelihood that you will also have drawn the rank $y_i$ of the second to be at least as great as the first is proportional to Kendall's tau.  More precisely, let $(X_i, Y_i)$ and $(X_j, Y_j)$ be identically distributed sample pairs from some joint cumulative distribution so that $X\ and\ Y$ will take on values in $[0,1]$, then Kendall's tau is given by equation \ref{eq:ktau} \cite{Nelsen2006}.  
+%  If a rank $x_{(i)}$ is drawn for the first variable, the likelihood that you will also have drawn the rank $y_{(i)}$ of the second to be at least as great as the first is proportional to Kendall's tau.  More precisely, 
+Let $(X_i, Y_i)$ and $(X_j, Y_j)$ be identically distributed sample pairs from some joint cumulative distribution so that $X\ and\ Y$ will take on values in $[0,1]$, then Kendall's tau is given by equation \ref{eq:ktau} \cite{Nelsen2006}.  
 \index{Kendall's Tau}
 
 \begin{equation}
