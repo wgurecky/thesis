@@ -299,7 +299,7 @@ The number of samples, $N$, used to estimate the integral given in equation \ref
 
 Figure \ref{fig:cmprpintotalsviolinnsample} shows the variance of the crud expectation value at 300 days of simulation time computed by the Monte Carlo approximation when using a sample sizes of 100, 400, and $800  [\frac{N}{\mathrm{CTF_{face}}}]$.  80 independent trials were conducted for each sample size to estimate the variance of the pin integrated crud results at 300 days.
 
-To isolate the impact of increasing the sample size on the crud variance, a single 300 day time step was conducted without re-sampling the underlying density functions during this period.  Importance sampling was not applied in this study.
+To isolate the impact of increasing the sample size on the crud variance, a single 300 day time step was conducted without resampling the underlying density functions during this period.  Importance sampling was not applied in this study.
 
 \begin{figure}[H]
     \centering
@@ -308,7 +308,7 @@ To isolate the impact of increasing the sample size on the crud variance, a sing
     \label{fig:cmprpintotalsviolinnsample}
 \end{figure}
 
-The standard deviation of the rod-integrated crud results at 300 days simulation time are summarized in table \ref{tab:crud_sample_size}.
+The standard deviation of the rod integrated crud results at 300 days simulation time are summarized in table \ref{tab:crud_sample_size}.
 
 \begin{table}[h]
 	\begin{center}
@@ -428,11 +428,11 @@ The improvement in performance afforded by importance sampling can be attributed
 
 \subsection{Single Pin with Time Stepping}
 
-Stepping the crud simulation forward under the application of hi2lo supplied boundary conditions demands careful treatment of hot spot stationarity assumptions.  The time evolution of the crud simulation on the rod surface is strongly influenced by choices made both in the number of re-sampling steps taken as well as tunable constants which govern the sample remapping procedure and surface temperature mixing.
+Stepping the crud simulation forward under the application of hi2lo supplied boundary conditions demands careful treatment of hot spot stationarity assumptions.  The time evolution of the crud simulation on the rod surface is strongly influenced by choices made both in the number of resampling steps taken as well as tunable constants which govern the sample remapping procedure and surface temperature mixing.
 
 \subsubsection{Spatial Remapping with Time Stepping}
 
-The influence of hot-spot stationarity assumptions on the overall integrated crud mass on the rod as a function of time can be seen in figures \ref{fig:cmprpintotals0406} and \ref{fig:cmprpintotalsnoremap}.  When the surface temperature is allowed to randomly mix on each re-sampling event in each CTF face, the influence of the hot spots are smeared over the surface of the rod which leads to an overall under prediction in the total integrated crud mass.  Reordering the samples in each CTF face by their temperature improves the ability of the hi2lo model to preserve the impact of stationary hot and cold spots on the rod surface.  Good agreement with the original coupled synthetic CFD-Crud simulation data was achieved by tuning the constants introduced in equation \ref{eq:weighting} to values of $w_T = 0.4$, and of $w_k = 0.6$.  This weighting seeks to preserve a heuristic thermal-hydraulic metric on the rod surface  where the metric can be interpreted as some linear combination of cladding surface temperature and near-wall TKE. 
+The influence of hot-spot stationarity assumptions on the overall integrated crud mass on the rod as a function of time can be seen in figures \ref{fig:cmprpintotals0406} and \ref{fig:cmprpintotalsnoremap}.  When the surface temperature is allowed to randomly mix on each resampling event in each CTF face, the influence of the hot spots are smeared over the surface of the rod which leads to an overall under prediction in the total integrated crud mass.  Reordering the samples in each CTF face by their temperature improves the ability of the hi2lo model to preserve the impact of stationary hot and cold spots on the rod surface.  Good agreement with the original coupled synthetic CFD-Crud simulation data was achieved by tuning the constants introduced in equation \ref{eq:weighting} to values of $w_T = 0.4$, and of $w_k = 0.6$.  This weighting seeks to preserve a heuristic thermal-hydraulic metric on the rod surface  where the metric can be interpreted as some linear combination of cladding surface temperature and near-wall TKE. 
 
 
 \begin{figure}[H]
@@ -459,27 +459,27 @@ A spatial representation of the samples pre and post-remapping are shown in figu
     \label{fig:remmap_comp}%
 \end{figure}
 
-\subsection{Re-Sample Frequency}
+\subsection{Resample Frequency}
 \label{sec:resample_freq_study}
 
-The frequency at which the distribution functions are sampled from on each CTF face influences the variance in the predicted integrated crud results.  To investigate this behavior, a parameter sweep was conducted in which the same pin was.  50 independent trials were conducted for each step size.  Shown in figure \ref{fig:cmprpintotalsviolin} a smaller re-sampling steps size, $\Delta t_s$, results in a reduction in the variance of the rod integrated crud estimates at 300 days of simulation time.   Additionally, the sampling-induced rod-integrated crud mass uncertainties were shown to be approximately distributed according to a normal distribution.  It is also important to note that the variance of the rod integrated crud results increases as a function of time.
+The frequency at which the distribution functions are sampled from on each CTF face influences the variance in the predicted integrated crud results.  To investigate this behavior, a parameter sweep was conducted in which the same pin was.  50 independent trials were conducted for each step size.  Shown in figure \ref{fig:cmprpintotalsviolin} a smaller resampling steps size, $\Delta t_s$, results in a reduction in the variance of the rod integrated crud estimates at 300 days of simulation time.   Additionally, the sampling induced rod integrated crud mass uncertainties were shown to be approximately distributed according to a normal distribution.  It is also important to note that the variance of the rod integrated crud results increases as a function of time.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\linewidth]{figs/synth/tstep_study/cmpr_pin_totals_violin}
-    \caption[Influence of the re-sample frequency on the predicted integrated crud variance.]{Influence of the re-sample frequency on the predicted rod-integrated crud variance.  Variance estimates are given in the right hand side of the figure from 50 independent trials.}
+    \caption[Influence of the resample frequency on the predicted integrated crud variance.]{Influence of the resample frequency on the predicted rod integrated crud variance.  Variance estimates are given in the right hand side of the figure from 50 independent trials for each of the step size cases.}
     \label{fig:cmprpintotalsviolin}
 \end{figure}
 
-Performing a larger number of re-sampling events per VERA state results in reduced variance at little additional computational effort.
-This is in part due to the minimal computational requirements of sampling the joint temperature and TKE distribution on each patch.  Drawing samples from a bivariate copula density model is straight forward and can be done in parallel since each patch is treated as an independent sampling zone in this hi2lo approach.  The crud computation, by comparison, is more expensive.  Increasing the re-sampling frequency does not increase the total number of samples used per pin per time step, rather, this process only increases the number of (re-sample) steps per VERA state point.  The reduction in variance stems from an improved sample density throughout time of the underlying random field.  In time, the underlaying random field is fixed throughout a VERA state point.  Repeatedly drawing samples from this field at small time steps rather than sampling the random field only once at the beginning of the VERA state point vastly increases the number of samples used to perform the time integration of the crud result on each CTF face.
+Performing a larger number of resampling events per VERA state results in reduced variance at little additional computational effort.
+This is in part due to the minimal computational requirements of sampling the joint temperature and TKE distribution on each patch.  Drawing samples from a bivariate copula density model is straight forward and can be done in parallel since each patch is treated as an independent sampling zone in this hi2lo approach.  The crud computation, by comparison, is more expensive.  Increasing the resampling frequency does not increase the total number of samples used per pin per time step, rather, this process only increases the number of (resample) steps per VERA state point.  The reduction in variance stems from an improved sample density throughout time of the underlying random field.  In time, the underlaying random field is fixed throughout a VERA state point.  Repeatedly drawing samples from this field at small time steps rather than sampling the random field only once at the beginning of the VERA state point vastly increases the number of samples used to perform the time integration of the crud result on each CTF face.
 
 
 \section{Section Takeaways}
 \begin{itemize}
-        \item  Good rod-integrated crud agreement between the synthetic source data and the predicted results was observed.  The rod-integrated results were summarized in table \ref{tab:crud_totals_1}.  Fitting copula and marginal distributions to the sample data, re-sampling from these models, and then growing curd using these samples reproduces the correct total amount of crud at each time step and correctly reproduces the axial distribution of crud as shown in figure \ref{fig:hi2lopincmass}.
+        \item  Good rod integrated crud agreement between the synthetic source data and the predicted results was observed.  The rod integrated results were summarized in table \ref{tab:crud_totals_1}.  Fitting copula and marginal distributions to the sample data, resampling from these models, and then growing curd using these samples reproduces the correct total amount of crud at each time step and correctly reproduces the axial distribution of crud as shown in figure \ref{fig:hi2lopincmass}.
         \item Increasing the number of samples drawn per CTF patch decreases variance in total crud mass and total precipitated boron estimates.  The number of samples used is an adjustable runtime parameter and can be increased depending on the available computational resources and accuracy desired.
-        \item Increasing the number of re-sampling steps per VERA state point reduces variance in the final integrated crud results. 
+        \item Increasing the number of resampling steps per VERA state point reduces variance in the final integrated crud results. 
         \item After drawing samples from the joint density distribution a reordering of the samples on the rod surface is necessary to preserve hot spot stationarity.  Demonstrated in figure \ref{fig:cmprpintotals0406} and \ref{fig:cmprpintotalsnoremap}, sample remapping with weights of $w_T=0.4,\ w_k=0.6$ was performed to achieve an optimal time marching sampling strategy.
         \item Importance sampling was shown to reduce the variance in the integrated crud results.
         \item A synthetic data generation tool allows absolute control over the properties of joint distribution of TH boundary conditions which are fed into the crud simulation code.  Since the synthetic data has known statistical properties, this data serves as an important data source for benchmarking and validation operations.

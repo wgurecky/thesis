@@ -351,7 +351,7 @@ Though improvements are possible, it should also be noted that section \ref{sec:
 
 \section{Crud Results}
 
-The presented case considered the 5x5 array operating at a single state with fixed power profile and flow conditions for 300 days.  The hi2lo model was marched forward in time using a re-sampling step size of 50 days.  A sample size of 400 was used to estimate the crud distribution in each CTF face.  The importance sampling distribution parameters were set to values given in table \ref{tab:hi2lo_params}.  The default remapping weights of $w_T=0.4, \ w_k=0.6$ were used in this case.
+The presented case considered the 5x5 array operating at a single state with fixed power profile and flow conditions for 300 days.  The hi2lo model was marched forward in time using a resampling step size of 50 days.  A sample size of 400 was used to estimate the crud distribution in each CTF face.  The importance sampling distribution parameters were set to values given in table \ref{tab:hi2lo_params}.  The default remapping weights of $w_T=0.4, \ w_k=0.6$ were used in this case.
 
 The comparisons presented are the result of the LOO cross validation study.
 Ergo the hi2lo model was used in a properly predictive manner since distribution parameters had to be inferred from the machine learning model at local core conditions outside of the training set.
@@ -382,7 +382,7 @@ A single pin was selected from the 25 pin array for detailed comparison of the C
     \label{fig:15axialcmass}
 \end{figure}
 
-The total crud mass and total boron hideout mass were computed at each re-sampling step and presented in figures \ref{fig:15pinbmasstime} and \ref{fig:15pincmasstime}.  The time evolution of the crud total mass for all pins is given in appendix B.  The hi2lo model under predicted the crud mass on pin 1 when compared to the CFD model.
+The total crud mass and total boron hideout mass were computed at each resampling step and presented in figures \ref{fig:15pinbmasstime} and \ref{fig:15pincmasstime}.  The time evolution of the crud total mass for all pins is given in appendix B.  The hi2lo model under predicted the crud mass on pin 1 when compared to the CFD model.
 
 \begin{figure}[H]
     \centering
@@ -546,7 +546,7 @@ Totals	 & 2.9128e+01 & 9.9713e+00 & 9.0877e+00 & -8.8360e-01  & -8.9\\
 \end{table}
 
 
-At each re-sample step the crud mass was summed over all pins in the assembly and presented in figure \ref{fig:asmcmasstime}.  The total assembly crud mass predicted by CFD and the hi2lo model are in in close agreement.  At 300 days simulation time the relative difference in the crud mass results between the hi2lo and the CFD model was -8.9\%, as shown in table \ref{tab:loo_crud_cmass}.
+At each resample step the crud mass was summed over all pins in the assembly and presented in figure \ref{fig:asmcmasstime}.  The total assembly crud mass predicted by CFD and the hi2lo model are in in close agreement.  At 300 days simulation time the relative difference in the crud mass results between the hi2lo and the CFD model was -8.9\%, as shown in table \ref{tab:loo_crud_cmass}.
 
 \begin{figure}[]
     \centering

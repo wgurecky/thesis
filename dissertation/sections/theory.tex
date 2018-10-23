@@ -464,7 +464,7 @@ Where the sample remapping coefficients $\mathbf w$ are set at runtime by the hi
 w_T + w_k + w_{q''} = 1
 \end{equation}
 Next the order statistics of $\mathbf m$ are computed such that $\mathbf m' = \{ m_{(0)} < m_{(1)}< ... m_{(N)} \}$.  As shown in figure \ref{fig:samplemapping}, the ordered samples are then emplaced on the CTF patch in an organized manner.  The sample space is denoted by $\Omega$ and a specific temperature, TKE, and boundary heat flux sample is denoted by $\mathcal F_i$ as a single dot residing inside the sample space.  The path taken on the patch surface is user controllable and is taken to be a simple serpentine left-to-right pattern in this work.
-Typical values for the remapping coefficients are $w_T=0.6, w_k=0.4, w_{q''}=0$.  With this setting, relatively high temperate and low TKE samples are likely to remain in the same location on the rod surface over multiple re-sampling events.
+Typical values for the remapping coefficients are $w_T=0.6, w_k=0.4, w_{q''}=0$.  With this setting, relatively high temperate and low TKE samples are likely to remain in the same location on the rod surface over multiple resampling events.
 
 \begin{figure}[H]
     \centering
@@ -473,16 +473,16 @@ Typical values for the remapping coefficients are $w_T=0.6, w_k=0.4, w_{q''}=0$.
     \label{fig:samplemapping}
 \end{figure}
 
-Note that since the crud simulation package utilized in this work is one-dimensional the pattern chosen for sample emplacement has no influence on the integrated crud result over a patch.  This would not be the case if the crud simulation package modeled a fully 3D crud layer as the state of the neighboring crud nodes in that case would matter.  Interestingly, since the hi2lo model user  can specify the sample remapping pattern at run time, a physically realistic pattern could be prescribed on the rod surface - even prescribed as a function of local core conditions leading to a hybrid strategy between the current pure statistical hi2lo procedure and the spatial remapping procedure implemented by Salko et. al \cite{salko17}.
+Since the crud simulation package utilized in this work is one-dimensional, the pattern chosen for sample emplacement has no influence on the integrated crud result over a patch.  This would not be the case if the crud simulation package modeled a fully 3D crud layer as the state of the neighboring crud nodes in that case would matter.  Interestingly, since the hi2lo model user  can specify the sample remapping pattern at run time, a physically realistic pattern could be prescribed on the rod surface - even prescribed as a function of local core conditions leading to a hybrid strategy between the current pure statistical hi2lo procedure and the spatial remapping procedure implemented by Salko et. al \cite{salko17}.
 
 \subsection{Time Stepping Scheme}
 \label{sec:time_step_scheme}
 
-Careful treatment of the propagation importance weights through discrete re-sampling steps is necessary to ensure there is no bias in the crud results when moving through multiple time steps and VERA states.
+Propagating the importance weights through discrete resampling steps requires special attention to ensure bias is not introduced into the crud results when moving through multiple time steps and VERA states.  The key observation is that the importance weights computed at a given resampling event should neither be double-counted nor discarded in subsequent resampling steps.  Instead, the importance weights are time averaged to achieve the correct importance weights used to evaluate the total crud mass on the rod surface at any given time step (resampling step).
 
 Figure \ref{fig:stepscheme} depicts the time stepping scheme for a single patch. The patch index is not shown to reduce visual clutter. The VERA state-point time index is denoted by $t$.  At the beginning of each VERA state-point the power distribution and thermal hydraulic conditions in the core change.  Here it is assumed there is a constant power profile and constant flow conditions over a VERA depletion step. 
 
-In figure \ref{fig:stepscheme} dotted arrows represent sampling from a probability distribution.  $\mathcal R$ is the spatial reordering map from sample space to a position on the rod surface. $\mathcal G$ represents the crud generation function provided by the crud simulation package which takes thermal hydraulic boundary conditions as input in addition to the previous crud state and produces a new crud state.  Re-sampling events are performed at time intervals $\Delta t_s$ and this interval is set at runtime by the user.  The influence of the re-sampling interval size is discussed in section \ref{sec:resample_freq_study}.  The re-sample index is denoted by $n$.  The subscript, $(\cdot)_s$ , denotes evaluation at a re-sampling event.  A prime-notated variable,  $(\cdot)'$, represents a spatially re-mapped sample as in figure \ref{fig:samplemapping}.  At each re-sampling event the temperature, TKE and boundary heat flux samples are drawn from the reconstructed joint probability $\hat H^t$.  Assume that the sample time step is constant and equal to $\Delta t_s$.
+In figure \ref{fig:stepscheme} dotted arrows represent sampling from a probability distribution.  $\mathcal R$ is the spatial reordering map from sample space to a position on the rod surface. $\mathcal G$ represents the crud generation function provided by the crud simulation package which takes thermal hydraulic boundary conditions as input in addition to the previous crud state and produces a new crud state.  Resampling events are performed at time intervals $\Delta t_s$ and this interval is set at runtime by the user.  The influence of the resampling interval size is discussed in section \ref{sec:resample_freq_study}.  The resample index is denoted by $n$.  The subscript, $(\cdot)_s$ , denotes evaluation at a resampling event.  A prime-notated variable,  $(\cdot)'$, represents a spatially re-mapped sample as in figure \ref{fig:samplemapping}.  At each resampling event the temperature, TKE and boundary heat flux samples are drawn from the reconstructed joint probability $\hat H^t$.  Assume that the sample time step is constant and equal to $\Delta t_s$.
 
 \begin{figure}[H]
     \centering
@@ -491,12 +491,12 @@ In figure \ref{fig:stepscheme} dotted arrows represent sampling from a probabili
     \label{fig:stepscheme}
 \end{figure}
 
-Since the re-sampling time step size is constant the sample time can be computed by multiplying the re-sampling event index by the constant re-sampling step size:
+Since the resampling time step size is constant the sample time can be computed by multiplying the resampling event index by the constant resampling step size:
 \begin{equation}
 t_{s_n} = n\Delta t_s
 \end{equation}
 
-The time averaged sample weights are in general updated by equation \ref{eq:time_sample_weights1} at each re-sampling step.
+The time averaged sample weights are in general updated by equation \ref{eq:time_sample_weights1} at each resampling step.
 
 \begin{equation}
 \bar \omega'_{{s_n},i} = 
@@ -506,7 +506,7 @@ The time averaged sample weights are in general updated by equation \ref{eq:time
 \end{equation}
 Where $i$ is the sample index within a single CTF face.
 
-After applying the constant re-sample step size assumption the time averaged sample weights can be updated at each re-sampling step according to equation \ref{eq:time_sample_weights3}.
+After applying the constant resample step size assumption the time averaged sample weights can be updated at each resampling step according to equation \ref{eq:time_sample_weights3}.
 The ratio of the target density and the sampling distribution density is denoted by $\omega$ and is given in equation \ref{eq:imp_prob_ratio}. 
 
 \begin{align}
@@ -515,7 +515,7 @@ The ratio of the target density and the sampling distribution density is denoted
 \label{eq:time_sample_weights3}
 \end{align}
 
-After each re-sampling event the total crud mass, $C_m$ on a CTF face, can be computed by a wighted sum given in equation \ref{eq:patch_sum_mass}.  The sampling and weighting procedure is depicted in figure \ref{fig:crudsamplesdt}.
+After each resampling event the total crud mass, $C_m$ on a CTF face, can be computed by a wighted sum given in equation \ref{eq:patch_sum_mass}.  The sampling and weighting procedure is depicted in figure \ref{fig:crudsamplesdt}.
 
 \begin{equation}
 C_{m} = \left(\frac{A}{\sum_i^M \bar \omega'_i}\right) \sum_i^M C'_i \bar \omega'_i
@@ -589,7 +589,7 @@ All model variables which are set at runtime are provided in table \ref{tab:hi2l
             Sym & Default Value & Purpose  \\
             \hline
             \hline
-            $\Delta t_s$ & 25 $[days]$ &  Re-sampling time step size. \\
+            $\Delta t_s$ & 25 $[days]$ &  Resampling time step size. \\
             \hline
             $M$ & 400 & Number of samples drawn per CTF face. \\
             \hline

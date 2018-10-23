@@ -20,17 +20,17 @@ Copula parameters can be determined by a weighted maximum likelihood fit to empi
 
 The \emph{StarVine} copula package and documentation is available at \url{https://github.com/wgurecky/StarVine.git}.
 
-\section{Python Interfaces to CRUD Codes}
+\section{Python Interfaces to Crud Codes}
 \index{MAMBA!Software Implementation}
 
-As part of this work, python interfaces were developed for both the legacy CASL crud tool known as MAMBA1D and the state-of-the art CRUD package, Mamba.  The python wrappers to these Fortran codes facilitate rapid prototyping of hi2lo procedures which provide boundary conditions to the CRUD codes.  Additionally, the high level interface simplifies the process of orchestrating large CRUD sensitivity studies.
+As part of this work, python interfaces were developed for both the legacy CASL crud tool known as MAMBA1D and the state-of-the art crud package, Mamba.  The python wrappers to these Fortran codes facilitate rapid prototyping of hi2lo procedures which provide boundary conditions to the crud codes.  Additionally, the high level interface simplifies the process of orchestrating large crud sensitivity studies.
 
 The python wrappers are available in the Virtual Environment for Reactor Analysis (VERA) developed by CASL \url{https://www.casl.gov}.
 
 \section{Hi2lo Code}
 \index{Hi2lo!Software Implementation}
 
-A package that leverages all the aforementioned tools to produce estimates of crud growth rates was developed.  This high level package is the primary user facing result of the current work.  It should be noted this package is heavily dependent on CRUD simulation, copula construction, and gradient boosting technologies.
+A package that leverages all the aforementioned tools to produce estimates of crud growth rates was developed.  This high level package is the primary user facing result of the current work.  It should be noted this package is heavily dependent on crud simulation, copula construction, and gradient boosting technologies.
 This package orchestrates the construction and evaluation of gradient boosted regression trees which provide the copula and marginal distribution parameters as a function of local core conditions.
 Currently, multi pin, multi state point simulation is implemented with future work focused on parallelization, training data acquisition, and improvements to the machine learning model implementation.
 
