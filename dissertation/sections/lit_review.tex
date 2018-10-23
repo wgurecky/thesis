@@ -100,9 +100,9 @@ In this RK approach, the subchannel code could provide mean predictions of relev
 
 \section{Subchannel Hi2lo}
 
-The utilization of CFD data to improve subchannel thermal hydraulic models does not necessarily take on a statistical downscaling characteristic.  Oftentimes the strategy by which one uses CFD data to improve a subchannel model can be developed using standard Bayesian inference techniques in which model parameters are inferred through comparing the low fidelity model to high fidelity experimental or CFD data.  This flavor of inverse problem oftentimes involves  model calibration, model selection and experimental design aspects.  A wide array of literature exists on each of these topics and will not be interrogated here.  Instead, a pointed literature review of the latest CFD-informed subchannel work is considered.
+The utilization of CFD data to improve subchannel thermal hydraulic models does not necessarily take on a statistical downscaling characteristic.  Oftentimes the strategy by which one uses CFD data to improve a subchannel model can be developed using standard Bayesian inference techniques in which model parameters are inferred through comparing the low fidelity model to high fidelity experimental or CFD data.  This typifies an inverse problem which oftentimes involves  model calibration, model selection and experimental design aspects.  A wide array of literature exists on each of these topics and will not be interrogated here.  Instead, a pointed literature review of the latest CFD-informed subchannel work is considered.
 
- M. Avramova developed CFD informed grid mixing models in CTF.  This work leveraged CFD results to improve the momentum balance and grid mixing models in CTF \cite{avramova2007}.  The lateral momentum equations implemented in CTF are provided in equation \ref{eq:ctf_lat_mom}.
+ M. Avramova developed CFD informed grid mixing models in CTF.  Avramova's work leveraged CFD results to improve the momentum balance and grid mixing models in CTF \cite{avramova2007}.  The lateral momentum equations implemented in CTF are provided in equation \ref{eq:ctf_lat_mom}.
 
     	\begin{align}
     	& \frac{\partial }{\partial t}(\alpha_l \rho_l \mathbf U_l)
@@ -144,7 +144,7 @@ Where the first term accounts for the effect of grid flow restriction and the se
     \caption{S. Yao empirical Nusselt number ratio vs. distance from upstream spacer grid.}
     \label{fig:gridnueff}
 \end{figure}
-This work is important because it repents an early approach to building experimentally informed hi2lo subchannel models.  This model is still employed by modern subchannel codes such as CTF to obtain more accurate rod surface temperature distributions near the spacer grids.
+This work is important because it repents an early approach to building experimentally informed hi2lo subchannel models.  The Yao model is still employed by modern subchannel codes such as CTF to obtain more accurate rod surface temperature distributions near the spacer grids.
 
     Similar to Yao's approach for capturing rod-enhanced heat transfer,  B. Salko et al. developed a CFD-Informed hi2lo spatial remapping procedure for CILC/CIPS screening \cite{salko17}.  Rather than establishing a general empirical relationship between grid geometric features and the flow field, Salko developed grid specific maps.  The developed multiplier maps are applicable only to the grid designed on which they are based.  In contrast to Yao's approach, this approach enables the retention of much higher resolution flow field features in the multiplier maps.  In addition to generating heat transfer multiplier maps, this method developed a TKE mapping procedure since both fields are required for accurate crud predictions.  Both maps are applied in conjunction to a baseline CTF result to produce grid enhanced surface temperature and TKE distributions at runtime of the CTF model.
     
@@ -233,11 +233,11 @@ A key assumption that the multiplier maps are insensitive flow rate was made in 
 \end{figure}
 
 
-Some simplifications are made in the application of this mapping.  For a given assembly, the multiplier maps have been shown to have a high span to span repeatability.  Therefore, a representative map is derived from a single span in a fully developed flow field.  This representative map is then applied to all other spans in the model.
+Some simplifications are made in the application of this mapping.  For a given assembly, the multiplier maps have been shown to have a high span to span repeatability.  Therefore, a representative map is derived from a single span in a fully developed flow field.  The representative map is then applied to all other spans in the model.
 
 The multiplier map may not be transferable to other assemblies in the core due to geometric effects including the orientation of neighboring assemblies and TH/neutronic feedbacks.  This represents a limitation to the spatial mapping procedure as unique maps must be generated for different assemblies in the core.
 
-T. Blyth produced CFD informed grid enhanced heat transfer models for the advanced subchannel code, CTF \cite{blyth2014} \cite{blyth2017}.  This work presented strategies for processing CFD data for use in generating enhanced heat transfer maps and for computing form loss coefficients across spacer grids.  Blyth's work served as a precursor to Salko's CFD informed method for developing HTC and TKE maps.
+T. Blyth produced CFD informed grid enhanced heat transfer models for the advanced subchannel code, CTF \cite{blyth2014} \cite{blyth2017}.  Blyth's work presented strategies for processing CFD data for use in generating enhanced heat transfer maps and for computing form loss coefficients across spacer grids.  Blyth's work served as a precursor to Salko's CFD informed method for developing HTC and TKE maps.
 
 
 \section{Copula}
