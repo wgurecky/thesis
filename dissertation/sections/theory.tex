@@ -119,7 +119,7 @@ A statistical relationship between the surface temperature, TKE, and boundary he
 h(T, k, q'') = f_T f_k, f_{q''} \prod_{m=1}^{n-1} \prod_{e \in E_m} c_{ij|D_e}(u_{i|D_e}, u_{j|D_e})
 \label{eq:ori_vine_model}
 \end{equation}
-Where $m$ denotes the tree level in the vine and each bivariate copula model, $c$ defined on the edge $\{e\}$ is known as a pair copula.  The conditioning set at edge $e$ is denoted $D_e$ is defined by a proximity condition  \cite{bedford2001}. $E_m$ denotes the set of all edges at level $m$. The graphical representation of this vine is provided in figure \ref{fig:cvine3var}. 
+Where $m$ denotes the tree level in the vine and each bivariate copula model, $c$ defined on the edge $\{e\}$ is known as a pair copula.  The conditioning set at edge $e$, denoted $D_e$, is defined by a proximity condition  \cite{bedford2001}. $E_m$ denotes the set of all edges at level $m$. The graphical representation of this vine is provided in figure \ref{fig:cvine3var}. 
 % The complete nested tree model is sometimes referred to as a pair copula construction in the literature.  
 Simplifying independence assumptions can be made based on the heat transfer processes on a fuel rod that lead to certain copula in the vine to take the form of a uniform density distribution on the unit square.
 
@@ -132,8 +132,8 @@ Simplifying independence assumptions can be made based on the heat transfer proc
 
 In this work it is assumed that the cladding surface temperature and near-wall TKE are uncorrelated with the boundary heat flux.  The justification is as follows.
 
-Relative variations in boundary heat flux are very small over a CTF face $(\pm 5\%)$ provided that a CTF face represents a small approximately $1 [cm^2]$ localized patch on the rod surface.  Large absolute heat fluxes of approximately $80 [W/cm^2]$ are possible on the cladding surface of fuel in a typical PWR.  However, high axial and azimuthal gradients of boundary heat flux on the rod surface are not typical under standard operation conditions.  High thermal gradients can lead to extra thermal induced stresses on the cladding which can promote rod bowing or, extreme in conditions, fuel failure.
-Additionally, figures \ref{fig:crud_sensi1} to \ref{fig:crud_sensi3} show that the sensitivity of crud growth rate to the boundary heat flux is small relative to sensitivity of curd to surface temperature and local turbulent kinetic energy.
+Relative variations in boundary heat flux are very small over a CTF face $(\pm 5\%)$ provided that a CTF face represents a small (approximately $1 [cm^2]$) localized patch on the rod surface.  Large absolute heat fluxes of approximately $80 [W/cm^2]$ are possible on the cladding surface of fuel in a typical PWR.  However, high axial and azimuthal gradients of boundary heat flux on the rod surface are not typical under standard operating conditions.  High thermal gradients can lead to extra thermal induced stresses on the cladding which can promote rod bowing or, extreme in conditions, fuel failure.
+Additionally, figures \ref{fig:crud_sensi1} to \ref{fig:crud_sensi3} show that the sensitivity of the crud growth rate to the boundary heat flux is small relative to the sensitivity of crud growth rates to surface temperature and local turbulent kinetic energy.
 
 After applying the independence assumptions the original trivariate dependence model between the temperature, TKE, and boundary heat flux can be reduced to a bivariate model with the boundary heat flux being treated independently.  Applying the simplifying assumptions results in: $c_{T,q''}(u_T, u_{q''}) = 1$ and $c_{k,q''|T}(u_{k|T}, u_{q''|T}) = 1$. The simplified joint density can then be given by equation \ref{eq:simple_vine_model}:
 \index{Copula!Vine Copula}
