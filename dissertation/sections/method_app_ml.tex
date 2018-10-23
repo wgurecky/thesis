@@ -64,7 +64,7 @@ After pre-processing, the HDF5 table includes a list of predictive scalar values
 \subsection{Feature Engineering}
 \label{sec:feature_eng}
 
-The objective of feature engineering is to select a predictive variable set that can describe the behavior of the conditional quantiles and copula everywhere in the assembly.
+The objective of feature engineering is to select a predictive variable set that describes the behavior of the conditional quantiles and copula everywhere in the assembly.
 
 \begin{table}[h]
     \begin{center}
@@ -113,7 +113,7 @@ Since the boosted regression (and classification) models are insensitive to mult
 
 \subsection{Cross Validation}
 
-An estimate of the crud prediction error incurred when evaluating the trained models at unknown CFD states can be made by performing a leave one out (LOO) cross validation study.  Cross validation is used to estimate how well the machine learning models employed in this work generalized to previously unseen local core conditions; i.e. core conditions that are not included in the training data set.
+An estimate of the per pin crud prediction errors incurred when evaluating the trained models at unknown CFD states were made by performing a leave one out (LOO) cross validation study.  Cross validation is used to estimate how well the machine learning models employed in this work generalized to previously unseen local core conditions; i.e. core conditions that are not included in the training data set.
 
 \begin{figure}[h]
     \centering
@@ -133,7 +133,7 @@ This cross validation technique ascertains crud prediction errors within the TH 
 A principal goal of the machine learning model is to predict the conditional quantiles of the temperature and TKE distributions as a function of local core conditions.  In this light, the trained quantile regression models are compared against the left-out CFD data set on each pin.  The accuracy of both the TKE and temperature quantile regressors is assessed using both quantile-quantile plots and quantile vs axial rod position comparisons.
 
 Quantile-quantile (Q-Q) plots of the temperature and TKE residual distributions are used to elucidate bias introduced by the machine learning model in the conditional quantiles at a variety of axial positions and local core conditions.  Estimated quantiles are obtained for the left-out pin by evaluating the trained reduced LOO model and are compared to the expected CFD result.
-A subset of the TKE residual quantile regression results are given in figures \ref{fig:tkepin1} to \ref{fig:tkepin3}.  A complete set of quantile regression results are provide in appendix \ref{chap:app_ml}. The Q-Q plots summarize the biases in the conditional quantile distributions when compared to the target golden standard CFD data.  The maximum and average Kolmogorov–Smirnov (KS) statistic is provided in the Q-Q figures for each pin which can be computed by equation \ref{eq:ks_stat}.
+A subset of the TKE residual quantile regression results are given in figures \ref{fig:tkepin1} to \ref{fig:tkepin3}.  A complete set of quantile regression results are provide in appendix \ref{chap:app_ml}. The Q-Q plots summarize the biases in the conditional quantile distributions when compared to the target golden standard CFD data.  The maximum and average Kolmogorov–Smirnov (KS) statistic is provided in the Q-Q figures for each pin.  The KS statistic is given by equation \ref{eq:ks_stat}.
 \begin{equation}
     KS = \mathrm{sup}(\{\hat F(q_{\tau}) - F(q_{\tau})\})
 \label{eq:ks_stat}
@@ -190,7 +190,7 @@ Where $n=20$ in this case since the predicted CDFs are supported at 20 locations
 \end{center}
 \end{table}
 
-By inspecting the KS test results presented in tables \ref{tab:ks_tke} and \ref{tab:ks_temp} it can be concluded that the prediction of the conditional temperature distribution on each CTF axial edit was far more difficult than predicting the conditional TKE distribution.  A large maximum KS temperature distribution distance was seen for the majority of the pins in the assembly. The worst performing pins in this respect were pin 4, pin 9, and pin 20. This is due to the aforementioned high span-to-span and pin-to-pin repeatability of the TKE distributions and conversely the low repeatability of the temperature distribution.  Since the maximum KS distance can occur in CTF axial edit which do not contain temperatures in excess of the saturation point, the maximum KS distance is not an indicator of poor crud predictive performance.  The presented KS tests only serve to quantify the ability of the gradient boosted quantile regressors to reproduce the expected distributions.
+By inspecting the KS test results presented in tables \ref{tab:ks_tke} and \ref{tab:ks_temp} it can be concluded that the prediction of the conditional temperature distribution on each CTF axial edit was far more difficult than predicting the conditional TKE distribution.  A large maximum KS temperature distribution distance was seen for the majority of the pins in the assembly. The worst performing pins in this respect were pin 4, pin 9, and pin 20. This is due to the aforementioned high span-to-span and pin-to-pin repeatability of the TKE distributions and conversely the low repeatability of the temperature distribution.  Since the maximum KS distance may occur in CTF axial edit which do not contain temperatures in excess of the saturation point, the maximum KS distance is not an indicator of poor crud predictive performance.  The presented KS tests only serve to quantify the ability of the gradient boosted quantile regressors to reproduce the expected distributions.
 
 Pin-average KS distances indicate that the the null hypothesis was not rejected in the majority of CTF axial zones, however.  This indicates that the distributions predicted by the gradient boosted quantile regressors were, on average, statistically indistinguishable from the empirical CFD distributions. 
 
@@ -265,9 +265,9 @@ Note that since a LOO CV technique was used for comparing the predicted distribu
     \label{fig:tkepin3}%
 \end{figure}
 
-Shown in the axial plots in figure \ref{fig:tkepin1} to \ref{fig:tkepin3}, the TKE distribution is drastically influenced by spacer grids.  The maximum near-wall TKE sharply increases following a spacer grid followed by a decay towards a more orderly flow.  The location of minimum predicted near wall TKE also immediately follows the spacer grids.  In addition to increasing the net turbulent kinetic energy of the flow, mixing vanes can also produce eddy regions of stagnant flow thus giving rise to regions of low near wall TKE.  The hi2lo model retains both of these properties of the flow field resolved by CFD.    
+Shown in the axial plots in figure \ref{fig:tkepin1} to \ref{fig:tkepin3}, the TKE distribution is drastically influenced by spacer grids.  The maximum near-wall TKE sharply increases following a spacer grid followed by a decay towards a more orderly flow.  The location of minimum predicted near wall TKE also immediately follows the spacer grids.  In addition to increasing the net turbulent kinetic energy of the flow, mixing vanes also produce eddy regions of stagnant flow thus giving rise to regions of low near wall TKE.  The hi2lo model retains both of these properties of the flow field resolved by CFD.    
 
-Good overall performance of the TKE quantile regression models can be attributed to high pin-to-pin and span-to-span similarities of the surface TKE distributions. The observation of high span-to-span repeatability of the TKE distributions is consistent with those found in other hi2lo studies by Salko et. al \cite{salko17}.
+Good overall performance of the TKE quantile regression models may be attributed to high pin-to-pin and span-to-span similarities of the surface TKE distributions. The observation of high span-to-span repeatability of the TKE distributions is consistent with those found in other hi2lo studies by Salko et. al \cite{salko17}.
 
 Temperature residual quantile regression results are given in figures \ref{fig:temppin1} to \ref{fig:temppin3}.  Similar to the TKE conditional quantiles, the conditional temperature distribution exhibits sharp changes in behavior across the spacer grids. Unlike the TKE residual distribution the surface temperature distributions do not exhibit the same degree of similarity from span to span or from pin to pin.  The presence of discontinuities in the temperature distributions enforced the choice of the gradient boosted tree machine learning algorithm which is resilient to steep gradients in the response surface.
 
@@ -356,7 +356,7 @@ The presented case considered the 5x5 array operating at a single state with fix
 The comparisons presented are the result of the LOO cross validation study.
 Ergo the hi2lo model was used in a properly predictive manner since distribution parameters had to be inferred from the machine learning model at local core conditions outside of the training set.
 
-The error estimates provided by the present LOO cross validation study can be viewed as conservative.  The LOO strategy expunged an entire pin from an already limited training pool of only 25 pins . This is not representative a production-ready training data set.  A training set to be used in a production environment will have all possible pin geometries represented within it; that is all possible pin configurations within a bundle.  Not all combinations of inlet and power conditions will be simulated by CFD due to computational time limitations and so interpolation error can be expected even if a provided a geometrically rich training set.  
+The error estimates provided by the present LOO cross validation study may be viewed as conservative.  The LOO strategy expunged an entire pin from an already limited training pool of only 25 pins . This is not representative a production-ready training data set.  A training set to be used in a production environment will have all possible pin geometries represented within it; that is all possible pin configurations within a bundle.  Not all combinations of inlet and power conditions will be simulated by CFD due to computational time limitations and so interpolation error may be expected even if a provided a geometrically rich training set.  
 
 % If the flow fields are principally governed by geometric factors the 
 
@@ -435,7 +435,7 @@ Circumventing these difficulties is a non-trivial undertaking.  Without making a
     \subfloat[Hi2lo pin crud thickness.]{{\includegraphics[width=0.46\linewidth]{figs/5x5/imp/tstep_5/pin_1/hi2lo_imp_pin_z_cthick} }}%
     \qquad
     \subfloat[CFD pin crud thickness.]{{\includegraphics[width=0.46\linewidth]{figs/5x5/cfd/tstep_5/pin_1/CFD_pin_z_cthick} }}%
-    \caption[Pin 1 crud thickness results at 300 days]{Pin 1 crud thickness results at 300 days.  Select crud quantiles are indicated via colored bands.  The maximum crud thickness predicted by the hi2lo model is approximately 70 microns at 300 days.  Likewise the maximum crud thickness predicted by coupled CFD/crud computations was approximately 72 microns.  Additionally note that the the mean crud thickness can significantly deviate from the median indicating asymmetry in the crud thickness distribution.}%
+    \caption[Pin 1 crud thickness results at 300 days]{Pin 1 crud thickness results at 300 days.  Select crud quantiles are indicated via colored bands.  The maximum crud thickness predicted by the hi2lo model is approximately 70 microns at 300 days.  Likewise the maximum crud thickness predicted by coupled CFD/crud computations was approximately 72 microns.  Additionally note that the the mean crud thickness deviates from the median indicating asymmetry in the crud thickness density distribution.}%
     \label{fig:dist_hi2loimppinzcthick}
 \end{figure}
 
@@ -638,7 +638,7 @@ Consistent under prediction of crud across the assembly was not observed. The to
 
 The correlations between crud prediction errors and errors committed by the quantile regressors were investigated in an attempt to establish performance metrics.  Understanding the correlation between the machine learning model prediction accuracy and the crud prediction errors is helpful if one wished to estimate the expect crud growth errors before employing the hi2lo model in a production setting.
 
-Provided sensitivities of the crud results to the machine learning prediction errors one can estimate the expected accuracy of the crud predictions obtained via the hi2lo model by:
+Provided sensitivities of the crud results to the machine learning prediction errors one may estimate the expected accuracy of the crud predictions obtained via the hi2lo model by:
 
 \begin{equation} \nonumber
     E_{c_j} \approx \sqrt{ \sum_l \left( \frac{\partial E_{c,j}}{\partial E_{l,j}}\right)^2 E_{l,j} }
