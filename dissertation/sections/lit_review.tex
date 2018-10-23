@@ -118,7 +118,7 @@ The grid directed cross flow momentum source term used in Avramova's model is de
     	M_l^{GDXF} = f^2_{sg}(z) u_l^2 \rho_l A_g S_g
         \label{eq:grid_en_xflow_coeff}
     	\end{equation}
-        Where $u_l$ is the axial liquid velocity and the cross flow factor was given by equation \ref{eq:f_factor}.
+        Where $u_l$ is the axial liquid velocity and the cross flow factor is given by equation \ref{eq:f_factor}.
     	\begin{equation}
     	f_{sg}(z) = \frac{V^{CFD}_l(z-z_{in})}{U^{CFD}_{in}}
         \label{eq:f_factor}
@@ -127,8 +127,7 @@ The grid directed cross flow momentum source term used in Avramova's model is de
 
  The effectiveness of the grid enhanced cross flow model was determined by comparing exit bulk temperature profiles across a variety of assembly designs against experimental and CFD results.  The results indicated a marked improvement in the rod-assembly outlet temperature distribution at little additional computational cost as compared to CTF without CFD informed grid enhanced cross flow corrections.  
  
- The next bodies of work are closer in alignment with traditional downscaling techniques.  These class of hi2lo procedures are not statistical in nature, but rather seek to correct spatial biases in the field predictions made by a low fidelity subchannel code.
-
+ The next bodies of work are closer in alignment with traditional downscaling techniques.  These hi2lo procedures are not statistical in nature, but rather seek to correct spatial biases in the field predictions made by a low fidelity subchannel code using a purely deterministic multiplier mapping procedure.
     
 S. Yao et al. developed an empirical model of the heat transfer coefficient downstream of spacer grids \cite{yao82}.
     An empirical relationship between the Nusselt number ratio and the vane angle, $\phi$, blockage ratio $\epsilon$, dimensionless distance from the grid, $x/D$, and fraction of flow area impeded by the vanes, $A$, was produced.  This relationship is provided in equation \ref{eq:yao_htc}.
@@ -137,7 +136,7 @@ S. Yao et al. developed an empirical model of the heat transfer coefficient down
 \frac{Nu}{Nu_0}  = \left[ 1 + 5.55 \epsilon^2 e^{-0.13(x/D)}\right] + \left[ 1 + A^2\mathrm{tan}^2\phi e^{-0.034(x/D)} \right]
 \label{eq:yao_htc}
 \end{equation}
-Where the first term is accounts for the effect of grid flow restriction and the second term represents the contribution of vane induced swirl on the heat transfer.
+Where the first term accounts for the effect of grid flow restriction and the second term represents the contribution of vane induced swirl on the heat transfer.
 
 \begin{figure}[H]
     \centering
@@ -145,8 +144,9 @@ Where the first term is accounts for the effect of grid flow restriction and the
     \caption{S. Yao empirical Nusselt number ratio vs. distance from upstream spacer grid.}
     \label{fig:gridnueff}
 \end{figure}
+This work is important because it repents an early approach to building experimentally informed hi2lo subchannel models.  This model is still employed by modern subchannel codes such as CTF to obtain more accurate rod surface temperature distributions near the spacer grids.
 
-    Similar to Yao's approach for capturing rod-enhanced heat transfer,  B. Salko et al. developed a CFD-Informed hi2lo spatial remapping procedure for CILC/CIPS screening \cite{salko17}.  Rather than establishing a general empirical relationship between grid geometric features and the flow field, Salko developed grid-specific maps.  The developed multiplier maps are applicable only to the grid designed on which they are based.  In contrast to Yao's approach, this approach enables a much higher resolution flow field effects on the surface temperature distribution to be retained in the multiplier maps.  In addition to generating heat transfer multiplier maps, this method developed a TKE mapping procedure since both fields are required for accurate crud predictions.  Both maps are applied in conjunction to a baseline CTF result to produce grid enhanced surface temperature and TKE distributions at runtime of the CTF model.
+    Similar to Yao's approach for capturing rod-enhanced heat transfer,  B. Salko et al. developed a CFD-Informed hi2lo spatial remapping procedure for CILC/CIPS screening \cite{salko17}.  Rather than establishing a general empirical relationship between grid geometric features and the flow field, Salko developed grid specific maps.  The developed multiplier maps are applicable only to the grid designed on which they are based.  In contrast to Yao's approach, this approach enables the retention of much higher resolution flow field features in the multiplier maps.  In addition to generating heat transfer multiplier maps, this method developed a TKE mapping procedure since both fields are required for accurate crud predictions.  Both maps are applied in conjunction to a baseline CTF result to produce grid enhanced surface temperature and TKE distributions at runtime of the CTF model.
     
     First, an intermediate coupling mesh is constructed on the rod surface with a resolution between the CFD mesh and the CTF grid.  Next, the raw CFD surface fields are then mapped to the coupling mesh.  In this approach crud is to be grown on the intermediate coupling grid.  In theory, this grid can be refined to be equivalent to the CFD mesh size and indeed this would reduce interpolation error in the hi2lo procedure \cite{salko17}.
        
@@ -192,7 +192,7 @@ Where the first term is accounts for the effect of grid flow restriction and the
     \STATE \textbf{return}: $\hat T_s = T^{i+1}_s$
     \end{algorithmic}
     \end{algorithm}
-    Where $h_{ctf}(\cdot)$ is a callable CTF function that returns and effective multiphase HTC, $h_{eff}$.
+    Where $h_{ctf}(\cdot)$ is a callable CTF function that returns an effective multiphase HTC, $h_{eff}$.
 
     The TKE remap is constructed by evaluation the ratio given in equation \ref{eq:tke_map} on all CTF faces.
     \begin{equation}
@@ -235,9 +235,9 @@ A key assumption that the multiplier maps are insensitive flow rate was made in 
 
 Some simplifications are made in the application of this mapping.  For a given assembly, the multiplier maps have been shown to have a high span to span repeatability.  Therefore, a representative map is derived from a single span in a fully developed flow field.  This representative map is then applied to all other spans in the model.
 
-The multiplier map may not be transferable to other assemblies in the core due to geometric effects including the orientation of neighboring assemblies and TH/neutronics feedbacks.  This represents a limitation to the spatial mapping procedure as unique maps must be generated for different assemblies in the core.
+The multiplier map may not be transferable to other assemblies in the core due to geometric effects including the orientation of neighboring assemblies and TH/neutronic feedbacks.  This represents a limitation to the spatial mapping procedure as unique maps must be generated for different assemblies in the core.
 
-Blyth produced CFD informed grid enhanced heat transfer models for the advanced subchannel code, CTF \cite{blyth2014} \cite{blyth2017}.  This work presented strategies for processing CFD data for use in generating enhanced heat transfer maps and for computing the form loss coefficient across spacer grids.  Blyth's work served as a precursor to Salko's CFD informed method for developing HTC and TKE maps.
+T. Blyth produced CFD informed grid enhanced heat transfer models for the advanced subchannel code, CTF \cite{blyth2014} \cite{blyth2017}.  This work presented strategies for processing CFD data for use in generating enhanced heat transfer maps and for computing form loss coefficients across spacer grids.  Blyth's work served as a precursor to Salko's CFD informed method for developing HTC and TKE maps.
 
 
 \section{Copula}
