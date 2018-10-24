@@ -3,7 +3,7 @@
 
 For deployment as an in-line statistically based downscaling tool which sits between a subchannel code and a crud simulation code in a core simulator such as VERA the model is required to perform the hi2lo mapping for all pins in the core at any operating condition.  In other words, the model must be evaluable at any local core conditions typical of an operating PWR.  Since the training data set cannot contain all possible pin geometries, loading configurations and operating conditions due to computational expense, the model produces a prediction for the copula and marginal distribution parameters between known states.
 
-One might envision a table-lookup approach where high fidelity CFD flow field maps are pre-computed and stored for a wide array of flow and power conditions.  A nearest neighbor interpolation scheme could then be applied to extract the best-matching CFD map provided some local core state by VERA.  This is not tractable since the number of CFD computations to build the data base would be prohibitively large.  Instead of storing spatial CFD hi2lo maps, CFD data is distilled into a set of statistics tabulated as a function of local core state.
+One might envision a table-lookup approach where high fidelity CFD flow field maps are precomputed and stored for a wide array of flow and power conditions.  A nearest neighbor interpolation scheme could then be applied to extract the best-matching CFD map provided some local core state by VERA.  This is not tractable since the number of CFD computations to build the data base would be prohibitively large.  Instead of storing spatial CFD hi2lo maps, CFD data is distilled into a set of statistics tabulated as a function of local core state.
 
 % It is appealing to transform the problem of hi2lo construction from performing spatial flow map prediction into one of summary statistics prediction where much less information is required adequately fill out the operating envelope.
 
@@ -641,7 +641,7 @@ The correlations between crud prediction errors and errors committed by the quan
 Provided sensitivities of the crud results to the machine learning prediction errors one may estimate the expected accuracy of the crud predictions obtained via the hi2lo model by:
 
 \begin{equation} \nonumber
-    E_{c_j} \approx \sqrt{ \sum_l \left( \frac{\partial E_{c,j}}{\partial E_{l,j}}\right)^2 E_{l,j} }
+    E_{c_j} \approx \sqrt{ \sum_l \left( \frac{\partial E_{c,j}}{\partial E_{l,j}}\right)^2 E_{l,j}^2 }
 \end{equation}
 Where $E_{c,j}$ is the $j^{th}$ pin crud mass error and $E_l$ is the error associated with the $l^{th}$ component of the ML model predictions.  $E_{l,j}$ can be computed at training time, before crud growth simulations are performed.
 This allows a user of the hi2lo model to detect problems with the trained quantile regression and copula models prior to employing the model to make crud predictions.
