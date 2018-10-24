@@ -1,5 +1,7 @@
-\documentclass[12pt,a4paper]{report}
-\usepackage[a4paper, total={6.00in, 9in}]{geometry}
+%\documentclass[12pt,a4paper]{report}
+\documentclass[12pt]{report}
+\usepackage[right=1.125in, left=1.125in, top=1.125in, bottom=0.815in]{geometry}
+%\usepackage{geometry}
 \usepackage{pdflscape}
 \usepackage{setspace}
 \usepackage[utf8]{inputenc}
@@ -22,28 +24,48 @@
 \usepackage[]{algorithm}
 \usepackage{algorithmic}
 \usepackage{array}
+\usepackage{makeidx}
 \newcolumntype{B}{>{\centering\arraybackslash}m{3cm}}
 \newcolumntype{C}{>{\centering\arraybackslash}m{4cm}}
 \newcolumntype{L}{>{\arraybackslash}m{8cm}}
 \usepackage[version=3]{mhchem} % Package for chemical equation typesetting \ce{}
-\usepackage{siunitx} % Provides the \SI{}{} and \si{}
+\usepackage{siunitx} % Provides the \SI{}{} and \si{} and \num{}
 \usepackage[normalem]{ulem}  % stike-through by \sout{}
+% \usepackage[backend=bibtex,firstinits=true]{biblatex}
 
+% UT diss template setup
+\usepackage{utdiss2}
+\usepackage[T1]{fontenc}
+\usepackage{titlesec, blindtext, color}
+\definecolor{gray75}{gray}{0.75}
+\newcommand{\hsp}{\hspace{20pt}}
 
+\author{William Ladd Gurecky}
+\address{9905 Chukar Circle\\ Austin, Texas 78758}
+\title{A CFD-Informed Model for Subchannel Resolution \\ Crud Prediction}
+\supervisor{Derek Haas}
+\committeemembers
+[Benjamin Leibowicz]
+[Sheldon Landsberger]
+[Kevin Clarno]
+{Stuart Slattery}
 
+% \previousdegrees{}
+\previousdegrees{B.S.M.E., M.S.E.}
 
 % image paths
 \graphicspath{{../proposal/}{./}{./figs/crud}}
 
-
 %===========================CUSTOM CMDS=======================================%
 \DeclareMathOperator*{\E}{\mathbb{E}}
 \newcommand{\xmark}{\ding{55}}%
-
-\author{William Gurecky}
-\title{CFD Informed Subchannel}
+\makeindex
 
 \begin{document}
+\copyrightpage          % Produces the copyright page.
+\commcertpage           % Produces the Committee Certification
+\titlepage              % Produces the title page.
+	
 \renewcommand{\thepage}{\roman{page}}
 %=================================TITLE=======================================%
 %-----------------------------------------------------------------------------%
@@ -61,10 +83,11 @@
 \input{./sections/acryn.tex}
 
 %=================================BODY========================================%
+\titleformat{\chapter}[hang]{\Huge\bfseries}{\thechapter\hsp\textcolor{gray75}{|}\hsp}{0pt}{\Huge\bfseries}
 \renewcommand{\thepage}{\arabic{page}} % Arabic numerals for page counter
 \setcounter{page}{1}
-\onehalfspacing
-% \doublespacing  % UT formatting spec
+% \onehalfspacing
+\doublespacing  % UT formatting spec
 %-----------------------------------------------------------------------------%
 \chapter{Introduction}
 \label{chap:intro}
@@ -100,25 +123,29 @@
 % \input{./sections/gantt.tex}
 
 %-----------------------------------------------------------------------------%
-\input{./sections/references.tex}
 
 %=================================APPX========================================%
 %-----------------------------------------------------------------------------%
-\chapter{Appendix A}
+\appendices
+\chapter{5x5 Machine Learning Results}
 \label{chap:app_ml}
 \input{./sections/appendix/app_ml_results.tex}
 
-\chapter{Appendix B}
+\chapter{5x5 Crud Results}
 \label{chap:app_b}
 \input{./sections/appendix/app_b.tex}
 
-\chapter{Appendix C}
+\chapter{Software}
 \label{chap:app_c}
 \input{./sections/appendix/app_e.tex}
 
-\chapter{Appendix D}
+\chapter{Rod Surface Heat Transfer}
 \label{chap:app_d}
 \input{./sections/appendix/app_d.tex}
+
+\printindex
+
+\input{./sections/references.tex}
 
 
 \end{document}
