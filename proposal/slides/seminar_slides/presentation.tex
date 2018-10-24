@@ -9,6 +9,124 @@
 %\usetheme[dept=Materials\ Science\ and\ Engineering]{cockrell}
 %\usetheme[dept=Petroleum\ and\ Geosystems\ Engineering]{cockrell}
 
+\mode<presentation> {
+	
+	
+	
+	% The Beamer class comes with a number of default slide themes
+	
+	% which change the colors and layouts of slides. Below this is a list
+	
+	% of all the themes, uncomment each in turn to see what they look like.
+	
+	
+	
+	%\usetheme{default}
+	
+	%\usetheme{AnnArbor}
+	
+	%\usetheme{Antibes}
+	
+	%\usetheme{Bergen}
+	
+	%\usetheme{Berkeley}
+	
+	%\usetheme{Berlin}
+	
+	%\usetheme{Boadilla}
+	
+	%\usetheme{CambridgeUS}
+	
+	%\usetheme{Copenhagen}
+	
+	\usetheme{Darmstadt}
+	
+	%\usetheme{Dresden}
+	
+	%\usetheme{Frankfurt}
+	
+	%\usetheme{Goettingen}
+	
+	%\usetheme{Hannover}
+	
+	%\usetheme{Ilmenau}
+	
+	%\usetheme{JuanLesPins}
+	
+	%\usetheme{Luebeck}
+	
+	%\usetheme{Madrid}
+	
+	%\usetheme{Malmoe}
+	
+	%\usetheme{Marburg}
+	
+	%\usetheme{Montpellier}
+	
+	%\usetheme{PaloAlto}
+	
+	%\usetheme{Pittsburgh}
+	
+	%\usetheme{Rochester}
+	
+	%\usetheme{Singapore}
+	
+	%\usetheme{Szeged}
+	
+	%\usetheme{Warsaw}
+	
+	
+	
+	% As well as themes, the Beamer class has a number of color themes
+	
+	% for any slide theme. Uncomment each of these in turn to see how it
+	
+	% changes the colors of your current slide theme.
+	
+	
+	
+	%\usecolortheme{albatross}
+	
+	% \usecolortheme{beaver}
+	
+	%\usecolortheme{beetle}
+	
+	%\usecolortheme{crane}
+	
+	%\usecolortheme{dolphin}
+	
+	\usecolortheme{dove}
+	
+	%\usecolortheme{fly}
+	
+	%\usecolortheme{lily}
+	
+	%\usecolortheme{orchid}
+	
+	%\usecolortheme{rose}
+	
+	%\usecolortheme{seagull}
+	
+	%\usecolortheme{seahorse}
+	
+	%\usecolortheme{whale}
+	
+	%\usecolortheme{wolverine}
+	
+	
+	
+	%\setbeamertemplate{footline} % To remove the footer line in all slides uncomment this line
+	
+	%\setbeamertemplate{footline}[page number] % To replace the footer line in all slides with a simple slide count uncomment this line
+	
+	
+	
+	%\setbeamertemplate{navigation symbols}{} % To remove the navigation symbols from the bottom of all slides uncomment this line
+	
+}
+
+
+
 % Packages
 %\usepackage{etex}
 %\usepackage[bigfiles]{media9}
@@ -48,9 +166,11 @@
 \frame{\frametitle{Outline}\tableofcontents}
 
 % =========================================================================== %
-\begin{frame}[shrink=10]
-    \frametitle{Chalk River Unidentified Deposit (CRUD)}
-    CRUD forms a porous layer on the surface of fuel rods.
+\section{Background}
+\begin{frame}
+    \frametitle{Chalk River Unidentified Deposit (crud)}
+    CRUD forms a porous layer on the surface of fuel rods.  It is primarily comprised of Nickel Ferrite.
+\begin{small}
     \begin{itemize}
     \item Preferentially deposited where temperature is high - near or above saturation point - and where local shear stresses on the rod are low.
 	\item CRUD induced local corrosion (CILC).
@@ -59,8 +179,9 @@
     	\item CRUD and tends to uptake and retain boron from the coolant.
     	\item \ce{Li^+} + \ce{B(OH)_3}   $\rightarrow$ \ce{LiBO_2} + \ce{H^+} + \ce{H_2O} .
     \end{itemize}
-    \item CASL developed CRUD simulation packages: MAMBA \& Mongoose
+    \item CASL developed CRUD simulation package, MAMBA, which is integrated with the VERA core simulator providing.  Goal: provide a \emph{predictive} CIPS tool.
     \end{itemize}
+\end{small}
 %\begin{figure}[!htbp]
 %\centering
 %\includegraphics[width=4cm]{figs/crud-crud.jpg}
@@ -82,34 +203,33 @@
 \end{frame}
 
 % =========================================================================== %
-\section{Background}
 \begin{frame}
-    \frametitle{Chalk River Unidentified Deposit (CRUD)}
+    \frametitle{Crud Induced Power Shift (CIPS)}
     \begin{figure}
         \centering
         \begin{minipage}{.5\textwidth}
             \centering
             \includegraphics[width=6cm]{figs/ao_mpact_ctf.png}
-            \caption{Core averaged \% axial offset. [CASL-I-2015-0318-000]}
+            \caption{Core averaged \% axial offset.  [CASL-I-2015-0318-000]}
         \end{minipage}%
         \begin{minipage}{.5\textwidth}
             \centering
             \includegraphics[width=6cm]{figs/core_b10_mpact_ctf.png}
-            \caption{VERA WBNP1 Cycle 7 CRUD \ce{^{10}B}. 16.08 $[MWD/MTU]$}
+            \caption{VERA WBNP1 Cycle 7 CRUD \ce{^{10}B}. \\ $@ 16.08 [MWD/MTU]$}
         \end{minipage}
     \end{figure}
 \end{frame}
 
 % =========================================================================== %
 \begin{frame}[shrink=20]
-    \frametitle{Coupled CFD/CRUD Calculation}
+    \frametitle{Coupled CFD/Crud Calculation}
     \begin{itemize}
-    \item CFD/CRUD coupling is useful for single-pin or single-assembly CRUD estimates.
-    \item High fidelity CFD/CRUD simulations are too numerically costly for full core simulation.
+    \item CFD/Crud coupling is useful for single-pin or single-assembly CRUD estimates.  Fine scale flow near spacer grid impacted surface crud distribution.  Important for quantifying crud induced local corrosion (CILC) risk.
+    \item CFD/Crud simulations are too numerically costly for full core simulation.
     \end{itemize}
         \begin{figure}[!htbp]
 \centering
-\includegraphics[width=14cm]{figs/combo_180x.png}
+\includegraphics[width=0.99\textwidth]{figs/combo_180x.png}
 \label{log_closed}
     \end{figure}
 \end{frame}
@@ -131,7 +251,7 @@ Differences between CTF (subchannel) and CFD meshes for a single pin.
 \end{frame}
 
 % =========================================================================== %
-\section{Hi2Low Approach}
+\section{Approach}
 \begin{frame}
     \frametitle{CFD informed surrogate model to improve CRUD growth}
     \begin{itemize}
@@ -152,7 +272,7 @@ Differences between CTF (subchannel) and CFD meshes for a single pin.
 \begin{frame}\frametitle{Objectives}
 \begin{itemize}
 \item Account for fine scale flow features unresolved by CTF on the growth of CRUD and boron hideout.
-\item Proposed Hi2Low Approach:
+\item Proposed hi2lo approach:
 \begin{itemize}
 	\item Forgo attempting to capture spatial distributions of temperature, boundary heat flux and TKE on rod surface. 
 	\item Instead, track joint probability density $f(T, TKE, q'')$ tallied over coarse CTF patches.
@@ -247,7 +367,7 @@ On a single coarse CTF patch:
 
 
 % =========================================================================== %
-\section{Capturing Dependence between Random Variables}
+\section[Copula]{Capturing Dependence between Random Variables}
 \begin{frame}
 \frametitle{Capturing Dependence - Sklar's Theorem}
 \begin{itemize}
@@ -270,6 +390,7 @@ Where $\theta_c$ and $\theta_{x,y}$ are free copula and marginal model parameter
 \end{frame}
 
 % =========================================================================== %
+\subsection{}
 \begin{frame}
 \frametitle{Specifying Copula Parameters}
 \begin{itemize}
@@ -285,6 +406,7 @@ Where $\varphi(\theta_c, t)$ is the copula's generator function and $\varphi'$ i
 \end{frame}
 
 % =========================================================================== %
+\subsection{}
 \begin{frame}[shrink=20]
 \frametitle{Computing Sample Quantiles}
 \begin{columns}
