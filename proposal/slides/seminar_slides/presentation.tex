@@ -384,14 +384,14 @@ On a single coarse CTF patch:
 \begin{itemize}
 	\item Expected total crud over patch : 
 	\begin{eqnarray}
-		A \mu_g\ [grams] = A \E[g(\mathbf x|g_o, \mathbf I, \delta t)] \nonumber \\
-		= A \iiint g(\mathbf x|g_o, \mathbf I, \delta t) h(\mathbf x|\theta) d \mathbf x  \nonumber
+		A \mu_g\ [grams] = A \E[\mathcal G(\mathbf x|\mathcal G_o, \mathbf I, \delta t)] \nonumber \\
+		= A \iiint \mathcal G(\mathbf x|\mathcal G_o, \mathbf I, \delta t) h(\mathbf x|\theta) d \mathbf x  \nonumber
 	\end{eqnarray}
 	let $\mathbf x= \{T, k, q''\}$.
-	$\mathbf I$ represents additional crud parameters, $g_o$ is the crud state at the start of the time step and $\theta$ are distribution parameters.
+	$\mathbf I$ represents additional crud parameters, $\mathcal G_o$ is the crud state at the start of the time step and $\theta$ are distribution parameters.
 	\item Estimate this integral via Monte Carlo:
 	\[
-	\E[g(x)] \approx \frac{1}{N} \sum_i^N \frac{g(\mathbf x_i) 
+	\E[g(x)] \approx \frac{1}{N} \sum_i^N \frac{\mathcal G(\mathbf x_i) 
 	h(\mathbf x_i | \theta)}{\tilde h(\mathbf x_i | \tilde \theta)}, \ \mathbf x \sim \tilde h
 	\]
 	Where $\tilde h$ is an importance distribution. 
@@ -694,16 +694,60 @@ Where $\theta_c$ and $\theta_{x,y}$ are free copula and marginal model parameter
 \subsection*{Gradient Boosting Quantile Regression Example}
 \begin{frame}
 \vspace{-16pt}
-
+\scriptsize{
+\begin{itemize}
+    \item Test function with $x\in [0,10]$ was used for testing.
+    \[
+    y = x\ \mathrm{sin}(x) +12 \mathcal H(x-5)+\varepsilon
+    \]
+    \item $\mathcal H$ denotes the Heaviside function. 
+    \item Synthetic noise, $\varepsilon \sim \mathcal N(0,2)$, was applied to the piecewise smooth test function.   
+    \item 5000 total samples were drawn from the test function.  The test data was spatially aggregated to 100 axial levels to mimic CTF axial grid spacing.
+\end{itemize}   
+}
+\vspace{-28pt}
+\begin{columns}
+    \begin{column}{0.5\textwidth}
+        \begin{figure}
+            \centering
+            \includegraphics[width=1.1\linewidth]{dissertation/figs/grad_boost/1d_boosted_regression_quantile_ex_0_5}
+            \caption{\centering \scriptsize Median prediction over 80 trials.}
+        \end{figure}
+    \end{column}
+    \begin{column}{0.5\textwidth}  %%<--- here
+        \begin{figure}
+            \centering
+            \includegraphics[width=1.1\linewidth]{dissertation/figs/grad_boost/1d_boosted_regression_quantile_ex_0_95}
+            \caption{\centering \scriptsize $\tau=0.95$ prediction over 80 trials.}
+        \end{figure}
+    \end{column}
+\end{columns}
 \end{frame}
 
 % =========================================================================== %
-\subsection*{Sampling}
 \begin{frame}
-\frametitle{Recovery of The joint distribution}
 \vspace{-16pt}
-On CTF face $j$:
-
+\begin{itemize}
+    \item Check to ensure quantile residuals (computed vs. expected) follow the expected theoretical behavior.
+    \item Tested two different gradient boosting libraries.  ({\color{blue} Custom implementation  (blue)}. {\color{red} sk-learn (red)})
+\end{itemize}
+\vspace{-28pt}
+\begin{columns}
+    \begin{column}{0.5\textwidth}
+        \begin{figure}
+            \centering
+            \includegraphics[width=1.1\linewidth]{dissertation/figs/grad_boost/1d_boosted_regression_quantile_resid_0_5}
+            \caption{\centering \scriptsize Median residual distributions vs. theory.}
+        \end{figure}
+    \end{column}
+    \begin{column}{0.5\textwidth}  %%<--- here
+        \begin{figure}
+            \centering
+            \includegraphics[width=1.1\linewidth]{dissertation/figs/grad_boost/1d_boosted_regression_quantile_resid_0_95}\\
+            \caption{\centering \scriptsize $\tau=0.95$ residual distributions vs. theory.}
+        \end{figure}
+    \end{column}
+\end{columns}
 \end{frame}
 
 % =========================================================================== %
@@ -712,13 +756,51 @@ On CTF face $j$:
 \frametitle{Monte Carlo Sampling of the Joint Distribution}
 \vspace{-16pt}
 
+\begin{itemize}
+    \item Define the reconstructed joint density as:
+\begin{align}
+h(T, k, q'') = & f_T(T;\hat \theta_T) f_k(k;\hat \theta_k) f_{j,q''} \cdot \nonumber \\
+& c_{T,k}(F_T(T;\hat \theta_{\tau,T})F_k(k;\hat \theta_{\tau,k});\hat \theta_c) \nonumber
+\label{eq:joint_t_tke_q}
+\end{align} 
+
+\item Let:
+\[ X=\{T, k, q''\} \]
+
+\item An estimate for the amount of crud on a given patch:
+\begin{equation}
+\E(\mathcal G(X)) \approx \frac{1}{N} \sum_i^N \mathcal G(X_i) h(X_i), \ \mathbf{X} \sim {h} \nonumber
+\label{eq:mc_expected_crud}
+\end{equation}
+\end{itemize}
 \end{frame}
 
 % =========================================================================== %
 \begin{frame}
 \frametitle{Importance Sampling of the Joint Distribution}
 \vspace{-16pt}
+\begin{itemize}
+    \item Specify a sampling (proposal) distribution, $\tilde h$.
 
+\begin{equation}
+\E(\mathcal G(X)) \approx \frac{1}{N} \sum_i^N \mathcal G(X_i) \frac{h(X_i)}{\tilde h(X_i)}, \ \mathbf{X} \sim \tilde{h} \nonumber
+\label{eq:mc_imp_expected_crud}
+\end{equation}
+
+    \item Impose simplification of matching proposal and target copula density distributions such that:
+    
+    \begin{equation}
+    \omega_i = \frac{h_i}{\tilde h_i} = \frac{f_1(x_i) f_2(x_i)c(u_1, u_2)}{\tilde f_1(x_i) \tilde f_2(x_i) \tilde c(u_1, u_2)} \nonumber
+    \label{eq:imp_prob_ratio}
+    \end{equation}
+    \begin{equation}
+    \omega_i = \frac{f_1(x_i) f_2(x_i)}{\tilde f_1(x_i) \tilde f_2(x_i)}  \nonumber
+    \label{eq:imp_prob_ratio2}
+    \end{equation}
+    
+    
+    \item \textbf{Goal:}  Target regions of the rod surface which have exhibit changes in crud behavior and contribute to crud growth $T \ge T_{sat}$ and high TKE.  Avoid sampling heavily in regions with $T<T_{sat}$.
+\end{itemize}
 \end{frame}
 
 % =========================================================================== %
