@@ -87,9 +87,14 @@
 \makeatother
 
 % Additional packages
+\usepackage[]{algorithm}
+\usepackage{algorithmic}
+\usepackage{multicol}
+\usepackage[english]{babel}
+\usepackage{blindtext}
 \usepackage{color}
 \usepackage{cancel}
-\usepackage[]{algorithm2e}
+% \usepackage[]{algorithm2e}
 \usepackage{mathtools}
 \usepackage{amsmath}
 \usepackage{pgfgantt}
@@ -396,7 +401,7 @@ On a single coarse CTF patch:
 \subsubsection*{Capturing Dependence Between Random Variables}
 \begin{frame}
 \frametitle{Capturing Dependence - Sklar's Theorem}
-\vspace{-12pt}
+\vspace{-16.5pt}
 \begin{itemize}
 \item Let $x=Temerature,\ y=TKE,\ z=BHF$.
 \item Given joint CDF: $H$, w/ cumulative margins: $F(x)=P[X < x] = \int_{-\infty}^{x}f(X)dX$
@@ -417,112 +422,222 @@ Where $\theta_c$ and $\theta_{x,y}$ are free copula and marginal model parameter
 \end{itemize}
 \end{frame}
 
+% =========================================================================== %
+\subsection*{Copula Properties}
+\begin{frame}[noframenumbering]
+\frametitle{Specifying Copula Parameters}
+\begin{itemize}
+    \item For the case of Archimedean copula, Kendall's tau, $\rho_\tau$ is
+    related to the copula's shape parameter by:
+    \[
+    \rho_\tau = 1 + 4 \int_0^1 \frac{\varphi(\theta_c,t)}{\varphi'(\theta_c, t)}dt
+    \]
+    Where $\varphi(\theta_c, t)$ is the copula's generator function and $\varphi'$ is the first derivative of the generator function with respect to $t$.
+    \item  If we restrict ourselves to the class of  Archimedean copula we only need $\rho_\tau$ and the copula type, $\Theta_c$ (Gumbel, Frank, Clayton, ect.) since $\rho_\tau$ is one-to-one with $\int_0^1 \frac{\varphi(\theta_c,t)}{\varphi'(\theta_c, t)}dt$.
+    \item \textbf{Goal:} Associate each CTF patch with a copula family (categorical response) and Kendall's tau (real-valued).
+\end{itemize}
+\end{frame}
+
 \begin{frame}
 % =========================================================================== %
 \frametitle<1>{Simplifications}
-\frametitle<2>{Slide2b}
-\frametitle<3>{Slide2c}
+\frametitle<2>{Problem Setup}
+\frametitle<3>{Problem Setup}
 % --------------------------------------------------------------------------- %
 
 \only<1>{
 \begin{itemize}
-    \item Assume the boundary heat flux is uncorrelated with 
+    \item Assume the boundary heat flux is uncorrelated with the surface temperature and TKE.
+    \item Assume boundary heat flux follows a Dirac delta function centered at the value predicted by VERA/CTF on each CTF face, $j$.
+    \[
+    f_{q''} = \delta_{(j,ctf)}
+    \]
+    Which results in
 \end{itemize}
+\[
+h(x, y, z) = c(u, v |\theta_c)f(x|\theta_x)f(y|\theta_y) f_{q''}
+\]
+Where $\theta_c$ and $\theta_{x,y}$ are free copula and marginal model parameters respectively.
 }
 % --------------------------------------------------------------------------- %
-\only<2>{Image2}
+\only<2>{
+    \begin{itemize}
+        \item It is necessary to predict (denoted by $\hat{(\cdot)}$ notation):
+        \begin{itemize}
+            \item $\hat \theta_c$ and $\hat \theta_{x,y}$ on all CTF faces. 
+        \end{itemize}  
+        
+        \item What is the functional form for these marginal and copula distributions take?
+        
+        \item By what method are the distribution parameters predicted?
+    \end{itemize}
+}
 % --------------------------------------------------------------------------- %
-\only<3>{Image3}
-
-% ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: %
-\end{frame}
-
-\subsection{}
-\begin{frame}[noframenumbering]
-\frametitle{Specifying Copula Parameters}
-\begin{itemize}
-\item For the case of Archimedean copula, Kendall's tau, $\rho_\tau$ is
-related to the copula's shape parameter by:
-\[
-\rho_\tau = 1 + 4 \int_0^1 \frac{\varphi(\theta_c,t)}{\varphi'(\theta_c, t)}dt
-\]
-Where $\varphi(\theta_c, t)$ is the copula's generator function and $\varphi'$ is the first derivative of the generator function with respect to $t$.
-\item  If we restrict ourselves to the class of  Archimedean copula we only need $\rho_\tau$ and the copula type, $\Theta_c$ (Gumbel, Frank, Clayton, ect.) to approximately specify the dependence structure between the temperature and turbulent kinetic energy in each CTF patch.
-\item Must associate each CTF patch with a copula family (categorical response) and Kendall's tau (real-valued).
-\end{itemize}
+\only<3>{
+    \begin{itemize}
+        \item It is necessary to predict (denoted by $\hat{(\cdot)}$ notation):
+        \begin{itemize}
+            \item $\hat \theta_c$ and $\hat \theta_{x,y}$ on all CTF faces. 
+        \end{itemize}  
+        
+        \item What is the functional form for these marginal and copula distributions take?
+        \begin{itemize}
+            \item Adopt a non-parametric representation of the temperature and TKE marginal distribution on each CTF face.  The copula will be chosen from a library of parametric copula families via typical KL divergence or AIC based best-fitting metrics.
+        \end{itemize}        
+        \item By what method are the distribution parameters predicted?
+        \begin{itemize}
+            \item Gradient boosted quantile regression trees for $\hat \theta_{x,y}$.
+            \item Typical gradient boosted regression trees for $\hat \theta_{c}$.
+        \end{itemize}
+    \end{itemize}
+}
 \end{frame}
 
 % =========================================================================== %
 \subsection*{Quantiles}
 \begin{frame}
-% =========================================================================== %
-\frametitle<1>{Computing Sample Quantiles}
+\frametitle<1>{Sample Quantiles}
 \frametitle<2>{Reconstructing the Margins from Sample Quantiles}
+\frametitle<3>{Computing Sample Quantiles}
 % --------------------------------------------------------------------------- %
 \only<1>{
 \vspace{-15pt}
-\begin{columns}
-    \begin{column}{0.5\textwidth}
-        \scriptsize{
-        \begin{itemize}
-            \item The $\tau^{th}$ quantile is $q_\tau = F^{-1}(\tau); $ where $\ F(t)=P[T \leq t]$ is a CDF.
-            \item $\tau \in [0, 1]$
-            \item Supply a desired percentile, e.g. $\tau_i = 0.75$.
-            To estimate a sample quantile minimize: $\E[\rho_\tau(T - \tau)]$ with $T \sim F$
-            \[
-            \rho_\tau( u) = \mathbf u \cdot (\tau - \mathbb{I}_{( u < 0)})
-            \]
-            \begin{equation}
-            \left.\begin{aligned}
-            \hat q_{\tau_i} &= argmin_{q} \E[\rho(u)];\ \  u = T - q  \\
-            \approx & argmin_q  \frac{1}{N} \sum_i^N \rho(u_i); \ u_i = t_i - q \\
-            \approx & argmin_q \left[ (1-\tau) \sum_{y \leq q}( t_i - q ) - \tau \sum_{y > q} (t_i - q) \right]
-            \end{aligned}\right. \nonumber
-            \end{equation}
-        \end{itemize}
-    }
-    \end{column}
-    \begin{column}{0.5\textwidth}  %%<--- here
-        \begin{center}
-            \includegraphics[width=0.9\textwidth]{figs/q_loss.png}
-        \end{center}
-    \end{column}
-\end{columns}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \scriptsize{
+                \begin{itemize}
+                    \item Given a set of sample quantiles, $\mathbf{\theta}_x = \{\hat q_{\tau_0}, \hat q_{\tau_i}, ... \hat q_{\tau_{N_Q}} \}$
+                    \item The quantile function can be inverted to give the CDF:
+                    \[
+                    F(x) = Q^{-1}(x; \mathbf{\theta}_x)
+                    \]
+                    \item Piecewise linear CDF shown in figure results in histogram-like PDF.  The function is supported at the known nodes: $\{\hat q_{\tau_0}, \hat q_{\tau_i}, ... \hat q_{\tau_{N_Q}} \}$
+                    \item Where $N_{Q_N}$ is the number of quantiles we desire to retain in the reconstruction and is a user set runtime parameter.
+                \end{itemize}
+            }
+        \end{column}
+        \begin{column}{0.5\textwidth}  %%<--- here
+            \begin{center}
+                \includegraphics[width=0.9\textwidth]{figs/margins_cdf_2.png}
+            \end{center}
+        \end{column}
+    \end{columns}
+    
 }
 % --------------------------------------------------------------------------- %
 \only<2>{
-\vspace{-15pt}
-\begin{columns}
-    \begin{column}{0.5\textwidth}
-        \scriptsize{
-        \begin{itemize}
-            \item The $\tau^{th}$ quantile is $q_\tau = F^{-1}(\tau); $ where $\ F(t)=P[T \leq t]$ is a CDF.
-            \item $\tau \in [0, 1]$
-            \item Supply a desired percentile, e.g. $\tau_i = 0.75$.
-            To estimate a sample quantile minimize: $\E[\rho_\tau(T - \tau)]$ with $T \sim F$
-            \[
-            \rho_\tau( u) = \mathbf u \cdot (\tau - \mathbb{I}_{( u < 0)})
-            \]
-            \begin{equation}
-            \left.\begin{aligned}
-            \hat q_{\tau_i} &= argmin_{q} \E[\rho(u)];\ \  u = T - q  \\
-            \approx & argmin_q  \frac{1}{N} \sum_i^N \rho(u_i) \\
-            \approx & argmin_q \left[ (1-\tau) \sum_{y \leq q}( t_i - q ) - \tau \sum_{y > q} (t_i - q) \right]
-            \end{aligned}\right. \nonumber
-            \end{equation}
-        \end{itemize}
-    }
-    \end{column}
-    \begin{column}{0.5\textwidth}  %%<--- here
-        \begin{center}
-            \includegraphics[width=0.9\textwidth]{figs/margins_cdf_2.png}
-        \end{center}
-    \end{column}
-\end{columns}
+    \vspace{-15pt}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \scriptsize{
+                \begin{itemize}
+                    \item The $\tau^{th}$ quantile is $q_\tau = F^{-1}(\tau); $ where $\ F(t)=P[T \leq t]$ is a CDF.
+                    \item $\tau \in [0, 1]$
+                    \item Supply a desired percentile, e.g. $\tau_i = 0.75$.
+                    To estimate a sample quantile minimize: $\E[\rho_\tau(T - \tau)]$ with $T \sim F$
+                    \[
+                    \rho_\tau( u) = \mathbf u \cdot (\tau - \mathbb{I}_{( u < 0)})
+                    \]
+                    \begin{equation}
+                    \left.\begin{aligned}
+                    \hat q_{\tau_i} &= argmin_{q} \E[\rho(u)];\ \  u = T - q  \\
+                    \approx & argmin_q  \frac{1}{N} \sum_i^N \rho(u_i) \\
+                    \approx & argmin_q \left[ (1-\tau) \sum_{y \leq q}( t_i - q ) - \tau \sum_{y > q} (t_i - q) \right]
+                    \end{aligned}\right. \nonumber
+                    \end{equation}
+                \end{itemize}
+            }
+        \end{column}
+        \begin{column}{0.5\textwidth}  %%<--- here
+            \begin{center}
+                \includegraphics[width=0.9\textwidth]{figs/margins_cdf_2.png}
+            \end{center}
+        \end{column}
+    \end{columns}
 }
-
+% --------------------------------------------------------------------------- %
+\only<3>{
+    \vspace{-15pt}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \scriptsize{
+                \begin{itemize}
+                    \item The $\tau^{th}$ quantile is $q_\tau = F^{-1}(\tau); $ where $\ F(t)=P[T \leq t]$ is a CDF.
+                    \item $\tau \in [0, 1]$
+                    \item Supply a desired percentile, e.g. $\tau_i = 0.75$.
+                    To estimate a sample quantile minimize: $\E[\rho_\tau(T - \tau)]$ with $T \sim F$
+                    \[
+                    \rho_\tau( u) = \mathbf u \cdot (\tau - \mathbb{I}_{( u < 0)})
+                    \]
+                    \begin{equation}
+                    \left.\begin{aligned}
+                    \hat q_{\tau_i} &= argmin_{q} \E[\rho(u)];\ \  u = T - q  \\
+                    \approx & argmin_q  \frac{1}{N} \sum_i^N \rho(u_i); \ u_i = t_i - q \\
+                    \approx & argmin_q \left[ (1-\tau) \sum_{y \leq q}( t_i - q ) - \tau \sum_{y > q} (t_i - q) \right]
+                    \end{aligned}\right. \nonumber
+                    \end{equation}
+                \end{itemize}
+            }
+        \end{column}
+        \begin{column}{0.5\textwidth}  %%<--- here
+            \begin{center}
+                \includegraphics[width=0.9\textwidth]{figs/q_loss.png}
+            \end{center}
+        \end{column}
+    \end{columns}
+}
 % ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: %
 \end{frame}
+
+
+% --------------------------------------------------------------------------- %
+\subsection*{Hi2lo method for time dependent crud prediction}
+\begin{frame}
+\vspace{-18.5pt}
+    \begin{algorithm}[H]
+        % \captionsetup{labelfont={sc,bf}, labelsep=newline}
+        \algsetup{linenosize=\tiny}
+        \tiny      
+        \begin{algorithmic}[1]      
+            \STATE \textbf{Initialization}  
+            \STATE (1) Pre-process training set.  
+            \STATE $\ \ $   (1b) Fit the joint distribution parameters to known CFD data: $\theta(\mathbf p, \mathbf z)$.  
+            \STATE $\ \ $   (1c) \textbf{def:}  $\ \theta \leftarrow \mathcal F_M(\mathbf p, \mathbf z | \gamma)$
+            \STATE (2) Train model:  $\hat{\mathcal F_M} =  \mathrm{argmin}_{\mathcal F}$
+            $L(\mathcal{F}_M (\mathbf p, \mathbf z| \gamma), \theta(\mathbf p, \mathbf z)) $
+            \FOR {VERA State, $v$}
+            \FOR {CTF face, $j$}
+            \STATE Evaluate ML model $\hat \theta_j \leftarrow \hat{\mathcal F_M}(\mathbf p_j, \mathbf z_j)$ \\
+            $\ \ \hat \theta_j = \{\hat \theta_{j,c}, \hat \theta_{j,\tau} \}$
+            \STATE Reconstruct margins (CDFs) from quantiles  \\
+            $\ \ \hat F_{j,T}= Q^{-1}(T; \{\hat{\theta}_{j,\tau} \})$ , $\hat F_{j,k}= Q^{-1}(k; \{\hat{\theta}_{j,\tau} \})$
+            \STATE Def $q''$ margin  $f_{j,q''} = \delta_{(q''_\mathrm{j,ctf})}$
+            \STATE Reconstruct joint distribution $\hat h_j(\cdot |\hat \theta_j) = \hat f_{j,T} \hat f_{j,k} f_{j,q''} c(\hat F_{j,T}, \hat F_{j,k}; \hat \theta_{j,c})$ \;
+            \ENDFOR
+            \FOR {Resample time step, $s,\ \Delta t_s$}
+            \FOR {CTF face, $j$}
+            \STATE Def importance  mixture quantile functions \\
+            $\ \ \tilde Q_{j,k} = \lambda_{0,k} \hat Q_{j,k}  + \lambda_{1,k} Q_{\beta_k}(k; \vartheta_k)$, 
+            $\ \ \tilde Q_{j,T} = \lambda_{0,T} \hat Q_{j,T}  + \lambda_{1,T} Q_{\beta_T}(T; \vartheta_T); $ \\
+            $\ \ \sum_i \lambda_i = 1, \ \ \tilde F_{j,T} = \tilde Q^{-1}_{j,T},\ \  \tilde F_{j,k} = \tilde Q^{-1}_{j,k} $
+            \STATE Def importance sampling distribution $\tilde h_j = \tilde f_{j,T} \tilde f_{j,k} c(\tilde F_{j,T}, \tilde F_{j,k}; \hat \theta_{j,c}) $
+            \STATE Draw samples $\mathbf x \sim \tilde h_j$ \;
+            \STATE Compute importance weights $\omega = \hat h_j(\mathbf x) /  \tilde h_j(\mathbf x) $
+            \STATE Re-map samples  $\mathbf x', \omega' \xleftarrow[\text{ }]{\text{R}} \mathbf x, \omega $
+            \STATE Update importance weights by equation \ref{eq:time_sample_weights3}
+            \STATE Evaluate equation \ref{eq:expected_crud} via importance sampling \\
+            $\ \ \mathbf C_s = \mathcal G(x'_i; \mathbf C_{s-1}, \mathbf I, \Delta t_s)$ \\
+            \STATE Crud mass at step $s$ in patch $j$:
+            $\ \ C_{s,j,m} = \left( \frac{A_j}{\sum_i^M \bar \omega'_i} \right) \sum_i^M C_{s,i,j,m} \bar \omega'_i$
+            \ENDFOR
+            \ENDFOR
+            \ENDFOR
+        \end{algorithmic}
+        \label{algo:hi2lo_crud_algo}
+    \end{algorithm}
+\end{frame}
+
+% ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: %
 
 % =========================================================================== %
 \subsection*{Sampling}
@@ -575,29 +690,29 @@ The $i^{th}$ CRUD sample drawn from CTF patch, $j$:
 
 
 % =========================================================================== %
-\begin{frame}[shrink=5]
-\frametitle{Propagating CRUD Through Time:  Patch Averaging}
-\begin{itemize}
-\item  \textbf{Claim:} If $g(\cdot)$ does not depend on the previous CRUD state then $\E[ g_i^{t+1}] =  \E[ g(x_i| \mu_g^{t}, \delta t)] = \E[ g( x_i| g_{i}^{t}, \delta t)]$.
-\item If true the following CRUD propagation scheme preserves the correct total crud mass over the patch at each time step:
-\begin{algorithm}[H]
-\For{$t = 1$ to ${t_{end}}$}{
-	Draw TH samples, $\{x_i, ... x_N\} \sim h$ \;
-	
-	Compute the crud distribution over the patch
-	$g_i^{t+1} = g(x_i|g_i^t=\mu_g^t, \delta t)$ \;
-	
-	Identify the ``mean crud flake" on the patch: $g^{t+1}_{i^*}$ \;
-	
-	Find the boundary conditions which gave rise to $g^{t+1}_{i^*}$, \\\ denote them $x^*$.  Set all boundary condition samples: $x^*_i = x^*, \forall i \in {1, ... N}$ \;
-	
-    Rewind the CRUD simulation back to $g^{t}$ \;
-	
-	Regrow crud with uniform TH boundary conditions over the patch:  $g_i^{t+1} = g(x^*_i|g_i^t, \delta t)$
-}
-\end{algorithm}
-\end{itemize}
-\end{frame}
+%\begin{frame}[shrink=5]
+%\frametitle{Propagating CRUD Through Time:  Patch Averaging}
+%\begin{itemize}
+%\item  \textbf{Claim:} If $g(\cdot)$ does not depend on the previous CRUD state then $\E[ g_i^{t+1}] =  \E[ g(x_i| \mu_g^{t}, \delta t)] = \E[ g( x_i| g_{i}^{t}, \delta t)]$.
+%\item If true the following CRUD propagation scheme preserves the correct total crud mass over the patch at each time step:
+%\begin{algorithm}[H]
+%\For{$t = 1$ to ${t_{end}}$}{
+%	Draw TH samples, $\{x_i, ... x_N\} \sim h$ \;
+%	
+%	Compute the crud distribution over the patch
+%	$g_i^{t+1} = g(x_i|g_i^t=\mu_g^t, \delta t)$ \;
+%	
+%	Identify the ``mean crud flake" on the patch: $g^{t+1}_{i^*}$ \;
+%	
+%	Find the boundary conditions which gave rise to $g^{t+1}_{i^*}$, \\\ denote them $x^*$.  Set all boundary condition samples: $x^*_i = x^*, \forall i \in {1, ... N}$ \;
+%	
+%    Rewind the CRUD simulation back to $g^{t}$ \;
+%	
+%	Regrow crud with uniform TH boundary conditions over the patch:  $g_i^{t+1} = g(x^*_i|g_i^t, \delta t)$
+%}
+%\end{algorithm}
+%\end{itemize}
+%\end{frame}
 
 % =========================================================================== %
 \begin{frame}[shrink=10]
@@ -918,28 +1033,28 @@ Each weak learner in the ensemble is a binary tree that partitions the input spa
 
 The generalized gradient boosting algorithm was developed by Friedman (1999).
 Let $y$ be some quantile of interest $Q_{\tau_{y_i}}$.
-\begin{algorithm}[H]
-\KwData{ (1) Training set $\{(p_i, y_i)\}_{i=1}^n$. (2) Differentiable loss function $L(y, F(p))$. (3) Number of iterations ${{M}}$.
-Initialize model with a constant value:
-$F_0(p) = \underset{\gamma}{\arg\min} \sum_{i=1}^n L(y_i, \gamma).$}
-
-\For{${{m}} = 1$ to ${{M}}$}{
-Compute the pseudo-residuals:
-
-\For{$i=1,\ldots,n $}{
-$r_{im} = -\frac{\partial L(y_i, F_{m-1}(p_i))}{\partial F_{m-1}(p_i)}$
-}
-
-Fit a weak learner $h_m(p)$ to pseudo-residuals, $r_{m}$: Training data set is $\{(p_i, r_{im})\}_{i=1}^n$ \;
-
-Compute multiplier $\gamma_m$ :
-$\gamma_m = \underset{\gamma}{\operatorname{arg\,min}} \sum_{i=1}^n L\left(y_i, F_{m-1}(p_i) + \gamma h_m(p_i)\right)$\;
-Update the model:
-$F_m(p) = F_{m-1}(p) + \nu \gamma_m h_m(p).$
-}
-Output $F_M(p).$
-\end{algorithm}
-Where $\nu$ is a tunable constant in $[0, 1]$ called the learning rate.
+%\begin{algorithm}[H]
+%\KwData{ (1) Training set $\{(p_i, y_i)\}_{i=1}^n$. (2) Differentiable loss function $L(y, F(p))$. (3) Number of iterations ${{M}}$.
+%Initialize model with a constant value:
+%$F_0(p) = \underset{\gamma}{\arg\min} \sum_{i=1}^n L(y_i, \gamma).$}
+%
+%\For{${{m}} = 1$ to ${{M}}$}{
+%Compute the pseudo-residuals:
+%
+%\For{$i=1,\ldots,n $}{
+%$r_{im} = -\frac{\partial L(y_i, F_{m-1}(p_i))}{\partial F_{m-1}(p_i)}$
+%}
+%
+%Fit a weak learner $h_m(p)$ to pseudo-residuals, $r_{m}$: Training data set is $\{(p_i, r_{im})\}_{i=1}^n$ \;
+%
+%Compute multiplier $\gamma_m$ :
+%$\gamma_m = \underset{\gamma}{\operatorname{arg\,min}} \sum_{i=1}^n L\left(y_i, F_{m-1}(p_i) + \gamma h_m(p_i)\right)$\;
+%Update the model:
+%$F_m(p) = F_{m-1}(p) + \nu \gamma_m h_m(p).$
+%}
+%Output $F_M(p).$
+%\end{algorithm}
+%Where $\nu$ is a tunable constant in $[0, 1]$ called the learning rate.
 \end{frame}
 
 % =========================================================================== %
