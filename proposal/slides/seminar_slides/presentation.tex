@@ -1086,14 +1086,17 @@ of the surface temperature or TKE fields.  This approach seeks to predict the jo
 % =========================================================================== %
 \begin{frame}[shrink=10]
 \frametitle{Future Work}
+\scriptsize{
 \begin{itemize}
-    \item Data Scaling Study:  Crud prediction error vs Number of CFD pins in training set.
-    \item Extrapolation detection.
-    \item Uncertainty Quantification.
-    \item Uncertainty Propagation.
-    \item Alternative machine learning strategies.
-    \item Feature engineering study.
+    \item Conduct a data scaling study:  Crud prediction error vs Number of CFD pins in training set.
+    \item Extrapolation detection.  Particularly in the case of boosted trees which produce piecewise constant predictions, the models should not be extrapolated outside of their training envelope.  User should be warned that additional CFD data is required, if necessary, to avoid extrapolation.
+    \item Uncertainty Quantification:  Quantify soucres of error in the CFD data, model induced uncertainty arising from quantile regression.  Investigate biases introduced by model assumptions.
+    \item Uncertainty Propagation:  Propagate data and model born uncertainties through the hi2lo model and into crud estimates.
+    \item Alternative machine learning strategies:  Stacked learning methods can increase prediction accuracy at the cost of higher training times.  Better prediction accuracy for the distribution parameters will result in smaller crud prediction errors.
+    \item Feature engineering study:  Incorporate additional geometric features of the pins, spacers, and assemblies into the training exogenous variable set.  This will improve the ability of the machine learning regressors to generalize to a wider variety of pin configurations.
+    \item Investigate alternatives to quantile regression to improve prediction accuracy of extreme value events.  This would increase the applicability of the hi2lo method to CILC analysis.
 \end{itemize}
+}
 \end{frame}
 
 \miniframesoff
