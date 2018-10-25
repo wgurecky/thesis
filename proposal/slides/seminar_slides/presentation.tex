@@ -1,133 +1,76 @@
 \documentclass[t, pdftex]{beamer}
 \usetheme[]{Cockrell}
-%\usetheme[dept=Aerospace\ Engineering\ and\ Engineering\ Mechanics]{cockrell}
-%\usetheme[dept=Biomedical\ Engineering]{cockrell}
-%\usetheme[dept=Chemical\ Engineering]{cockrell}
-%\usetheme[dept=Civil,\ Architectural\ and\ Environmental\ Engineering]{cockrell}
-%\usetheme[dept=Electrical\ and\ Computer\ Engineering]{cockrell}
 %\usetheme[dept=Mechanical\ Engineering]{cockrell}
-%\usetheme[dept=Materials\ Science\ and\ Engineering]{cockrell}
-%\usetheme[dept=Petroleum\ and\ Geosystems\ Engineering]{cockrell}
 
-\mode<presentation> {
-	
-	
-	
-	% The Beamer class comes with a number of default slide themes
-	
-	% which change the colors and layouts of slides. Below this is a list
-	
+% \useoutertheme[subsection=false]{miniframes}
+% \useoutertheme[footline=authortitle]{miniframes}
+% \setbeamercolor{mini frame}{fg=white,bg=utblack}
+%\usepackage{etoolbox}
+%\patchcmd{\sectionentry}{\usebeamercolor[fg]{section in head/foot}}{\usebeamercolor[fg]{mini frame}}{}{}
+
+\mode<presentation> {	
+	% The Beamer class comes with a number of default slide themes	
+	% which change the colors and layouts of slides. Below this is a list	
 	% of all the themes, uncomment each in turn to see what they look like.
 	
+		
+	%\usetheme{default}	
+	%\usetheme{AnnArbor}	
+	%\usetheme{Antibes}	
+	%\usetheme{Bergen}	
+	%\usetheme{Berkeley}	
+	%\usetheme{Berlin}	
+	%\usetheme{Boadilla}	
+	%\usetheme{CambridgeUS}	
+	%\usetheme{Copenhagen}	
+	%\usetheme{Darmstadt}	
+	%\usetheme{Dresden}	
+	%\usetheme{Frankfurt}	
+	%\usetheme{Goettingen}	
+	%\usetheme{Hannover}	
+	%\usetheme{Ilmenau}	
+	%\usetheme{JuanLesPins}	
+	%\usetheme{Luebeck}	
+	%\usetheme{Madrid}	
+	%\usetheme{Malmoe}	
+	%\usetheme{Marburg}	
+	%\usetheme{Montpellier}	
+	%\usetheme{PaloAlto}	
+	%\usetheme{Pittsburgh}	
+	%\usetheme{Rochester}	
+	%\usetheme{Singapore}	
+	%\usetheme{Szeged}	
+	%\usetheme{Warsaw}	
 	
-	
-	%\usetheme{default}
-	
-	%\usetheme{AnnArbor}
-	
-	%\usetheme{Antibes}
-	
-	%\usetheme{Bergen}
-	
-	%\usetheme{Berkeley}
-	
-	%\usetheme{Berlin}
-	
-	%\usetheme{Boadilla}
-	
-	%\usetheme{CambridgeUS}
-	
-	%\usetheme{Copenhagen}
-	
-	\usetheme{Darmstadt}
-	
-	%\usetheme{Dresden}
-	
-	%\usetheme{Frankfurt}
-	
-	%\usetheme{Goettingen}
-	
-	%\usetheme{Hannover}
-	
-	%\usetheme{Ilmenau}
-	
-	%\usetheme{JuanLesPins}
-	
-	%\usetheme{Luebeck}
-	
-	%\usetheme{Madrid}
-	
-	%\usetheme{Malmoe}
-	
-	%\usetheme{Marburg}
-	
-	%\usetheme{Montpellier}
-	
-	%\usetheme{PaloAlto}
-	
-	%\usetheme{Pittsburgh}
-	
-	%\usetheme{Rochester}
-	
-	%\usetheme{Singapore}
-	
-	%\usetheme{Szeged}
-	
-	%\usetheme{Warsaw}
-	
-	
-	
-	% As well as themes, the Beamer class has a number of color themes
-	
-	% for any slide theme. Uncomment each of these in turn to see how it
-	
+	% As well as themes, the Beamer class has a number of color themes	
+	% for any slide theme. Uncomment each of these in turn to see how it	
 	% changes the colors of your current slide theme.
 	
-	
-	
-	%\usecolortheme{albatross}
-	
-	% \usecolortheme{beaver}
-	
-	%\usecolortheme{beetle}
-	
-	%\usecolortheme{crane}
-	
-	%\usecolortheme{dolphin}
-	
-	\usecolortheme{dove}
-	
-	%\usecolortheme{fly}
-	
-	%\usecolortheme{lily}
-	
-	%\usecolortheme{orchid}
-	
-	%\usecolortheme{rose}
-	
-	%\usecolortheme{seagull}
-	
-	%\usecolortheme{seahorse}
-	
-	%\usecolortheme{whale}
-	
+	%\usecolortheme{albatross}	
+	%\usecolortheme{beaver}	
+	%\usecolortheme{beetle}	
+	%\usecolortheme{crane}	
+	%\usecolortheme{dolphin}	
+	\usecolortheme{dove}	
+	%\usecolortheme{fly}	
+	%\usecolortheme{lily}	
+	%\usecolortheme{orchid}	
+	%\usecolortheme{rose}	
+	%\usecolortheme{seagull}	
+	%\usecolortheme{seahorse}	
+	%\usecolortheme{whale}	
 	%\usecolortheme{wolverine}
 	
-	
-	
-	%\setbeamertemplate{footline} % To remove the footer line in all slides uncomment this line
-	
-	%\setbeamertemplate{footline}[page number] % To replace the footer line in all slides with a simple slide count uncomment this line
-	
-	
+		
+	\setbeamertemplate{footline} % To remove the footer line in all slides uncomment this line	
+	%\setbeamertemplate{footline}[page number] % To replace the footer line in all slides with a simple slide count uncomment this line	
 	
 	%\setbeamertemplate{navigation symbols}{} % To remove the navigation symbols from the bottom of all slides uncomment this line
-	
+    
+    \setbeamertemplate{itemize item}{\color{utblack}$\blacktriangleright$}
 }
 
-
-
-% Packages
+% Additional Packages
 %\usepackage{etex}
 %\usepackage[bigfiles]{media9}
 %\graphicspath{{./figs/}}
@@ -141,14 +84,13 @@
 \usepackage{pgfgantt}
 \usepackage[version=3]{mhchem} % Package for chemical equation typesetting \ce{}
 \usepackage{siunitx} % Provides the \SI{}{} and \si{}
+%\usepackage[font=scriptsize,justification=centering]{caption}
 \renewcommand{\CancelColor}{\color{utorange}}
 \DeclareMathOperator*{\E}{\mathbb{E}}
-
-%Add bibliography file location for citiation
 \bibliography{example.bib}
 
 
-\title{A CFD-Informed Hi2Low Method for Improving Subchannel Resolution CRUD Predictions}
+\title{A CFD-Informed Hi2Low Method for Improving Subchannel Resolution Crud Predictions}
 \subtitle{}
 \author{William Gurecky}
 \date{\today}
@@ -166,10 +108,11 @@
 \frame{\frametitle{Outline}\tableofcontents}
 
 % =========================================================================== %
-\section{Background}
+\section{Introduction}
+\subsection*{Crud Background}
 \begin{frame}
     \frametitle{Chalk River Unidentified Deposit (crud)}
-    CRUD forms a porous layer on the surface of fuel rods.  It is primarily comprised of Nickel Ferrite.
+    Crud forms a porous layer on the surface of fuel rods.  It is primarily comprised of Nickel Ferrite.
 \begin{small}
     \begin{itemize}
     \item Preferentially deposited where temperature is high - near or above saturation point - and where local shear stresses on the rod are low.
@@ -203,6 +146,7 @@
 \end{frame}
 
 % =========================================================================== %
+\subsection*{Motivation}
 \begin{frame}
     \frametitle{Crud Induced Power Shift (CIPS)}
     \begin{figure}
@@ -221,6 +165,26 @@
 \end{frame}
 
 % =========================================================================== %
+\subsection*{Motivation}
+\begin{frame}
+\frametitle{Current Crud Model Deficiencies}
+\begin{itemize}
+    \item \textbf{Incorrect boundary conditions provided to the crud code.}
+    \begin{itemize}
+        \item Fine scale flow details around spacer grids are not resolved by subchannel codes.  It is imperative for CILC analysis to capture the influence of the spacer grids on the crud deposition rate.  
+        \item It is also important to account for the presence of spacer grids on crud growth when predicting CIPS.
+    \end{itemize}
+    \item Incorrect simulated crud chemistry, pore fill mechanisms, and intra-crud species transport models.
+    \item Difficulty accounting for the source of corrosion products and nickel and iron particulate entrained in the primary coolant loop.
+    \begin{itemize}
+        \item Requires understanding of the metallurgy of all primary loop components. 
+        \item Plants of different make and vintage require a predictive corrosion and erosion source term models.
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+% =========================================================================== %
+\subsection*{High Fidelity Crud Simulation}
 \begin{frame}[shrink=20]
     \frametitle{Coupled CFD/Crud Calculation}
     \begin{itemize}
@@ -235,6 +199,7 @@
 \end{frame}
 
 % =========================================================================== %
+\subsection*{CFD and Subchannel Mesh Background}
 \begin{frame}
 Differences between CTF (subchannel) and CFD meshes for a single pin.
 \begin{figure}
@@ -297,7 +262,7 @@ Differences between CTF (subchannel) and CFD meshes for a single pin.
     \begin{center}
     \begin{figure}
      \includegraphics[width=6cm]{figs/cfd_ctf_multi_grid.png}
-     \caption{TKE remapping procedure.}      
+     \caption{\centering TKE remapping procedure.}      
     \end{figure}
      \end{center}
 \end{column}
@@ -311,14 +276,14 @@ Differences between CTF (subchannel) and CFD meshes for a single pin.
 \centering
 \begin{minipage}{.5\textwidth}
   %
-  \includegraphics[width=5cm]{figs/ctf_crud_orig.png}
-\caption{CRUD growth on the rod surface prior to HTC and TKE field remapping.}
+\includegraphics[width=5cm]{figs/ctf_crud_orig.png}
+\caption{\centering \scriptsize{ CRUD growth on the rod surface \\ prior to HTC and TKE \\ field remapping.}}
 \label{fig:crud_pre_map}
 \end{minipage}%
 \begin{minipage}{.5\textwidth}
   %
   \includegraphics[width=5cm]{figs/ctf_crud_reconstructed.png}
-\caption{CRUD growth on the rod surface post HTC and TKE field remapping.}
+\caption{\centering \scriptsize CRUD growth on the rod \\ surface post HTC and TKE \\ field remapping.}
 \label{fig:crud_post_map}
 \end{minipage}
 \end{figure}
@@ -327,7 +292,7 @@ Differences between CTF (subchannel) and CFD meshes for a single pin.
 
 % =========================================================================== %
 \begin{frame}
-\begin{figure}[!htbp]
+\begin{figure}[]
 \centering
 \includegraphics[width=10.88cm]{figs/ctf_patch_ex3_b.png}
 \label{model_overview}
@@ -389,9 +354,25 @@ Where $\theta_c$ and $\theta_{x,y}$ are free copula and marginal model parameter
 \end{itemize}
 \end{frame}
 
-% =========================================================================== %
 \subsection{}
 \begin{frame}
+% =========================================================================== %
+\frametitle<1>{Slide2a}
+\frametitle<2>{Slide2b}
+\frametitle<3>{Slide2c}
+% --------------------------------------------------------------------------- %
+
+\only<1>{Image1}
+% --------------------------------------------------------------------------- %
+\only<2>{Image2}
+% --------------------------------------------------------------------------- %
+\only<3>{Image3}
+
+% ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: %
+\end{frame}
+
+\subsection{}
+\begin{frame}[noframenumbering]
 \frametitle{Specifying Copula Parameters}
 \begin{itemize}
 \item For the case of Archimedean copula, Kendall's tau, $\rho_\tau$ is
@@ -400,7 +381,7 @@ related to the copula's shape parameter by:
 \rho_\tau = 1 + 4 \int_0^1 \frac{\varphi(\theta_c,t)}{\varphi'(\theta_c, t)}dt
 \]
 Where $\varphi(\theta_c, t)$ is the copula's generator function and $\varphi'$ is the first derivative of the generator function with respect to $t$.
-\item  If we restrict ourselves to the class of  Archimedean copula we only need $\rho_\tau$ and the copula type, $\Theta_c$ (gumbel, frank, clayton, ect.) to approximately specify the dependence structure between the temperature and turbulent kinetic energy in each CTF patch.
+\item  If we restrict ourselves to the class of  Archimedean copula we only need $\rho_\tau$ and the copula type, $\Theta_c$ (Gumbel, Frank, Clayton, ect.) to approximately specify the dependence structure between the temperature and turbulent kinetic energy in each CTF patch.
 \item Must associate each CTF patch with a copula family (categorical response) and Kendall's tau (real-valued).
 \end{itemize}
 \end{frame}
