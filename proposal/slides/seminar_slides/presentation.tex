@@ -90,6 +90,7 @@
 \usepackage[]{algorithm}
 \usepackage{algorithmic}
 \usepackage{multicol}
+% \usepackage{subfig}
 \usepackage[english]{babel}
 \usepackage{blindtext}
 \usepackage{color}
@@ -100,7 +101,11 @@
 \usepackage{pgfgantt}
 \usepackage[version=3]{mhchem} % Package for chemical equation typesetting \ce{}
 \usepackage{siunitx} % Provides the \SI{}{} and \si{} and \number{}
+
 \renewcommand{\CancelColor}{\color{utorange}}
+
+% Additional Graphics Paths
+\graphicspath{{./figs/}{../../../}{./}}
 
 % Custom symbols and operators
 \DeclareMathOperator*{\E}{\mathbb{E}}
@@ -260,7 +265,6 @@ Crud forms a porous layer on the surface of fuel rods and is primarily comprised
     \end{column}
 \end{columns}
 \vspace{-12pt}
-
 \end{frame}
 
 % =========================================================================== %
@@ -506,12 +510,12 @@ Where $\theta_c$ and $\theta_{x,y}$ are free copula and marginal model parameter
         \begin{column}{0.5\textwidth}
             \scriptsize{
                 \begin{itemize}
-                    \item Given a set of sample quantiles, $\mathbf{\theta}_x = \{\hat q_{\tau_0}, \hat q_{\tau_i}, ... \hat q_{\tau_{N_Q}} \}$
+                    \item Given a set of sample quantiles, $\hat{\mathbf{\theta}_x} = \{\hat q_{\tau_0}, \hat q_{\tau_i}, ... \hat{q_{\tau_{N_Q}}} \}$
                     \item The quantile function can be inverted to give the CDF:
                     \[
-                    F(x) = Q^{-1}(x; \mathbf{\theta}_x)
+                    \hat F(x) = \hat{Q}^{-1}(X; \mathbf{\hat \theta}_x)
                     \]
-                    \item Piecewise linear CDF shown in figure results in histogram-like PDF.  The function is supported at the known nodes: $\{\hat q_{\tau_0}, \hat q_{\tau_i}, ... \hat q_{\tau_{N_Q}} \}$
+                    \item Piecewise linear CDF shown in figure results in histogram-like PDF.  The function is supported at the known nodes: $\{ \hat q_{\tau_0}, \hat q_{\tau_i}, ... \hat q_{\tau_{N_Q}} \}$
                     \item Where $N_{Q_N}$ is the number of quantiles we desire to retain in the reconstruction and is a user set runtime parameter.
                 \end{itemize}
             }
@@ -572,7 +576,7 @@ Where $\theta_c$ and $\theta_{x,y}$ are free copula and marginal model parameter
                     \begin{equation}
                     \left.\begin{aligned}
                     \hat q_{\tau_i} &= argmin_{q} \E[\rho(u)];\ \  u = T - q  \\
-                    \approx & argmin_q  \frac{1}{N} \sum_i^N \rho(u_i); \ u_i = t_i - q \\
+                    \approx & argmin_q  \frac{1}{N} \sum_i^N \rho(u_i); \ u_i = T_i - q \\
                     \approx & argmin_q \left[ (1-\tau) \sum_{y \leq q}( t_i - q ) - \tau \sum_{y > q} (t_i - q) \right]
                     \end{aligned}\right. \nonumber
                     \end{equation}
@@ -587,6 +591,88 @@ Where $\theta_c$ and $\theta_{x,y}$ are free copula and marginal model parameter
     \end{columns}
 }
 % ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: %
+\end{frame}
+
+% =========================================================================== %
+\subsection*{Sample Quantile Properties}
+\begin{frame}
+\begin{itemize}
+    \item Consider a set of samples $\{x_i, x_N \}$ with $X \sim F_T$.
+    \item If we were to repeatedly draw i.i.d samples from $F_T$, what can we say about where we expect the $\tau^{th}$ quantile to fall?
+    \item Answer:  In the large sample limit $N \rightarrow \infty$ any given sample quantile follows a Gaussian distribution:
+    \begin{align}
+    q_\tau &\sim \mathcal N \left( F_T^{-1}(\tau), \sigma^2_{q_\tau} \right) \nonumber \\
+    \sigma^2_{q_\tau} &= \frac{\tau(1 - \tau)}{n[f_T(F_T^{-1}(\tau))]^2} \nonumber
+    \label{eq:theory_qdist_1}
+    \end{align}
+    
+    \item Why is this important?
+    \begin{itemize}
+        \item Estimates for where the upper quantiles of the temperature and TKE distributions lie are fraught with high variance.  This variance is propagated through the machine learning models and into the crud calculations.
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+% =========================================================================== %
+\subsection*{Sample Quantile Properties}
+\begin{frame}
+\frametitle<1>{Example Quantile Properties}
+\frametitle<2>{Example Quantile Properties}
+% --------------------------------------------------------------------------- %
+\only<1>{
+%\frametitle{Example Quantile Properties}
+\begin{itemize}
+    \item Consider a beta random variable  $X\sim \beta(2,5)$.
+    \item Empirical quantiles for a beta distribution. 500 trials shown. $\tau = \{ 0.1, 0.5, 0.9 \}$ quantiles denoted by dashed vertical lines.
+\end{itemize}
+\vspace{-16pt}
+\begin{columns}
+    \begin{column}{0.5\textwidth}
+        \begin{figure}
+            \centering
+            \includegraphics[width=1.0\linewidth]{dissertation/figs/quantile_theory/q_beta_residual}
+        \end{figure}
+    \end{column}
+    \begin{column}{0.5\textwidth}  %%<--- here
+        \begin{figure}
+            \centering
+            \includegraphics[width=1.0\linewidth]{dissertation/figs/quantile_theory/q_beta_residual_conditional_0_1}
+        \end{figure}
+    \end{column}
+\end{columns}
+}
+% --------------------------------------------------------------------------- %
+\only<2>{
+   % \frametitle{Example Quantile Properties}
+    \begin{itemize}
+        \item Consider a beta random variable  $X\sim \beta(2,5)$.
+        \item Empirical quantiles for a beta distribution. 500 trials shown. $\tau = \{ 0.1, 0.5, 0.9 \}$ quantiles denoted by dashed vertical lines.
+    \end{itemize}
+    \vspace{-16pt}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+                \centering
+                \includegraphics[width=1.0\linewidth]{dissertation/figs/quantile_theory/q_beta_residual}
+            \end{figure}
+        \end{column}
+        \begin{column}{0.5\textwidth}  %%<--- here
+            \begin{figure}
+                \centering
+                \includegraphics[width=1.0\linewidth]{dissertation/figs/quantile_theory/q_beta_residual_conditional_0_9}
+            \end{figure}
+        \end{column}
+    \end{columns}
+}
+% ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: %
+\end{frame}
+
+% =========================================================================== %
+\subsection*{Gradient Boosting}
+\begin{frame}
+\begin{itemize}
+    \item Denote the gradient boosted model as $\mathcal F_M$.
+\end{itemize}
 \end{frame}
 
 
