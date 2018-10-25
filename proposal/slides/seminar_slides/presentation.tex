@@ -70,12 +70,23 @@
     \setbeamertemplate{itemize item}{\color{utblack}$\blacktriangleright$}
 }
 
-% Additional Packages
-%\usepackage{etex}
-%\usepackage[bigfiles]{media9}
-%\graphicspath{{./figs/}}
+% Additional Settings
+% From:
+% https://tex.stackexchange.com/questions/37127/how-to-remove-some-pages-from-the-navigation-bullets-in-beamer/45038#45038
+\makeatletter
+\let\beamer@writeslidentry@miniframeson=\beamer@writeslidentry
+\def\beamer@writeslidentry@miniframesoff{%
+    \expandafter\beamer@ifempty\expandafter{\beamer@framestartpage}{}% does not happen normally
+    {%else
+        % removed \addtocontents commands
+        \clearpage\beamer@notesactions%
+    }
+}
+\newcommand*{\miniframeson}{\let\beamer@writeslidentry=\beamer@writeslidentry@miniframeson}
+\newcommand*{\miniframesoff}{\let\beamer@writeslidentry=\beamer@writeslidentry@miniframesoff}
+\makeatother
 
-%Enable cancelto in math
+% Additional packages
 \usepackage{color}
 \usepackage{cancel}
 \usepackage[]{algorithm2e}
@@ -83,12 +94,16 @@
 \usepackage{amsmath}
 \usepackage{pgfgantt}
 \usepackage[version=3]{mhchem} % Package for chemical equation typesetting \ce{}
-\usepackage{siunitx} % Provides the \SI{}{} and \si{}
-%\usepackage[font=scriptsize,justification=centering]{caption}
+\usepackage{siunitx} % Provides the \SI{}{} and \si{} and \number{}
 \renewcommand{\CancelColor}{\color{utorange}}
-\DeclareMathOperator*{\E}{\mathbb{E}}
-\bibliography{example.bib}
 
+% Custom symbols and operators
+\DeclareMathOperator*{\E}{\mathbb{E}}
+
+% Bibliography definition
+% \bibliography{../../dissertation/sections/refs.bib}
+% \usepackage[style=ieee]{biblatex}
+% \bibliography{../../../dissertation/sections/refs.bib}
 
 \title{A CFD-Informed Hi2Low Method for Improving Subchannel Resolution Crud Predictions}
 \subtitle{}
@@ -291,8 +306,10 @@ Differences between CTF (subchannel) and CFD meshes for a single pin.
 
 
 % =========================================================================== %
+\subsection*{Crud State vs Thermal Hydraulic Surface Conditions Covariance Structure}
 \begin{frame}
 \begin{figure}[]
+\vspace{-16.5pt}
 \centering
 \includegraphics[width=10.88cm]{figs/ctf_patch_ex3_b.png}
 \label{model_overview}
@@ -300,8 +317,10 @@ Differences between CTF (subchannel) and CFD meshes for a single pin.
 \end{frame}
 
 % =========================================================================== %
+\subsection*{CFD vs Subchannel:  Influcene on crud predictive capability}
 \begin{frame}
 On a single coarse CTF patch:
+\vspace{-6.5pt}
 \begin{figure}[!htbp]
 \centering
 \includegraphics[width=11cm]{figs/model_relations_2.png}
@@ -310,6 +329,8 @@ On a single coarse CTF patch:
 \end{frame}
 
 % =========================================================================== %
+\section[Theory]{Theory}
+\subsection*{Problem Statement}
 \begin{frame}
 \textbf{Goal:} Compute the total integrated crud over a CTF patch with area $A$, for a single time step of $\delta t$.
 \begin{itemize}
@@ -332,9 +353,10 @@ On a single coarse CTF patch:
 
 
 % =========================================================================== %
-\section[Copula]{Capturing Dependence between Random Variables}
+\subsection*{Capturing Dependence Between Random Variables: Copula Theory}
 \begin{frame}
 \frametitle{Capturing Dependence - Sklar's Theorem}
+\vspace{-12pt}
 \begin{itemize}
 \item Given joint CDF: $H$, w/ cumulative margins: $F(x)=P[X < x] = \int_{-\infty}^{x}f(t)dt$
 \[
@@ -708,30 +730,15 @@ Approximately optimal remapping coefficients: $\alpha=0.4, \beta=0.6, \gamma=0$.
 
 
 % =========================================================================== %
-\section{Future Work}
 \begin{frame}[shrink=10]
 \frametitle{Future Work}
 \begin{itemize}
-\item Predict copula and marginal distributions in cases where no CFD data exists.
-\begin{itemize}
-	\item Implement and validate gradient boosted regression and classification tree models.
-	\begin{itemize}
-		\item Boosted classification model for copula family
-		\item Boosted regression for Kendall's $\tau$
-		\item Quantile regression for margins
-	\end{itemize}
-	\item Enables prediction of copula parameters and margin quantiles given local core conditions from CTF.
-	\item Train on a limited set of CFD results spanning a typical PWR TH envelope.
-	\item Ascertain interpolation error introduced by the trained machine learning model
-	\begin{itemize}
-		\item Remove single CFD training data set and train on the reduced data.
-		\item Make a CRUD prediction at the flow, power and geometric conditions occupied by witheld data set.
-		\item Add the withheld CFD data back to full training set and train the full model.
-		\item Make a second CRUD prediction at identical flow, power and geometric conditions.
-		\item Compute CRUD prediction difference.
-		\item Repeat.
-	\end{itemize}
-\end{itemize}
+\item Data Scaling Study:  Crud prediction error vs Number of CFD pins in training set.
+\item Extrapolation detection.
+\item Uncertainty Quantification.
+\item Uncertainty Propagation.
+\item Alternative machine learning strategies.
+\item Feature engineering study.
 \end{itemize}
 \end{frame}
 
@@ -808,6 +815,7 @@ Quantiles used in TKE residual reconstruction: $\tau_{TKE}=\{0, 0.01, 0.05, 0.15
 
 
 % =========================================================================== %
+\section{Conclusion}
 \begin{frame}
 \frametitle{Conclusion}
 \begin{itemize}
@@ -821,22 +829,19 @@ of the temperature, TKE, and CRUD on the rods' surface.
 \end{itemize}
 \end{frame}
 
+\miniframesoff
 % =========================================================================== %
-\begin{frame}
-\frametitle{Questions?}
-\end{frame}
-
 \lastframe%
 
 % =========================================================================== %
 \setbeamercolor{normal text}{fg=white}
-\begin{frame}
-\frametitle{Appendix}
-\end{frame}
+%\begin{frame}
+%\frametitle{Appendix}
+%\end{frame}
 
 % =========================================================================== %
 \setbeamercolor{background canvas}{bg=white}
-\begin{frame}[shrink=10]
+\begin{frame}[shrink=10, noframenumbering]
 \frametitle{Classification and Regression Tree (CART) - Weak Learner}
 Each weak learner in the ensemble is a binary tree that partitions the input space based on "best-first" splits.  
 \begin{itemize}
@@ -884,7 +889,7 @@ Where $\nu$ is a tunable constant in $[0, 1]$ called the learning rate.
 
 % =========================================================================== %
 \setbeamercolor{background canvas}{bg=white}
-\begin{frame}
+\begin{frame}[noframenumbering]
 \frametitle{GBRT - Weak Learners Fit to Pseudo Residuals}
 Weak learners are fit the the pseudo-residuals (derivative of the loss function): 
 \[
@@ -901,7 +906,7 @@ Source: Peter Prettenhofer, PyData (2014).
 
 % =========================================================================== %
 \setbeamercolor{background canvas}{bg=white}
-\begin{frame}
+\begin{frame}[noframenumbering]
 \frametitle{GBRT - Ensemble of weak learners}
 
 \begin{figure}[!htbp]
@@ -1001,13 +1006,20 @@ Source: Peter Prettenhofer, PyData (2014).
 
 % =========================================================================== %
 \setbeamercolor{background canvas}{bg=white}
-\begin{frame}
+\begin{frame}[noframenumbering]
 \frametitle{Copula Density Functions}
 \begin{figure}[!htbp]
 \centering
 \includegraphics[width=10cm]{figs/montage_copula_pdf.png}
 \label{model_overview}
 \end{figure}
+\end{frame}
+
+% =========================================================================== %
+\setbeamercolor{background canvas}{bg=white}
+\begin{frame}[noframenumbering]
+\frametitle{References}
+% \printbibliography
 \end{frame}
 
 \end{document}
