@@ -127,7 +127,7 @@
 \subsection*{Crud Background}
 \begin{frame}
     \frametitle{Chalk River Unidentified Deposit (crud)}
-    Crud forms a porous layer on the surface of fuel rods.  It is primarily comprised of Nickel Ferrite.
+    Crud forms a porous layer on the surface of fuel rods.  Crud is primarily comprised of \ce{NiFe_2O_4} (Nickel Ferrite).
 \begin{small}
     \begin{itemize}
     \item Preferentially deposited where temperature is high - near or above saturation point - and where local shear stresses on the rod are low.
@@ -195,6 +195,24 @@
         \item Requires understanding of the metallurgy of all primary loop components. 
         \item Plants of different make and vintage require a predictive corrosion and erosion source term models.
     \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+% =========================================================================== %
+\subsection*{Hi2lo Overview}
+\begin{frame}
+\frametitle{Hi2lo}
+\begin{figure}[]
+    \vspace{-16.5pt}
+    \centering
+    \includegraphics[width=0.99\textwidth]{figs/mamba_hi2lo_vera.png}
+    \label{hi2lo_overview}
+\end{figure}
+\vspace{-16.5pt}
+\begin{itemize}
+    \item Information flows from high fidelity (CFD) to low fidelity model (CTF) in a unidirectional manner.
+    \item Hi2lo augments CTF solution to provide increased fidelity cladding surface temperature, near-wall TKE, and boundary heat flux estimates to MAMBA.
 \end{itemize}
 \end{frame}
 
@@ -495,7 +513,7 @@ The $i^{th}$ CRUD sample drawn from CTF patch, $j$:
 \end{figure}
 \end{frame}
 
-\section{Propagating CRUD Through Time}
+\section[Model Exploration]{Model Exploration Provided Synthetic CFD Data}
 % =========================================================================== %
 \begin{frame}[shrink=2]
 \frametitle{Propagating CRUD Through Time}
