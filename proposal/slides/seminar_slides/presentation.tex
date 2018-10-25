@@ -545,8 +545,8 @@ Where $\theta_c$ and $\theta_{x,y}$ are free copula and marginal model parameter
                     \begin{equation}
                     \left.\begin{aligned}
                     \hat q_{\tau_i} &= argmin_{q} \E[\rho(u)];\ \  u = T - q  \\
-                    \approx & argmin_q  \frac{1}{N} \sum_i^N \rho(u_i) \\
-                    \approx & argmin_q \left[ (1-\tau) \sum_{y \leq q}( t_i - q ) - \tau \sum_{y > q} (t_i - q) \right]
+                    \approx & argmin_q  \frac{1}{N} \sum_i^N \rho(u_i); \ u_i = T_i - q \\
+                    \approx & argmin_q \left[ (1-\tau) \sum_{T_i \leq q}( T_i - q ) - \tau \sum_{T_i > q} (T_i - q) \right]
                     \end{aligned}\right. \nonumber
                     \end{equation}
                 \end{itemize}
@@ -577,7 +577,7 @@ Where $\theta_c$ and $\theta_{x,y}$ are free copula and marginal model parameter
                     \left.\begin{aligned}
                     \hat q_{\tau_i} &= argmin_{q} \E[\rho(u)];\ \  u = T - q  \\
                     \approx & argmin_q  \frac{1}{N} \sum_i^N \rho(u_i); \ u_i = T_i - q \\
-                    \approx & argmin_q \left[ (1-\tau) \sum_{y \leq q}( t_i - q ) - \tau \sum_{y > q} (t_i - q) \right]
+                    \approx & argmin_q \left[ (1-\tau) \sum_{T_i \leq q}( T_i - q ) - \tau \sum_{T_i > q} (T_i - q) \right]
                     \end{aligned}\right. \nonumber
                     \end{equation}
                 \end{itemize}
@@ -718,7 +718,7 @@ Where $\theta_c$ and $\theta_{x,y}$ are free copula and marginal model parameter
         \begin{figure}
             \centering
             \includegraphics[width=1.1\linewidth]{dissertation/figs/grad_boost/1d_boosted_regression_quantile_ex_0_95}
-            \caption{\centering \scriptsize $\tau=0.95$ prediction over 80 trials.}
+            \caption{\centering \scriptsize $\hat{q}_{\tau=0.95}$ prediction over 80 trials.}
         \end{figure}
     \end{column}
 \end{columns}
