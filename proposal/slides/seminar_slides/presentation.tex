@@ -126,36 +126,38 @@
 \section{Introduction}
 \subsection*{Crud Background}
 \begin{frame}
-    \frametitle{Chalk River Unidentified Deposit (crud)}
-    Crud forms a porous layer on the surface of fuel rods.  Crud is primarily comprised of \ce{NiFe_2O_4} (Nickel Ferrite).
-\begin{small}
+\frametitle{Chalk River Unidentified Deposit (crud)}
+\vspace{-12pt}
+Crud forms a porous layer on the surface of fuel rods and is primarily comprised of \ce{NiFe_2O_4} (Nickel Ferrite).
+\[
+    \frac{d N_{\mathrm{\ce{NiFe}},c}}{dt} = (\alpha_{\mathrm{nb}} + \alpha_{b}q''_{b} )N_{\mathrm{\ce{NiFe}}, \mathrm{cool}} - \gamma_k k
+\]
+\begin{tiny}
     \begin{itemize}
+    \item Where $N_{NiFe,c}$ is the concentration of \ce{NiFe_2O_4} in a small volume on the cladding surface. $N_{NiFe,cool}$ is the concentration of nickel and iron particulates in the coolant.  $k$ is the near-cladding surface turbulent kinetic energy.  $q''$ is the boiling heat flux (only has nonzero value at $T_s>T_{sat}$).  $\alpha_{nb}$ is a non-boiling coefficient and $\alpha_b$ is a boiling rate constant.  $\gamma_k$ is an erosion multiplier.
     \item Preferentially deposited where temperature is high - near or above saturation point - and where local shear stresses on the rod are low.
-	\item CRUD induced local corrosion (CILC).
-    \item CRUD induced power shift (CIPS). Also known as axial offset anomaly (AOA).
-    \begin{itemize} 
-    	\item CRUD and tends to uptake and retain boron from the coolant.
-    	\item \ce{Li^+} + \ce{B(OH)_3}   $\rightarrow$ \ce{LiBO_2} + \ce{H^+} + \ce{H_2O} .
+	\item Crud an increase oxide ingress rates in certain zirc alloys leading to crud induced local corrosion (CILC).
+    \item Crud tends to uptake and retain boron from the coolant which drives
+          crud induced power shift (CIPS). Also known as axial offset anomaly (AOA).
+    \item CASL developed CRUD simulation package, MAMBA, which is integrated with the VERA core simulator providing.  
     \end{itemize}
-    \item CASL developed CRUD simulation package, MAMBA, which is integrated with the VERA core simulator providing.  Goal: provide a \emph{predictive} CIPS tool.
-    \end{itemize}
-\end{small}
+\end{tiny}
 %\begin{figure}[!htbp]
 %\centering
 %\includegraphics[width=4cm]{figs/crud-crud.jpg}
 %\caption{CRUD on fuel rods.}
 %\label{log_closed}
 %\end{figure}
-%
+\vspace{-12pt}
     \begin{figure}
         \centering
-        \begin{minipage}{.7\textwidth}
+        \begin{minipage}{.5\textwidth}
             \centering
-            \includegraphics[width=6cm]{figs/crud-crud.jpg}
+            \includegraphics[width=0.55\textwidth]{figs/crud-crud.jpg}
         \end{minipage}%
-        \begin{minipage}{.4\textwidth}
+        \begin{minipage}{.5\textwidth}
             \centering
-            \includegraphics[width=6cm]{figs/crud_flake_ex.png}
+            \includegraphics[width=0.55\textwidth]{figs/crud_flake_ex.png}
         \end{minipage}
     \end{figure}
 \end{frame}
@@ -185,12 +187,12 @@
 \frametitle{Crud Impacts on Industry}
 \vspace{-12pt}
 \begin{itemize}
-    \item CIPS influences the burnup distribution over a cycle.  Missed burnup targets means less bang for the buck  \citation{Lang2017}.
+    \item CIPS influences the burnup distribution reducing overall fuel utilization and can reduce shutdown margin  \cite{lange17}.
     \item Plants seeking power uprates or lifetime extensions must prove the facility can operate within thermal limits.  Crud can complicate the analysis by shifting the power distribution and influencing surface heat transfer behavior which must be accounted for in DNB computations.
     \item Though rare, CILC failures require impacted assemblies to drastically reduce power and miss their burnup target.
     \item Crud ultrasonic/chemical shock treatment is an extra step to perform during reloading operations, costing time and potentially increasing radiation exposure risk to plant workers.
 \end{itemize}
-\textbf{Goal:} Provide predictive CIPS capability to avoid unfavorable loading patterns.
+\textbf{Goal:} Provide predictive capability to avoid CIPS limited fuel loading patterns.
 \end{frame}
 
 % =========================================================================== %
@@ -238,7 +240,7 @@
 \begin{columns}
     \begin{column}{0.5\textwidth}
         \begin{itemize}
-            \item Salko et. al (2017) developed a Hi2Low procedure based on mapping and re-scaling CFD results onto an intermediate reconstruction grid upon which CRUD is grown.
+            \item Salko et. al (2017)  developed a Hi2Low procedure based on mapping and re-scaling CFD results onto an intermediate reconstruction grid upon which CRUD is grown.
             \item The single phase heat transfer coefficient (HTC) and TKE surface fields are mapped.
             \item An iterative method is used to converge on the correct pin surface temperature given HTC and the boundary heat flux provided by CTF.
         \end{itemize}
@@ -247,11 +249,13 @@
         \begin{center}
             \begin{figure}
                 \includegraphics[width=6cm]{figs/cfd_ctf_multi_grid.png}
-                \caption{\centering TKE remapping procedure.}      
+                \caption{\centering TKE remapping procedure. \cite{salko17}}      
             \end{figure}
         \end{center}
     \end{column}
 \end{columns}
+\vspace{-12pt}
+
 \end{frame}
 
 % =========================================================================== %
@@ -317,7 +321,7 @@ Differences between CTF (subchannel) and CFD meshes for a single pin.
     \end{itemize}
     \begin{block}{Rod Surface Field}
         \[ 
-        F(\mathbf z) = \underbrace{\mu(\mathbf{z})}_\text{CTF} + \underbrace{\varepsilon({\mathbf p(\mathbf z)})}_\text{CFD Informed} + b(\mathbf{z})
+        F(\mathbf z) = \underbrace{\mu(\mathbf{z})}_\text{CTF} + \underbrace{\varepsilon(\mathbf z, {\mathbf p(\mathbf z)}) + b(\mathbf{z}) }_\text{CFD Informed}
         \]
     \end{block}
     Treat $\varepsilon$ as a random field.  $\varepsilon(\cdot)$ is a CFD informed model. $\mathbf z$ are spatial coordinates. $\mathbf p$ are a set of auxiliary predictors. \\
@@ -388,12 +392,14 @@ On a single coarse CTF patch:
 
 
 % =========================================================================== %
-\subsection*{Capturing Dependence Between Random Variables: Copula Theory}
+\subsection*{Copula Theory}
+\subsubsection*{Capturing Dependence Between Random Variables}
 \begin{frame}
 \frametitle{Capturing Dependence - Sklar's Theorem}
 \vspace{-12pt}
 \begin{itemize}
-\item Given joint CDF: $H$, w/ cumulative margins: $F(x)=P[X < x] = \int_{-\infty}^{x}f(t)dt$
+\item Let $x=Temerature,\ y=TKE,\ z=BHF$.
+\item Given joint CDF: $H$, w/ cumulative margins: $F(x)=P[X < x] = \int_{-\infty}^{x}f(X)dX$
 \[
 H(x,y) = C(F(x), F(y))
 \]
@@ -411,15 +417,18 @@ Where $\theta_c$ and $\theta_{x,y}$ are free copula and marginal model parameter
 \end{itemize}
 \end{frame}
 
-\subsection{}
 \begin{frame}
 % =========================================================================== %
-\frametitle<1>{Slide2a}
+\frametitle<1>{Simplifications}
 \frametitle<2>{Slide2b}
 \frametitle<3>{Slide2c}
 % --------------------------------------------------------------------------- %
 
-\only<1>{Image1}
+\only<1>{
+\begin{itemize}
+    \item Assume the boundary heat flux is uncorrelated with 
+\end{itemize}
+}
 % --------------------------------------------------------------------------- %
 \only<2>{Image2}
 % --------------------------------------------------------------------------- %
@@ -444,68 +453,79 @@ Where $\varphi(\theta_c, t)$ is the copula's generator function and $\varphi'$ i
 \end{frame}
 
 % =========================================================================== %
-\subsection{}
-\begin{frame}[shrink=20]
-\frametitle{Computing Sample Quantiles}
+\subsection*{Quantiles}
+\begin{frame}
+% =========================================================================== %
+\frametitle<1>{Computing Sample Quantiles}
+\frametitle<2>{Reconstructing the Margins from Sample Quantiles}
+% --------------------------------------------------------------------------- %
+\only<1>{
+\vspace{-15pt}
 \begin{columns}
-\begin{column}{0.5\textwidth}
-\begin{itemize}
-\item The $\tau^{th}$ quantile is $q_\tau = F^{-1}(\tau); $ where $\ F(t)=P[T \leq t]$ is a CDF.
-\item $\tau \in [0, 1]$
-\item Supply a desired percentile, e.g. $\tau_i = 0.75$.
-To estimate a sample quantile minimize: $\E[\rho_\tau(T - \tau)]$ with $T \sim F$
-\[
-\rho_\tau( u) = \mathbf u \cdot (\tau - \mathbb{I}_{( u < 0)})
-\]
-\begin{equation}
-\left.\begin{aligned}
-\hat q_{\tau_i} &= argmin_{q} \E[\rho(u)];\ \  u = T - q  \\
-\approx & argmin_q  \frac{1}{N} \sum_i^N \rho(u_i); \ u_i = t_i - q \\
-\approx & argmin_q \left[ (1-\tau) \sum_{y \leq q}( t_i - q ) - \tau \sum_{y > q} (t_i - q) \right]
-\end{aligned}\right. \nonumber
-\end{equation}
-\end{itemize}
-\end{column}
-\begin{column}{0.5\textwidth}  %%<--- here
-    \begin{center}
-     \includegraphics[width=0.9\textwidth]{figs/q_loss.png}
-     \end{center}
-\end{column}
+    \begin{column}{0.5\textwidth}
+        \scriptsize{
+        \begin{itemize}
+            \item The $\tau^{th}$ quantile is $q_\tau = F^{-1}(\tau); $ where $\ F(t)=P[T \leq t]$ is a CDF.
+            \item $\tau \in [0, 1]$
+            \item Supply a desired percentile, e.g. $\tau_i = 0.75$.
+            To estimate a sample quantile minimize: $\E[\rho_\tau(T - \tau)]$ with $T \sim F$
+            \[
+            \rho_\tau( u) = \mathbf u \cdot (\tau - \mathbb{I}_{( u < 0)})
+            \]
+            \begin{equation}
+            \left.\begin{aligned}
+            \hat q_{\tau_i} &= argmin_{q} \E[\rho(u)];\ \  u = T - q  \\
+            \approx & argmin_q  \frac{1}{N} \sum_i^N \rho(u_i); \ u_i = t_i - q \\
+            \approx & argmin_q \left[ (1-\tau) \sum_{y \leq q}( t_i - q ) - \tau \sum_{y > q} (t_i - q) \right]
+            \end{aligned}\right. \nonumber
+            \end{equation}
+        \end{itemize}
+    }
+    \end{column}
+    \begin{column}{0.5\textwidth}  %%<--- here
+        \begin{center}
+            \includegraphics[width=0.9\textwidth]{figs/q_loss.png}
+        \end{center}
+    \end{column}
 \end{columns}
+}
+% --------------------------------------------------------------------------- %
+\only<2>{
+\vspace{-15pt}
+\begin{columns}
+    \begin{column}{0.5\textwidth}
+        \scriptsize{
+        \begin{itemize}
+            \item The $\tau^{th}$ quantile is $q_\tau = F^{-1}(\tau); $ where $\ F(t)=P[T \leq t]$ is a CDF.
+            \item $\tau \in [0, 1]$
+            \item Supply a desired percentile, e.g. $\tau_i = 0.75$.
+            To estimate a sample quantile minimize: $\E[\rho_\tau(T - \tau)]$ with $T \sim F$
+            \[
+            \rho_\tau( u) = \mathbf u \cdot (\tau - \mathbb{I}_{( u < 0)})
+            \]
+            \begin{equation}
+            \left.\begin{aligned}
+            \hat q_{\tau_i} &= argmin_{q} \E[\rho(u)];\ \  u = T - q  \\
+            \approx & argmin_q  \frac{1}{N} \sum_i^N \rho(u_i) \\
+            \approx & argmin_q \left[ (1-\tau) \sum_{y \leq q}( t_i - q ) - \tau \sum_{y > q} (t_i - q) \right]
+            \end{aligned}\right. \nonumber
+            \end{equation}
+        \end{itemize}
+    }
+    \end{column}
+    \begin{column}{0.5\textwidth}  %%<--- here
+        \begin{center}
+            \includegraphics[width=0.9\textwidth]{figs/margins_cdf_2.png}
+        \end{center}
+    \end{column}
+\end{columns}
+}
+
+% ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: %
 \end{frame}
 
 % =========================================================================== %
-\begin{frame}[shrink=20]
-\frametitle{Reconstructing the Margins from Sample Quantiles}
-\begin{columns}
-\begin{column}{0.5\textwidth}
-\begin{itemize}
-\item The $\tau^{th}$ quantile is $q_\tau = F^{-1}(\tau); $ where $\ F(t)=P[T \leq t]$ is a CDF.
-\item $\tau \in [0, 1]$
-\item Supply a desired percentile, e.g. $\tau_i = 0.75$.
-To estimate a sample quantile minimize: $\E[\rho_\tau(T - \tau)]$ with $T \sim F$
-\[
-\rho_\tau( u) = \mathbf u \cdot (\tau - \mathbb{I}_{( u < 0)})
-\]
-\begin{equation}
-\left.\begin{aligned}
-\hat q_{\tau_i} &= argmin_{q} \E[\rho(u)];\ \  u = T - q  \\
-\approx & argmin_q  \frac{1}{N} \sum_i^N \rho(u_i) \\
-\approx & argmin_q \left[ (1-\tau) \sum_{y \leq q}( t_i - q ) - \tau \sum_{y > q} (t_i - q) \right]
-\end{aligned}\right. \nonumber
-\end{equation}
-\end{itemize}
-\end{column}
-\begin{column}{0.5\textwidth}  %%<--- here
-    \begin{center}
-     \includegraphics[width=0.9\textwidth]{figs/margins_cdf_2.png}
-     \end{center}
-\end{column}
-\end{columns}
-\end{frame}
-
-
-% =========================================================================== %
+\subsection*{Sampling}
 \begin{frame}
 \frametitle{Single CTF Patch: CRUD Growth}
 The $i^{th}$ CRUD sample drawn from CTF patch, $j$:
