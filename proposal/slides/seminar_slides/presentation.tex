@@ -182,6 +182,20 @@
 % =========================================================================== %
 \subsection*{Motivation}
 \begin{frame}
+\frametitle{Crud Impacts on Industry}
+\vspace{-12pt}
+\begin{itemize}
+    \item CIPS influences the burnup distribution over a cycle.  Missed burnup targets means less bang for the buck  \citation{Lang2017}.
+    \item Plants seeking power uprates or lifetime extensions must prove the facility can operate within thermal limits.  Crud can complicate the analysis by shifting the power distribution and influencing surface heat transfer behavior which must be accounted for in DNB computations.
+    \item Though rare, CILC failures require impacted assemblies to drastically reduce power and miss their burnup target.
+    \item Crud ultrasonic/chemical shock treatment is an extra step to perform during reloading operations, costing time and potentially increasing radiation exposure risk to plant workers.
+\end{itemize}
+\textbf{Goal:} Provide predictive CIPS capability to avoid unfavorable loading patterns.
+\end{frame}
+
+% =========================================================================== %
+\subsection*{Motivation}
+\begin{frame}
 \frametitle{Current Crud Model Deficiencies}
 \begin{itemize}
     \item \textbf{Incorrect boundary conditions provided to the crud code.}
@@ -214,6 +228,51 @@
     \item Information flows from high fidelity (CFD) to low fidelity model (CTF) in a unidirectional manner.
     \item Hi2lo augments CTF solution to provide increased fidelity cladding surface temperature, near-wall TKE, and boundary heat flux estimates to MAMBA.
 \end{itemize}
+\end{frame}
+
+
+% =========================================================================== %
+\subsection*{State of Hi2lo}
+\begin{frame}[shrink=10]
+\frametitle{Prior Hil2o Work: HTC Remapping Hi2Low Procedure}
+\begin{columns}
+    \begin{column}{0.5\textwidth}
+        \begin{itemize}
+            \item Salko et. al (2017) developed a Hi2Low procedure based on mapping and re-scaling CFD results onto an intermediate reconstruction grid upon which CRUD is grown.
+            \item The single phase heat transfer coefficient (HTC) and TKE surface fields are mapped.
+            \item An iterative method is used to converge on the correct pin surface temperature given HTC and the boundary heat flux provided by CTF.
+        \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}  %%<--- here
+        \begin{center}
+            \begin{figure}
+                \includegraphics[width=6cm]{figs/cfd_ctf_multi_grid.png}
+                \caption{\centering TKE remapping procedure.}      
+            \end{figure}
+        \end{center}
+    \end{column}
+\end{columns}
+\end{frame}
+
+% =========================================================================== %
+\subsection*{State of Hi2lo}
+\begin{frame}
+\frametitle{Prior Hil2o Work: HTC Remapping Hi2Low Procedure}
+\begin{figure}[!htbp]
+\centering
+\begin{minipage}{.5\textwidth}
+    %
+    \includegraphics[width=5cm]{figs/ctf_crud_orig.png}
+    \caption{\centering \scriptsize{ CRUD growth on the rod surface \\ prior to HTC and TKE \\ field remapping.}}
+    \label{fig:crud_pre_map}
+\end{minipage}%
+\begin{minipage}{.5\textwidth}
+    %
+    \includegraphics[width=5cm]{figs/ctf_crud_reconstructed.png}
+    \caption{\centering \scriptsize CRUD growth on the rod \\ surface post HTC and TKE \\ field remapping.}
+    \label{fig:crud_post_map}
+\end{minipage}
+\end{figure}
 \end{frame}
 
 % =========================================================================== %
@@ -278,48 +337,6 @@ Differences between CTF (subchannel) and CFD meshes for a single pin.
 	\item Predict likelihood of temperatures in excess of saturation occurring in coincidence with low local turbulent kinetic energy.
 	\item Preserve correlations between surface temperature, boundary heat flux and turbulent kinetic energy.
 \end{itemize}
-\end{frame}
-
-% =========================================================================== %
-\begin{frame}[shrink=10]
-    \frametitle{Prior Art: HTC Remapping Hi2Low Procedure}
-\begin{columns}
-\begin{column}{0.5\textwidth}
-   \begin{itemize}
-   \item Salko et. al (2017) developed a Hi2Low procedure based on mapping and re-scaling CFD results onto an intermediate reconstruction grid upon which CRUD is grown.
-   \item The single phase heat transfer coefficient (HTC) and TKE surface fields are mapped.
-   \item An iterative method is used to converge on the correct pin surface temperature given HTC and the boundary heat flux provided by CTF.
-   \end{itemize}
-\end{column}
-\begin{column}{0.5\textwidth}  %%<--- here
-    \begin{center}
-    \begin{figure}
-     \includegraphics[width=6cm]{figs/cfd_ctf_multi_grid.png}
-     \caption{\centering TKE remapping procedure.}      
-    \end{figure}
-     \end{center}
-\end{column}
-\end{columns}
-\end{frame}
-
-% =========================================================================== %
-\begin{frame}
-    \frametitle{Prior Art: HTC Remapping Hi2Low Procedure}
-    \begin{figure}[!htbp]
-\centering
-\begin{minipage}{.5\textwidth}
-  %
-\includegraphics[width=5cm]{figs/ctf_crud_orig.png}
-\caption{\centering \scriptsize{ CRUD growth on the rod surface \\ prior to HTC and TKE \\ field remapping.}}
-\label{fig:crud_pre_map}
-\end{minipage}%
-\begin{minipage}{.5\textwidth}
-  %
-  \includegraphics[width=5cm]{figs/ctf_crud_reconstructed.png}
-\caption{\centering \scriptsize CRUD growth on the rod \\ surface post HTC and TKE \\ field remapping.}
-\label{fig:crud_post_map}
-\end{minipage}
-\end{figure}
 \end{frame}
 
 
