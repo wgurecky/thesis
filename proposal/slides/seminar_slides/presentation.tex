@@ -670,9 +670,56 @@ Where $\theta_c$ and $\theta_{x,y}$ are free copula and marginal model parameter
 % =========================================================================== %
 \subsection*{Gradient Boosting}
 \begin{frame}
+\vspace{-16pt}
 \begin{itemize}
     \item Denote the gradient boosted model as $\mathcal F_M$.
+    \item With the appropriate loss function, $L(\cdot)$, the gradient boosted model is trained to produce the conditional quantiles we seek:
+    \[
+     \hat{\mathcal F_M} =  \mathrm{argmin}_{\mathcal F}
+     L(\mathcal{F}_M (\mathbf p, \mathbf z| \gamma), \theta(\mathbf p, \mathbf z)) 
+    \]
+    \item Supply position $z_j$, and local thermal hydraulic conditions, $p_j$, near CTF face $j$ to evaluated the trained model:
+    \[
+    \hat \theta_j \leftarrow \hat{\mathcal F_M}(\mathbf p_j, \mathbf z_j)
+    \]
+    \item  The boosted model is treated as a meta-model containing many independent predictors for each conditional quantile of interest.
+    \[
+    \ \ \hat \theta_j = \{\hat \theta_{j,c}, \hat \theta_{j,x}, \hat \theta_{j,y} \}
+    \]
+    \item Note: Covarience between quantiles is ignored in the current implementation of the boosted quantile regression models.
 \end{itemize}
+\end{frame}
+
+% =========================================================================== %
+\subsection*{Gradient Boosting Example}
+\begin{frame}
+\vspace{-16pt}
+
+\end{frame}
+
+% =========================================================================== %
+\subsection*{Sampling}
+\begin{frame}
+\frametitle{Recovery of The joint distribution}
+\vspace{-16pt}
+On CTF face $j$:
+
+\end{frame}
+
+% =========================================================================== %
+\subsection*{Sampling}
+\begin{frame}
+\frametitle{Monte Carlo Sampling of the Joint Distribution}
+\vspace{-16pt}
+
+\end{frame}
+
+% =========================================================================== %
+\subsection*{Importance Sampling}
+\begin{frame}
+\frametitle{Importance Sampling of the Joint Distribution}
+\vspace{-16pt}
+
 \end{frame}
 
 
