@@ -197,7 +197,7 @@ In order to estimate a sample quantile, $\hat q_\tau$, given the empirical CDF $
     \label{fig:qloss}
 \end{figure}
 
-In this work, a set of sample quantiles, $\hat \theta_\tau = \{q_{\tau_0}, \dots, q_{\tau_i}, \dots q_{N_Q} \}$, are used to construct step-wise cumulative distributions, $\hat F$, for the cladding outer temperature and near-wall TKE surface fields.  $N_Q$ denotes the number of quantiles used in the CDF reconstruction and is a user set parameter. The stepwise quantile function with prescribed quantiles is given by equation \ref{eq:cdf_from_qtau}.
+In this work, a set of sample quantiles, $\hat \theta_\tau = \{\hat q_{\tau_0}, \dots, \hat q_{\tau_i}, \dots \hat q_{N_Q} \}$, are used to construct step-wise cumulative distributions, $\hat F$, for the cladding outer temperature and near-wall TKE surface fields.  $N_Q$ denotes the number of quantiles used in the CDF reconstruction and is a user set parameter. The stepwise quantile function with prescribed quantiles is given by equation \ref{eq:cdf_from_qtau}.
 \index{Quantiles!Emperical}
 
 \begin{equation}
@@ -375,16 +375,23 @@ Where $\tau$ is the user set quantile of interest. For instance, if the 95\% qua
 \subsection{Monte Carlo Crud Estimation}
 \label{chap:mc_crud}
 
-Before applying a sampling procedure to the temperature and TKE surface fields on a given CTF face, the the joint density function is reconstructed from a copula and marginal distributions.  The margins are defined by their quantile functions as shown in equation \ref{eq:cdf_from_qtau}.  After separate reconstruction of the margins and applying the boundary heat flux independence assumption shown previously in equation \ref{eq:simple_vine_model}, equation \ref{eq:joint_t_tke_q} defines the joint density.
+Before applying a sampling procedure to the temperature and TKE surface fields on a given CTF face, the the joint density function is reconstructed from copula and marginal distributions.   On CTF face $j$, the gradient boosted model is queried for the conditional quantiles and the copula shape parameter:
+
+\begin{align}
+\hat \theta_j \leftarrow  & \hat{\mathcal F_M}(\mathbf p_j, \mathbf z_j) \nonumber \\
+ \hat \theta_j =& \{\hat \theta_{j,c}, \hat \theta_{j,\{T,k\}} \}
+\end{align}
+The CTF face index is dropped in the remainder of this section to reduce subindex clutter.
+
+Provided estimates for the conditional quantiles, $\hat \theta_{\{T,k\}}$ in each face, the margins are defined by their quantile functions as shown in equation \ref{eq:cdf_from_qtau}.  After separate reconstruction of the margins and applying the boundary heat flux independence assumption shown previously in equation \ref{eq:simple_vine_model}, equation \ref{eq:joint_t_tke_q} defines the joint density.
 
 \begin{equation}
 h(T, k, q'') = f_T(T;\hat \theta_T) f_k(k;\hat \theta_k) f_{j,q''} 
-c_{T,k}(F_T(T;\hat \theta_{\tau,T})F_k(k;\hat \theta_{\tau,k});\hat \theta_c)
+[ c_{T,k}(F_T(T;\hat \theta_{T})F_k(k;\hat \theta_{k});\hat \theta_c)]
 \label{eq:joint_t_tke_q}
 \end{equation} 
-Where $\theta_\tau$ represent conditional quantiles predicted by the data driven model.  These distribution parameters will be dropped in the remainder of this section.
 
-After reconstruction of the joint temperature, boundary heat flux and turbulent kinetic energy distribution on each patch, one draws samples from the joint distribution via methods outlined by section \ref{sec:sampling_copula} in equation \ref{eq:h_inv_sample}.  
+After reconstruction of the joint temperature, boundary heat flux and turbulent kinetic energy distribution on each patch, the goal is to draw samples from the copula based distribution with arbitrary margins.  This is accomplished through the methods outlined by section \ref{sec:sampling_copula} in equation \ref{eq:h_inv_sample}.  
 
 With the ability to draw samples from a multivariate distribution now established, the Monte Carlo approximation of integral \ref{eq:expected_crud} follows and is represented by equation \ref{eq:mc_expected_crud}.  Let $X=\{T,k,q''\}$.
 \index{Monte Carlo Sampling}
@@ -401,26 +408,24 @@ Rather than sampling from the density function $h$, one may draw samples from an
 \label{eq:mc_imp_expected_crud}
 \end{equation}
 \index{Importance Sampling}
-In principal the proposal distribution, $\tilde h$, may be radically different from the target density, $h$.  A method for determining a near optimal proposal distribution is provided in section \ref{sec:Importance Sampling}.
-
-\textbf{TODO:} Fix symbol consistency issues.
-Substituting the joint density function defined by \ref{eq:sklar2} in to () yields:
+In principal the proposal distribution, $\tilde h$, may be radically different from the target density, $h$. In practice computing the optimal choice for the proposal density distribution is non-trivial.   The generic original and proposal densities can be written simply as shown in equation \ref{eq:mc_imp_int_2}. A method for determining a near optimal proposal distribution is provided in section \ref{sec:Importance Sampling}.
 
 \begin{align}
-    h(x_1, x_2..) &= c(u_1, u_2, ...) f(x_1) f(x_2) \nonumber \\
-    \tilde h(x_1, x_2..) &= \tilde c(u_1, u_2, ...) \tilde f(x_1) \tilde f(x_2)
+    h(T, k, q'') &= c(F_T(T), F_k(k)) f_T f_k f_{j,q''}  \nonumber \\
+    \tilde h(T, k, q'') &= \tilde c(\tilde F_T(T), \tilde F_k(k)) \tilde f_T \tilde f_k f_{j,q''} 
 \label{eq:mc_imp_int_2}
 \end{align}
 
 \begin{equation}
-\E(\mathcal G(x)) \approx \frac{1}{N} \sum_i^N \mathcal G_i(x) \omega_i(x), \ x \sim \tilde{f_1} \tilde f_2 \tilde c(u_1, u_2)
+\E(\mathcal G(X)) \approx \frac{1}{N} \sum_i^N \mathcal G(X_i) \omega(X_i), \ \mathbf X \sim \tilde c(\tilde F_T(T), \tilde F_k(k)) \tilde f_T \tilde f_k f_{j,q''} 
 \label{eq:mc_imp_int2}
 \end{equation}
 
 with the probability ratio of the target density to the proposal given by \ref{eq:imp_prob_ratio}:
 
 \begin{equation}
-\omega_i = \frac{h_i}{\tilde h_i} = \frac{f_1(x_i) f_2(x_i)c(u_1, u_2)}{\tilde f_1(x_i) \tilde f_2(x_i) \tilde c(u_1, u_2)}
+\omega_i = \frac{h_i}{\tilde h_i} = \frac{f_T(T_i) f_k(k_i)c(F_T(T), F_k(k))}
+  {\tilde f_T(T_i) \tilde f_k(k_i) \tilde c(\tilde F_T(T), \tilde F_k(k))}
 \label{eq:imp_prob_ratio}
 \end{equation}
 
@@ -433,12 +438,12 @@ with the probability ratio of the target density to the proposal given by \ref{e
 %
 %In this work the target and proposal copula are taken to be the same function.
 
-In some scenarios the proposal or target density is only known up to a constant, e.g. $h^* = c h(x)$.  In this case the probability ratio is known up to a constant of proportionality and requires renormalization: 
+In some scenarios the proposal or target density is only known up to a constant, e.g. $h^* = c h(X)$.  In this case the probability ratio is known up to a constant of proportionality and requires renormalization: 
 
 \begin{equation}
-\E(\mathcal G(x)) \approx \frac{ \sum_i^N \mathcal G_i(x) \omega_i(x)}{\sum_i^N \omega_i(x)}
+\E(\mathcal G(X)) \approx \frac{ \sum_i^N \mathcal G_i(X) \omega_i(X)}{\sum_i^N \omega_i(x)}
 ,
- \ x \sim \tilde{f_1} \tilde f_2 \tilde c(u_1, u_2)
+ \ \mathbf X \sim \tilde c(\tilde F_T(T), \tilde F_k(k)) \tilde f_T \tilde f_k f_{j,q''} 
 \end{equation}
 
 This is known as self normalizing importance sampling.  Traditional importance sampling may be applied in this case since $h$ and $\tilde{h}$ are properly normalized density functions in this hi2lo application which integrate to 1 over their respective support.
