@@ -791,7 +791,7 @@ h(T, k, q'') = & f_T(T;\hat \theta_T) f_k(k;\hat \theta_k) f_{j,q''} \cdot \nonu
 
 \item An estimate for the amount of crud on a given patch:
 \begin{equation}
-\E(\mathcal G(X)) \approx \frac{1}{N} \sum_i^N \mathcal G(X_i) h(X_i), \ \mathbf{X} \sim {h} \nonumber
+\E(\mathcal G(X)) \approx \frac{1}{N} \sum_i^N \mathcal G(X_i), \ \mathbf{X} \sim {h} \nonumber
 \label{eq:mc_expected_crud}
 \end{equation}
 \end{itemize}
@@ -843,29 +843,28 @@ h(T, k, q'') = & f_T(T;\hat \theta_T) f_k(k;\hat \theta_k) f_{j,q''} \cdot \nonu
 \end{frame}
 
 
-% =========================================================================== %
-\subsection*{Time Stepping}
-\begin{frame}
-\frametitle{Time Stepping}
-\vspace{-16pt}
+%% =========================================================================== %
+%\subsection*{Time Stepping}
+%\begin{frame}
+%\frametitle{Time Stepping}
+%\vspace{-16pt}
+%
+%\end{frame}
+%
+%% =========================================================================== %
+%\begin{frame}
+%\frametitle{Hot Spot Stationarity}
+%\vspace{-16pt}
+%
+%\end{frame}
+%
+%% =========================================================================== %
+%\subsection*{Sampling}
+%\begin{frame}
+%\frametitle{Sampling and Time Stepping Review}
+%\end{frame}
 
-\end{frame}
-
-% =========================================================================== %
-\begin{frame}
-\frametitle{Hot Spot Stationarity}
-\vspace{-16pt}
-
-\end{frame}
-
-% =========================================================================== %
-\subsection*{Sampling}
-\begin{frame}
-\frametitle{Sampling and Time Stepping Review}
-
-\end{frame}
-
-\section[Model Exploration]{Model Exploration Provided Synthetic CFD Data}
+\section[Time Stepping]{Propagating Crud Through Time}
 % =========================================================================== %
 \begin{frame}
 \frametitle{Propagating Crud Through Time}
@@ -1150,6 +1149,74 @@ Approximately optimal remapping coefficients: $w_T=0.4, w_k=0.6, w_{q''}=0$.
 % =========================================================================== %
 \subsection*{Training Data}
 \begin{frame}
+\frametitle{CFD Geometry}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{/dissertation/figs/5x5/5x5_top_down}
+    \caption{Top down view of 5x5 pin Westinghouse facility.  Assembly dimensions and pin powers redacted.}
+    \label{fig:5x5topdown}
+\end{figure}
+\end{frame}
+
+\begin{frame}[shrink=20]
+\subsection*{Feature Extraction}
+\frametitle{CFD Data Preprocessing}
+\vspace{-20pt}
+\begin{itemize}
+    \item Execute paired CFD and CTF simulations.
+    \begin{itemize}
+        \item Same inlet conditions.
+        \item Same power distribution.
+        \item Matching rod and grid geometry.
+    \end{itemize}
+    \item Aggregate the fine scale surface CFD data onto the CTF surface mesh.
+    \item Compute features shown in the table below in each CTF face.
+    \item Subtract CFD result from CTF result (compute residuals).
+    \item Compute copula properties on each CTF face which best matches the CFD temperature vs TKE dependence structure.
+    \item Pair each feature set with the CFD-CTF residuals \& store feature/data pairs in an HDF5 file.
+    \item Repeat for all available CFD/CTF matching pins.
+\end{itemize}
+\vspace{-20pt}
+\begin{table}[h]
+    \begin{center}
+        \caption{Features included in the gradient boosted models as exogenous variables.}
+        \begin{tabular}[h]{|l | l | l | l |}
+            \hline
+            Sym & Label & Feature & Unit \\
+            \hline
+            \hline
+            $T$ & ctf\_twall\_avg & CTF Face surface temperature & $[K]$ \\
+            $R_T$ & ctf\_twall\_range & Surface temperature range in 4 adjacent faces & $[K]$ \\
+            $q''$ & ctf\_bhf\_avg & Local CTF face heat flux & $[W/m^2]$ \\
+            $R_{q''}$ & ctf\_bhf\_range & Heat flux range in 4 adjacent faces & $[W/m^2]$ \\
+            $u_z$ & w\_bulk & CTF subchannel bulk Z Velocity &  $[m/s]$ \\
+            $k$ & ctf\_tke\_avg & Local CTF face near wall TKE &  $[J/kg]$ \\
+            $R_k$ & ctf\_tke\_range & CTF TKE range in 4 adjacent faces & $[J/kg]$ \\
+            $z$ & z & Global axial position & $[m]$ \\
+            $\delta z_g$ & dz\_grid & Position relative to nearest spacer grid & $[m]$ \\
+            $N_g$ & n\_upsteam\_grid  & Nearest upstream spacer grid ID & $[]$ \\
+            $T_\infty$ & t\_bulk & Subchannel bulk temperature  &  $[K]$ \\
+            \hline
+        \end{tabular}
+        \label{tab:features}
+    \end{center}
+\end{table}
+\end{frame}
+
+\begin{frame}
+\subsection*{Feature Extraction}
+\frametitle{CFD Data Preprocessing: Copula Features}
+\begin{itemize}
+    \item Copula behavior vs. axial position.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\subsection*{Machine Learning Results}
+\frametitle{Leave-One-Out Cross Validation}
+\begin{itemize}
+    \item Copula behavior vs. axial position.
+\end{itemize}
 \end{frame}
 
 \section[Results]{Hi2lo Results Provided CFD Data Source}

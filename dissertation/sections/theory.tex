@@ -390,7 +390,7 @@ With the ability to draw samples from a multivariate distribution now establishe
 \index{Monte Carlo Sampling}
 
 \begin{equation}
-\E(\mathcal G(X)) \approx \frac{1}{N} \sum_i^N \mathcal G(X_i) h(X_i), \ \mathbf{X} \sim {h}
+\E(\mathcal G(X)) \approx \frac{1}{N} \sum_i^N \mathcal G(X_i), \ \mathbf{X} \sim {h}
 \label{eq:mc_expected_crud}
 \end{equation}
 
@@ -571,7 +571,7 @@ Algorithm \ref{algo:hi2lo_crud_algo} begins with the same pre-processing and mac
               \STATE Evaluate equation \ref{eq:expected_crud} via importance sampling \\
                 $\ \ \mathbf C_s = \mathcal G(x'_i; \mathbf C_{s-1}, \mathbf I, \Delta t_s)$ \\
               \STATE Crud mass at step $s$ in patch $j$:
-                $\ \ C_{s,j,m} = \left( \frac{A_j}{\sum_i^M \bar \omega'_i} \right) \sum_i^M C_{s,i,j,m} \bar \omega'_i$
+                $\ \ C_{s,j,m} = \left( \frac{A_j}{\sum_i^N \bar \omega'_i} \right) \sum_i^N C_{s,i,j,m} \bar \omega'_i$
           \ENDFOR
         \ENDFOR
         \ENDFOR
