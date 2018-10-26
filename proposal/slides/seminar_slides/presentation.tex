@@ -757,6 +757,7 @@ Where $\theta_c$ and $\theta_{x,y}$ are free copula and marginal model parameter
 \vspace{-16pt}
 
 \begin{itemize}
+    \item Obtain $\{\}$ via evaluation gradient boosted regression: .
     \item Define the reconstructed joint density as:
 \begin{align}
 h(T, k, q'') = & f_T(T;\hat \theta_T) f_k(k;\hat \theta_k) f_{j,q''} \cdot \nonumber \\
@@ -777,6 +778,17 @@ h(T, k, q'') = & f_T(T;\hat \theta_T) f_k(k;\hat \theta_k) f_{j,q''} \cdot \nonu
 
 % =========================================================================== %
 \begin{frame}
+\frametitle{\small Monte Carlo Sampling of the Joint Distribution over a Single Patch}
+\vspace{-16pt}
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=1.0\linewidth]{/dissertation/figs/imp_patch/original_t_tke_bmass_scatter_cut}
+    \label{model_overview}
+\end{figure}
+\end{frame}
+
+% =========================================================================== %
+\begin{frame}
 \frametitle{Importance Sampling of the Joint Distribution}
 \vspace{-16pt}
 \begin{itemize}
@@ -787,21 +799,28 @@ h(T, k, q'') = & f_T(T;\hat \theta_T) f_k(k;\hat \theta_k) f_{j,q''} \cdot \nonu
 \label{eq:mc_imp_expected_crud}
 \end{equation}
 
-    \item Impose simplification of matching proposal and target copula density distributions such that:
+\item The sample importance is given by the ratio between the target and sampling distributions:
     
     \begin{equation}
-    \omega_i = \frac{h_i}{\tilde h_i} = \frac{f_1(x_i) f_2(x_i)c(u_1, u_2)}{\tilde f_1(x_i) \tilde f_2(x_i) \tilde c(u_1, u_2)} \nonumber
+    \omega_i = \frac{h_i}{\tilde h_i} = \frac{f_1(x_i) f_2(x_i)c(F_1(x_i), F_2(x_i))}{\tilde f_1(x_i) \tilde f_2(x_i) \tilde c(\tilde F_1(x_i), \tilde F_2(x_i))} \nonumber
     \label{eq:imp_prob_ratio}
     \end{equation}
-    \begin{equation}
-    \omega_i = \frac{f_1(x_i) f_2(x_i)}{\tilde f_1(x_i) \tilde f_2(x_i)}  \nonumber
-    \label{eq:imp_prob_ratio2}
-    \end{equation}
-    
-    
+
     \item \textbf{Goal:}  Target regions of the rod surface which have exhibit changes in crud behavior and contribute to crud growth $T \ge T_{sat}$ and high TKE.  Avoid sampling heavily in regions with $T<T_{sat}$.
 \end{itemize}
 \end{frame}
+
+% =========================================================================== %
+\begin{frame}
+\frametitle{\small Importance Sampling of the Joint Distribution over a Single Patch}
+\vspace{-16pt}
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=1.0\linewidth]{/dissertation/figs/imp_patch/importance_t_tke_bmass_scatter_cut}
+    \label{model_overview}
+\end{figure}
+\end{frame}
+
 
 % =========================================================================== %
 \subsection*{Time Stepping}
@@ -817,55 +836,6 @@ h(T, k, q'') = & f_T(T;\hat \theta_T) f_k(k;\hat \theta_k) f_{j,q''} \cdot \nonu
 \vspace{-16pt}
 
 \end{frame}
-
-
-% --------------------------------------------------------------------------- %
-\subsection*{Hi2lo method for time dependent crud prediction}
-\begin{frame}
-\vspace{-18.5pt}
-    \begin{algorithm}[H]
-        % \captionsetup{labelfont={sc,bf}, labelsep=newline}
-        \algsetup{linenosize=\tiny}
-        \tiny      
-        \begin{algorithmic}[1]      
-            \STATE \textbf{Initialization}  
-            \STATE (1) Pre-process training set.  
-            \STATE $\ \ $   (1b) Fit the joint distribution parameters to known CFD data: $\theta(\mathbf p, \mathbf z)$.  
-            \STATE $\ \ $   (1c) \textbf{def:}  $\ \theta \leftarrow \mathcal F_M(\mathbf p, \mathbf z | \gamma)$
-            \STATE (2) Train model:  $\hat{\mathcal F_M} =  \mathrm{argmin}_{\mathcal F}$
-            $L(\mathcal{F}_M (\mathbf p, \mathbf z| \gamma), \theta(\mathbf p, \mathbf z)) $
-            \FOR {VERA State, $v$}
-            \FOR {CTF face, $j$}
-            \STATE Evaluate ML model $\hat \theta_j \leftarrow \hat{\mathcal F_M}(\mathbf p_j, \mathbf z_j)$ \\
-            $\ \ \hat \theta_j = \{\hat \theta_{j,c}, \hat \theta_{j,\tau} \}$
-            \STATE Reconstruct margins (CDFs) from quantiles  \\
-            $\ \ \hat F_{j,T}= Q^{-1}(T; \{\hat{\theta}_{j,\tau} \})$ , $\hat F_{j,k}= Q^{-1}(k; \{\hat{\theta}_{j,\tau} \})$
-            \STATE Def $q''$ margin  $f_{j,q''} = \delta_{(q''_\mathrm{j,ctf})}$
-            \STATE Reconstruct joint distribution $\hat h_j(\cdot |\hat \theta_j) = \hat f_{j,T} \hat f_{j,k} f_{j,q''} c(\hat F_{j,T}, \hat F_{j,k}; \hat \theta_{j,c})$ \;
-            \ENDFOR
-            \FOR {Resample time step, $s,\ \Delta t_s$}
-            \FOR {CTF face, $j$}
-            \STATE Def importance  mixture quantile functions \\
-            $\ \ \tilde Q_{j,k} = \lambda_{0,k} \hat Q_{j,k}  + \lambda_{1,k} Q_{\beta_k}(k; \vartheta_k)$, 
-            $\ \ \tilde Q_{j,T} = \lambda_{0,T} \hat Q_{j,T}  + \lambda_{1,T} Q_{\beta_T}(T; \vartheta_T); $ \\
-            $\ \ \sum_i \lambda_i = 1, \ \ \tilde F_{j,T} = \tilde Q^{-1}_{j,T},\ \  \tilde F_{j,k} = \tilde Q^{-1}_{j,k} $
-            \STATE Def importance sampling distribution $\tilde h_j = \tilde f_{j,T} \tilde f_{j,k} c(\tilde F_{j,T}, \tilde F_{j,k}; \hat \theta_{j,c}) $
-            \STATE Draw samples $\mathbf x \sim \tilde h_j$ \;
-            \STATE Compute importance weights $\omega = \hat h_j(\mathbf x) /  \tilde h_j(\mathbf x) $
-            \STATE Re-map samples  $\mathbf x', \omega' \xleftarrow[\text{ }]{\text{R}} \mathbf x, \omega $
-            \STATE Update importance weights by equation \ref{eq:time_sample_weights3}
-            \STATE Evaluate equation \ref{eq:expected_crud} via importance sampling \\
-            $\ \ \mathbf C_s = \mathcal G(x'_i; \mathbf C_{s-1}, \mathbf I, \Delta t_s)$ \\
-            \STATE Crud mass at step $s$ in patch $j$:
-            $\ \ C_{s,j,m} = \left( \frac{A_j}{\sum_i^M \bar \omega'_i} \right) \sum_i^M C_{s,i,j,m} \bar \omega'_i$
-            \ENDFOR
-            \ENDFOR
-            \ENDFOR
-        \end{algorithmic}
-        \label{algo:hi2lo_crud_algo}
-    \end{algorithm}
-\end{frame}
-% ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: %
 
 % =========================================================================== %
 \subsection*{Sampling}
@@ -965,20 +935,20 @@ The $i^{th}$ CRUD sample drawn from CTF patch, $j$:
 
 % =========================================================================== %
 \begin{frame}[shrink=10]
-\frametitle{Propagating CRUD Through Time}
+\frametitle{Propagating Crud Through Time}
 \begin{itemize}
-\item  \textbf{Problem:}  The crud growth rate depends on the previous crud state.  The patch averaging scheme is unphysical since it does not preserve the correct past CRUD state for each crud flake. 
+\item  \textbf{Problem:}  The crud growth rate depends on the previous crud state. 
 \end{itemize}
 \begin{figure}[!htbp]
 \centering
 \begin{minipage}{.5\textwidth}
   \includegraphics[width=5cm]{figs/dboron_dt_tke.png}
-\caption{CRUD growth rate TKE sensitivity vs. Time. $T=620K, q''=100W/cm^2$.} 
+\caption{\centering Crud growth rate TKE \\ sensitivity vs. Time. \\ $T=620[K], q''=100[W/cm^2]$.} 
 \label{fig:crud_pre_map}
 \end{minipage}%
 \begin{minipage}{.5\textwidth}
   \includegraphics[width=5cm]{figs/dboron_dt_t.png}
-\caption{CRUD growth rate Temperature sensitivity vs. Time. $T=620K, q''=100W/cm^2$..}
+\caption{\centering Crud growth rate Temperature \\ sensitivity vs. Time. \\ $TKE=0.01[J/kg], q''=100[W/cm^2]$..}
 \label{fig:crud_post_map}
 \end{minipage}
 \end{figure}
@@ -986,9 +956,10 @@ The $i^{th}$ CRUD sample drawn from CTF patch, $j$:
 
 % =========================================================================== %
 \begin{frame}[shrink=20]
-\frametitle{Propagating CRUD Through Time: Patch Remapping}
+\frametitle{Propagating Crud Through Time: Patch Remapping}
 \begin{columns}
 \begin{column}{0.5\textwidth}
+        \scriptsize{
    Two bounding cases to consider:
 \begin{itemize}
 \item Hot spots on the rod surface remain stationary w.r.t time
@@ -1002,9 +973,10 @@ The $i^{th}$ CRUD sample drawn from CTF patch, $j$:
 \end{itemize}
 Define a metric; for each $\mathcal F_i$ compute:
 \[
-m_i = \alpha T_i + \beta TKE_i + \gamma q_i''
+    m_i = w_T \left( \frac{T_i - T_{min}}{T_{max} - T_{min}} \right) + w_k \left( \frac{k_i - k_{min}}{k_{max} - k_{min}} \right) +  w_q'' \left( \frac{q^{''}_i - q^{''}_{min}}{q_{max} - q_{min}} \right)
 \]
 Rank $m_i's$ by highest to lowest with and store the ranked indices.
+}
 \end{column}
 \begin{column}{0.5\textwidth}  %%<--- here
     \begin{center}
@@ -1027,7 +999,7 @@ Rank $m_i's$ by highest to lowest with and store the ranked indices.
         \begin{minipage}{.5\textwidth}
             \centering
             \includegraphics[width=6cm]{figs/new/patch_t_ex.png}
-            \caption{\centering Re-ordered temperature samples. \\ $\alpha=1.0; \beta=\gamma=0$}
+            \caption{\centering Re-ordered temperature samples. \\ $w_T=1.0; w_k=w_{q''}=0$}
         \end{minipage}
     \end{figure}
 Both patches share the \emph{same} PDF of temperature, however, the spatial distributions are not equal.
@@ -1046,7 +1018,7 @@ Both patches share the \emph{same} PDF of temperature, however, the spatial dist
         \begin{minipage}{.5\textwidth}
             \centering
             \includegraphics[width=6cm]{figs/new/patch_tke_ex.png}
-            \caption{\centering Re-ordered TKE samples. \\ $\alpha=1.0; \beta=\gamma=0$}
+            \caption{\centering Re-ordered TKE samples. \\  $w_T=1.0; w_k=w_{q''}=0$}
         \end{minipage}
     \end{figure}
 Both patches share the \emph{same} PDF of TKE, however, the spatial distributions are not equal.
@@ -1058,18 +1030,17 @@ Both patches share the \emph{same} PDF of TKE, however, the spatial distribution
 \tiny{
 Pin-integrated Boron inside the CRUD as a function of time.  \\ 
 {\color{green} Green: Assumes randomly moving hot spots.} \\
-{\color{blue} Blue: Assumes stationary hot spots ($\alpha=1.0; \beta=\gamma=0$).}
+{\color{blue} Blue: Assumes stationary hot spots ( $w_T=1.0; w_k=w_{q''}=0$).}
 }
 \begin{figure}[!htbp]
 \centering
-\includegraphics[width=8cm]{figs/new/cmpr_pin_totals.png}
+\includegraphics[width=7cm]{figs/new/cmpr_pin_totals.png}
 \label{model_overview}
 \end{figure}
 \end{frame}
 
 
 % =========================================================================== %
-\section{Results}
 \begin{frame}
 \frametitle{Single Pin Results $@$ 300 days}
     \begin{figure}
@@ -1077,15 +1048,15 @@ Pin-integrated Boron inside the CRUD as a function of time.  \\
         \begin{minipage}{.5\textwidth}
             \centering
             \includegraphics[width=6cm]{figs/map_method/cmpr_pin_totals.png}
-            \caption{Totoal rod CRUD boron vs. time.}
+            \caption{\centering Total rod crud boron vs. time.}
         \end{minipage}%
         \begin{minipage}{.5\textwidth}
             \centering
             \includegraphics[width=6cm]{figs/map_method/struct_pin_z_bmass.png}
-            \caption{ CRUD Boron Deposition $[g/cm^2]$}
+            \caption{ \centering Crud Boron Deposition $[g/cm^2]$}
         \end{minipage}
     \end{figure}
-Approximately optimal remapping coefficients: $\alpha=0.4, \beta=0.6, \gamma=0$.  
+Approximately optimal remapping coefficients: $w_T=0.4, w_k=0.6, w_{q''}=0$.  
 \end{frame}
 
 
@@ -1096,15 +1067,15 @@ Approximately optimal remapping coefficients: $\alpha=0.4, \beta=0.6, \gamma=0$.
         \begin{minipage}{.5\textwidth}
             \centering
             \includegraphics[width=6cm]{figs/map_method/cmpr_pin_totals.png}
-            \caption{Totoal rod CRUD boron vs. time.}
+            \caption{\centering Total rod crud boron vs. time.}
         \end{minipage}%
         \begin{minipage}{.5\textwidth}
             \centering
             \includegraphics[width=6cm]{figs/map_method/struct_pin_z_cmass.png}
-            \caption{ CRUD mass Deposition $[g/cm^2]$}
+            \caption{ \centering Crud mass Deposition $[g/cm^2]$}
         \end{minipage}
     \end{figure}
-Approximately optimal remapping coefficients: $\alpha=0.4, \beta=0.6, \gamma=0$.  
+Approximately optimal remapping coefficients: $w_T=0.4, w_k=0.6, w_{q''}=0$.  
 \end{frame}
 
 % =========================================================================== %
@@ -1123,78 +1094,104 @@ Approximately optimal remapping coefficients: $\alpha=0.4, \beta=0.6, \gamma=0$.
             \caption{ Axial cladding outer \\ surface TKE distribution [J/kg]}
         \end{minipage}
     \end{figure}
-Approximately optimal remapping coefficients: $\alpha=0.4, \beta=0.6, \gamma=0$.  
-\end{frame}
-
-% =========================================================================== %
-\begin{frame}\frametitle{ \small Preliminary Temperature Gradient Boosted Quantile Regression Results}
-Note: The CFD data is detrended using matching CTF fields before regression is performed.
-    \begin{figure}
-        \centering
-        \begin{minipage}{.5\textwidth}
-            \centering
-            \includegraphics[width=6cm]{figs/t_quantile_model_out.png}
-            \caption{Hi2Low predicted temperature \\ residual quantiles $[K]$ vs \\ Axial position $[m]$.}
-        \end{minipage}%
-        \begin{minipage}{.5\textwidth}
-            \centering
-            \includegraphics[width=6cm]{figs/qq_plot_t_69.png}
-            \caption{Q-Q Plot comparing gradient boosted quantiles vs. synthetic CFD data. $z=2.59[m]$}
-        \end{minipage}
-    \end{figure}
-Quantiles used in temperature residual reconstruction: $\tau_{T}=\{0, 0.1, 0.3, 0.5, 0.7, 0.85, 0.9 0.95, 0.99, 1\}$
-\end{frame}
-
-% =========================================================================== %
-\begin{frame}\frametitle{\small Preliminary Temperature Gradient Boosted Quantile Regression Results}
-    \begin{figure}
-        \centering
-        \begin{minipage}{.5\textwidth}
-            \centering
-            \includegraphics[width=6cm]{figs/t_quantile_model_out.png}
-            \caption{Hi2Low predicted temperature \\ residual quantiles $[K]$ vs \\ Axial position $[m]$.}
-        \end{minipage}%
-        \begin{minipage}{.5\textwidth}
-            \centering
-            \includegraphics[width=6cm]{figs/qq_plot_t_76.png}
-            \caption{Q-Q Plot comparing gradient boosted quantiles vs. synthetic CFD data. $z=2.84[m]$}
-        \end{minipage}
-    \end{figure}
-Quantiles used in temperature residual reconstruction: $\tau_{T}=\{0, 0.1, 0.3, 0.5, 0.7, 0.85, 0.9 0.95, 0.99, 1\}$
-\end{frame}
-
-% =========================================================================== %
-\begin{frame}\frametitle{\small Preliminary TKE Gradient Boosted Quantile Regression Results}
-    \begin{figure}
-        \centering
-        \begin{minipage}{.5\textwidth}
-            \centering
-            \includegraphics[width=6cm]{figs/tke_quantile_model_out.png}
-            \caption{Hi2Low predicted TKE residual \\ quantiles $[J/kg]$ vs \\ Axial position $[m]$.}
-        \end{minipage}%
-        \begin{minipage}{.5\textwidth}
-            \centering
-            \includegraphics[width=6cm]{figs/qq_plot_tke_76.png}
-            \caption{Q-Q Plot comparing gradient boosted quantiles vs. synthetic CFD data. $z=2.84[m]$}
-        \end{minipage}
-    \end{figure}
-Quantiles used in TKE residual reconstruction: $\tau_{TKE}=\{0, 0.01, 0.05, 0.15, 0.3, 0.5, 0.7, 1\}$
+Approximately optimal remapping coefficients: $w_T=0.4, w_k=0.6, w_{q''}=0$.  
 \end{frame}
 
 
 % =========================================================================== %
-\begin{frame}\frametitle{\small Preliminary GB Classifier Output combined with GB Kendall's $\tau$ regressor}
-\tiny Copula Parameters as a function of axial position (qtr-symmetric rod)
-\begin{figure}[!htbp]
-\centering
-\includegraphics[width=8cm]{figs/ktau_plot.png}
-\label{model_overview}
-\end{figure}
-\begin{itemize}
-\item {\color{red} Red - Frank Copula}
-\item {\color{green} Green - Gaussian Copula}
-\item {\color{blue} Blue - Clayton Copula}
-\end{itemize}
+\subsection*{Hi2lo method for time dependent crud prediction}
+\begin{frame}
+\vspace{-18.5pt}
+\begin{algorithm}[H]
+    % \captionsetup{labelfont={sc,bf}, labelsep=newline}
+    \algsetup{linenosize=\tiny}
+    \tiny      
+    \begin{algorithmic}[1]      
+        \STATE \textbf{Initialization}  
+        \STATE (1) Pre-process training set.  
+        \STATE $\ \ $   (1b) Fit the joint distribution parameters to known CFD data: $\theta(\mathbf p, \mathbf z)$.  
+        \STATE $\ \ $   (1c) \textbf{def:}  $\ \theta \leftarrow \mathcal F_M(\mathbf p, \mathbf z | \gamma)$
+        \STATE (2) Train model:  $\hat{\mathcal F_M} =  \mathrm{argmin}_{\mathcal F}$
+        $L(\mathcal{F}_M (\mathbf p, \mathbf z| \gamma), \theta(\mathbf p, \mathbf z)) $
+        \FOR {VERA State, $v$}
+        \FOR {CTF face, $j$}
+        \STATE Evaluate ML model $\hat \theta_j \leftarrow \hat{\mathcal F_M}(\mathbf p_j, \mathbf z_j)$ \\
+        $\ \ \hat \theta_j = \{\hat \theta_{j,c}, \hat \theta_{j,\tau} \}$
+        \STATE Reconstruct margins (CDFs) from quantiles  \\
+        $\ \ \hat F_{j,T}= Q^{-1}(T; \{\hat{\theta}_{j,\tau} \})$ , $\hat F_{j,k}= Q^{-1}(k; \{\hat{\theta}_{j,\tau} \})$
+        \STATE Def $q''$ margin  $f_{j,q''} = \delta_{(q''_\mathrm{j,ctf})}$
+        \STATE Reconstruct joint distribution $\hat h_j(\cdot |\hat \theta_j) = \hat f_{j,T} \hat f_{j,k} f_{j,q''} c(\hat F_{j,T}, \hat F_{j,k}; \hat \theta_{j,c})$ \;
+        \ENDFOR
+        \FOR {Resample time step, $s,\ \Delta t_s$}
+        \FOR {CTF face, $j$}
+        \STATE Def importance  mixture quantile functions \\
+        $\ \ \tilde Q_{j,k} = \lambda_{0,k} \hat Q_{j,k}  + \lambda_{1,k} Q_{\beta_k}(k; \vartheta_k)$, 
+        $\ \ \tilde Q_{j,T} = \lambda_{0,T} \hat Q_{j,T}  + \lambda_{1,T} Q_{\beta_T}(T; \vartheta_T); $ \\
+        $\ \ \sum_i \lambda_i = 1, \ \ \tilde F_{j,T} = \tilde Q^{-1}_{j,T},\ \  \tilde F_{j,k} = \tilde Q^{-1}_{j,k} $
+        \STATE Def importance sampling distribution $\tilde h_j = \tilde f_{j,T} \tilde f_{j,k} c(\tilde F_{j,T}, \tilde F_{j,k}; \hat \theta_{j,c}) $
+        \STATE Draw samples $\mathbf x \sim \tilde h_j$ \;
+        \STATE Compute importance weights $\omega = \hat h_j(\mathbf x) /  \tilde h_j(\mathbf x) $
+        \STATE Re-map samples  $\mathbf x', \omega' \xleftarrow[\text{ }]{\text{R}} \mathbf x, \omega $
+        \STATE Update importance weights by equation \ref{eq:time_sample_weights3}
+        \STATE Evaluate equation \ref{eq:expected_crud} via importance sampling \\
+        $\ \ \mathbf C_s = \mathcal G(x'_i; \mathbf C_{s-1}, \mathbf I, \Delta t_s)$ \\
+        \STATE Crud mass at step $s$ in patch $j$:
+        $\ \ C_{s,j,m} = \left( \frac{A_j}{\sum_i^M \bar \omega'_i} \right) \sum_i^M C_{s,i,j,m} \bar \omega'_i$
+        \ENDFOR
+        \ENDFOR
+        \ENDFOR
+    \end{algorithmic}
+    \label{algo:hi2lo_crud_algo}
+\end{algorithm}
+\end{frame}
+
+\section[Preprocessing]{Data Preparation}
+% =========================================================================== %
+\subsection*{Training Data}
+\begin{frame}
+\end{frame}
+
+\section[Results]{Hi2lo Results Provided CFD Data Source}
+% =========================================================================== %
+\subsection*{Machine Learning Results}
+\begin{frame}
+\frametitle{Gradient Boosting Prediction Results: TKE conditional quantiles}
+\end{frame}
+
+% =========================================================================== %
+\begin{frame}
+\frametitle{Gradient Boosting Prediction Results: Temperature conditional quantiles}
+\end{frame}
+
+% =========================================================================== %
+\begin{frame}
+\frametitle{Gradient Boosting Prediction Results: Kendall's $\tau$}
+\end{frame}
+
+% =========================================================================== %
+\subsection*{Crud Results}
+\begin{frame}
+\frametitle{Single Pin Crud Results}
+\end{frame}
+
+% =========================================================================== %
+\begin{frame}
+\frametitle{Single Pin Crud Results Cont.}
+\end{frame}
+
+% =========================================================================== %
+\begin{frame}
+\frametitle{5x5 Assembly Crud Results}
+\end{frame}
+
+% =========================================================================== %
+\begin{frame}
+\frametitle{5x5 Assembly Crud Results Cont.}
+\end{frame}
+
+% =========================================================================== %
+\begin{frame}
+\frametitle{5x5 Assembly Crud Results Cont.}
 \end{frame}
 
 
