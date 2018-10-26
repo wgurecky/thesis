@@ -173,6 +173,27 @@ Crud forms a porous layer on the surface of fuel rods and is primarily comprised
 \end{frame}
 
 % =========================================================================== %
+\subsection*{Crud Cladding Side Boundary Condition Sensitivity}
+\begin{frame}
+\frametitle{Chalk River Unidentified Deposit (crud)}
+\vspace{-12pt}
+    \begin{figure}
+    \centering
+    \begin{minipage}{.5\textwidth}
+        \centering
+        \includegraphics[width=1.0\linewidth]{/dissertation/figs/crud/crud_t_tke_boron_response_80}
+        \caption{\centering Crud boron deposition rate vs \\ surface temperature and TKE. \\ Boundary heat flux \\ $q''=80[W/cm^2]$.  }
+    \end{minipage}%
+    \begin{minipage}{.5\textwidth}
+        \centering
+        \includegraphics[width=1.0\linewidth]{/dissertation/figs/crud/crud_t_tke_boron_response_120}
+        \caption{\centering Crud boron deposition rate vs \\ surface temperature and TKE.  \\ Boundary heat flux \\ $q''=120[W/cm^2]$. }
+    \end{minipage}
+pyMAMBA results. 
+\end{figure}
+\end{frame}
+
+% =========================================================================== %
 \subsection*{Motivation}
 \begin{frame}
     \frametitle{Crud Induced Power Shift (CIPS)}
@@ -1101,7 +1122,7 @@ Approximately optimal remapping coefficients: $w_T=0.4, w_k=0.6, w_{q''}=0$.
 % =========================================================================== %
 \subsection*{Hi2lo method for time dependent crud prediction}
 \begin{frame}
-\vspace{-18.5pt}
+\vspace{-16pt}
 \begin{algorithm}[H]
     % \captionsetup{labelfont={sc,bf}, labelsep=newline}
     \algsetup{linenosize=\tiny}
@@ -1124,10 +1145,6 @@ Approximately optimal remapping coefficients: $w_T=0.4, w_k=0.6, w_{q''}=0$.
         \ENDFOR
         \FOR {Resample time step, $s,\ \Delta t_s$}
         \FOR {CTF face, $j$}
-        \STATE Def importance  mixture quantile functions \\
-        $\ \ \tilde Q_{j,k} = \lambda_{0,k} \hat Q_{j,k}  + \lambda_{1,k} Q_{\beta_k}(k; \vartheta_k)$, 
-        $\ \ \tilde Q_{j,T} = \lambda_{0,T} \hat Q_{j,T}  + \lambda_{1,T} Q_{\beta_T}(T; \vartheta_T); $ \\
-        $\ \ \sum_i \lambda_i = 1, \ \ \tilde F_{j,T} = \tilde Q^{-1}_{j,T},\ \  \tilde F_{j,k} = \tilde Q^{-1}_{j,k} $
         \STATE Def importance sampling distribution $\tilde h_j = \tilde f_{j,T} \tilde f_{j,k} c(\tilde F_{j,T}, \tilde F_{j,k}; \hat \theta_{j,c}) $
         \STATE Draw samples $\mathbf x \sim \tilde h_j$ \;
         \STATE Compute importance weights $\omega = \hat h_j(\mathbf x) /  \tilde h_j(\mathbf x) $
