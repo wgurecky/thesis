@@ -861,98 +861,31 @@ h(T, k, q'') = & f_T(T;\hat \theta_T) f_k(k;\hat \theta_k) f_{j,q''} \cdot \nonu
 % =========================================================================== %
 \subsection*{Sampling}
 \begin{frame}
-\frametitle{Single CTF Patch: CRUD Growth}
-The $i^{th}$ CRUD sample drawn from CTF patch, $j$:
-\begin{figure}[!htbp]
-\centering
-\includegraphics[width=9cm]{figs/crud_samples.png}
-\label{model_overview}
-\end{figure}
-\begin{itemize}
-\item When importance sampling is not used samples are drawn with weight $w_i=A_p/N$ where $A_p$ is the CTF patch area and $N$ is the total number of samples/patch.
-\item TH boundary conditions are held fixed throughout the duration of the CRUD simulation step with timestep size $\Delta t$.
-\end{itemize}
-\end{frame}
+\frametitle{Sampling and Time Stepping Review}
 
-% =========================================================================== %
-\begin{frame}
-\tiny Example Results $@$ 100 [days] simulation time on a single CTF patch (Centroid at $z,\theta=(2.95, 3.14)$). 
-\begin{figure}[!htbp]
-\centering
-\includegraphics[width=8.2cm]{figs/new/patch_scatter.png}
-\label{model_overview}
-\end{figure}
 \end{frame}
 
 \section[Model Exploration]{Model Exploration Provided Synthetic CFD Data}
 % =========================================================================== %
-\begin{frame}[shrink=2]
-\frametitle{Propagating CRUD Through Time}
+\begin{frame}
+\frametitle{Propagating Crud Through Time}
+\vspace{-16pt}
 \begin{itemize}
-\item Utilize single pin, steady state, synthetic CFD data as golden standard boundary conditions.
-\item Run CRUD computations with synthetic CFD data 
-\item Fit copula and margins to CFD data on each CTF patch 
-\item Run CRUD computation with the fitted model supplying boundary conditions to MAMBA
-\item Compare:
-\begin{itemize}
-\item The predicted total CRUD mass and CRUD boron on the pin as a function of time
-\item Maximum crud thickness as a function of time
+    \item Thermal hydraulic state, including power distribution and flow rates, changes through a cycle.  
+    \item Provide a mechanism to step the solution forward in time, akin to solving the following stochastic ODE:
+    \[
+    \frac{d N}{d t} = \alpha N - \gamma_k k
+    \]
+    Where $\alpha$ and $\gamma_k$ are random variables whose governing distributions depend on the local core state.
 \end{itemize}
-\item Propagate uncertainties in the CRUD fields through time.
-\end{itemize}
-\begin{figure}[!htbp]
+
+\begin{figure}[]
 \centering
-\includegraphics[width=10cm]{figs/crud_time_demo.png}
+\includegraphics[width=0.9\linewidth]{figs/crud_time_demo.png}
 \label{model_overview}
 \end{figure}
 \end{frame}
 
-
-% =========================================================================== %
-%\begin{frame}[shrink=5]
-%\frametitle{Propagating CRUD Through Time:  Patch Averaging}
-%\begin{itemize}
-%\item  \textbf{Claim:} If $g(\cdot)$ does not depend on the previous CRUD state then $\E[ g_i^{t+1}] =  \E[ g(x_i| \mu_g^{t}, \delta t)] = \E[ g( x_i| g_{i}^{t}, \delta t)]$.
-%\item If true the following CRUD propagation scheme preserves the correct total crud mass over the patch at each time step:
-%\begin{algorithm}[H]
-%\For{$t = 1$ to ${t_{end}}$}{
-%	Draw TH samples, $\{x_i, ... x_N\} \sim h$ \;
-%	
-%	Compute the crud distribution over the patch
-%	$g_i^{t+1} = g(x_i|g_i^t=\mu_g^t, \delta t)$ \;
-%	
-%	Identify the ``mean crud flake" on the patch: $g^{t+1}_{i^*}$ \;
-%	
-%	Find the boundary conditions which gave rise to $g^{t+1}_{i^*}$, \\\ denote them $x^*$.  Set all boundary condition samples: $x^*_i = x^*, \forall i \in {1, ... N}$ \;
-%	
-%    Rewind the CRUD simulation back to $g^{t}$ \;
-%	
-%	Regrow crud with uniform TH boundary conditions over the patch:  $g_i^{t+1} = g(x^*_i|g_i^t, \delta t)$
-%}
-%\end{algorithm}
-%\end{itemize}
-%\end{frame}
-
-% =========================================================================== %
-\begin{frame}[shrink=10]
-\frametitle{Propagating CRUD Through Time: Patch Averaging}
-\begin{figure}[!htbp]
-\centering
-\begin{minipage}{.5\textwidth}
-  \includegraphics[width=6.5cm]{figs/avg_method/cmpr_pin_totals.png}
-\caption{Pin integrated CRUD boron \\ as a function of time.} 
-\label{fig:crud_pre_map}
-\end{minipage}%
-\begin{minipage}{.5\textwidth}
-  \includegraphics[width=6.5cm]{figs/avg_method/struct_pin_z_bmass.png}
-\caption{CRUD boron mass distribution at 300[days].}
-\label{fig:crud_post_map}
-\end{minipage}
-\end{figure}
-\begin{itemize}
-\item \small For all cases presented the boundary heat flux is flat and fixed at $85.85 W/cm^2$ and assumes the boundary heat flux is uncorrelated with $T$ and $TKE$.  Only the top 3 spacer grids are included.
-\end{itemize}
-\end{frame}
 
 % =========================================================================== %
 \begin{frame}[shrink=10]
@@ -980,8 +913,9 @@ The $i^{th}$ CRUD sample drawn from CTF patch, $j$:
 \frametitle{Propagating Crud Through Time: Patch Remapping}
 \begin{columns}
 \begin{column}{0.5\textwidth}
-        \scriptsize{
-   Two bounding cases to consider:
+    Two bounding cases to consider:
+\scriptsize{
+   
 \begin{itemize}
 \item Hot spots on the rod surface remain stationary w.r.t time
 	\begin{itemize}
@@ -996,7 +930,7 @@ Define a metric; for each $\mathcal F_i$ compute:
 \[
     m_i = w_T \left( \frac{T_i - T_{min}}{T_{max} - T_{min}} \right) + w_k \left( \frac{k_i - k_{min}}{k_{max} - k_{min}} \right) +  w_q'' \left( \frac{q^{''}_i - q^{''}_{min}}{q_{max} - q_{min}} \right)
 \]
-Rank $m_i's$ by highest to lowest with and store the ranked indices.
+Rank $m_i$ by highest to lowest with and store the ranked indices.
 }
 \end{column}
 \begin{column}{0.5\textwidth}  %%<--- here
@@ -1004,6 +938,45 @@ Rank $m_i's$ by highest to lowest with and store the ranked indices.
      \includegraphics[width=0.85\textwidth]{figs/sample_mapping.png}
      \end{center}
 \end{column}
+\end{columns}
+\end{frame}
+
+% =========================================================================== %
+\begin{frame}[shrink=20]
+\frametitle{\small Propagating Crud Through Time: With Importance Sample Weights}
+\vspace{-20pt}
+\begin{itemize}
+    \item Define sample remapping:  $ \mathcal R $  
+    \item Draw samples, $X \sim \tilde h$ and compute sample weights, $\mathbf \omega$.
+    \item Remap samples:  $\mathbf x', \omega' \xleftarrow[\text{ }]{\mathcal R} \mathbf x, \omega $
+    \item For $ i \in [0, 1, ... N]$  Where $N$ is the number of samples drawn per CTF Face:
+\end{itemize}
+\begin{columns}
+    \begin{column}{0.5\textwidth}
+Compute time averaged importance weights:
+\begin{align}
+\bar \omega'_{{n},i} &= \left( \frac{(n-1) \Delta t_s}{n \Delta t_s} \right) \bar \omega'_{n-1,i} + \left( \frac{\Delta t_s}{n \Delta t_s} \right) \omega'_{n,i} \nonumber \\
+&= \left( \frac{(n-1)}{n} \right) \bar \omega'_{n-1,i} + \left( \frac{1}{n} \right) \omega'_{n,i} \nonumber
+\label{eq:time_sample_weights3}
+\end{align}
+Where $n$ is the current resampling step index.
+Crud growth step:
+\[
+\mathbf C_{n,i} = \mathcal G(x'_i; \mathbf C_{i, n-1}, \mathbf I, \Delta t_s)
+\]
+\begin{equation}
+C_{m} = \left(\frac{A}{\sum_i^M \bar \omega'_i}\right) \sum_i^N C'_i \bar \omega'_i \nonumber
+\label{eq:patch_sum_mass}
+\end{equation}
+   \end{column}
+\begin{column}{0.5\textwidth}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\linewidth]{/dissertation/figs/step_scheme}
+    \caption{Multi-state point time stepping overview.  Multiple Resampling events are conducted per VERA state.  $\Delta t_s$ is a user controllable resampling step size parameter.}
+    \label{fig:stepscheme}
+\end{figure}
+ \end{column}
 \end{columns}
 \end{frame}
 
@@ -1063,7 +1036,38 @@ Pin-integrated Boron inside the CRUD as a function of time.  \\
 
 % =========================================================================== %
 \begin{frame}
-\frametitle{Single Pin Results $@$ 300 days}
+\frametitle{Single Pin Results: No Sample Remapping}
+\vspace{-16pt}
+\scriptsize{
+\begin{itemize}
+    \item No Sample Remapping Performed i.e:
+    Ranked samples $\mathbf m'$ are randomly emplaced on the CTF faces.
+    \item Hot spots are allowed to randomly move about the rod surface at each resampling step.
+    \item Non-physical
+\end{itemize}
+}
+\begin{figure}[!htbp]
+    \centering
+    \begin{minipage}{.5\textwidth}
+        \includegraphics[width=1.1\linewidth]{figs/avg_method/cmpr_pin_totals.png}
+        \caption{\centering Pin integrated CRUD boron \\ as a function of time.} 
+        \label{fig:crud_pre_map}
+    \end{minipage}%
+    \begin{minipage}{.5\textwidth}
+        \includegraphics[width=1.1\linewidth]{figs/avg_method/struct_pin_z_bmass.png}
+        \caption{\centering CRUD boron mass distribution at 300[days].}
+        \label{fig:crud_post_map}
+    \end{minipage}
+\end{figure}
+\end{frame}
+
+% =========================================================================== %
+\subsection*{Time Dependence}
+\begin{frame}
+\frametitle{Single Pin Results:  Remapping Applied}
+\begin{itemize}
+    \item Approximately optimal remapping coefficients: $w_T=0.4, w_k=0.6, w_{q''}=0$. 
+\end{itemize}
     \begin{figure}
         \centering
         \begin{minipage}{.5\textwidth}
@@ -1076,27 +1080,7 @@ Pin-integrated Boron inside the CRUD as a function of time.  \\
             \includegraphics[width=6cm]{figs/map_method/struct_pin_z_bmass.png}
             \caption{ \centering Crud Boron Deposition $[g/cm^2]$}
         \end{minipage}
-    \end{figure}
-Approximately optimal remapping coefficients: $w_T=0.4, w_k=0.6, w_{q''}=0$.  
-\end{frame}
-
-
-\begin{frame}
-\frametitle{Single Pin Results $@$ 300 days}
-    \begin{figure}
-        \centering
-        \begin{minipage}{.5\textwidth}
-            \centering
-            \includegraphics[width=6cm]{figs/map_method/cmpr_pin_totals.png}
-            \caption{\centering Total rod crud boron vs. time.}
-        \end{minipage}%
-        \begin{minipage}{.5\textwidth}
-            \centering
-            \includegraphics[width=6cm]{figs/map_method/struct_pin_z_cmass.png}
-            \caption{ \centering Crud mass Deposition $[g/cm^2]$}
-        \end{minipage}
-    \end{figure}
-Approximately optimal remapping coefficients: $w_T=0.4, w_k=0.6, w_{q''}=0$.  
+    \end{figure} 
 \end{frame}
 
 % =========================================================================== %
@@ -1149,11 +1133,11 @@ Approximately optimal remapping coefficients: $w_T=0.4, w_k=0.6, w_{q''}=0$.
         \STATE Draw samples $\mathbf x \sim \tilde h_j$ \;
         \STATE Compute importance weights $\omega = \hat h_j(\mathbf x) /  \tilde h_j(\mathbf x) $
         \STATE Re-map samples  $\mathbf x', \omega' \xleftarrow[\text{ }]{\text{R}} \mathbf x, \omega $
-        \STATE Update importance weights by equation \ref{eq:time_sample_weights3}
-        \STATE Evaluate equation \ref{eq:expected_crud} via importance sampling \\
+        \STATE Update importance weights by:  $\bar{\omega}_{s,i} = \left( \frac{(s-1)}{s} \right) \bar \omega'_{s-1,i} + \left( \frac{1}{s} \right) \omega'_{s,i}$
+        \STATE Grow crud:
         $\ \ \mathbf C_s = \mathcal G(x'_i; \mathbf C_{s-1}, \mathbf I, \Delta t_s)$ \\
         \STATE Crud mass at step $s$ in patch $j$:
-        $\ \ C_{s,j,m} = \left( \frac{A_j}{\sum_i^M \bar \omega'_i} \right) \sum_i^M C_{s,i,j,m} \bar \omega'_i$
+        $\ \ C_{s,j,m} = \left( \frac{A_j}{\sum_i^M \bar \omega'_i} \right) \sum_i^N C_{s,i,j,m} \bar \omega'_{s,i}$
         \ENDFOR
         \ENDFOR
         \ENDFOR
