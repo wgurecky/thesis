@@ -510,7 +510,7 @@ Where $\theta_c$ and $\theta_{x,y}$ are free copula and marginal model parameter
         
         \item What functional form do the marginal and copula distributions take?
         \begin{itemize}
-            \item Adopt a non-parametric representation of the temperature and TKE marginal distribution on each CTF face.  The CFD born distributions do not conform to a known parametric distribution family and cannot be reliably transformed to be Gaussian-like distribution since this transformation would vary from CTF face to face.
+            \item Adopt a non-parametric representation of the temperature and TKE marginal distribution on each CTF face.  The CFD born distributions do not conform to a known parametric distribution family and cannot be reliably transformed to be Gaussian-like since this transformation would vary from CTF face to face.
             \item Choose a copula from a library of parametric copula families via KL divergence or AIC based best-fitting metrics.
         \end{itemize}        
         \item By what method are the distribution parameters predicted?
@@ -778,14 +778,15 @@ Where $\theta_c$ and $\theta_{x,y}$ are free copula and marginal model parameter
 % =========================================================================== %
 \subsection*{Sampling}
 \begin{frame}
-\frametitle{Monte Carlo Sampling of the Joint Distribution}
+\frametitle{Monte Carlo Sampling}
 \vspace{-16pt}
 \begin{itemize}
-    \item Obtain $\ \ \hat \theta_j = \{\hat \theta_{j,c}, \hat \theta_{j,\tau} \}$ via evaluation gradient boosted regression: $\hat \theta_j \leftarrow \hat{\mathcal F_M}(\mathbf p_j, \mathbf z_j)$.
+    \item Obtain $\ \ \hat \theta_j = \{\hat \theta_{j,c}, \hat \theta_{j,\{k, T\}} \}$ via evaluation of the gradient boosted model: $\hat \theta_j \leftarrow \hat{\mathcal F_M}(\mathbf p_j, \mathbf z_j)$.
+    \item Drop understood patch index: $j$ 
     \item Define the reconstructed joint density as:
 \begin{align}
-h(T, k, q'') = & f_T(T;\hat \theta_T) f_k(k;\hat \theta_k) f_{j,q''} \cdot \nonumber \\
-& c_{T,k}(F_T(T;\hat \theta_{\tau,T})F_k(k;\hat \theta_{\tau,k});\hat \theta_c) \nonumber
+h(T, k, q'') = & f_T(T;\hat \theta_T) f_k(k;\hat \theta_k) f_{q''} \cdot \nonumber \\
+& c_{T,k}(F_T(T;\hat \theta_{T}),F_k(k;\hat \theta_{k});\hat \theta_c) \nonumber
 \label{eq:joint_t_tke_q}
 \end{align} 
 
@@ -813,7 +814,7 @@ h(T, k, q'') = & f_T(T;\hat \theta_T) f_k(k;\hat \theta_k) f_{j,q''} \cdot \nonu
 
 % =========================================================================== %
 \begin{frame}
-\frametitle{Importance Sampling of the Joint Distribution}
+\frametitle{Importance Sampling}
 \vspace{-16pt}
 \begin{itemize}
     \item Specify a sampling (proposal) distribution, $\tilde h$.
@@ -843,6 +844,63 @@ h(T, k, q'') = & f_T(T;\hat \theta_T) f_k(k;\hat \theta_k) f_{j,q''} \cdot \nonu
     \includegraphics[width=1.0\linewidth]{/dissertation/figs/imp_patch/importance_t_tke_bmass_scatter_cut}
     \label{model_overview}
 \end{figure}
+\end{frame}
+
+% =========================================================================== %
+\begin{frame}
+\frametitle{Importance Sampling Distributions}
+\vspace{-16pt}
+\begin{itemize}
+    \item Proposal (red) vs. original (blue) marginal distributions for the (a) surface temperature and (b) TKE.
+\end{itemize}
+
+\begin{columns}
+    \begin{column}{0.5\textwidth}
+\begin{figure}[]
+\centering
+\includegraphics[width=1.0\linewidth]{/dissertation/figs/imp_patch/temperature_importance_marginal_compare}
+\caption{\centering (a)}
+\label{model_overview}
+\end{figure}
+\end{column}
+\begin{column}{0.5\textwidth}
+\begin{figure}[]
+\centering
+\includegraphics[width=1.0\linewidth]{/dissertation/figs/imp_patch/tke_importance_marginal_compare}\\
+\caption{\centering (b)}
+\label{model_overview}
+\end{figure}
+\end{column}
+\end{columns}
+\end{frame}
+
+% =========================================================================== %
+\begin{frame}
+\frametitle{\small Importance Sampling Results on a Single Patch}
+\vspace{-16pt}
+\begin{itemize}
+    \item Importance sampling trial results on a single CTF face for (a) crud boron mass deposition and (b) Crud mass deposition at 300 days.  Red denotes importance samples and blue denotes standard Monte Carlo samples.  
+\end{itemize}
+\[ \frac{\sigma^2_{MC}}{\sigma^2_{I}} \approx (\num{4.979e-6})^2 / (\num{3.503e-6})^2  \approx 2.02 \]
+\vspace{-28pt}
+\begin{columns}
+    \begin{column}{0.5\textwidth}
+\begin{figure}[]
+    \centering
+    \includegraphics[width=1.0\linewidth]{/dissertation/figs/imp_patch/bmass_sample_violin}
+    \caption{\centering (a)}
+    \label{model_overview}
+\end{figure}
+\end{column}
+\begin{column}{0.5\textwidth}
+\begin{figure}[]
+    \centering
+    \includegraphics[width=1.0\linewidth]{/dissertation/figs/imp_patch/cmass_sample_violin}\\
+    \caption{\centering (b)}
+    \label{model_overview}
+\end{figure}
+\end{column}
+\end{columns}
 \end{frame}
 
 
@@ -1132,12 +1190,24 @@ Approximately optimal remapping coefficients: $w_T=0.4, w_k=0.6, w_{q''}=0$.
 \subsection*{Training Data}
 \begin{frame}
 \frametitle{CFD Geometry}
+\begin{columns}
+    \begin{column}{0.5\textwidth}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\linewidth]{/dissertation/figs/5x5/5x5_top_down}
-    \caption{Top down view of 5x5 pin Westinghouse facility.  Assembly dimensions and pin powers redacted.}
+    \includegraphics[width=0.8\linewidth]{/dissertation/figs/5x5/5x5_side}
+    \caption{\centering Side view of 5x5 pin \\ Westinghouse facility.}
+    \label{fig:5x5side}
+\end{figure}
+    \end{column}
+\begin{column}{0.5\textwidth}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{/dissertation/figs/5x5/5x5_top_down}
+    \caption{\centering Top down view of 5x5 pin \\ Westinghouse facility.}
     \label{fig:5x5topdown}
 \end{figure}
+\end{column}
+\end{columns}
 \end{frame}
 
 % =========================================================================== %
