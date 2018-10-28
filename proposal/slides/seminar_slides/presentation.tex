@@ -685,6 +685,15 @@ h(T, k, q'') = c(u, v |\theta_c)f(T|\theta_T)f(k|\theta_k) f_{q''}
 \end{figure}
 \end{frame}
 
+\section[Synthetic Data]{Synthetic CFD Data Source for Model Validation}
+% =========================================================================== %
+\begin{frame}
+\begin{itemize}
+    \item Augment baseline CTF result by a user-specified stochastic component:
+\end{itemize}
+\end{frame}
+
+\section[Applied Methods]{Applied Methods: Monte Carlo Crud Integration \& Propagating Crud Through Time}
 % =========================================================================== %
 \subsection*{Sampling}
 \begin{frame}
@@ -746,7 +755,7 @@ h(T, k, q'') = & f_T(T;\hat \theta_T) f_k(k;\hat \theta_k) f_{q''} \cdot \nonumb
 \end{frame}
 
 % =========================================================================== %
-\subsection*{Crud Cladding Side Boundary Condition Sensitivity}
+\subsection*{Crud Boundary Condition Sensitivity}
 \begin{frame}
 \frametitle{Chalk River Unidentified Deposit (crud)}
 \vspace{-12pt}
@@ -770,6 +779,7 @@ h(T, k, q'') = & f_T(T;\hat \theta_T) f_k(k;\hat \theta_k) f_{q''} \cdot \nonumb
 \end{frame}
 
 % =========================================================================== %
+\subsection*{Importance Sampling}
 \begin{frame}
 \frametitle{\small Importance Sampling of the Joint Distribution over a Single Patch}
 \vspace{-19pt}
@@ -811,7 +821,7 @@ h(T, k, q'') = & f_T(T;\hat \theta_T) f_k(k;\hat \theta_k) f_{q''} \cdot \nonumb
 % =========================================================================== %
 \begin{frame}
 \frametitle{\small Importance Sampling Results on a Single Patch}
-\vspace{-16pt}
+\vspace{-18pt}
 \begin{itemize}
     \item Importance sampling trial results on a single CTF face. {\color{utred}Red} denotes importance samples and {\color{utblue}blue} denotes standard Monte Carlo samples.  
 \end{itemize}
@@ -844,7 +854,7 @@ h(T, k, q'') = & f_T(T;\hat \theta_T) f_k(k;\hat \theta_k) f_{q''} \cdot \nonumb
 \end{frame}
 
 
-\section[Time Stepping]{Propagating Crud Through Time}
+\subsection*{Time Stepping}
 % =========================================================================== %
 \begin{frame}
 \frametitle{Propagating Crud Through Time}
@@ -1119,7 +1129,7 @@ Both patches share the \emph{same} PDF of TKE, however, the spatial distribution
         \STATE (1) Pre-process training set.  
         \STATE $\ \ $   (1b) Fit distribution parameters to CFD data: $\theta(\mathbf p, \mathbf z)$.  
         \STATE $\ \ $   (1c) \textbf{def:}  $\ \theta \leftarrow \mathcal F_M(\mathbf p, \mathbf z | \gamma)$
-        \STATE (2) Train model:  \\ $\hat{\mathcal F_M} =  \mathrm{argmin}_{\mathcal F}$ \\
+        \STATE (2) Train model:  \\ $\hat{\mathcal F_M} =  \mathrm{argmin}_{\mathcal F}$ 
         $L(\mathcal{F}_M (\mathbf p, \mathbf z| \gamma), \theta(\mathbf p, \mathbf z)) $
         \FOR {VERA State, $v$}
         \FOR {CTF face, $j$}
@@ -1149,7 +1159,7 @@ Both patches share the \emph{same} PDF of TKE, however, the spatial distribution
 \end{columns}
 \end{frame}
 
-\section[ML Results]{Hi2lo Results Provided CFD Data Source}
+\section[ML Results]{Machine Learning Driven Hi2lo Results Provided CFD Data Source}
 % =========================================================================== %
 \subsection*{Training Data}
 \begin{frame}
