@@ -198,7 +198,7 @@
         \[
         \frac{d N_{\mathrm{\ce{NiFe}},c}}{dt} = (\alpha_{\mathrm{nb}} + \alpha_{b}q''_{b} )N_{\mathrm{\ce{NiFe}}, \mathrm{cool}} - \gamma_k k
         \]
-        \item $N_{NiFe,c}$ is the concentration of \ce{NiFe_2O_4} in a small volume on the cladding surface. $N_{NiFe,cool}$ is the concentration of nickel and iron particulates in the coolant.  $k$ is the near-cladding surface turbulent kinetic energy.  $q''$ is the boiling heat flux (only has nonzero value at $T_s>T_{sat}$).  $\alpha_{nb}$ is a non-boiling coefficient and $\alpha_b$ is a boiling rate constant.  $\gamma_k$ is an erosion multiplier. $k$ is the turbulent kinetic energy (TKE) \cite{mongoose17}.
+        \item $N_{NiFe,c}$: concentration of \ce{NiFe_2O_4}. $N_{NiFe,cool}$: concentration of nickel and iron particulates in the coolant.  $k$: near-cladding surface turbulent kinetic energy (TKE).  $q''$: boiling heat flux (nonzero at $T_s>T_{sat}$).  $\alpha_{nb}$: non-boiling coefficient. $\alpha_b$: boiling rate constant.  $\gamma_k$: erosion multiplier \cite{mongoose17}.
         
     \end{itemize}
 \end{scriptsize}
@@ -570,11 +570,7 @@ Where $\theta_c$ and $\theta_{x,y}$ are free copula and marginal model parameter
 % =========================================================================== %
 \subsection*{Quantiles}
 \begin{frame}
-\frametitle<1>{Sample Quantiles}
-\frametitle<2>{Reconstructing the Margins from Sample Quantiles}
-\frametitle<3>{Computing Sample Quantiles}
-% --------------------------------------------------------------------------- %
-\only<1>{
+\frametitle{Sample Quantiles}
 \vspace{-15pt}
     \begin{columns}
         \begin{column}{0.5\textwidth}
@@ -596,145 +592,6 @@ Where $\theta_c$ and $\theta_{x,y}$ are free copula and marginal model parameter
             \end{center}
         \end{column}
     \end{columns}
-    
-}
-% --------------------------------------------------------------------------- %
-\only<2>{
-    \vspace{-15pt}
-    \begin{columns}
-        \begin{column}{0.5\textwidth}
-            \scriptsize{
-                \begin{itemize}
-                    \item The $\tau^{th}$ quantile is $q_\tau = F^{-1}(\tau); $ where $\ F(t)=P[T \leq t]$ is a CDF.
-                    \item $\tau \in [0, 1]$
-                    \item Supply a desired percentile, e.g. $\tau_i = 0.75$.
-                    To estimate a sample quantile minimize: $\E[\rho_\tau(T - \tau)]$ with $T \sim F$
-                    \[
-                    \rho_\tau( u) = \mathbf u \cdot (\tau - \mathbb{I}_{( u < 0)})
-                    \]
-                    \begin{equation}
-                    \left.\begin{aligned}
-                    \hat q_{\tau_i} &= argmin_{q} \E[\rho(u)];\ \  u = T - q  \\
-                    \approx & argmin_q  \frac{1}{N} \sum_i^N \rho(u_i); \ u_i = T_i - q \\
-                    \approx & argmin_q \left[ (1-\tau) \sum_{T_i \leq q}( T_i - q ) - \tau \sum_{T_i > q} (T_i - q) \right]
-                    \end{aligned}\right. \nonumber
-                    \end{equation}
-                \end{itemize}
-            }
-        \end{column}
-        \begin{column}{0.5\textwidth}  %%<--- here
-            \begin{center}
-                \includegraphics[width=0.9\textwidth]{figs/margins_cdf_2.png}
-            \end{center}
-        \end{column}
-    \end{columns}
-}
-% --------------------------------------------------------------------------- %
-\only<3>{
-    \vspace{-15pt}
-    \begin{columns}
-        \begin{column}{0.5\textwidth}
-            \scriptsize{
-                \begin{itemize}
-                    \item The $\tau^{th}$ quantile is $q_\tau = F^{-1}(\tau); $ where $\ F(t)=P[T \leq t]$ is a CDF.
-                    \item $\tau \in [0, 1]$
-                    \item Supply a desired percentile, e.g. $\tau_i = 0.75$.
-                    To estimate a sample quantile minimize: $\E[\rho_\tau(T - \tau)]$ with $T \sim F$
-                    \[
-                    \rho_\tau( u) = \mathbf u \cdot (\tau - \mathbb{I}_{( u < 0)})
-                    \]
-                    \begin{equation}
-                    \left.\begin{aligned}
-                    \hat q_{\tau_i} &= argmin_{q} \E[\rho(u)];\ \  u = T - q  \\
-                    \approx & argmin_q  \frac{1}{N} \sum_i^N \rho(u_i); \ u_i = T_i - q \\
-                    \approx & argmin_q \left[ (1-\tau) \sum_{T_i \leq q}( T_i - q ) - \tau \sum_{T_i > q} (T_i - q) \right]
-                    \end{aligned}\right. \nonumber
-                    \end{equation}
-                \end{itemize}
-            }
-        \end{column}
-        \begin{column}{0.5\textwidth}  %%<--- here
-            \begin{center}
-                \includegraphics[width=0.9\textwidth]{figs/q_loss.png}
-            \end{center}
-        \end{column}
-    \end{columns}
-}
-% ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: %
-\end{frame}
-
-% =========================================================================== %
-\subsection*{Sample Quantile Properties}
-\begin{frame}
-\begin{itemize}
-    \item Consider a set of samples $\{x_i, x_N \}$ with $X \sim F_T$.
-    \item If we were to repeatedly draw i.i.d samples from $F_T$, what can we say about where we expect the $\tau^{th}$ quantile to fall?
-    \item Answer:  In the large sample limit $N \rightarrow \infty$ any given sample quantile follows a Gaussian distribution:
-    \begin{align}
-    q_\tau &\sim \mathcal N \left( F_T^{-1}(\tau), \sigma^2_{q_\tau} \right) \nonumber \\
-    \sigma^2_{q_\tau} &= \frac{\tau(1 - \tau)}{n[f_T(F_T^{-1}(\tau))]^2} \nonumber
-    \label{eq:theory_qdist_1}
-    \end{align}
-    
-    \item Why is this important?
-    \begin{itemize}
-        \item Estimates for where the upper quantiles of the temperature and TKE distributions lie are fraught with high variance.  This variance is propagated through the machine learning models and into the crud calculations.
-    \end{itemize}
-\end{itemize}
-\end{frame}
-
-% =========================================================================== %
-\subsection*{Sample Quantile Properties}
-\begin{frame}
-\frametitle<1>{Example Quantile Properties}
-\frametitle<2>{Example Quantile Properties}
-% --------------------------------------------------------------------------- %
-\only<1>{
-%\frametitle{Example Quantile Properties}
-\begin{itemize}
-    \item Consider a beta random variable  $X\sim \beta(2,5)$.
-    \item Empirical quantiles for a beta distribution. 500 trials shown. $\tau = \{ 0.1, 0.5, 0.9 \}$ quantiles denoted by dashed vertical lines.
-\end{itemize}
-\vspace{-16pt}
-\begin{columns}
-    \begin{column}{0.5\textwidth}
-        \begin{figure}
-            \centering
-            \includegraphics[width=1.0\linewidth]{dissertation/figs/quantile_theory/q_beta_residual}
-        \end{figure}
-    \end{column}
-    \begin{column}{0.5\textwidth}  %%<--- here
-        \begin{figure}
-            \centering
-            \includegraphics[width=1.0\linewidth]{dissertation/figs/quantile_theory/q_beta_residual_conditional_0_1}
-        \end{figure}
-    \end{column}
-\end{columns}
-}
-% --------------------------------------------------------------------------- %
-\only<2>{
-   % \frametitle{Example Quantile Properties}
-    \begin{itemize}
-        \item Consider a beta random variable  $X\sim \beta(2,5)$.
-        \item Empirical quantiles for a beta distribution. 500 trials shown. $\tau = \{ 0.1, 0.5, 0.9 \}$ quantiles denoted by dashed vertical lines.
-    \end{itemize}
-    \vspace{-16pt}
-    \begin{columns}
-        \begin{column}{0.5\textwidth}
-            \begin{figure}
-                \centering
-                \includegraphics[width=1.0\linewidth]{dissertation/figs/quantile_theory/q_beta_residual}
-            \end{figure}
-        \end{column}
-        \begin{column}{0.5\textwidth}  %%<--- here
-            \begin{figure}
-                \centering
-                \includegraphics[width=1.0\linewidth]{dissertation/figs/quantile_theory/q_beta_residual_conditional_0_9}
-            \end{figure}
-        \end{column}
-    \end{columns}
-}
-% ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: %
 \end{frame}
 
 % =========================================================================== %
@@ -1782,7 +1639,149 @@ of the surface temperature or TKE fields.  This approach seeks to predict the jo
 
 % =========================================================================== %
 \setbeamercolor{background canvas}{bg=white}
-\begin{frame}[shrink=10, noframenumbering]
+\begin{frame}
+\frametitle{Sample Quantiles}
+\vspace{-15pt}
+\begin{columns}
+    \begin{column}{0.5\textwidth}
+        \scriptsize{
+            \begin{itemize}
+                \item The $\tau^{th}$ quantile is $q_\tau = F^{-1}(\tau); $ where $\ F(t)=P[T \leq t]$ is a CDF.
+                \item $\tau \in [0, 1]$
+                \item Supply a desired percentile, e.g. $\tau_i = 0.75$.
+                To estimate a sample quantile minimize: $\E[\rho_\tau(T - \tau)]$ with $T \sim F$
+                \[
+                \rho_\tau( u) = \mathbf u \cdot (\tau - \mathbb{I}_{( u < 0)})
+                \]
+                \begin{equation}
+                \left.\begin{aligned}
+                \hat q_{\tau_i} &= argmin_{q} \E[\rho(u)];\ \  u = T - q  \\
+                \approx & argmin_q  \frac{1}{N} \sum_i^N \rho(u_i); \ u_i = T_i - q \\
+                \approx & argmin_q \left[ (1-\tau) \sum_{T_i \leq q}( T_i - q ) - \tau \sum_{T_i > q} (T_i - q) \right]
+                \end{aligned}\right. \nonumber
+                \end{equation}
+            \end{itemize}
+        }
+    \end{column}
+    \begin{column}{0.5\textwidth}  %%<--- here
+        \begin{center}
+            \includegraphics[width=0.9\textwidth]{figs/margins_cdf_2.png}
+        \end{center}
+    \end{column}
+\end{columns}
+\end{frame}
+
+% =========================================================================== %
+\setbeamercolor{background canvas}{bg=white}
+\begin{frame}
+\frametitle{Sample Quantiles}
+\vspace{-15pt}
+\begin{columns}
+\begin{column}{0.5\textwidth}
+    \scriptsize{
+        \begin{itemize}
+            \item The $\tau^{th}$ quantile is $q_\tau = F^{-1}(\tau); $ where $\ F(t)=P[T \leq t]$ is a CDF.
+            \item $\tau \in [0, 1]$
+            \item Supply a desired percentile, e.g. $\tau_i = 0.75$.
+            To estimate a sample quantile minimize: $\E[\rho_\tau(T - \tau)]$ with $T \sim F$
+            \[
+            \rho_\tau( u) = \mathbf u \cdot (\tau - \mathbb{I}_{( u < 0)})
+            \]
+            \begin{equation}
+            \left.\begin{aligned}
+            \hat q_{\tau_i} &= argmin_{q} \E[\rho(u)];\ \  u = T - q  \\
+            \approx & argmin_q  \frac{1}{N} \sum_i^N \rho(u_i); \ u_i = T_i - q \\
+            \approx & argmin_q \left[ (1-\tau) \sum_{T_i \leq q}( T_i - q ) - \tau \sum_{T_i > q} (T_i - q) \right]
+            \end{aligned}\right. \nonumber
+            \end{equation}
+        \end{itemize}
+    }
+\end{column}
+\begin{column}{0.5\textwidth}  %%<--- here
+    \begin{center}
+        \includegraphics[width=0.9\textwidth]{figs/q_loss.png}
+    \end{center}
+\end{column}
+\end{columns}
+\end{frame}
+
+% =========================================================================== %
+\setbeamercolor{background canvas}{bg=white}
+\begin{frame}
+\begin{itemize}
+\item Consider a set of samples $\{x_i, x_N \}$ with $X \sim F_T$.
+\item If we were to repeatedly draw i.i.d samples from $F_T$, what can we say about where we expect the $\tau^{th}$ quantile to fall?
+\item Answer:  In the large sample limit $N \rightarrow \infty$ any given sample quantile follows a Gaussian distribution:
+\begin{align}
+q_\tau &\sim \mathcal N \left( F_T^{-1}(\tau), \sigma^2_{q_\tau} \right) \nonumber \\
+\sigma^2_{q_\tau} &= \frac{\tau(1 - \tau)}{n[f_T(F_T^{-1}(\tau))]^2} \nonumber
+\label{eq:theory_qdist_1}
+\end{align}
+
+\item Why is this important?
+\begin{itemize}
+\item Estimates for where the upper quantiles of the temperature and TKE distributions lie are fraught with high variance.  This variance is propagated through the machine learning models and into the crud calculations.
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+% =========================================================================== %
+\setbeamercolor{background canvas}{bg=white}
+\begin{frame}
+\frametitle<1>{Example Quantile Properties}
+\frametitle<2>{Example Quantile Properties}
+% --------------------------------------------------------------------------- %
+\only<1>{
+%\frametitle{Example Quantile Properties}
+\begin{itemize}
+\item Consider a beta random variable  $X\sim \beta(2,5)$.
+\item Empirical quantiles for a beta distribution. 500 trials shown. $\tau = \{ 0.1, 0.5, 0.9 \}$ quantiles denoted by dashed vertical lines.
+\end{itemize}
+\vspace{-16pt}
+\begin{columns}
+\begin{column}{0.5\textwidth}
+\begin{figure}
+    \centering
+    \includegraphics[width=1.0\linewidth]{dissertation/figs/quantile_theory/q_beta_residual}
+\end{figure}
+\end{column}
+\begin{column}{0.5\textwidth}  %%<--- here
+\begin{figure}
+    \centering
+    \includegraphics[width=1.0\linewidth]{dissertation/figs/quantile_theory/q_beta_residual_conditional_0_1}
+\end{figure}
+\end{column}
+\end{columns}
+}
+% --------------------------------------------------------------------------- %
+\only<2>{
+% \frametitle{Example Quantile Properties}
+\begin{itemize}
+\item Consider a beta random variable  $X\sim \beta(2,5)$.
+\item Empirical quantiles for a beta distribution. 500 trials shown. $\tau = \{ 0.1, 0.5, 0.9 \}$ quantiles denoted by dashed vertical lines.
+\end{itemize}
+\vspace{-16pt}
+\begin{columns}
+\begin{column}{0.5\textwidth}
+\begin{figure}
+    \centering
+    \includegraphics[width=1.0\linewidth]{dissertation/figs/quantile_theory/q_beta_residual}
+\end{figure}
+\end{column}
+\begin{column}{0.5\textwidth}  %%<--- here
+\begin{figure}
+    \centering
+    \includegraphics[width=1.0\linewidth]{dissertation/figs/quantile_theory/q_beta_residual_conditional_0_9}
+\end{figure}
+\end{column}
+\end{columns}
+}
+% ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: %
+\end{frame}
+
+% =========================================================================== %
+\setbeamercolor{background canvas}{bg=white}
+\begin{frame}[shrink=10]
 \frametitle{Classification and Regression Tree (CART) - Weak Learner}
 Each weak learner in the ensemble is a binary tree that partitions the input space based on "best-first" splits.  
 \begin{itemize}
@@ -1798,39 +1797,48 @@ Each weak learner in the ensemble is a binary tree that partitions the input spa
 \end{frame}
 
 % =========================================================================== %
-\setbeamercolor{background canvas}{bg=white}
-\begin{frame}[shrink=20]
+\setbeamercolor{normal text}{fg=white}
+\setbeamercolor{text}{fg=white}
+\setbeamercolor{background canvas}{bg=utblack}
+\begin{frame}
 \frametitle{Gradient Boosting Algorithm}
-
-The generalized gradient boosting algorithm was developed by Friedman (1999).
-Let $y$ be some quantile of interest $Q_{\tau_{y_i}}$.
-%\begin{algorithm}[H]
-%\KwData{ (1) Training set $\{(p_i, y_i)\}_{i=1}^n$. (2) Differentiable loss function $L(y, F(p))$. (3) Number of iterations ${{M}}$.
-%Initialize model with a constant value:
-%$F_0(p) = \underset{\gamma}{\arg\min} \sum_{i=1}^n L(y_i, \gamma).$}
-%
-%\For{${{m}} = 1$ to ${{M}}$}{
-%Compute the pseudo-residuals:
-%
-%\For{$i=1,\ldots,n $}{
-%$r_{im} = -\frac{\partial L(y_i, F_{m-1}(p_i))}{\partial F_{m-1}(p_i)}$
-%}
-%
-%Fit a weak learner $h_m(p)$ to pseudo-residuals, $r_{m}$: Training data set is $\{(p_i, r_{im})\}_{i=1}^n$ \;
-%
-%Compute multiplier $\gamma_m$ :
-%$\gamma_m = \underset{\gamma}{\operatorname{arg\,min}} \sum_{i=1}^n L\left(y_i, F_{m-1}(p_i) + \gamma h_m(p_i)\right)$\;
-%Update the model:
-%$F_m(p) = F_{m-1}(p) + \nu \gamma_m h_m(p).$
-%}
-%Output $F_M(p).$
-%\end{algorithm}
-%Where $\nu$ is a tunable constant in $[0, 1]$ called the learning rate.
+\begin{algorithm}[H]
+    \algsetup{linenosize=\tiny}
+    \tiny  
+    \begin{algorithmic}[1]
+        \STATE \textbf{Initialization} 
+        \STATE (1) Training set $\{(p_i, y_i)\}_{i=1}^n$. 
+        \STATE (2) Differentiable loss function $L(y, F(p))$. 
+        \STATE (3) Number of iterations ${{M}}$.
+        \STATE (4)   Initialize model with a constant value:
+        $F_0(p) = \underset{\gamma}{\arg\min} \sum_{i=1}^n L(y_i, \gamma).$
+        
+        \FOR {${{m}} = 1$ to ${{M}}$}
+        \STATE Compute the pseudo-residuals:  
+        \FOR {$i=1,\ldots,n $}
+        \STATE $r_{im} = -\frac{\partial L(y_i, F_{m-1}(p_i))}{\partial F_{m-1}(p_i)}$
+        \ENDFOR
+        
+        \STATE Fit a weak learner $h_m(p; a_m)$ to pseudo-residuals, $r_{m}$: \\
+        $\ \ \ h^* = \underset{a_m}{\operatorname{arg\,min}}(||h_m(p; a_m) - r_m||)$ \\
+        $\ \ $ Training data set is $\{(p_i, r_{im})\}_{i=1}^n$ \;
+        
+        \STATE Compute multiplier $\gamma_m$ :
+        $\gamma_m = \underset{\gamma}{\operatorname{arg\,min}} \sum_{i=1}^n L\left(y_i, F_{m-1}(p_i) + \gamma h^*_m(p_i)\right)$\;
+        \STATE Update the model:
+        $F_m(p) = F_{m-1}(p) + \nu \gamma_m h^*_m(p).$
+        
+        \ENDFOR
+        \STATE Output $F_M(p).$
+    \end{algorithmic}
+    \label{alg:boosting}
+\end{algorithm}
+\cite{friedman2001}
 \end{frame}
 
 % =========================================================================== %
 \setbeamercolor{background canvas}{bg=white}
-\begin{frame}[noframenumbering]
+\begin{frame}
 \frametitle{GBRT - Weak Learners Fit to Pseudo Residuals}
 Weak learners are fit the the pseudo-residuals (derivative of the loss function): 
 \[
@@ -1847,7 +1855,7 @@ Source: Peter Prettenhofer, PyData (2014).
 
 % =========================================================================== %
 \setbeamercolor{background canvas}{bg=white}
-\begin{frame}[noframenumbering]
+\begin{frame}
 \frametitle{GBRT - Ensemble of weak learners}
 
 \begin{figure}[!htbp]
@@ -1947,11 +1955,12 @@ Source: Peter Prettenhofer, PyData (2014).
 
 % =========================================================================== %
 \setbeamercolor{background canvas}{bg=white}
-\begin{frame}[noframenumbering]
+\begin{frame}
 \frametitle{Copula Density Functions}
+\vspace{-36pt}
 \begin{figure}[!htbp]
 \centering
-\includegraphics[width=10cm]{figs/montage_copula_pdf.png}
+\includegraphics[width=12cm]{figs/montage_copula_pdf.png}
 \label{model_overview}
 \end{figure}
 \end{frame}
