@@ -378,7 +378,7 @@ Where $\tau$ is the user set quantile of interest. For instance, if the 95\% qua
 Before applying a sampling procedure to the temperature and TKE surface fields on a given CTF face, the the joint density function is reconstructed from copula and marginal distributions.   On CTF face $j$, the gradient boosted model is queried for the conditional quantiles and the copula shape parameter:
 
 \begin{align}
-\hat \theta_j \leftarrow  & \hat{\mathcal F_M}(\mathbf p_j, \mathbf z_j) \nonumber \\
+\hat \theta_j \leftarrow  & {\mathcal F_M}(\mathbf p_j, \mathbf z_j) \nonumber \\
  \hat \theta_j =& \{\hat \theta_{j,c}, \hat \theta_{j,\{T,k\}} \}
 \end{align}
 The CTF face index is dropped in the remainder of this section to reduce subindex clutter.

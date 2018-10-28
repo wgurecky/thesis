@@ -96,7 +96,8 @@
   {\flushright
   \usebeamerfont{author}\usebeamercolor[fg]{author}\insertauthor\par
   \usebeamerfont{institute}\usebeamercolor[fg]{institute}\insertinstitute\par
-  \usebeamerfont{date}\usebeamercolor[fg]{institute}\insertdate\par
+  % \usebeamerfont{date}\usebeamercolor[fg]{institute}\insertdate\par
+  \usebeamerfont{date}\usebeamercolor[fg]{institute}October 30, 2018\par
   }
 }
 
@@ -109,11 +110,13 @@
 
 %Use biber for special bibliogrphay.  The next few lines are all custom hacks to
 %make nice footnote citation in beamer.
-\usepackage[hyperref=true,style=verbose,labeldate=true,minnames=2,maxnames=10,maxbibnames=99,backend=biber]{biblatex}
+%\usepackage[hyperref=true,style=verbose,labeldate=true,minnames=2,maxnames=10,maxbibnames=99,backend=biber]{biblatex}
+\usepackage[hyperref=true,style=verbose,labeldate=true,minnames=2,maxnames=10,maxbibnames=99,backend=bibtex]{biblatex}
+%\usepackage[hyperref=true,labeldate=true,minnames=2,maxnames=10,maxbibnames=99,backend=bibtex]{biblatex}
 %Use utorange for hyperlinks
 \hypersetup{colorlinks=true, allcolors=utblack, linkcolor=utblack, urlcolor=utorange}
 
-%\renewcommand*{\labelnamepunct}{\addcolon\addspace}
+\renewcommand*{\labelnamepunct}{\addcolon\addspace}
 \DeclareFieldFormat[article,inbook,incollection,inproceedings,patent,thesis,unpublished]
 {title}{#1\isdot}
 \renewbibmacro*{cite:short}{%

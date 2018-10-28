@@ -122,10 +122,22 @@
 
 % Bibliography definition
 % \bibliography{../../dissertation/sections/refs.bib}
-% \usepackage[style=ieee]{biblatex}
-% \bibliography{../../../dissertation/sections/refs.bib}
+% \usepackage[hyperref=true,style=verbose,labeldate=true,minnames=2,maxnames=10,maxbibnames=99,backend=biber]{biblatex}
+%\usepackage[backend=bibtex]{biblatex}
+%\usepackage[backend=bibtex,sorting=none,hyperref=true,style=nature,isbn=false,doi=false,eprint=false,url=false]{biblatex}
+\footnotesize{\bibliography{refs}}
+%\setbeamerfont{bibliography entry author}{size=\small}
+%\setbeamerfont{bibliography entry title}{size=\small}
+%\setbeamerfont{bibliography entry location}{size=\small}
+%\setbeamerfont{bibliography entry note}{size=\small}
+%\setbeamerfont{bibliography item}{size=\small}
+%\setbeamertemplate{footline}{%
+%    \hfill \insertframenumber{} / \inserttotalframenumber \hfill \vspace*{1mm}
+%}
+\setbeamersize{text margin left=14pt, text margin right=14pt} %new code
 
-\title{A CFD-Informed Hi2Low Method for Improving Subchannel Resolution Crud Predictions}
+
+\title{A CFD-Informed Hi2Lo Method for Subchannel Resolution Crud Prediction}
 \subtitle{}
 \author{William Gurecky}
 \date{\today}
@@ -159,13 +171,13 @@ Crud forms a porous layer on the surface of fuel rods and is primarily comprised
 	\item Crud can increase oxide ingress rates in certain zirc alloys leading to crud induced local corrosion (CILC).
     \item Crud tends to uptake and retain boron from the coolant which drives
           crud induced power shift (CIPS). Also known as axial offset anomaly (AOA).
-    \item CASL developed CRUD simulation package, MAMBA, which is integrated with the VERA core simulator.  
+    \item CASL developed crud simulation package, MAMBA, which is integrated with the VERA core simulator.  
     \end{itemize}
 \end{tiny}
 %\begin{figure}[!htbp]
 %\centering
 %\includegraphics[width=4cm]{figs/crud-crud.jpg}
-%\caption{CRUD on fuel rods.}
+%\caption{Crud on fuel rods.}
 %\label{log_closed}
 %\end{figure}
 \vspace{-12pt}
@@ -173,11 +185,11 @@ Crud forms a porous layer on the surface of fuel rods and is primarily comprised
         \centering
         \begin{minipage}{.5\textwidth}
             \centering
-            \includegraphics[width=0.55\textwidth]{figs/crud-crud.jpg}
+            \includegraphics[width=0.5\textwidth]{figs/crud-crud.jpg}
         \end{minipage}%
         \begin{minipage}{.5\textwidth}
             \centering
-            \includegraphics[width=0.55\textwidth]{figs/crud_flake_ex.png}
+            \includegraphics[width=0.5\textwidth]{figs/crud_flake_ex.png}
         \end{minipage}
     \end{figure}
 \end{frame}
@@ -187,17 +199,20 @@ Crud forms a porous layer on the surface of fuel rods and is primarily comprised
 \begin{frame}
 \frametitle{Chalk River Unidentified Deposit (crud)}
 \vspace{-12pt}
+\begin{itemize}
+    \item Crud boron deposition rate vs. surface temperature and TKE.
+\end{itemize}
     \begin{figure}
     \centering
     \begin{minipage}{.5\textwidth}
         \centering
-        \includegraphics[width=1.0\linewidth]{/dissertation/figs/crud/crud_t_tke_boron_response_80}
-        \caption{\centering Crud boron deposition rate vs \\ surface temperature and TKE. \\ Boundary heat flux \\ $q''=80[W/cm^2]$.  }
+        \includegraphics[width=1.01\linewidth]{/dissertation/figs/crud/crud_t_tke_boron_response_80}
+        \caption{\centering Boundary heat flux: \\ $q''=80[W/cm^2]$.  }
     \end{minipage}%
     \begin{minipage}{.5\textwidth}
         \centering
-        \includegraphics[width=1.0\linewidth]{/dissertation/figs/crud/crud_t_tke_boron_response_120}
-        \caption{\centering Crud boron deposition rate vs \\ surface temperature and TKE.  \\ Boundary heat flux \\ $q''=120[W/cm^2]$. }
+        \includegraphics[width=1.01\linewidth]{/dissertation/figs/crud/crud_t_tke_boron_response_120}
+        \caption{\centering  Boundary heat flux: \\ $q''=120[W/cm^2]$. }
     \end{minipage}
 pyMAMBA results. 
 \end{figure}
@@ -207,28 +222,30 @@ pyMAMBA results.
 \subsection*{Motivation}
 \begin{frame}
     \frametitle{Crud Induced Power Shift (CIPS)}
+    \vspace{-22pt}
     \begin{figure}
         \centering
         \begin{minipage}{.5\textwidth}
             \centering
             \includegraphics[width=6cm]{figs/ao_mpact_ctf.png}
-            \caption{Core averaged \% axial offset.  [CASL-I-2015-0318-000]}
+            \caption{Core averaged \% axial offset.}
         \end{minipage}%
         \begin{minipage}{.5\textwidth}
             \centering
             \includegraphics[width=6cm]{figs/core_b10_mpact_ctf.png}
-            \caption{VERA WBNP1 Cycle 7 CRUD \ce{^{10}B}. \\ $@ 16.08 [MWD/MTU]$}
+            \caption{VERA WBNP1 Cycle 7 crud \ce{^{10}B}. \\ $@ 16.08 [MWD/MTU]$}
         \end{minipage}
     \end{figure}
+ \cite{collins2015}
 \end{frame}
 
 % =========================================================================== %
 \subsection*{Motivation}
 \begin{frame}
 \frametitle{Crud Impacts on Industry}
-\vspace{-12pt}
+\vspace{-24pt}
 \begin{itemize}
-    \item CIPS influences the burnup distribution reducing overall fuel utilization and can reduce shutdown margin  \cite{lange17}.
+    \item CIPS influences the burnup distribution reducing overall fuel utilization and can reduce shutdown margin  \cite{lange2017}.
     \item Plants seeking power uprates or lifetime extensions must prove the facility can operate within thermal limits.  Crud can complicate the analysis by shifting the power distribution and influencing surface heat transfer behavior which must be accounted for in DNB computations.
     \item Though rare, CILC failures require impacted assemblies to drastically reduce power and miss their burnup target.
     \item Crud ultrasonic/chemical shock treatment is an extra step to perform during reloading operations, costing time and potentially increasing radiation exposure risk to plant workers.
@@ -277,11 +294,11 @@ pyMAMBA results.
 % =========================================================================== %
 \subsection*{State of Hi2lo}
 \begin{frame}[shrink=10]
-\frametitle{Prior Hil2o Work: HTC Remapping Hi2Low Procedure}
+\frametitle{Prior Hil2o Work: HTC Spatial Remapping Procedure}
 \begin{columns}
     \begin{column}{0.5\textwidth}
         \begin{itemize}
-            \item Salko et. al (2017)  developed a Hi2Low procedure based on mapping and re-scaling CFD results onto an intermediate reconstruction grid upon which CRUD is grown.
+            \item Procedure based on mapping and re-scaling CFD results onto an intermediate reconstruction grid upon which crud is grown.
             \item The single phase heat transfer coefficient (HTC) and TKE surface fields are mapped.
             \item An iterative method is used to converge on the correct pin surface temperature given HTC and the boundary heat flux provided by CTF.
         \end{itemize}
@@ -301,37 +318,44 @@ pyMAMBA results.
 % =========================================================================== %
 \subsection*{State of Hi2lo}
 \begin{frame}
-\frametitle{Prior Hil2o Work: HTC Remapping Hi2Low Procedure}
+\frametitle{Prior Hil2o Work: HTC Spatial Remapping Procedure}
 \begin{figure}[!htbp]
 \centering
 \begin{minipage}{.5\textwidth}
     %
     \includegraphics[width=5cm]{figs/ctf_crud_orig.png}
-    \caption{\centering \scriptsize{ CRUD growth on the rod surface \\ prior to HTC and TKE \\ field remapping.}}
+    \caption{\centering \scriptsize{ Crud growth on the rod surface \\ prior to HTC and TKE \\ field remapping.}}
     \label{fig:crud_pre_map}
 \end{minipage}%
 \begin{minipage}{.5\textwidth}
     %
-    \includegraphics[width=5cm]{figs/ctf_crud_reconstructed.png}
-    \caption{\centering \scriptsize CRUD growth on the rod \\ surface post HTC and TKE \\ field remapping.}
+    \vspace{-5pt}
+    \includegraphics[width=4.9cm]{figs/ctf_crud_reconstructed.png}
+    \caption{\centering \scriptsize Crud growth on the rod \\ surface post HTC and TKE \\ field remapping.}
     \label{fig:crud_post_map}
 \end{minipage}
 \end{figure}
+\cite{salko17}
 \end{frame}
 
 % =========================================================================== %
 \subsection*{High Fidelity Crud Simulation}
-\begin{frame}[shrink=20]
-    \frametitle{Coupled CFD/Crud Calculation}
+\begin{frame}
+\frametitle{Coupled CFD/Crud Calculation}
+\vspace{-18pt}
+\scriptsize{
     \begin{itemize}
-    \item CFD/Crud coupling is useful for single-pin or single-assembly CRUD estimates.  Fine scale flow near spacer grid impacted surface crud distribution.  Important for quantifying crud induced local corrosion (CILC) risk.
-    \item CFD/Crud simulations are too numerically costly for full core simulation.
+    \item CFD/Crud coupling is useful for single-pin or single-assembly crud estimates.
+    % Fine scale flow near spacer grid impacted surface crud distribution.  Important for quantifying crud induced local corrosion (CILC) risk.
+    \item Too numerically costly for full core simulation.
     \end{itemize}
-        \begin{figure}[!htbp]
+}
+\begin{figure}[]
 \centering
-\includegraphics[width=0.99\textwidth]{figs/combo_180x.png}
-\label{log_closed}
-    \end{figure}
+\includegraphics[width=0.95\textwidth]{figs/combo_180x.png}
+\label{cfd_crud}
+\end{figure}
+\cite{slattery16}
 \end{frame}
 
 % =========================================================================== %
@@ -354,9 +378,9 @@ Differences between CTF (subchannel) and CFD meshes for a single pin.
 % =========================================================================== %
 \section{Approach}
 \begin{frame}
-    \frametitle{CFD informed surrogate model to improve CRUD growth}
+    \frametitle{CFD Informed Surrogate Model to Improve Crud Growth}
     \begin{itemize}
-    \item Construct a scale bridging model which utilizes a suite of precomputed CFD solutions to improve CRUD predictions given on the CTF grid. 
+    \item Construct a scale bridging model which utilizes a suite of precomputed CFD solutions to improve crud predictions given on the CTF grid. 
     \item CTF estimates mean TH conditions everywhere in the core at a low spatial resolution.  The surrogate provides higher order moments about the mean.
     \end{itemize}
     \begin{block}{Rod Surface Field}
@@ -372,7 +396,7 @@ Differences between CTF (subchannel) and CFD meshes for a single pin.
 % =========================================================================== %
 \begin{frame}\frametitle{Objectives}
 \begin{itemize}
-\item Account for fine scale flow features unresolved by CTF on the growth of CRUD and boron hideout.
+\item Account for fine scale flow features unresolved by CTF on the growth of crud and boron hideout.
 \item Proposed hi2lo approach:
 \begin{itemize}
 	\item Forgo attempting to capture spatial distributions of temperature, boundary heat flux and TKE on rod surface. 
@@ -1068,7 +1092,7 @@ Both patches share the \emph{same} PDF of TKE, however, the spatial distribution
 \begin{frame}
 \frametitle{Mapping strategy comparison: Single pin results}
 \tiny{
-Pin-integrated Boron inside the CRUD as a function of time.  \\ 
+Pin-integrated Boron inside the crud as a function of time.  \\ 
 {\color{green} Green: Assumes randomly moving hot spots.} \\
 {\color{blue} Blue: Assumes stationary hot spots ( $w_T=1.0; w_k=w_{q''}=0$).}
 }
@@ -1096,12 +1120,12 @@ Pin-integrated Boron inside the CRUD as a function of time.  \\
     \centering
     \begin{minipage}{.5\textwidth}
         \includegraphics[width=1.1\linewidth]{figs/avg_method/cmpr_pin_totals.png}
-        \caption{\centering Pin integrated CRUD boron \\ as a function of time.} 
+        \caption{\centering Pin integrated crud boron \\ as a function of time.} 
         \label{fig:crud_pre_map}
     \end{minipage}%
     \begin{minipage}{.5\textwidth}
         \includegraphics[width=1.1\linewidth]{figs/avg_method/struct_pin_z_bmass.png}
-        \caption{\centering CRUD boron mass distribution at 300[days].}
+        \caption{\centering Crud boron mass distribution at 300[days].}
         \label{fig:crud_post_map}
     \end{minipage}
 \end{figure}
@@ -1197,6 +1221,7 @@ Approximately optimal remapping coefficients: $w_T=0.4, w_k=0.6, w_{q''}=0$.
 \subsection*{Training Data}
 \begin{frame}
 \frametitle{CFD Geometry}
+\vspace*{-32pt}
 \begin{columns}
     \begin{column}{0.5\textwidth}
 \begin{figure}[H]
@@ -1215,6 +1240,7 @@ Approximately optimal remapping coefficients: $w_T=0.4, w_k=0.6, w_{q''}=0$.
 \end{figure}
 \end{column}
 \end{columns}
+\cite{salko17}
 \end{frame}
 
 % =========================================================================== %
@@ -1263,10 +1289,11 @@ Approximately optimal remapping coefficients: $w_T=0.4, w_k=0.6, w_{q''}=0$.
 \end{table}
 \end{frame}
 
+\subsection*{Feature Extraction: Copula Features}
 % =========================================================================== %
 \begin{frame}
-\frametitle{CFD Data Preprocessing: Copula Features}
-\vspace{-42pt}
+% \frametitle{CFD Data Preprocessing: Copula Features}
+\vspace{-34pt}
 \begin{columns}
     \begin{column}{0.5\textwidth}
         \begin{figure}[H]%
@@ -1323,10 +1350,10 @@ Approximately optimal remapping coefficients: $w_T=0.4, w_k=0.6, w_{q''}=0$.
 
 
 % =========================================================================== %
-\subsection*{Machine Learning Results}
+\subsection*{Machine Learning Results: TKE conditional quantiles}
 \begin{frame}
-\frametitle{Gradient Boosting Results: TKE conditional quantiles}
-\vspace{-42pt}
+% \frametitle{\small Gradient Boosting Results: TKE conditional quantiles}
+\vspace{-33pt}
 \begin{columns}
     \begin{column}{0.5\textwidth}
         \begin{figure}[H]%
@@ -1350,9 +1377,10 @@ Approximately optimal remapping coefficients: $w_T=0.4, w_k=0.6, w_{q''}=0$.
 \end{frame}
 
 % =========================================================================== %
+\subsection*{Machine Learning Results: Temperature conditional quantiles}
 \begin{frame}
-\frametitle{Gradient Boosting Results: Temperature quantiles}
-\vspace{-42pt}
+%\frametitle{Gradient Boosting Results: Temperature quantiles}
+\vspace{-33pt}
 \begin{columns}
     \begin{column}{0.5\textwidth}
         \begin{figure}[H]%
@@ -1376,9 +1404,10 @@ Approximately optimal remapping coefficients: $w_T=0.4, w_k=0.6, w_{q''}=0$.
 \end{frame}
 
 % =========================================================================== %
+\subsection*{Machine Learning Results: Kendall's $\tau$}
 \begin{frame}
-\frametitle{Gradient Boosting Results: Kendall's $\tau$}
-\vspace{-42pt}
+%\frametitle{Gradient Boosting Results: Kendall's $\tau$}
+\vspace{-33pt}
 \begin{columns}
     \begin{column}{0.5\textwidth}
         \begin{figure}[H]%
@@ -1402,10 +1431,10 @@ Approximately optimal remapping coefficients: $w_T=0.4, w_k=0.6, w_{q''}=0$.
 \end{frame}
 
 % =========================================================================== %
-\subsection*{Crud Results}
+\subsection*{Crud Results: Pin 1}
 \begin{frame}
-\frametitle{Single Pin Crud Results: Pin 1}
-\vspace{-42pt}
+% \frametitle{Single Pin Crud Results: Pin 1}
+\vspace{-32pt}
 \begin{columns}
     \begin{column}{0.5\textwidth}
         \begin{figure}[H]%
@@ -1431,46 +1460,49 @@ Approximately optimal remapping coefficients: $w_T=0.4, w_k=0.6, w_{q''}=0$.
 % =========================================================================== %
 \begin{frame}
 %\vspace{-8pt}
-\frametitle{\small Single Pin Crud Results: Pin 1  Cont.}
+\frametitle{Single Pin Crud Results: Pin 1  Cont.}
 \vspace{-22pt}
+\begin{itemize}
+    \item Crud thickness quantile predictions.
+\end{itemize}
 \begin{columns}
     \begin{column}{0.5\textwidth}
-        \centering{ \tiny{CFD}}
-        \vspace{-12.5pt}
+        %\vspace{-12.5pt}
         \begin{figure}[H]%
-            \includegraphics[width=.95\linewidth]{/dissertation/figs/5x5/cfd/tstep_5/pin_1/CFD_pin_z_cthick}
+            \includegraphics[width=1.12\linewidth]{/dissertation/figs/5x5/cfd/tstep_5/pin_1/CFD_pin_z_cthick}\\
+            \caption{\centering CFD}
         \end{figure}
-        \vspace{-26pt}
-        \begin{figure}[H]%
-            \includegraphics[width=.95\linewidth]{/dissertation/figs/5x5/cfd/tstep_5/pin_1/CFD_pin_z_bmass}
-     
-        \end{figure}
+%        \vspace{-26pt}
+%        \begin{figure}[H]%
+%            \includegraphics[width=.95\linewidth]{/dissertation/figs/5x5/cfd/tstep_5/pin_1/CFD_pin_z_bmass}   
+%        \end{figure}
     \end{column}
     \begin{column}{0.5\textwidth}
-          \centering{\tiny{Hi2lo}}
-          \vspace{-12.5pt}
+        %  \vspace{-12.5pt}
         \begin{figure}[H]%
-            \includegraphics[width=.95\linewidth]{/dissertation/figs/5x5/imp/tstep_5/pin_1/hi2lo_imp_pin_z_cthick}
+            \includegraphics[width=1.12\linewidth]{/dissertation/figs/5x5/imp/tstep_5/pin_1/hi2lo_imp_pin_z_cthick}
+            \caption{\centering Hi2lo}
         \end{figure}
-        \vspace{-26pt}
-        \begin{figure}[H]%
-            \includegraphics[width=.95\linewidth]{/dissertation/figs/5x5/imp/tstep_5/pin_1/hi2lo_imp_pin_z_bmass}
-            %\includegraphics[width=1.0\linewidth]{/dissertation/figs/5x5/cfd/tstep_5/pin_1/CFD_pin_z_cthick}
-        \end{figure}
+%        \vspace{-26pt}
+%        \begin{figure}[H]%
+%            \includegraphics[width=.95\linewidth]{/dissertation/figs/5x5/imp/tstep_5/pin_1/hi2lo_imp_pin_z_bmass}
+%            %\includegraphics[width=1.0\linewidth]{/dissertation/figs/5x5/cfd/tstep_5/pin_1/CFD_pin_z_cthick}
+%        \end{figure}
     \end{column}
 \end{columns}
 \end{frame}
 
+\subsection*{Crud Results: 5x5 Assembly}
 % =========================================================================== %
 \begin{frame}
-\frametitle{5x5 Assembly Crud Results}
+\frametitle{RMS Crud Errors}
 \vspace{-42pt}
 \begin{columns}
     \begin{column}{0.5\textwidth}
         \begin{figure}[H]%
             \includegraphics[width=1.0\linewidth]{/dissertation/figs/5x5/imp/l2_boron_asm_errors_hmap}
         \end{figure}
-        \vspace{-26pt}
+        \vspace{-38pt}
         \begin{figure}[H]%
             \includegraphics[width=1.0\linewidth]{/dissertation/figs/5x5/imp/l2_cmass_asm_errors_hmap}
         \end{figure}
@@ -1521,26 +1553,26 @@ Approximately optimal remapping coefficients: $w_T=0.4, w_k=0.6, w_{q''}=0$.
 
 % =========================================================================== %
 \begin{frame}
-\frametitle{5x5 Assembly Crud Results Cont.}
+\frametitle{Relative Integrated Crud Mass Errors}
 \vspace{-42pt}
 \begin{columns}
     \begin{column}{0.5\textwidth}
         \begin{figure}[H]%
             \includegraphics[width=1.0\linewidth]{/dissertation/figs/5x5/imp/tot_bmass_rel_asm_errors_hmap}
         \end{figure}
-        \vspace{-26pt}
+        \vspace{-38pt}
         \begin{figure}[H]%
-            \includegraphics[width=1.0\linewidth]{/dissertation/figs/5x5/imp/tot_boron_asm_errors_hmap}
+             \includegraphics[width=1.0\linewidth]{/dissertation/figs/5x5/imp/tot_cmass_rel_asm_errors_hmap}
         \end{figure}
     \end{column}
     \begin{column}{0.5\textwidth}
-        \begin{figure}[H]%
-            \includegraphics[width=1.0\linewidth]{/dissertation/figs/5x5/imp/tot_cmass_asm_errors_hmap}
-        \end{figure}
-        \vspace{-26pt}
-        \begin{figure}[H]%
-            \includegraphics[width=1.0\linewidth]{/dissertation/figs/5x5/imp/tot_cmass_rel_asm_errors_hmap}
-        \end{figure}
+%        \begin{figure}[H]%
+%            \includegraphics[width=1.0\linewidth]{/dissertation/figs/5x5/imp/tot_cmass_asm_errors_hmap}
+%        \end{figure}
+%        \vspace{-38pt}
+%        \begin{figure}[H]%        
+%             \includegraphics[width=1.0\linewidth]{/dissertation/figs/5x5/imp/tot_boron_asm_errors_hmap}
+%        \end{figure}
     \end{column}
 \end{columns}
 \end{frame}
@@ -1845,11 +1877,13 @@ Source: Peter Prettenhofer, PyData (2014).
 \end{figure}
 \end{frame}
 
-% =========================================================================== %
-\setbeamercolor{background canvas}{bg=white}
-\begin{frame}[noframenumbering]
-\frametitle{References}
-% \printbibliography
-\end{frame}
+%\section{}
+%% =========================================================================== %
+%\setbeamercolor{background canvas}{bg=white}
+%\begin{frame}[allowframebreaks]
+%\frametitle{References}
+%%\bibliographystyle{plain}
+%%\printbibliography
+%\end{frame}
 
 \end{document}
