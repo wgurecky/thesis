@@ -110,7 +110,7 @@
 \usepackage{siunitx} % Provides the \SI{}{} and \si{} and \number{}
 \newcolumntype{B}{>{\centering\arraybackslash}m{3cm}}
 \newcolumntype{C}{>{\centering\arraybackslash}m{2cm}}
-\newcolumntype{M}{>{\centering\arraybackslash}m{1cm}}
+\newcolumntype{M}{>{\centering\arraybackslash}m{1.2cm}}
 \newcolumntype{L}{>{\arraybackslash}m{8cm}}
 
 \renewcommand{\CancelColor}{\color{utorange}}
@@ -161,61 +161,59 @@
 \begin{frame}
 \frametitle{Chalk River Unidentified Deposit (crud)}
 \vspace{-12pt}
-Crud forms a porous layer on the surface of fuel rods and is primarily comprised of \ce{NiFe_2O_4} (Nickel Ferrite).
-\[
-    \frac{d N_{\mathrm{\ce{NiFe}},c}}{dt} = (\alpha_{\mathrm{nb}} + \alpha_{b}q''_{b} )N_{\mathrm{\ce{NiFe}}, \mathrm{cool}} - \gamma_k k
-\]
-\begin{tiny}
+\begin{scriptsize}
     \begin{itemize}
-    \item Where $N_{NiFe,c}$ is the concentration of \ce{NiFe_2O_4} in a small volume on the cladding surface. $N_{NiFe,cool}$ is the concentration of nickel and iron particulates in the coolant.  $k$ is the near-cladding surface turbulent kinetic energy.  $q''$ is the boiling heat flux (only has nonzero value at $T_s>T_{sat}$).  $\alpha_{nb}$ is a non-boiling coefficient and $\alpha_b$ is a boiling rate constant.  $\gamma_k$ is an erosion multiplier.
-    \item Preferentially deposited where temperature is high - near or above saturation point - and where local shear stresses on the rod are low.
-	\item Crud can increase oxide ingress rates in certain zirc alloys leading to crud induced local corrosion (CILC).
-    \item Crud tends to uptake and retain boron from the coolant which drives
-          crud induced power shift (CIPS). Also known as axial offset anomaly (AOA).
-    \item CASL developed crud simulation package, MAMBA, which is integrated with the VERA core simulator.  
+     \item Deposited on rod surface where temperature is high - near or above saturation point - and where local shear stresses are low.
+     \item Uptakes boron from the coolant driving
+     crud induced power shift (CIPS).
+
+	\item Crud can increase oxide ingress rates in certain zirc alloys leading to crud induced local corrosion (CILC) \cite{kendrick13}.
+
+    \item CASL developed crud simulation package, MAMBA, which is integrated with the VERA core simulator \cite{collins16}.  
     \end{itemize}
-\end{tiny}
-%\begin{figure}[!htbp]
-%\centering
-%\includegraphics[width=4cm]{figs/crud-crud.jpg}
-%\caption{Crud on fuel rods.}
-%\label{log_closed}
-%\end{figure}
+\end{scriptsize}
+
 \vspace{-12pt}
     \begin{figure}
         \centering
         \begin{minipage}{.5\textwidth}
             \centering
-            \includegraphics[width=0.5\textwidth]{figs/crud-crud.jpg}
+            \includegraphics[width=0.55\textwidth]{figs/crud-crud.jpg}
         \end{minipage}%
         \begin{minipage}{.5\textwidth}
             \centering
-            \includegraphics[width=0.5\textwidth]{figs/crud_flake_ex.png}
+            \includegraphics[width=0.55\textwidth]{figs/crud_flake_ex.png}
         \end{minipage}
     \end{figure}
 \end{frame}
 
-% =========================================================================== %
-\subsection*{Crud Cladding Side Boundary Condition Sensitivity}
 \begin{frame}
 \frametitle{Chalk River Unidentified Deposit (crud)}
 \vspace{-12pt}
-\begin{itemize}
-    \item Crud boron deposition rate vs. surface temperature and TKE.
-\end{itemize}
-    \begin{figure}
+\begin{scriptsize}
+    \begin{itemize}
+        \item Deposited on rod surface where temperature is high - near or above saturation point - and where local shear stresses are low.
+        \item Crud uptakes and retains boron from the coolant which drives
+        crud induced power shift (CIPS).       
+        \[
+        \frac{d N_{\mathrm{\ce{NiFe}},c}}{dt} = (\alpha_{\mathrm{nb}} + \alpha_{b}q''_{b} )N_{\mathrm{\ce{NiFe}}, \mathrm{cool}} - \gamma_k k
+        \]
+        \item $N_{NiFe,c}$ is the concentration of \ce{NiFe_2O_4} in a small volume on the cladding surface. $N_{NiFe,cool}$ is the concentration of nickel and iron particulates in the coolant.  $k$ is the near-cladding surface turbulent kinetic energy.  $q''$ is the boiling heat flux (only has nonzero value at $T_s>T_{sat}$).  $\alpha_{nb}$ is a non-boiling coefficient and $\alpha_b$ is a boiling rate constant.  $\gamma_k$ is an erosion multiplier. $k$ is the turbulent kinetic energy (TKE) \cite{mongoose17}.
+        
+    \end{itemize}
+\end{scriptsize}
+
+\vspace{-12pt}
+\begin{figure}
     \centering
     \begin{minipage}{.5\textwidth}
         \centering
-        \includegraphics[width=1.01\linewidth]{/dissertation/figs/crud/crud_t_tke_boron_response_80}
-        \caption{\centering Boundary heat flux: \\ $q''=80[W/cm^2]$.  }
+        \includegraphics[width=0.55\textwidth]{figs/crud-crud.jpg}
     \end{minipage}%
     \begin{minipage}{.5\textwidth}
         \centering
-        \includegraphics[width=1.01\linewidth]{/dissertation/figs/crud/crud_t_tke_boron_response_120}
-        \caption{\centering  Boundary heat flux: \\ $q''=120[W/cm^2]$. }
+        \includegraphics[width=0.55\textwidth]{figs/crud_flake_ex.png}
     \end{minipage}
-pyMAMBA results. 
 \end{figure}
 \end{frame}
 
@@ -251,7 +249,7 @@ pyMAMBA results.
     \item Though rare, CILC failures require impacted assemblies to drastically reduce power and miss their burnup target.
     \item Crud ultrasonic/chemical shock treatment is an extra step to perform during reloading operations, costing time and potentially increasing radiation exposure risk to plant workers.
 \end{itemize}
-\textbf{Goal:} Provide predictive capability to avoid CIPS limited fuel loading patterns.
+\textbf{Goal: Provide predictive capability to avoid CIPS limited fuel loading patterns.}
 \end{frame}
 
 % =========================================================================== %
@@ -281,7 +279,7 @@ pyMAMBA results.
 \begin{figure}[]
     \vspace{-16.5pt}
     \centering
-    \includegraphics[width=0.99\textwidth]{figs/mamba_hi2lo_vera.png}
+    \includegraphics[width=0.99\textwidth]{figs/mamba_hi2lo_vera_2.png}
     \label{hi2lo_overview}
 \end{figure}
 \vspace{-16.5pt}
@@ -362,61 +360,31 @@ pyMAMBA results.
 % =========================================================================== %
 \subsection*{CFD and Subchannel Mesh Background}
 \begin{frame}
-Differences between CTF (subchannel) and CFD meshes for a single pin.
+\frametitle{CTF (subchannel) and CFD Meshes for a Single Pin}
+\vspace{-20pt}
 \begin{figure}
         \centering
         \begin{minipage}{.4\textwidth}
             \centering
             \includegraphics[width=3cm]{figs/cfd_ctf_mesh_v.png}
+            \caption{\centering \scriptsize CTF (top).  CFD (bottom) }
         \end{minipage}%
         \begin{minipage}{.4\textwidth}
             \centering
             \includegraphics[width=2cm]{figs/ctf_mesh_v.png}
         \end{minipage}
 \end{figure}
+\cite{salko17}
 \end{frame}
-
-% =========================================================================== %
-\section{Approach}
-\begin{frame}
-    \frametitle{CFD Informed Surrogate Model to Improve Crud Growth}
-    \begin{itemize}
-    \item Construct a scale bridging model which utilizes a suite of precomputed CFD solutions to improve crud predictions given on the CTF grid. 
-    \item CTF estimates mean TH conditions everywhere in the core at a low spatial resolution.  The surrogate provides higher order moments about the mean.
-    \end{itemize}
-    \begin{block}{Rod Surface Field}
-        \[ 
-        F(\mathbf z) = \underbrace{\mu(\mathbf{z})}_\text{CTF} + \underbrace{\varepsilon(\mathbf z, {\mathbf p(\mathbf z)}) + b(\mathbf{z}) }_\text{CFD Informed}
-        \]
-    \end{block}
-    Treat $\varepsilon$ as a random field.  $\varepsilon(\cdot)$ is a CFD informed model. $\mathbf z$ are spatial coordinates. $\mathbf p$ are a set of auxiliary predictors. \\
-    $b$ is bias ($\mu_{CTF} - \mu_{CFD}$) \\
-    $\mu$ is piecewise constant over each CTF patch
-\end{frame}
-
-% =========================================================================== %
-\begin{frame}\frametitle{Objectives}
-\begin{itemize}
-\item Account for fine scale flow features unresolved by CTF on the growth of crud and boron hideout.
-\item Proposed hi2lo approach:
-\begin{itemize}
-	\item Forgo attempting to capture spatial distributions of temperature, boundary heat flux and TKE on rod surface. 
-	\item Instead, track joint probability density $f(T, TKE, q'')$ tallied over coarse CTF patches.
-\end{itemize}
-	\item Predict likelihood of temperatures in excess of saturation occurring in coincidence with low local turbulent kinetic energy.
-	\item Preserve correlations between surface temperature, boundary heat flux and turbulent kinetic energy.
-\end{itemize}
-\end{frame}
-
 
 % =========================================================================== %
 \subsection*{Crud State vs Thermal Hydraulic Surface Conditions Covariance Structure}
 \begin{frame}
 \begin{figure}[]
-\vspace{-16.5pt}
-\centering
-\includegraphics[width=10.88cm]{figs/ctf_patch_ex3_b.png}
-\label{model_overview}
+    \vspace{-16.5pt}
+    \centering
+    \includegraphics[width=10.88cm]{figs/ctf_patch_ex3_b.png}
+    \label{model_overview}
 \end{figure}
 \end{frame}
 
@@ -426,10 +394,55 @@ Differences between CTF (subchannel) and CFD meshes for a single pin.
 On a single coarse CTF patch:
 \vspace{-6.5pt}
 \begin{figure}[!htbp]
-\centering
-\includegraphics[width=11cm]{figs/model_relations_2.png}
-\label{model_overview}
+    \centering
+    \includegraphics[width=11cm]{figs/model_relations_2.png}
+    \label{model_overview}
 \end{figure}
+\end{frame}
+
+\section{Approach}
+% =========================================================================== %
+\begin{frame}\frametitle{Objectives}
+\begin{itemize}
+    \item Account for fine scale flow features unresolved by CTF on the growth of crud and boron hideout. \\
+
+    \item Predict likelihood of temperatures in excess of saturation occurring in coincidence with low local turbulent kinetic energy. \\
+    
+    \item Preserve correlations between surface temperature, boundary heat flux and turbulent kinetic energy.
+\end{itemize}
+\end{frame}
+
+% =========================================================================== %
+\begin{frame}\frametitle{Approach}
+\begin{itemize}
+\item Forgo attempting to capture spatial intra-CTF patch distributions of temperature, boundary heat flux and TKE on rod surface. 
+\item Track joint probability density, $f(T, TKE, q'')$, tallied over coarse CTF patches.
+    \item Utilize a suite of \textbf{precomputed} CFD solutions to improve crud predictions given on the CTF grid. 
+    \item General Solution: Augment the CTF solution with a predicted stochastic component.
+    \begin{itemize}
+        \item CTF estimates mean TH conditions at a low spatial resolution.  
+        \item The surrogate provides higher order moments about the mean.
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+% =========================================================================== %
+\begin{frame}
+    \frametitle{Approach}
+    \vspace{-8pt}
+    \begin{itemize}
+    \item CTF estimates mean TH conditions at a low spatial resolution.  The surrogate provides higher order moments about the mean.
+    
+    \begin{block}{Rod Surface Field}
+        \[ 
+        F(\mathbf z) = \underbrace{\mu(\mathbf{z})}_\text{CTF} + \underbrace{\varepsilon(\mathbf z, {\mathbf p(\mathbf z)}) + b(\mathbf{z}) }_\text{CFD Informed}
+        \]
+    \end{block}
+    \item Treat $\varepsilon$ as a random field.  $\varepsilon(\cdot)$ is a CFD informed model. $\mathbf z$ are spatial coordinates. $\mathbf p$ are a set of auxiliary predictors. \\
+    \item $b$ is bias ($\mu_{CTF} - \mu_{CFD}$) \\
+    $\mu$ is piecewise constant over each CTF patch
+\end{itemize}
 \end{frame}
 
 % =========================================================================== %
@@ -463,7 +476,7 @@ On a single coarse CTF patch:
 \frametitle{Capturing Dependence - Sklar's Theorem}
 \vspace{-16.5pt}
 \begin{itemize}
-\item Let $x=Temerature,\ y=TKE,\ z=BHF$.
+\item Let $x=Temperature,\ y=TKE,\ z=BHF$.
 \item Given joint CDF: $H$, w/ cumulative margins: $F(x)=P[X < x] = \int_{-\infty}^{x}f(X)dX$
 \[
 H(x,y) = C(F(x), F(y))
@@ -527,7 +540,7 @@ Where $\theta_c$ and $\theta_{x,y}$ are free copula and marginal model parameter
             \item $\hat \theta_c$ and $\hat \theta_{x,y}$ on all CTF faces. 
         \end{itemize}  
         
-        \item What is the functional form for these marginal and copula distributions take?
+        \item What functional form do the marginal and copula distributions take?
         
         \item By what method are the distribution parameters predicted?
     \end{itemize}
@@ -540,7 +553,7 @@ Where $\theta_c$ and $\theta_{x,y}$ are free copula and marginal model parameter
             \item $\hat \theta_c$ and $\hat \theta_{x,y}$ on all CTF faces. 
         \end{itemize}  
         
-        \item What functional form do the marginal and copula distributions take?
+        \item What form do the marginal and copula distributions take?
         \begin{itemize}
             \item Adopt a non-parametric representation of the temperature and TKE marginal distribution on each CTF face.  The CFD born distributions do not conform to a known parametric distribution family and cannot be reliably transformed to be Gaussian-like since this transformation would vary from CTF face to face.
             \item Choose a copula from a library of parametric copula families via KL divergence or AIC based best-fitting metrics.
@@ -567,13 +580,13 @@ Where $\theta_c$ and $\theta_{x,y}$ are free copula and marginal model parameter
         \begin{column}{0.5\textwidth}
             \scriptsize{
                 \begin{itemize}
-                    \item Given a set of sample quantiles, $\hat{\mathbf{\theta}_x} = \{\hat q_{\tau_0}, \hat q_{\tau_i}, ... \hat{q_{\tau_{N_Q}}} \}$
+                    \item Given a set of sample quantiles, $\hat{\mathbf{\theta}_x} = \{\hat q_{\tau_0}, \hat q_{\tau_i}, ... \hat{q}_{\tau_{N_Q}} \}$
                     \item The quantile function can be inverted to give the CDF:
                     \[
                     \hat F(x) = \hat{Q}^{-1}(X; \mathbf{\hat \theta}_x)
                     \]
                     \item Piecewise linear CDF shown in figure results in histogram-like PDF.  The function is supported at the known nodes: $\{ \hat q_{\tau_0}, \hat q_{\tau_i}, ... \hat q_{\tau_{N_Q}} \}$
-                    \item Where $N_{Q_N}$ is the number of quantiles we desire to retain in the reconstruction and is a user set runtime parameter.
+                    \item Where $N_{Q}$ is the number of quantiles we desire to retain in the reconstruction and is a user set runtime parameter.
                 \end{itemize}
             }
         \end{column}
@@ -786,7 +799,7 @@ Where $\theta_c$ and $\theta_{x,y}$ are free copula and marginal model parameter
 \vspace{-16pt}
 \begin{itemize}
     \item Check to ensure quantile residuals (computed vs. expected) follow the expected theoretical behavior.
-    \item Tested two different gradient boosting libraries.  ({\color{blue} Custom implementation  (blue)}. {\color{red} sk-learn (red)})
+    \item Tested two different gradient boosting libraries.  ({\color{utblue} Custom implementation  (blue)}. {\color{utred} sk-learn (red)})
 \end{itemize}
 \vspace{-28pt}
 \begin{columns}
@@ -836,7 +849,7 @@ h(T, k, q'') = & f_T(T;\hat \theta_T) f_k(k;\hat \theta_k) f_{q''} \cdot \nonumb
 % =========================================================================== %
 \begin{frame}
 \frametitle{\small Monte Carlo Sampling of the Joint Distribution over a Single Patch}
-\vspace{-16pt}
+\vspace{-19pt}
 \begin{figure}[!htbp]
     \centering
     \includegraphics[width=1.0\linewidth]{/dissertation/figs/imp_patch/original_t_tke_bmass_scatter_cut}
@@ -863,14 +876,38 @@ h(T, k, q'') = & f_T(T;\hat \theta_T) f_k(k;\hat \theta_k) f_{q''} \cdot \nonumb
     \label{eq:imp_prob_ratio}
     \end{equation}
 
-    \item \textbf{Goal:}  Target regions of the rod surface which have exhibit changes in crud behavior and contribute to crud growth $T \ge T_{sat}$ and high TKE.  Avoid sampling heavily in regions with $T<T_{sat}$.
+    \item \textbf{Goal:}  Target regions of the rod surface which exhibit changes in crud behavior and contribute to crud growth: $T \ge T_{sat}$ and low TKE.  Avoid sampling heavily in regions with $T<T_{sat}$.
 \end{itemize}
+\end{frame}
+
+% =========================================================================== %
+\subsection*{Crud Cladding Side Boundary Condition Sensitivity}
+\begin{frame}
+\frametitle{Chalk River Unidentified Deposit (crud)}
+\vspace{-12pt}
+\begin{itemize}
+    \item Crud boron deposition rate vs. surface temperature and TKE.
+\end{itemize}
+\begin{figure}
+    \centering
+    \begin{minipage}{.5\textwidth}
+        \centering
+        \includegraphics[width=1.01\linewidth]{/dissertation/figs/crud/crud_t_tke_boron_response_80}
+        \caption{\centering Boundary heat flux: \\ $q''=80[W/cm^2]$.  }
+    \end{minipage}%
+    \begin{minipage}{.5\textwidth}
+        \centering
+        \includegraphics[width=1.01\linewidth]{/dissertation/figs/crud/crud_t_tke_boron_response_120}
+        \caption{\centering  Boundary heat flux: \\ $q''=120[W/cm^2]$. }
+    \end{minipage}
+    pyMAMBA results. 
+\end{figure}
 \end{frame}
 
 % =========================================================================== %
 \begin{frame}
 \frametitle{\small Importance Sampling of the Joint Distribution over a Single Patch}
-\vspace{-16pt}
+\vspace{-19pt}
 \begin{figure}[!htbp]
     \centering
     \includegraphics[width=1.0\linewidth]{/dissertation/figs/imp_patch/importance_t_tke_bmass_scatter_cut}
@@ -881,25 +918,25 @@ h(T, k, q'') = & f_T(T;\hat \theta_T) f_k(k;\hat \theta_k) f_{q''} \cdot \nonumb
 % =========================================================================== %
 \begin{frame}
 \frametitle{Importance Sampling Distributions}
-\vspace{-16pt}
-\begin{itemize}
-    \item Proposal (red) vs. original (blue) marginal distributions for the (a) surface temperature and (b) TKE.
-\end{itemize}
 
+\begin{itemize}
+    \item {\color{utred} Proposal (red)} vs. {\color{utblue} original (blue)} marginal distributions.
+\end{itemize}
+\vspace{-18pt}
 \begin{columns}
     \begin{column}{0.5\textwidth}
 \begin{figure}[]
 \centering
-\includegraphics[width=1.0\linewidth]{/dissertation/figs/imp_patch/temperature_importance_marginal_compare}
-\caption{\centering (a)}
+\includegraphics[width=1.1\linewidth]{/dissertation/figs/imp_patch/temperature_importance_marginal_compare}
+\caption{\centering Temperature}
 \label{model_overview}
 \end{figure}
 \end{column}
 \begin{column}{0.5\textwidth}
 \begin{figure}[]
 \centering
-\includegraphics[width=1.0\linewidth]{/dissertation/figs/imp_patch/tke_importance_marginal_compare}\\
-\caption{\centering (b)}
+\includegraphics[width=1.1\linewidth]{/dissertation/figs/imp_patch/tke_importance_marginal_compare}\\
+\caption{\centering TKE}
 \label{model_overview}
 \end{figure}
 \end{column}
@@ -1092,14 +1129,16 @@ Both patches share the \emph{same} PDF of TKE, however, the spatial distribution
 % =========================================================================== %
 \begin{frame}
 \frametitle{Mapping strategy comparison: Single pin results}
-\tiny{
-Pin-integrated Boron inside the crud as a function of time.  \\ 
-{\color{green} Green: Assumes randomly moving hot spots.} \\
-{\color{blue} Blue: Assumes stationary hot spots ( $w_T=1.0; w_k=w_{q''}=0$).}
-}
+\begin{itemize}
+    \item Pin-integrated Boron inside the crud as a function of time.  
+    \item {\color{utgreen} Green: Assumes randomly moving hot spots.} 
+    \item {\color{blue} Blue: Assumes stationary hot spots ( $w_T=1.0; w_k=w_{q''}=0$).}
+\end{itemize}
+
+\vspace{-16pt}
 \begin{figure}[!htbp]
 \centering
-\includegraphics[width=7cm]{figs/new/cmpr_pin_totals.png}
+\includegraphics[width=0.6\textwidth]{figs/new/cmpr_pin_totals.png}
 \label{model_overview}
 \end{figure}
 \end{frame}
@@ -1554,7 +1593,7 @@ Approximately optimal remapping coefficients: $w_T=0.4, w_k=0.6, w_{q''}=0$.
 
 % =========================================================================== %
 \begin{frame}
-\frametitle{Relative Integrated Crud Mass Errors}
+\frametitle{Pin-Integrated Crud Mass Errors}
 \vspace{-42pt}
 \begin{columns}
     \begin{column}{0.5\textwidth}
@@ -1578,9 +1617,9 @@ Approximately optimal remapping coefficients: $w_T=0.4, w_k=0.6, w_{q''}=0$.
         \tiny
         \begin{center}
             % \caption[Hi2lo crud boron mass results]{Crud boron mass hi2lo LOO result summary at 300 days.}
-            \begin{tabular}[h]{|c|c|c|c|}
+            \begin{tabular}[h]{|c|M|M|M|}
                 \hline
-                Pin & Hi2lo Bmass $[g]$ & Hi2lo-CFD $[g]$ & Rel Diff \% \\
+                Pin & Hi2lo Bmass $[g]$ & Hi2lo-CFD $[g]$ & Hi2lo-CFD $\Delta$ \% \\
                 \hline
                 1  &  6.3163e-04 & -1.2326e-04 &  -16.3 \\
                 2  &  3.1487e-04 & -2.0466e-04 &  -39.4 \\
@@ -1620,7 +1659,7 @@ Approximately optimal remapping coefficients: $w_T=0.4, w_k=0.6, w_{q''}=0$.
 
 % =========================================================================== %
 \begin{frame}
-\frametitle{5x5 Assembly Crud Results Summary}
+\frametitle{5x5 Assembly Crud Result Summary}
 \vspace{-8pt}
 \begin{table}[h]
     \tiny
@@ -1628,7 +1667,7 @@ Approximately optimal remapping coefficients: $w_T=0.4, w_k=0.6, w_{q''}=0$.
         % \caption[Hi2lo crud boron mass results]{Crud boron mass hi2lo LOO result summary at 300 days.}
         \begin{tabular}[h]{|c|c|c|M|c|c|M|}
             \hline
-            Pin & CTF Bmass $[g]$ & CFD Bmass $[g]$ & CTF-CFD Rel Diff \% & Hi2lo Bmass $[g]$ & Hi2lo-CFD $[g]$ & Hi2lo-CFD Rel Diff \% \\
+            Pin & CTF Bmass $[g]$ & CFD Bmass $[g]$ & \textbf{CTF-CFD Rel $\Delta$ \%} & Hi2lo Bmass $[g]$ & Hi2lo-CFD $[g]$ & \textbf{Hi2lo-CFD $\Delta$ \%} \\
             \hline
  1  &  1.2940e-03 & 7.5489e-04  & $\bf{71.4  }$  & 6.3163e-04 & -1.2326e-04 &  $\bf{-16.3}$ \\
  2  &  1.1458e-03 & 5.1953e-04  & $\bf{120.5 }$  & 3.1487e-04 & -2.0466e-04 & $\bf{ -39.4}$ \\
@@ -1671,7 +1710,7 @@ Totals & 1.5443e-02 & 5.2453e-03 & $\bf{194.4}$ & 4.7791e-03 & -4.6623e-04   & $
 \begin{columns}
     \begin{column}{0.5\textwidth}
         \begin{itemize}
-            \item Result of using the hi2lo model in a \emph{predictive} manner via leave-one-out analysis.  
+            \item Result of using the hi2lo model in a \textbf{predictive} manner via leave-one-out analysis.  
             \item The influence of spacer grids on the overall assembly crud distribution is accounted for by the hi2lo method.   
             \item Other cross-validation strategies are possible: Provided more CFD data, a multi-fold cross validation strategy is viable.
         \end{itemize}
@@ -1723,7 +1762,7 @@ of the surface temperature or TKE fields.  This approach seeks to predict the jo
     \item \textbf{Extrapolation detection}:  Particularly in the case of boosted trees which produce piecewise constant predictions, the models should not be extrapolated outside of their training envelope.  User should be warned that additional CFD data is required, if necessary, to avoid extrapolation.
     \item \textbf{Uncertainty Quantification}:  Quantify sources of error in the CFD data, model induced uncertainty arising from quantile regression.  Investigate biases introduced by model assumptions.
     \item \textbf{Uncertainty Propagation}:  Propagate data and model born uncertainties through the hi2lo model and into crud estimates.
-    \item\textbf{ Alternative machine learning strategies}:  Stacked learning methods can increase prediction accuracy at the cost of higher training times.  Better prediction accuracy for the distribution parameters will result in smaller crud prediction errors.
+    \item\textbf{Alternative machine learning strategies}:  Stacked learning methods can increase prediction accuracy at the cost of higher training times.  Better prediction accuracy for the distribution parameters will result in smaller crud prediction errors.
     \item \textbf{Feature engineering study}:  Incorporate additional geometric features of the pins, spacers, and assemblies into the training exogenous variable set.  This will improve the ability of the machine learning regressors to generalize to a wider variety of pin configurations.
     \item Investigate alternatives to quantile regression to improve prediction accuracy of extreme value events.  This would increase the applicability of the hi2lo method to CILC analysis.
     \item Utilize the hi2lo crud distribution predictions to derive a \textbf{CILC risk metric}.  It is natural to extend the existing hi2lo framework towards extreme value event estimation.  The aim would be to predict cladding failure probability given a certain proportion of the rod surface is expected to harbor ``critically'' thick crud.
