@@ -110,6 +110,7 @@
 \usepackage{siunitx} % Provides the \SI{}{} and \si{} and \number{}
 \newcolumntype{B}{>{\centering\arraybackslash}m{3cm}}
 \newcolumntype{C}{>{\centering\arraybackslash}m{2cm}}
+\newcolumntype{M}{>{\centering\arraybackslash}m{1cm}}
 \newcolumntype{L}{>{\arraybackslash}m{8cm}}
 
 \renewcommand{\CancelColor}{\color{utorange}}
@@ -1460,11 +1461,11 @@ Approximately optimal remapping coefficients: $w_T=0.4, w_k=0.6, w_{q''}=0$.
 % =========================================================================== %
 \begin{frame}
 %\vspace{-8pt}
-\frametitle{Single Pin Crud Results: Pin 1  Cont.}
+\frametitle{Crud Thickness Quantile Predictions}
 \vspace{-22pt}
-\begin{itemize}
-    \item Crud thickness quantile predictions.
-\end{itemize}
+%\begin{itemize}
+%    \item Crud thickness quantile predictions.
+%\end{itemize}
 \begin{columns}
     \begin{column}{0.5\textwidth}
         %\vspace{-12.5pt}
@@ -1573,49 +1574,89 @@ Approximately optimal remapping coefficients: $w_T=0.4, w_k=0.6, w_{q''}=0$.
 %        \begin{figure}[H]%        
 %             \includegraphics[width=1.0\linewidth]{/dissertation/figs/5x5/imp/tot_boron_asm_errors_hmap}
 %        \end{figure}
+    \begin{table}[h]
+        \tiny
+        \begin{center}
+            % \caption[Hi2lo crud boron mass results]{Crud boron mass hi2lo LOO result summary at 300 days.}
+            \begin{tabular}[h]{|c|c|c|c|}
+                \hline
+                Pin & Hi2lo Bmass $[g]$ & Hi2lo-CFD $[g]$ & Rel Diff \% \\
+                \hline
+                1  &  6.3163e-04 & -1.2326e-04 &  -16.3 \\
+                2  &  3.1487e-04 & -2.0466e-04 &  -39.4 \\
+                3  &  3.4192e-04 & 1.5140e-05 &  4.6 \\ 
+                4  &  2.9848e-04 & -2.6999e-04 &  $\bf{-47.5}$ \\
+                5  &  2.2723e-04 & 3.7490e-05 &  19.8 \\ 
+                6  &  1.0065e-04 & 8.9640e-06 &  9.8 \\ 
+                7  &  3.7515e-05 & -2.6950e-06 &  -6.7 \\
+                8  &  3.3475e-05 & 3.6140e-06 &  12.1 \\ 
+                9  &  3.3063e-05 & -2.6100e-07 &  -0.8 \\
+                10  & 2.8171e-05 & -7.7210e-06 &  -21.5 \\
+                11  & 3.7932e-05 & -2.3840e-06 &  -5.9 \\
+                12  & 8.2669e-05 & -3.4551e-05 &  -29.5 \\
+                13  & 2.6878e-04 & 3.9690e-05 &  17.3 \\ 
+                14  & 3.9548e-04 & 1.2077e-04 &  44.0 \\ 
+                15  & 3.3163e-04 & -1.1904e-04 &  -26.4 \\
+                16  & 4.3385e-04 & 1.3678e-04 &  46.0 \\ 
+                17  & 2.6569e-04 & -1.7000e-06 &  -0.6 \\
+                18  & 2.0092e-04 & -3.3760e-05 &  -14.4 \\
+                19  & 1.4341e-04 & 3.0520e-05 &  27.0 \\ 
+                20  & 4.8991e-05 & -2.3286e-05 &  -32.2 \\
+                21  & 4.4092e-05 & -1.3620e-06 &  -3.0 \\
+                22  & 6.1729e-05 & 1.7153e-05 &  38.5 \\ 
+                23  & 1.1521e-04 & -3.5710e-05 &  -23.7 \\
+                24  & 2.1561e-04 & 3.0820e-05 &  16.7 \\ 
+                25  & 8.6106e-05 & -4.6794e-05 &  -35.2 \\
+                \hline \hline
+                Totals & 4.7791e-03 & -4.6623e-04   & -8.88 \\
+                \hline
+            \end{tabular}
+            \label{tab:loo_crud_bmass}
+        \end{center}
+    \end{table}
     \end{column}
 \end{columns}
 \end{frame}
 
 % =========================================================================== %
 \begin{frame}
-\frametitle{5x5 Assembly Crud Results Cont.}
+\frametitle{5x5 Assembly Crud Results Summary}
 \vspace{-8pt}
 \begin{table}[h]
     \tiny
     \begin{center}
         % \caption[Hi2lo crud boron mass results]{Crud boron mass hi2lo LOO result summary at 300 days.}
-        \begin{tabular}[h]{|c|c|c|c|c|c|}
+        \begin{tabular}[h]{|c|c|c|M|c|c|M|}
             \hline
-            Pin & CTF Bmass $[g]$ & CFD Bmass $[g]$ & Hi2lo Bmass $[g]$ & Hi2lo-CFD $[g]$ & Rel Diff \% \\
+            Pin & CTF Bmass $[g]$ & CFD Bmass $[g]$ & CTF-CFD Rel Diff \% & Hi2lo Bmass $[g]$ & Hi2lo-CFD $[g]$ & Hi2lo-CFD Rel Diff \% \\
             \hline
-            1  & 1.2940e-03 & 7.5489e-04 & 6.3163e-04 & -1.2326e-04 &  -16.3 \\
-            2  & 1.1458e-03 & 5.1953e-04 & 3.1487e-04 & -2.0466e-04 &  -39.4 \\
-            3  & 1.0265e-03 & 3.2678e-04 & 3.4192e-04 & 1.5140e-05 &  4.6 \\ 
-            4  & 1.0111e-03 & 5.6847e-04 & 2.9848e-04 & -2.6999e-04 &  $\bf{-47.5}$ \\
-            5  & 9.5319e-04 & 1.8974e-04 & 2.2723e-04 & 3.7490e-05 &  19.8 \\ 
-            6  & 4.0505e-04 & 9.1686e-05 & 1.0065e-04 & 8.9640e-06 &  9.8 \\ 
-            7  & 8.0907e-05 & 4.0210e-05 & 3.7515e-05 & -2.6950e-06 &  -6.7 \\
-            8  & 6.5705e-05 & 2.9861e-05 & 3.3475e-05 & 3.6140e-06 &  12.1 \\ 
-            9  & 6.7204e-05 & 3.3324e-05 & 3.3063e-05 & -2.6100e-07 &  -0.8 \\
-            10  &6.6850e-05 & 3.5892e-05 & 2.8171e-05 & -7.7210e-06 &  -21.5 \\
-            11  &8.7449e-05 & 4.0316e-05 & 3.7932e-05 & -2.3840e-06 &  -5.9 \\
-            12  &4.6693e-04 & 1.1722e-04 & 8.2669e-05 & -3.4551e-05 &  -29.5 \\
-            13  &1.0616e-03 & 2.2909e-04 & 2.6878e-04 & 3.9690e-05 &  17.3 \\ 
-            14  &1.0617e-03 & 2.7471e-04 & 3.9548e-04 & 1.2077e-04 &  44.0 \\ 
-            15  &1.0366e-03 & 4.5067e-04 & 3.3163e-04 & -1.1904e-04 &  -26.4 \\
-            16  &1.1594e-03 & 2.9707e-04 & 4.3385e-04 & 1.3678e-04 &  46.0 \\ 
-            17  &9.1090e-04 & 2.6739e-04 & 2.6569e-04 & -1.7000e-06 &  -0.6 \\
-            18  &7.1616e-04 & 2.3468e-04 & 2.0092e-04 & -3.3760e-05 &  -14.4 \\
-            19  &6.1329e-04 & 1.1289e-04 & 1.4341e-04 & 3.0520e-05 &  27.0 \\ 
-            20  &1.6370e-04 & 7.2277e-05 & 4.8991e-05 & -2.3286e-05 &  -32.2 \\
-            21  &1.2524e-04 & 4.5454e-05 & 4.4092e-05 & -1.3620e-06 &  -3.0 \\
-            22  &1.7007e-04 & 4.4576e-05 & 6.1729e-05 & 1.7153e-05 &  38.5 \\ 
-            23  &6.2594e-04 & 1.5092e-04 & 1.1521e-04 & -3.5710e-05 &  -23.7 \\
-            24  &7.1144e-04 & 1.8479e-04 & 2.1561e-04 & 3.0820e-05 &  16.7 \\ 
-            25  &4.1668e-04 & 1.3290e-04 & 8.6106e-05 & -4.6794e-05 &  -35.2 \\
+ 1  &  1.2940e-03 & 7.5489e-04  & $\bf{71.4  }$  & 6.3163e-04 & -1.2326e-04 &  $\bf{-16.3}$ \\
+ 2  &  1.1458e-03 & 5.1953e-04  & $\bf{120.5 }$  & 3.1487e-04 & -2.0466e-04 & $\bf{ -39.4}$ \\
+ 3  &  1.0265e-03 & 3.2678e-04  & $\bf{214.1 }$  & 3.4192e-04 & 1.5140e-05 & $\bf{ 4.6 }$ \\
+ 4  &  1.0111e-03 & 5.6847e-04  & $\bf{77.9  }$  & 2.9848e-04 & -2.6999e-04 &  $\bf{-47.5}$ \\
+ 5  &  9.5319e-04 & 1.8974e-04  & $\bf{402.4 }$  & 2.2723e-04 & 3.7490e-05 & $\bf{ 19.8 }$ \\
+ 6  &  4.0505e-04 & 9.1686e-05  & $\bf{341.8 }$  & 1.0065e-04 & 8.9640e-06 & $\bf{ 9.8 }$ \\
+ 7  &  8.0907e-05 & 4.0210e-05  & $\bf{101.2 }$  & 3.7515e-05 & -2.6950e-06 & $\bf{ -6.7}$ \\
+ 8  &  6.5705e-05 & 2.9861e-05  & $\bf{120.0 }$  & 3.3475e-05 & 3.6140e-06 & $\bf{ 12.1 }$ \\
+ 9  &  6.7204e-05 & 3.3324e-05  & $\bf{101.7 }$  & 3.3063e-05 & -2.6100e-07 & $\bf{ -0.8}$ \\
+ 10  & 6.6850e-05 & 3.5892e-05  & $\bf{86.3  }$  & 2.8171e-05 & -7.7210e-06 & $\bf{ -21.5}$ \\
+ 11  & 8.7449e-05 & 4.0316e-05  & $\bf{116.9 }$  & 3.7932e-05 & -2.3840e-06 & $\bf{ -5.9}$ \\
+ 12  & 4.6693e-04 & 1.1722e-04  & $\bf{298.3 }$  & 8.2669e-05 & -3.4551e-05 & $\bf{ -29.5}$ \\
+ 13  & 1.0616e-03 & 2.2909e-04  & $\bf{363.4 }$  & 2.6878e-04 & 3.9690e-05 & $\bf{ 17.3 }$ \\
+ 14  & 1.0617e-03 & 2.7471e-04  & $\bf{286.5 }$  & 3.9548e-04 & 1.2077e-04 & $\bf{ 44.0 }$ \\
+ 15  & 1.0366e-03 & 4.5067e-04  & $\bf{130.0 }$  & 3.3163e-04 & -1.1904e-04 & $\bf{ -26.4}$ \\
+ 16  & 1.1594e-03 & 2.9707e-04  & $\bf{290.3 }$  & 4.3385e-04 & 1.3678e-04 & $\bf{ 46.0 }$ \\
+ 17  & 9.1090e-04 & 2.6739e-04  & $\bf{240.7 }$  & 2.6569e-04 & -1.7000e-06 & $\bf{ -0.6}$ \\
+ 18  & 7.1616e-04 & 2.3468e-04  & $\bf{205.2 }$  & 2.0092e-04 & -3.3760e-05 & $\bf{ -14.4}$ \\
+ 19  & 6.1329e-04 & 1.1289e-04  & $\bf{443.3 }$  & 1.4341e-04 & 3.0520e-05 & $\bf{ 27.0 }$ \\
+ 20  & 1.6370e-04 & 7.2277e-05  & $\bf{126.5 }$  & 4.8991e-05 & -2.3286e-05 & $\bf{ -32.2}$ \\
+ 21  & 1.2524e-04 & 4.5454e-05  & $\bf{175.5 }$  & 4.4092e-05 & -1.3620e-06 & $\bf{ -3.0}$ \\
+ 22  & 1.7007e-04 & 4.4576e-05  & $\bf{281.5 }$  & 6.1729e-05 & 1.7153e-05 & $\bf{ 38.5 }$ \\
+ 23  & 6.2594e-04 & 1.5092e-04  & $\bf{314.7 }$  & 1.1521e-04 & -3.5710e-05 & $\bf{ -23.7}$ \\
+ 24  & 7.1144e-04 & 1.8479e-04  & $\bf{285.0 }$  & 2.1561e-04 & 3.0820e-05 & $\bf{ 16.7 }$ \\
+ 25  & 4.1668e-04 & 1.3290e-04  & $\bf{213.5 }$  & 8.6106e-05 & -4.6794e-05 & $\bf{ -35.2}$ \\
             \hline \hline
-            Totals & 1.5443e-02 & 5.2453e-03 & 4.7791e-03 & -4.6623e-04   & -8.88 \\
+Totals & 1.5443e-02 & 5.2453e-03 & $\bf{194.4}$ & 4.7791e-03 & -4.6623e-04   & $\bf{-8.8}$ \\
             \hline
         \end{tabular}
         \label{tab:loo_crud_bmass}
@@ -1625,15 +1666,14 @@ Approximately optimal remapping coefficients: $w_T=0.4, w_k=0.6, w_{q''}=0$.
 
 % =========================================================================== %
 \begin{frame}
-\frametitle{5x5 Assembly Crud Results Cont.}
+\frametitle{5x5 Assembly Crud Result Summary}
 \vspace{-18pt}
 \begin{columns}
     \begin{column}{0.5\textwidth}
         \begin{itemize}
             \item Result of using the hi2lo model in a \emph{predictive} manner via leave-one-out analysis.  
-            \item Assembly integrated crud mass vs. time comparison.
             \item The influence of spacer grids on the overall assembly crud distribution is accounted for by the hi2lo method.   
-            \item More complex cross-validation strategies are possible: Provided more CFD data, a multi-fold cross validation strategy could be viable.
+            \item Other cross-validation strategies are possible: Provided more CFD data, a multi-fold cross validation strategy is viable.
         \end{itemize}
     \end{column}
     \begin{column}{0.5\textwidth}
