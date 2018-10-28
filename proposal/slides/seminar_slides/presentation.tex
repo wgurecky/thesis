@@ -417,8 +417,8 @@ On a single coarse CTF patch:
 \begin{itemize}
 \item Forgo attempting to capture spatial intra-CTF patch distributions of temperature, boundary heat flux and TKE on rod surface. 
 \item Track joint probability density, $f(T, TKE, q'')$, tallied over coarse CTF patches.
-    \item Utilize a suite of \textbf{precomputed} CFD solutions to improve crud predictions given on the CTF grid. 
-    \item General Solution: Augment the CTF solution with a predicted stochastic component.
+    \item Utilize a suite of precomputed CFD solutions to improve crud predictions given on the CTF grid. 
+    \item Augment the CTF solution with a predicted stochastic component.
     \begin{itemize}
         \item CTF estimates mean TH conditions at a low spatial resolution.  
         \item The surrogate provides higher order moments about the mean.
@@ -484,7 +484,7 @@ H(x,y) = C(F(x), F(y))
 \[
 c(u, v) = \frac{\partial^2 C(u, v)}{\partial u \partial v};\ u=F(x), v=F(y)
 \]
-\item  The copula PDF, $c(\cdot)$ describes dependence between two random variables.
+% \item  The copula PDF, $c(\cdot)$ describes dependence between two random variables.
 \item  Has uniform marginal density distributions \cite{Nelsen2006}.
 \item  Defined on the unit square $[0, 1]^2$ (in the bivariate case)
 \item  Any joint PDF, $h(\cdot)$ can be decomposed as: \\
@@ -509,6 +509,7 @@ Where $\theta_c$ and $\theta_{x,y}$ are free copula and marginal model parameter
     \item  If we restrict ourselves to the class of  Archimedean copula we only need $\rho_\tau$ and the copula type, $\Theta_c$ (Gumbel, Frank, Clayton, ect.) since $\rho_\tau$ is one-to-one with $\int_0^1 \frac{\varphi(\theta_c,t)}{\varphi'(\theta_c, t)}dt$.
     \item \textbf{Goal:} Associate each CTF patch with a copula family (categorical response) and Kendall's tau (real-valued).
 \end{itemize}
+\cite{Nelsen2006}
 \end{frame}
 
 \begin{frame}
@@ -571,7 +572,7 @@ h(x, y, z) = c(u, v |\theta_c)f(x|\theta_x)f(y|\theta_y) f_{q''}
 % =========================================================================== %
 \subsection*{Quantiles}
 \begin{frame}
-\frametitle{Sample Quantiles}
+\frametitle{Representation of Margins: Sample Quantiles}
 \vspace{-15pt}
     \begin{columns}
         \begin{column}{0.5\textwidth}
@@ -806,28 +807,34 @@ h(T, k, q'') = & f_T(T;\hat \theta_T) f_k(k;\hat \theta_k) f_{q''} \cdot \nonumb
 \frametitle{\small Importance Sampling Results on a Single Patch}
 \vspace{-16pt}
 \begin{itemize}
-    \item Importance sampling trial results on a single CTF face for (a) crud boron mass deposition and (b) Crud mass deposition at 300 days.  Red denotes importance samples and blue denotes standard Monte Carlo samples.  
+    \item Importance sampling trial results on a single CTF face. {\color{utred}Red} denotes importance samples and {\color{utblue}blue} denotes standard Monte Carlo samples.  
 \end{itemize}
 \[ \frac{\sigma^2_{MC}}{\sigma^2_{I}} \approx (\num{4.979e-6})^2 / (\num{3.503e-6})^2  \approx 2.02 \]
-\vspace{-28pt}
-\begin{columns}
-    \begin{column}{0.5\textwidth}
+\vspace{-18pt}
+%\begin{columns}
+%    \begin{column}{0.5\textwidth}
+%\begin{figure}[]
+%    \centering
+%    \includegraphics[width=1.0\linewidth]{/dissertation/figs/imp_patch/bmass_sample_violin}
+%    \caption{\centering (a)}
+%    \label{model_overview}
+%\end{figure}
+%\end{column}
+%\begin{column}{0.5\textwidth}
+%\begin{figure}[]
+%    \centering
+%    \includegraphics[width=1.0\linewidth]{/dissertation/figs/imp_patch/cmass_sample_violin}\\
+%    \caption{\centering (b)}
+%    \label{model_overview}
+%\end{figure}
+%\end{column}
+%\end{columns}
+
 \begin{figure}[]
     \centering
-    \includegraphics[width=1.0\linewidth]{/dissertation/figs/imp_patch/bmass_sample_violin}
-    \caption{\centering (a)}
+    \includegraphics[width=0.65\linewidth]{/dissertation/figs/imp_patch/cmass_sample_violin}\\
     \label{model_overview}
 \end{figure}
-\end{column}
-\begin{column}{0.5\textwidth}
-\begin{figure}[]
-    \centering
-    \includegraphics[width=1.0\linewidth]{/dissertation/figs/imp_patch/cmass_sample_violin}\\
-    \caption{\centering (b)}
-    \label{model_overview}
-\end{figure}
-\end{column}
-\end{columns}
 \end{frame}
 
 
@@ -1054,20 +1061,22 @@ Both patches share the \emph{same} PDF of TKE, however, the spatial distribution
 % =========================================================================== %
 \begin{frame}
 \frametitle{Single Pin Results $@$ 300 days}
+\begin{itemize}
+    \item Approximately optimal remapping coefficients: $w_T=0.4, w_k=0.6, w_{q''}=0$. 
+\end{itemize}
     \begin{figure}
         \centering
         \begin{minipage}{.5\textwidth}
             \centering
             \includegraphics[width=6cm]{figs/map_method/struct_pin_z_twall.png}
-            \caption{Axial cladding outter \\ surface temperature distribution [K].}
+            \caption{\centering Axial cladding outer \\ surface temperature distribution [K].}
         \end{minipage}%
         \begin{minipage}{.5\textwidth}
             \centering
             \includegraphics[width=6cm]{figs/map_method/struct_pin_z_tke.png}
-            \caption{ Axial cladding outer \\ surface TKE distribution [J/kg]}
+            \caption{ \centering Axial cladding outer \\ surface TKE distribution [J/kg]}
         \end{minipage}
     \end{figure}
-Approximately optimal remapping coefficients: $w_T=0.4, w_k=0.6, w_{q''}=0$.  
 \end{frame}
 
 
@@ -1707,6 +1716,8 @@ of the surface temperature or TKE fields.  This approach seeks to predict the jo
 \end{frame}
 
 % =========================================================================== %
+\setbeamercolor{normal text}{fg=black}
+\setbeamercolor{footnote text}{fg=black}
 \setbeamercolor{background canvas}{bg=white}
 \begin{frame}
 \begin{itemize}
@@ -1715,7 +1726,7 @@ of the surface temperature or TKE fields.  This approach seeks to predict the jo
 \item Answer:  In the large sample limit $N \rightarrow \infty$ any given sample quantile follows a Gaussian distribution:
 \begin{align}
 q_\tau &\sim \mathcal N \left( F_T^{-1}(\tau), \sigma^2_{q_\tau} \right) \nonumber \\
-\sigma^2_{q_\tau} &= \frac{\tau(1 - \tau)}{n[f_T(F_T^{-1}(\tau))]^2} \nonumber
+\sigma^2_{q_\tau} &= \frac{\tau(1 - \tau)}{N[f_T(F_T^{-1}(\tau))]^2} \nonumber
 \label{eq:theory_qdist_1}
 \end{align}
 
@@ -1724,6 +1735,7 @@ q_\tau &\sim \mathcal N \left( F_T^{-1}(\tau), \sigma^2_{q_\tau} \right) \nonumb
 \item Estimates for where the upper quantiles of the temperature and TKE distributions lie are fraught with high variance.  This variance is propagated through the machine learning models and into the crud calculations.
 \end{itemize}
 \end{itemize}
+\cite{mosteller1946}
 \end{frame}
 
 % =========================================================================== %
@@ -1798,11 +1810,12 @@ Each weak learner in the ensemble is a binary tree that partitions the input spa
 \end{frame}
 
 % =========================================================================== %
-\setbeamercolor{normal text}{fg=white}
-\setbeamercolor{text}{fg=white}
-\setbeamercolor{background canvas}{bg=utblack}
+%\setbeamercolor{normal text}{fg=white}
+%\setbeamercolor{text}{fg=white}
+%\setbeamercolor{background canvas}{bg=utblack}
 \begin{frame}
 \frametitle{Gradient Boosting Algorithm}
+\vspace{-20pt}
 \begin{algorithm}[H]
     \algsetup{linenosize=\tiny}
     \tiny  
@@ -1812,12 +1825,12 @@ Each weak learner in the ensemble is a binary tree that partitions the input spa
         \STATE (2) Differentiable loss function $L(y, F(p))$. 
         \STATE (3) Number of iterations ${{M}}$.
         \STATE (4)   Initialize model with a constant value:
-        $F_0(p) = \underset{\gamma}{\arg\min} \sum_{i=1}^n L(y_i, \gamma).$
+        $\mathcal F_0(p) = \underset{\gamma}{\arg\min} \sum_{i=1}^n L(y_i, \gamma).$
         
         \FOR {${{m}} = 1$ to ${{M}}$}
         \STATE Compute the pseudo-residuals:  
         \FOR {$i=1,\ldots,n $}
-        \STATE $r_{im} = -\frac{\partial L(y_i, F_{m-1}(p_i))}{\partial F_{m-1}(p_i)}$
+        \STATE $r_{im} = -\frac{\partial L(y_i, \mathcal \mathcal F_{m-1}(p_i))}{\partial \mathcal F_{m-1}(p_i)}$
         \ENDFOR
         
         \STATE Fit a weak learner $h_m(p; a_m)$ to pseudo-residuals, $r_{m}$: \\
@@ -1825,15 +1838,16 @@ Each weak learner in the ensemble is a binary tree that partitions the input spa
         $\ \ $ Training data set is $\{(p_i, r_{im})\}_{i=1}^n$ \;
         
         \STATE Compute multiplier $\gamma_m$ :
-        $\gamma_m = \underset{\gamma}{\operatorname{arg\,min}} \sum_{i=1}^n L\left(y_i, F_{m-1}(p_i) + \gamma h^*_m(p_i)\right)$\;
+        $\gamma_m = \underset{\gamma}{\operatorname{arg\,min}} \sum_{i=1}^n L\left(y_i, \mathcal F_{m-1}(p_i) + \gamma h^*_m(p_i)\right)$\;
         \STATE Update the model:
-        $F_m(p) = F_{m-1}(p) + \nu \gamma_m h^*_m(p).$
+        $\mathcal F_m(p) = \mathcal F_{m-1}(p) + \nu \gamma_m h^*_m(p).$
         
         \ENDFOR
-        \STATE Output $F_M(p).$
+        \STATE Output $\mathcal F_M(p).$
     \end{algorithmic}
     \label{alg:boosting}
 \end{algorithm}
+$p$: predictors. $h_m$: weak leaner, $a_m$ weak learner hyper-parameters.  $gamma$ tree weight. 
 \cite{friedman2001}
 \end{frame}
 
