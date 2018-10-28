@@ -500,13 +500,13 @@ Where $\theta_c$ and $\theta_{T,k}$ are free copula and marginal model parameter
 \begin{frame}[noframenumbering]
 \frametitle{Specifying Copula Parameters}
 \begin{itemize}
-    \item For the case of Archimedean copula, Kendall's tau, $\rho_\tau$ is
+    \item For Archimedean copula, Kendall's tau, $\rho_\tau$ is
     related to the copula's shape parameter by:
     \[
     \rho_\tau = 1 + 4 \int_0^1 \frac{\varphi(\theta_c,t)}{\varphi'(\theta_c, t)}dt
     \]
     Where $\varphi(\theta_c, t)$ is the copula's generator function and $\varphi'$ is the first derivative of the generator function with respect to $t$.
-    \item  If we restrict ourselves to the class of  Archimedean copula we only need $\rho_\tau$ and the copula type, $\Theta_c$ (Gumbel, Frank, Clayton, ect.) since $\rho_\tau$ is one-to-one with $\int_0^1 \frac{\varphi(\theta_c,t)}{\varphi'(\theta_c, t)}dt$.
+    \item  $\rho_\tau$ is one-to-one with $\int_0^1 \frac{\varphi(\theta_c,t)}{\varphi'(\theta_c, t)}dt$.
     \item \textbf{Goal:} Associate each CTF patch with a copula family (categorical response) and Kendall's tau (real-valued).
 \end{itemize}
 \cite{Nelsen2006}
@@ -597,26 +597,66 @@ h(T, k, q'') = c(u, v |\theta_c)f(T|\theta_T)f(k|\theta_k) f_{q''}
 \end{frame}
 
 % =========================================================================== %
+%\subsection*{Gradient Boosting}
+%\begin{frame}
+%\begin{itemize}
+% \item By what method are the distribution parameters predicted?
+%\begin{itemize}
+%    \item Gradient boosted quantile regression trees for $\hat \theta_{T,k}$.
+%    \item Gradient boosted regression trees for $\hat \theta_{c}$.
+%\end{itemize}
+%\end{itemize}
+%\end{frame}
+
+% =========================================================================== %
 \subsection*{Gradient Boosting}
 \begin{frame}
-\vspace{-16pt}
+\frametitle{Gradient Boosting}
+\vspace{-8pt}
 \begin{itemize}
-    \item Denote the gradient boosted model as $\mathcal F_M$.
+    \item A supervised machine learning method for classification and regression.
+    \item Gradient descent in function space.
+    \item Find $\mathcal F_M$ that maps the inputs $\mathbf p$ to training data, $y$, where $\mathcal F_M$ is given by:
+    \[
+    \mathcal F_M = \text{argmin}_{\mathcal F} \E_{y, \mathbf p} [ L(y, \mathcal F(\mathbf p)) ]
+    \]\\
+    $L(\cdot)$: differentiable loss function.  $\mathbf p$: predictive features. $y$: response.  Paired set $\{\mathbf p, y \}$ is the \emph{training data set}.
+%    \item Sum-of-trees ensemble technique:
+%    \[
+%    \mathcal F_M(\mathbf p, \mathbf{\gamma}, \mathbf b) = \sum_{m=0}^M \gamma_m h_m(\mathbf p; b_m)
+%    \label{eq:single_cart_model}
+%    \]
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.65\textwidth]{figs/pseudo_resids.png}
+    \label{model_overview}
+\end{figure}
+\end{itemize}
+\cite{prett2014}
+\end{frame}
+
+% =========================================================================== %
+\begin{frame}
+\frametitle{Gradient Boosting}
+\vspace{-8pt}
+\begin{itemize}
+    % \item Denote the gradient boosted model as $\mathcal F_M$.
     \item With the appropriate loss function, $L(\cdot)$, the gradient boosted model is trained to produce the conditional quantiles we seek:
     \[
      \hat{\mathcal F_M} =  \mathrm{argmin}_{\mathcal F}
-     L(\mathcal{F}_M (\mathbf p, \mathbf z| \gamma), \theta(\mathbf p, \mathbf z)) 
+     \E [ L(\mathcal{F}_M (\mathbf p), \theta(\mathbf p)) ]
     \]
-    \item Supply position $z_j$, and local thermal hydraulic conditions, $p_j$, near CTF face $j$ to evaluated the trained model:
+    \item Supply local thermal hydraulic conditions, $\mathbf p_j$, near CTF face $j$ to evaluated the trained model:
     \[
-    \hat \theta_j \leftarrow \hat{\mathcal F_M}(\mathbf p_j, \mathbf z_j)
+    \hat \theta_j \leftarrow \hat{\mathcal F_M}(\mathbf p_j)
     \]
     \item  The boosted model is treated as a meta-model containing many independent predictors for each conditional quantile of interest.
     \[
     \ \ \hat \theta_j = \{\hat \theta_{j,c}, \hat \theta_{j,T}, \hat \theta_{j,k} \}
     \]
-    \item Covarience between quantiles is ignored in the current implementation of the boosted quantile regression models.
+    % \item Covarience between quantiles is ignored in the current implementation of the boosted quantile regression models.
 \end{itemize}
+\cite{friedman2001}
 \end{frame}
 
 % =========================================================================== %
@@ -1116,7 +1156,9 @@ Both patches share the \emph{same} PDF of TKE, however, the spatial distribution
             \item Evaluate ML models
             \item Reconstruct Joint Densities
             \item Sample Distributions
-            \item Compute Crud via pyMAMBA
+            \item Importance Weights
+            \item Spatial Remapping
+            \item Compute Crud
         \end{enumerate}
     \end{column}
  \begin{column}{0.5\textwidth}
@@ -1159,7 +1201,7 @@ Both patches share the \emph{same} PDF of TKE, however, the spatial distribution
 \end{columns}
 \end{frame}
 
-\section[ML Results]{Machine Learning Driven Hi2lo Results Provided CFD Data Source}
+\section[ML Results]{Machine Learning Driven Hi2lo: Results Provided 5x5 Full-Height Assembly CFD Data}
 % =========================================================================== %
 \subsection*{Training Data}
 \begin{frame}
@@ -1319,6 +1361,64 @@ Both patches share the \emph{same} PDF of TKE, however, the spatial distribution
 \end{frame}
 
 % =========================================================================== %
+\subsection*{Machine Learning Results: TKE Conditional Quantiles, 2 sample KS Test}
+\begin{frame}
+% \frametitle{\small Gradient Boosting Results: TKE conditional quantiles}
+\vspace{-33pt}
+\begin{columns}
+    \begin{column}{0.5\textwidth}
+\begin{table}[h]
+    \tiny
+    \begin{center}
+        \caption[KS statistic TKE summary.]{$H_o\equiv \hat F_k \sim F_{k,cfd}$. Values in bold result in rejection of the $H_o$ at significance level $\alpha=0.1$.}
+        \begin{tabular}[h]{|c|c|c|}
+            \hline
+            Pin & $KS_\mu$ & $KS_{max}$ \\
+            \hline
+            1 &  2.949e-02 &  \textbf{3.7027e-01} \\
+            2 &  8.487e-02 &  \textbf{3.7030e-01} \\
+            3 &  2.999e-02 &  1.9407e-01 \\
+            4 &  1.111e-01 &  \textbf{5.5811e-01} \\
+            5 &  3.175e-02 &  1.8512e-01 \\
+            6 &  2.891e-02 &  2.3469e-01 \\
+            7 &  4.466e-02 &  2.2317e-01 \\
+            8 &  5.642e-02 &  \textbf{3.2113e-01} \\
+            9 &  1.943e-02 &  1.3405e-01 \\
+            10 & 5.650e-02 & \textbf{2.8362e-01} \\
+            11 & 3.155e-02 & 1.5097e-01 \\
+            12 & 6.701e-02 & \textbf{4.3280e-01} \\
+            13 & 3.847e-02 & 2.3050e-01 \\
+            14 & 4.220e-02 & \textbf{3.5174e-01} \\
+            15 & 5.040e-02 & \textbf{2.7588e-01} \\
+            16 & 9.001e-02 & \textbf{4.1846e-01} \\
+            17 & 2.129e-02 & 2.0583e-01 \\
+            18 & 2.702e-02 & 1.7656e-01 \\
+            19 & 2.959e-02 & 1.5939e-01 \\
+            20 & 3.804e-02 & 1.8140e-01 \\
+            21 & 3.092e-02 & 2.3890e-01 \\
+            22 & 2.263e-02 & 1.6278e-01 \\
+            23 & 2.181e-02 & 1.4727e-01 \\
+            24 & 3.227e-02 & 1.3258e-01 \\
+            25 & 2.728e-02 & 1.5842e-01 \\
+            \hline
+        \end{tabular}
+        \label{tab:ks_tke}
+    \end{center}
+\end{table}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+        \begin{figure}[H]%
+            \includegraphics[width=1.0\linewidth]{/dissertation/figs/ml_fit/qq_tke_pin_1}
+        \end{figure}
+        \vspace{-26pt}
+        \begin{figure}[H]%
+            \includegraphics[width=1.0\linewidth]{/dissertation/figs/ml_fit/qq_tke_pin_2}
+        \end{figure}
+    \end{column}
+\end{columns}
+\end{frame}
+
+% =========================================================================== %
 \subsection*{Machine Learning Results: Temperature conditional quantiles}
 \begin{frame}
 %\frametitle{Gradient Boosting Results: Temperature quantiles}
@@ -1332,6 +1432,64 @@ Both patches share the \emph{same} PDF of TKE, however, the spatial distribution
         \begin{figure}[H]%
             \includegraphics[width=1.0\linewidth]{/dissertation/figs/ml_fit/q_twall_regression_2}
         \end{figure}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+        \begin{figure}[H]%
+            \includegraphics[width=1.0\linewidth]{/dissertation/figs/ml_fit/qq_twall_pin_1}
+        \end{figure}
+        \vspace{-26pt}
+        \begin{figure}[H]%
+            \includegraphics[width=1.0\linewidth]{/dissertation/figs/ml_fit/qq_twall_pin_2}
+        \end{figure}
+    \end{column}
+\end{columns}
+\end{frame}
+
+% =========================================================================== %
+\subsection*{Machine Learning Results: Temperature Conditional Quantiles, 2 sample KS Test}
+\begin{frame}
+%\frametitle{Gradient Boosting Results: Temperature quantiles}
+\vspace{-33pt}
+\begin{columns}
+    \begin{column}{0.5\textwidth}
+\begin{table}[h]
+    \tiny
+    \begin{center}
+        \caption[KS statistic temperature summary.]{$H_o\equiv \hat F_T \sim F_{T,cfd}$. Values in bold result in rejection of the $H_o$ at significance level $\alpha=0.1$.}
+        \begin{tabular}[h]{|c|c|c|}
+            \hline
+            Pin & $KS_\mu$ & $KS_{max}$ \\
+            \hline
+            1 &  4.329e-02 &  \textbf{3.2094e-01} \\
+            2 &  8.477e-02 &  \textbf{3.9065e-01} \\
+            3 &  6.725e-02 &  \textbf{4.4959e-01} \\
+            4 &  1.509e-01 &  \textbf{6.0957e-01} \\
+            5 &  4.483e-02 &  \textbf{2.7359e-01} \\
+            6 &  8.718e-02 &  \textbf{4.4920e-01} \\
+            7 &  8.848e-02 &  \textbf{3.2938e-01} \\
+            8 &  5.668e-02 &  \textbf{4.2560e-01} \\
+            9 &  7.273e-02 &  \textbf{6.3407e-01} \\
+            10 & 1.292e-01 &  \textbf{4.6647e-01} \\
+            11 & 6.765e-02 &\textbf{ 3.5969e-01} \\
+            12 & 1.124e-01 & \textbf{4.9874e-01} \\
+            13 & 5.064e-02 & \textbf{3.2152e-01} \\
+            14 & 6.728e-02 & \textbf{4.7099e-01} \\
+            15 & 1.429e-01 &\textbf{ 5.4111e-01} \\
+            16 & 7.260e-02 & \textbf{3.9793e-01} \\
+            17 & 3.975e-02 & 2.3933e-01 \\
+            18 & 3.209e-02 & 2.5577e-01 \\
+            19 & 6.852e-02 &\textbf{ 3.7904e-01} \\
+            20 & 1.273e-01 &\textbf{ 8.3754e-01} \\
+            21 & 3.059e-02 &\textbf{ 3.8896e-01} \\
+            22 & 1.147e-01 &\textbf{ 6.6852e-01} \\
+            23 & 6.098e-02 &\textbf{ 4.6728e-01} \\
+            24 & 6.525e-02 &\textbf{ 4.7225e-01} \\
+            25 & 4.811e-02 & \textbf{ 3.3235e-01} \\
+            \hline
+        \end{tabular}
+        \label{tab:ks_temp}
+    \end{center}
+\end{table}
     \end{column}
     \begin{column}{0.5\textwidth}
         \begin{figure}[H]%
