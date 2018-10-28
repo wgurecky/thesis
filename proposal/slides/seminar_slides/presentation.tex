@@ -476,22 +476,22 @@ On a single coarse CTF patch:
 \frametitle{Capturing Dependence - Sklar's Theorem}
 \vspace{-16.5pt}
 \begin{itemize}
-\item Let $x=Temperature,\ y=TKE,\ z=BHF$.
-\item Given joint CDF: $H$, w/ cumulative margins: $F(x)=P[X < x] = \int_{-\infty}^{x}f(X)dX$
+\item Let $T=Temperature,\ k=TKE,\ q''=BHF$.
+\item Given joint CDF: $H$, w/ cumulative margins: $F_T=P[T < t] = \int_{-\infty}^{t}f(w)dw$
 \[
-H(x,y) = C(F(x), F(y))
+H(T,k) = C(F_T, F_k)
 \]
 \[
-c(u, v) = \frac{\partial^2 C(u, v)}{\partial u \partial v};\ u=F(x), v=F(y)
+c(u, v) = \frac{\partial^2 C(u, v)}{\partial u \partial v};\ u=F_T, v=F_k
 \]
 % \item  The copula PDF, $c(\cdot)$ describes dependence between two random variables.
 \item  Has uniform marginal density distributions \cite{Nelsen2006}.
 \item  Defined on the unit square $[0, 1]^2$ (in the bivariate case)
 \item  Any joint PDF, $h(\cdot)$ can be decomposed as: \\
 \[
-h(x, y) = c(u, v |\theta_c)f(x|\theta_x)f(y|\theta_y)
+h(T, k) = c(u, v |\theta_c)f(T|\theta_T)f(k|\theta_k)
 \]
-Where $\theta_c$ and $\theta_{x,y}$ are free copula and marginal model parameters respectively.
+Where $\theta_c$ and $\theta_{T,k}$ are free copula and marginal model parameters respectively.
 \end{itemize}
 \end{frame}
 
@@ -529,9 +529,9 @@ Where $\theta_c$ and $\theta_{x,y}$ are free copula and marginal model parameter
     Which results in
 
 \[
-h(x, y, z) = c(u, v |\theta_c)f(x|\theta_x)f(y|\theta_y) f_{q''}
+h(T, k, q'') = c(u, v |\theta_c)f(T|\theta_T)f(k|\theta_k) f_{q''}
 \]
-    Where $\theta_c$ and $\theta_{x,y}$ are free copula and marginal model parameters respectively.
+    Where $\theta_c$ and $\theta_{T,k}$ are free copula and marginal model parameters respectively.
 \end{itemize}
 }
 % --------------------------------------------------------------------------- %
@@ -539,7 +539,7 @@ h(x, y, z) = c(u, v |\theta_c)f(x|\theta_x)f(y|\theta_y) f_{q''}
     \begin{itemize}
         \item It is necessary to predict (denoted by $\hat{(\cdot)}$ notation):
         \begin{itemize}
-            \item $\hat \theta_c$ and $\hat \theta_{x,y}$ on all CTF faces. 
+            \item $\hat \theta_c$ and $\hat \theta_{T,k}$ on all CTF faces. 
         \end{itemize}  
         
         \item What functional form do the marginal and copula distributions take?
@@ -552,7 +552,7 @@ h(x, y, z) = c(u, v |\theta_c)f(x|\theta_x)f(y|\theta_y) f_{q''}
     \begin{itemize}
         \item It is necessary to predict (denoted by $\hat{(\cdot)}$ notation):
         \begin{itemize}
-            \item $\hat \theta_c$ and $\hat \theta_{x,y}$ on all CTF faces. 
+            \item $\hat \theta_c$ and $\hat \theta_{T,k}$ on all CTF faces. 
         \end{itemize}  
         
         \item What form do the marginal and copula distributions take?
@@ -562,7 +562,7 @@ h(x, y, z) = c(u, v |\theta_c)f(x|\theta_x)f(y|\theta_y) f_{q''}
         \end{itemize}        
         \item By what method are the distribution parameters predicted?
         \begin{itemize}
-            \item Gradient boosted quantile regression trees for $\hat \theta_{x,y}$.
+            \item Gradient boosted quantile regression trees for $\hat \theta_{T,k}$.
             \item Gradient boosted regression trees for $\hat \theta_{c}$.
         \end{itemize}
     \end{itemize}
@@ -578,10 +578,10 @@ h(x, y, z) = c(u, v |\theta_c)f(x|\theta_x)f(y|\theta_y) f_{q''}
         \begin{column}{0.5\textwidth}
             \scriptsize{
                 \begin{itemize}
-                    \item Given a set of sample quantiles, $\hat{\mathbf{\theta}_x} = \{\hat q_{\tau_0}, \hat q_{\tau_i}, ... \hat{q}_{\tau_{N_Q}} \}$
+                    \item Given a set of sample quantiles, $\hat{\mathbf{\theta}_T} = \{\hat q_{\tau_0}, \hat q_{\tau_i}, ... \hat{q}_{\tau_{N_Q}} \}$
                     \item The quantile function can be inverted to give the CDF:
                     \[
-                    \hat F(x) = \hat{Q}^{-1}(X; \mathbf{\hat \theta}_x)
+                    \hat F_T = \hat{Q}^{-1}(T; \mathbf{\hat \theta}_T)
                     \]
                     \item Piecewise linear CDF shown in figure results in histogram-like PDF.  The function is supported at the known nodes: $\{ \hat q_{\tau_0}, \hat q_{\tau_i}, ... \hat q_{\tau_{N_Q}} \}$
                     \item Where $N_{Q}$ is the number of quantiles we desire to retain in the reconstruction and is a user set runtime parameter.
@@ -613,16 +613,16 @@ h(x, y, z) = c(u, v |\theta_c)f(x|\theta_x)f(y|\theta_y) f_{q''}
     \]
     \item  The boosted model is treated as a meta-model containing many independent predictors for each conditional quantile of interest.
     \[
-    \ \ \hat \theta_j = \{\hat \theta_{j,c}, \hat \theta_{j,x}, \hat \theta_{j,y} \}
+    \ \ \hat \theta_j = \{\hat \theta_{j,c}, \hat \theta_{j,T}, \hat \theta_{j,k} \}
     \]
-    \item Note: Covarience between quantiles is ignored in the current implementation of the boosted quantile regression models.
+    \item Covarience between quantiles is ignored in the current implementation of the boosted quantile regression models.
 \end{itemize}
 \end{frame}
 
 % =========================================================================== %
 \subsection*{Gradient Boosting Quantile Regression Example}
 \begin{frame}
-\vspace{-16pt}
+\vspace{-8pt}
 \scriptsize{
 \begin{itemize}
     \item Test function with $x\in [0,10]$ was used for testing.
@@ -634,7 +634,7 @@ h(x, y, z) = c(u, v |\theta_c)f(x|\theta_x)f(y|\theta_y) f_{q''}
     \item 5000 total samples were drawn from the test function.  The test data was spatially aggregated to 100 axial levels to mimic CTF axial grid spacing.
 \end{itemize}   
 }
-\vspace{-28pt}
+\vspace{-32pt}
 \begin{columns}
     \begin{column}{0.5\textwidth}
         \begin{figure}
@@ -655,7 +655,7 @@ h(x, y, z) = c(u, v |\theta_c)f(x|\theta_x)f(y|\theta_y) f_{q''}
 
 % =========================================================================== %
 \begin{frame}
-\vspace{-16pt}
+\vspace{-8pt}
 \begin{itemize}
     \item Check to ensure quantile residuals (computed vs. expected) follow the expected theoretical behavior.
     \item Tested two different gradient boosting libraries.  ({\color{utblue} Custom implementation  (blue)}. {\color{utred} sk-learn (red)})
@@ -701,7 +701,7 @@ h(T, k, q'') = & f_T(T;\hat \theta_T) f_k(k;\hat \theta_k) f_{q''} \cdot \nonumb
 \end{align} 
 
 \item Let:
-\[ X=\{T, k, q''\} \]
+\[ \mathbf X=\{T, k, q''\} \]
 
 \item An estimate for the amount of crud on a given patch:
 \begin{equation}
@@ -737,7 +737,7 @@ h(T, k, q'') = & f_T(T;\hat \theta_T) f_k(k;\hat \theta_k) f_{q''} \cdot \nonumb
 \item The sample importance is given by the ratio between the target and sampling distributions:
     
     \begin{equation}
-    \omega_i = \frac{h_i}{\tilde h_i} = \frac{f_1(x_i) f_2(x_i)c(F_1(x_i), F_2(x_i))}{\tilde f_1(x_i) \tilde f_2(x_i) \tilde c(\tilde F_1(x_i), \tilde F_2(x_i))} \nonumber
+    \omega_i = \frac{h_i}{\tilde h_i} = \frac{f_T(t_i) f_k(k_i)c(F_T(t_i), F_k(k_i))}{\tilde f_T(t_i) \tilde f_k(k_i) \tilde c(\tilde F_T(t_i), \tilde F_k(k_i))} \nonumber
     \label{eq:imp_prob_ratio}
     \end{equation}
 
@@ -1089,7 +1089,27 @@ Both patches share the \emph{same} PDF of TKE, however, the spatial distribution
 % =========================================================================== %
 \subsection*{Hi2lo method for time dependent crud prediction}
 \begin{frame}
-\vspace{-16pt}
+\frametitle{Hi2lo Method Recap}
+\vspace{-28pt}
+\begin{columns}
+     \vspace{22pt}
+    \begin{column}{0.5\textwidth}
+        
+        Upfront:
+        \begin{enumerate}
+            \item Preprocess CFD data
+            \item Train ML models
+         \end{enumerate}
+     \vspace{18pt}
+        At Runtime:
+         \begin{enumerate}
+            \item Evaluate ML models
+            \item Reconstruct Joint Densities
+            \item Sample Distributions
+            \item Compute Crud via pyMAMBA
+        \end{enumerate}
+    \end{column}
+ \begin{column}{0.5\textwidth}
 \begin{algorithm}[H]
     % \captionsetup{labelfont={sc,bf}, labelsep=newline}
     \algsetup{linenosize=\tiny}
@@ -1097,39 +1117,39 @@ Both patches share the \emph{same} PDF of TKE, however, the spatial distribution
     \begin{algorithmic}[1]      
         \STATE \textbf{Initialization}  
         \STATE (1) Pre-process training set.  
-        \STATE $\ \ $   (1b) Fit the joint distribution parameters to known CFD data: $\theta(\mathbf p, \mathbf z)$.  
+        \STATE $\ \ $   (1b) Fit distribution parameters to CFD data: $\theta(\mathbf p, \mathbf z)$.  
         \STATE $\ \ $   (1c) \textbf{def:}  $\ \theta \leftarrow \mathcal F_M(\mathbf p, \mathbf z | \gamma)$
-        \STATE (2) Train model:  $\hat{\mathcal F_M} =  \mathrm{argmin}_{\mathcal F}$
+        \STATE (2) Train model:  \\ $\hat{\mathcal F_M} =  \mathrm{argmin}_{\mathcal F}$ \\
         $L(\mathcal{F}_M (\mathbf p, \mathbf z| \gamma), \theta(\mathbf p, \mathbf z)) $
         \FOR {VERA State, $v$}
         \FOR {CTF face, $j$}
-        \STATE Evaluate ML model $\hat \theta_j \leftarrow \hat{\mathcal F_M}(\mathbf p_j, \mathbf z_j)$ \\
-        $\ \ \hat \theta_j = \{\hat \theta_{j,c}, \hat \theta_{j,\tau} \}$
-        \STATE Reconstruct margins (CDFs) from quantiles  \\
-        $\ \ \hat F_{j,T}= Q^{-1}(T; \{\hat{\theta}_{j,\tau} \})$ , $\hat F_{j,k}= Q^{-1}(k; \{\hat{\theta}_{j,\tau} \})$
+        \STATE Evaluate ML model $\hat \theta_j \leftarrow \hat{\mathcal F_M}(\mathbf p_j, \mathbf z_j)$ 
+        \STATE Reconstruct margins (CDFs) from quantiles:  \\
+        $\ \ \hat F_{j,T}$ , $\hat F_{j,k}$
         \STATE Def $q''$ margin  $f_{j,q''} = \delta_{(q''_\mathrm{j,ctf})}$
-        \STATE Reconstruct joint distribution $\hat h_j(\cdot |\hat \theta_j) = \hat f_{j,T} \hat f_{j,k} f_{j,q''} c(\hat F_{j,T}, \hat F_{j,k}; \hat \theta_{j,c})$ \;
+        \STATE Reconstruct joint distribution: $\hat h_j(\cdot |\hat \theta_j)$
         \ENDFOR
         \FOR {Resample time step, $s,\ \Delta t_s$}
         \FOR {CTF face, $j$}
-        \STATE Def importance sampling distribution $\tilde h_j = \tilde f_{j,T} \tilde f_{j,k} c(\tilde F_{j,T}, \tilde F_{j,k}; \hat \theta_{j,c}) $
+        \STATE Def importance sampling distribution: $\tilde h_j$
         \STATE Draw samples $\mathbf x \sim \tilde h_j$ \;
         \STATE Compute importance weights $\omega = \hat h_j(\mathbf x) /  \tilde h_j(\mathbf x) $
         \STATE Re-map samples  $\mathbf x', \omega' \xleftarrow[\text{ }]{\text{R}} \mathbf x, \omega $
-        \STATE Update importance weights by:  $\bar{\omega}_{s,i} = \left( \frac{(s-1)}{s} \right) \bar \omega'_{s-1,i} + \left( \frac{1}{s} \right) \omega'_{s,i}$
+        \STATE Time average importance weights
         \STATE Grow crud:
         $\ \ \mathbf C_s = \mathcal G(x'_i; \mathbf C_{s-1}, \mathbf I, \Delta t_s)$ \\
-        \STATE Crud mass at step $s$ in patch $j$:
-        $\ \ C_{s,j,m} = \left( \frac{A_j}{\sum_i^M \bar \omega'_i} \right) \sum_i^N C_{s,i,j,m} \bar \omega'_{s,i}$
+        \STATE Integrate Crud mass at step $s$ in patch $j$.
         \ENDFOR
         \ENDFOR
         \ENDFOR
     \end{algorithmic}
     \label{algo:hi2lo_crud_algo}
 \end{algorithm}
+    \end{column}
+\end{columns}
 \end{frame}
 
-\section[Preprocessing]{Data Preparation}
+\section[ML Results]{Hi2lo Results Provided CFD Data Source}
 % =========================================================================== %
 \subsection*{Training Data}
 \begin{frame}
@@ -1229,7 +1249,6 @@ Both patches share the \emph{same} PDF of TKE, however, the spatial distribution
 \end{columns}
 \end{frame}
 
-\section[Results]{Hi2lo Results Provided CFD Data Source}
 \subsection*{Cross Validation}
 % =========================================================================== %
 \begin{frame}
@@ -1652,6 +1671,52 @@ of the surface temperature or TKE fields.  This approach seeks to predict the jo
 %\begin{frame}
 %\frametitle{Appendix}
 %\end{frame}
+
+% =========================================================================== %
+\setbeamercolor{normal text}{fg=black}
+\setbeamercolor{footnote text}{fg=black}
+\setbeamercolor{background canvas}{bg=white}
+\begin{frame}
+\frametitle{\small Hi2lo method for time dependent crud prediction}
+\vspace{-22pt}
+\begin{algorithm}[H]
+    % \captionsetup{labelfont={sc,bf}, labelsep=newline}
+    \algsetup{linenosize=\tiny}
+    \tiny      
+    \begin{algorithmic}[1]      
+        \STATE \textbf{Initialization}  
+        \STATE (1) Pre-process training set.  
+        \STATE $\ \ $   (1b) Fit the joint distribution parameters to known CFD data: $\theta(\mathbf p, \mathbf z)$.  
+        \STATE $\ \ $   (1c) \textbf{def:}  $\ \theta \leftarrow \mathcal F_M(\mathbf p, \mathbf z | \gamma)$
+        \STATE (2) Train model:  $\hat{\mathcal F_M} =  \mathrm{argmin}_{\mathcal F}$
+        $L(\mathcal{F}_M (\mathbf p, \mathbf z| \gamma), \theta(\mathbf p, \mathbf z)) $
+        \FOR {VERA State, $v$}
+        \FOR {CTF face, $j$}
+        \STATE Evaluate ML model $\hat \theta_j \leftarrow \hat{\mathcal F_M}(\mathbf p_j, \mathbf z_j)$ \\
+        $\ \ \hat \theta_j = \{\hat \theta_{j,c}, \hat \theta_{j,\tau} \}$
+        \STATE Reconstruct margins (CDFs) from quantiles  \\
+        $\ \ \hat F_{j,T}= Q^{-1}(T; \{\hat{\theta}_{j,\tau} \})$ , $\hat F_{j,k}= Q^{-1}(k; \{\hat{\theta}_{j,\tau} \})$
+        \STATE Def $q''$ margin  $f_{j,q''} = \delta_{(q''_\mathrm{j,ctf})}$
+        \STATE Reconstruct joint distribution $\hat h_j(\cdot |\hat \theta_j) = \hat f_{j,T} \hat f_{j,k} f_{j,q''} c(\hat F_{j,T}, \hat F_{j,k}; \hat \theta_{j,c})$ \;
+        \ENDFOR
+        \FOR {Resample time step, $s,\ \Delta t_s$}
+        \FOR {CTF face, $j$}
+        \STATE Def importance sampling distribution $\tilde h_j = \tilde f_{j,T} \tilde f_{j,k} c(\tilde F_{j,T}, \tilde F_{j,k}; \hat \theta_{j,c}) $
+        \STATE Draw samples $\mathbf x \sim \tilde h_j$ \;
+        \STATE Compute importance weights $\omega = \hat h_j(\mathbf x) /  \tilde h_j(\mathbf x) $
+        \STATE Re-map samples  $\mathbf x', \omega' \xleftarrow[\text{ }]{\text{R}} \mathbf x, \omega $
+        \STATE Update importance weights by:  $\bar{\omega}_{s,i} = \left( \frac{(s-1)}{s} \right) \bar \omega'_{s-1,i} + \left( \frac{1}{s} \right) \omega'_{s,i}$
+        \STATE Grow crud:
+        $\ \ \mathbf C_s = \mathcal G(x'_i; \mathbf C_{s-1}, \mathbf I, \Delta t_s)$ \\
+        \STATE Crud mass at step $s$ in patch $j$:
+        $\ \ C_{s,j,m} = \left( \frac{A_j}{\sum_i^M \bar \omega'_i} \right) \sum_i^N C_{s,i,j,m} \bar \omega'_{s,i}$
+        \ENDFOR
+        \ENDFOR
+        \ENDFOR
+    \end{algorithmic}
+    \label{algo:hi2lo_crud_algo}
+\end{algorithm}
+\end{frame}
 
 % =========================================================================== %
 \setbeamercolor{background canvas}{bg=white}

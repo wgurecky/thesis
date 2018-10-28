@@ -69,16 +69,13 @@ Legend:
             \item ($\cdot$) {Propagate uncertainty to ensemble CRUD calculations}
         \end{enumerate}
         %----------------- POST PROPOSAL ------------------%
-        \item (\checkmark-) Multi-state point execution
+        \item (\checkmark) Multi-state point execution
         \begin{enumerate}
             \item (\checkmark) Implement time stepping scheme.  Support ability to change the power profile/flow conditions at each time step.
             \item (\checkmark) Implement ability to propagate uncertainty through time steps.
-            \begin{itemize}
-                \item (\checkmark) Account for sampling-induced uncertainty and demonstrate how these errors compound over time.
-                \item (\checkmark) {\color{blue} Account for hot spot stationarity in time.}
-
-            \end{itemize}
-        \item ($\cdot$) {\color{blue} Detail how this hi2lo strategy fits into a multi-physics framework with TH/Neutronic/CRUD feedbacks.}
+            \item (\checkmark) {\color{blue} Account for hot spot stationarity in time.}
+            \item (\checkmark) Account for sampling-induced uncertainty and demonstrate how these errors compound over time.
+            \item (\checkmark) {\color{blue} Detail how this hi2lo strategy fits into a multi-physics framework with TH/Neutronic/CRUD feedbacks.}
         %
         \end{enumerate}
         % -------------------------------------------------%
