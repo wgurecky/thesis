@@ -660,23 +660,29 @@ h(x, y, z) = c(u, v |\theta_c)f(x|\theta_x)f(y|\theta_y) f_{q''}
     \item Check to ensure quantile residuals (computed vs. expected) follow the expected theoretical behavior.
     \item Tested two different gradient boosting libraries.  ({\color{utblue} Custom implementation  (blue)}. {\color{utred} sk-learn (red)})
 \end{itemize}
-\vspace{-28pt}
-\begin{columns}
-    \begin{column}{0.5\textwidth}
-        \begin{figure}
-            \centering
-            \includegraphics[width=1.1\linewidth]{dissertation/figs/grad_boost/1d_boosted_regression_quantile_resid_0_5}
-            \caption{\centering \scriptsize Median residual distributions vs. theory.}
-        \end{figure}
-    \end{column}
-    \begin{column}{0.5\textwidth}  %%<--- here
-        \begin{figure}
-            \centering
-            \includegraphics[width=1.1\linewidth]{dissertation/figs/grad_boost/1d_boosted_regression_quantile_resid_0_95}\\
-            \caption{\centering \scriptsize $\tau=0.95$ residual distributions vs. theory.}
-        \end{figure}
-    \end{column}
-\end{columns}
+\vspace{-8pt}
+%\begin{columns}
+%    \begin{column}{0.5\textwidth}
+%        \begin{figure}
+%            \centering
+%            \includegraphics[width=1.1\linewidth]{dissertation/figs/grad_boost/1d_boosted_regression_quantile_resid_0_5}
+%            \caption{\centering \scriptsize Median residual distributions vs. theory.}
+%        \end{figure}
+%    \end{column}
+%    \begin{column}{0.5\textwidth}  %%<--- here
+%        \begin{figure}
+%            \centering
+%            \includegraphics[width=1.1\linewidth]{dissertation/figs/grad_boost/1d_boosted_regression_quantile_resid_0_95}\\
+%            \caption{\centering \scriptsize $\tau=0.95$ residual distributions vs. theory.}
+%        \end{figure}
+%    \end{column}
+%\end{columns}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.67\linewidth]{dissertation/figs/grad_boost/1d_boosted_regression_quantile_resid_0_95}\\
+    \caption{\centering \scriptsize $\tau=0.95$ residual distributions vs. theory.}
+\end{figure}
 \end{frame}
 
 % =========================================================================== %
