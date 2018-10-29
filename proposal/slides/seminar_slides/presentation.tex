@@ -1432,10 +1432,10 @@ Both patches share the \emph{same} PDF of TKE, however, the spatial distribution
 \begin{frame}
 \frametitle{Leave-One-Out Cross Validation}
 \vspace{-8pt}
-\textbf{Goal:} Obtain an estimate for model's predictive performance on previously unseen thermal hydraulic conditions.
+\textbf{Goal: Obtain an estimate for model's predictive performance}
 \begin{columns}
     \begin{column}{0.5\textwidth}
-        \scriptsize{
+        \small{
 \begin{itemize}
     \item Remove one pin from the 5x5 training data set.
     \item Re-train the gradient boosted models on the remaining 24 pins.
@@ -1450,7 +1450,7 @@ Both patches share the \emph{same} PDF of TKE, however, the spatial distribution
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.5\linewidth]{/dissertation/figs/drawings/5x5_loo}
-    \caption{ \scriptsize Example pin layout for leave-one-out cross validation procedure.  The gradient boosted models are trained on CFD and CTF data extracted from the blue pins.  Crud predictions are made on the missing pin.}
+    \caption{ \small Example pin layout for \\ leave-one-out cross validation.}
     \label{fig:5x5loo}
 \end{figure}
 
@@ -1853,7 +1853,7 @@ Both patches share the \emph{same} PDF of TKE, however, the spatial distribution
         % \caption[Hi2lo crud boron mass results]{Crud boron mass hi2lo LOO result summary at 300 days.}
         \begin{tabular}[h]{|c|c|c|M|c|c|M|}
             \hline
-            Pin & CTF Bmass $[g]$ & CFD Bmass $[g]$ & \textbf{CTF-CFD Rel $\Delta$ \%} & Hi2lo Bmass $[g]$ & Hi2lo-CFD $[g]$ & \textbf{Hi2lo-CFD $\Delta$ \%} \\
+            Pin & CTF Bmass $[g]$ & CFD Bmass $[g]$ & \textbf{CTF-CFD $\Delta$ \%} & Hi2lo Bmass $[g]$ & Hi2lo-CFD $[g]$ & \textbf{Hi2lo-CFD $\Delta$ \%} \\
             \hline
  1  &  1.2940e-03 & 7.5489e-04  & $\bf{71.4  }$  & 6.3163e-04 & -1.2326e-04 &  $\bf{-16.3}$ \\
  2  &  1.1458e-03 & 5.1953e-04  & $\bf{120.5 }$  & 3.1487e-04 & -2.0466e-04 & $\bf{ -39.4}$ \\
@@ -1881,7 +1881,7 @@ Both patches share the \emph{same} PDF of TKE, however, the spatial distribution
  24  & 7.1144e-04 & 1.8479e-04  & $\bf{285.0 }$  & 2.1561e-04 & 3.0820e-05 & $\bf{ 16.7 }$ \\
  25  & 4.1668e-04 & 1.3290e-04  & $\bf{213.5 }$  & 8.6106e-05 & -4.6794e-05 & $\bf{ -35.2}$ \\
             \hline \hline
-Totals & 1.5443e-02 & 5.2453e-03 & $\bf{194.4}$ & 4.7791e-03 & -4.6623e-04   & $\bf{-8.8}$ \\
+Totals & 1.5443e-02 & 5.2453e-03 & {\scriptsize \color{utred}$\bf{194.4}$} & 4.7791e-03 & -4.6623e-04   & {\scriptsize \color{utred}$\bf{-8.8}$} \\
             \hline
         \end{tabular}
         \label{tab:loo_crud_bmass}
