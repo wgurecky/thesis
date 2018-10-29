@@ -334,7 +334,7 @@ Each sub-model, $h_m$, is referred to as a weak learner and is defined to be a t
     \begin{algorithmic}[1]
     \STATE \textbf{Initialization} 
     \STATE (1) Training set $\{(p_i, y_i)\}_{i=1}^n$. 
-    \STATE (2) Differentiable loss function $L(y, F(p))$. 
+    \STATE (2) Differentiable loss function $L(y, \mathcal F(p))$. 
     \STATE (3) Number of iterations ${{M}}$.
     \STATE (4)   Initialize model with a constant value:
         $\mathcal F_0(p) = \underset{\gamma}{\arg\min} \sum_{i=1}^n L(y_i, \gamma).$
