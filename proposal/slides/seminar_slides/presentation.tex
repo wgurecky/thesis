@@ -512,6 +512,7 @@ Where $\theta_c$ and $\theta_{T,k}$ are free copula and marginal model parameter
 \cite{Nelsen2006}
 \end{frame}
 
+\subsection*{Setup}
 \begin{frame}
 % =========================================================================== %
 \frametitle<1>{Simplifications}
@@ -536,8 +537,11 @@ h(T, k, q'') = c(u, v |\theta_c)f(T|\theta_T)f(k|\theta_k) f_{q''}
 }
 % --------------------------------------------------------------------------- %
 \only<2>{
+\[
+h(T, k, q'') = c(u, v |\theta_c)f(T|\theta_T)f(k|\theta_k) f_{q''}
+\]
     \begin{itemize}
-        \item It is necessary to predict (denoted by $\hat{(\cdot)}$ notation):
+        \item Predict (denoted by $\hat{(\cdot)}$ notation):
         \begin{itemize}
             \item $\hat \theta_c$ and $\hat \theta_{T,k}$ on all CTF faces. 
         \end{itemize}  
@@ -614,8 +618,8 @@ h(T, k, q'') = c(u, v |\theta_c)f(T|\theta_T)f(k|\theta_k) f_{q''}
 \frametitle{Gradient Boosting}
 \vspace{-8pt}
 \begin{itemize}
-    \item A supervised machine learning method for classification and regression.
-    \item Gradient descent in function space.
+    \item Supervised machine learning method for classification and regression
+    \item Gradient descent in function space
     \item Find $\mathcal F_M$ that maps the inputs $\mathbf p$ to training data, $y$, where $\mathcal F_M$ is given by:
     \[
     \mathcal F_M = \text{argmin}_{\mathcal F} \E_{y, \mathbf p} [ L(y, \mathcal F(\mathbf p)) ]
@@ -663,14 +667,13 @@ h(T, k, q'') = c(u, v |\theta_c)f(T|\theta_T)f(k|\theta_k) f_{q''}
 \subsection*{Gradient Boosting Quantile Regression Example}
 \begin{frame}
 \vspace{-8pt}
+    \[
+    y = x\ \mathrm{sin}(x) +12 \mathcal H(x-5)+\varepsilon; \ \ x\in [0,10]
+    \]
 \scriptsize{
 \begin{itemize}
-    \item Test function with $x\in [0,10]$ was used for testing.
-    \[
-    y = x\ \mathrm{sin}(x) +12 \mathcal H(x-5)+\varepsilon
-    \]
-    \item $\mathcal H$ denotes the Heaviside function. 
-    \item Synthetic noise, $\varepsilon \sim \mathcal N(0,2)$, was applied to the piecewise smooth test function.   
+    % \item $\mathcal H$ denotes the Heaviside function. 
+    \item Synthetic noise, $\varepsilon \sim \mathcal N(0,2)$ 
     \item 5000 total samples were drawn from the test function.  The test data was spatially aggregated to 100 axial levels to mimic CTF axial grid spacing.
 \end{itemize}   
 }
@@ -2188,7 +2191,7 @@ Source: Peter Prettenhofer, PyData (2014).
 \item Applies tailored noise on top of CTF result.
 \begin{itemize}
 	\item Complete control over margins and copula. 
-	\item Simplest case is gaussian noise: $F(z) = \mu_{CTF}(z) + \epsilon(z), \ \epsilon \sim G(\mu(z), \Sigma(z))$
+	\item Simplest case is gaussian noise: $F(z) = \mu_{CTF}(z) + \epsilon(z), \ \epsilon \sim \mathcal N(\mu(z), \Sigma(z))$
 \end{itemize}
 \item Aids in verification of regression model results. 
 \end{itemize}
@@ -2217,6 +2220,46 @@ Source: Peter Prettenhofer, PyData (2014).
 \includegraphics[width=12cm]{figs/montage_copula_pdf.png}
 \label{model_overview}
 \end{figure}
+\end{frame}
+
+% =========================================================================== %
+\setbeamercolor{background canvas}{bg=white}
+\begin{frame}
+\frametitle{Fitting Copula}
+The likelihood function for a copula is given by equation \ref{eq:lik}.  For any given sample pair, $w_i, v_i$, each factor in the likelihood function describes how probable it was for that sample originated from the underlying copula distribution with parameter $\theta_c$.
+\index{Copula!Fitting}
+
+\begin{equation}
+\mathcal{L}= \prod_{i=1}^N c(w_i, v_i|\theta_c)
+\label{eq:lik}
+\end{equation}
+
+\begin{equation}
+\hat \theta_{c,ML} = \mathrm{argmin}_{\theta_c}[-\mathrm{ln}\mathcal{L}(\theta_{c} ; \mathbf w, \mathbf v)]
+\label{eq:nlog_lik}
+\end{equation}
+
+\end{frame}
+
+% =========================================================================== %
+\setbeamercolor{background canvas}{bg=white}
+\begin{frame}
+\frametitle{Sampling Copula}
+Let $h$ represent the conditional distribution of $u_1$ given all other random variables $\{u_2, ... u_d\}$.  In the two dimensional case $h$ is given by equation \ref{eq:cop_h} \cite{Nelsen2006}:
+\index{Copula!Sampling}
+
+\begin{equation}
+h(u_1 | u_2) = \frac{\partial C(u_1, u_2)}{\partial u_2}
+\label{eq:cop_h}
+\end{equation}
+For some classes of copula, computing the inverse analytically is oftentimes not possible.
+
+A random vector of length $N$ is drawn from the uniform distribution $\in [0, 1]$:  $\{\mathbf U_2\}$.  For each sample, $u_{2_i}$ in $\{\mathbf U_2\}$ the 1D line search problem given in equation \ref{eq:h_inv_sample} is solved.  This produces a sample vector of length $N$: $\{\mathbf U_1\}$.
+
+\begin{equation}
+u_{1_i} = \mathrm{argmin}_{u_1} \left[ h(u_1|u_{2_i}) - u_{2_i} \right],\ \mathrm{with}\ 0 < u_1 < 1
+\label{eq:h_inv_sample}
+\end{equation}
 \end{frame}
 
 %\section{}
