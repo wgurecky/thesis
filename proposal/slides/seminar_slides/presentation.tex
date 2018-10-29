@@ -739,6 +739,19 @@ h(T, k, q'') = c(u, v |\theta_c)f(T|\theta_T)f(k|\theta_k) f_{q''}
 % =========================================================================== %
 \begin{frame}
 \frametitle{Synthetic CFD Data}
+\begin{itemize}
+    \item Baseline CTF result by a user-specified bias and stochastic component
+    \item Source of easy to compute CFD-like data
+    \item Functional form of residuals about CTF is specified
+    \item Enables verification of the hi2lo procedures against expected result
+    \item Does not account for spatial-autocorrelation
+\end{itemize}
+\end{frame}
+
+\subsection*{Sythetic Data Generation}
+% =========================================================================== %
+\begin{frame}
+\frametitle{Synthetic CFD Data}
 \vspace{-18pt}
 \begin{itemize}
     \item Augment baseline CTF result by a user-specified bias, $\mathbf b$ and stochastic component, $\varepsilon(\mathbf z; \theta)$:
@@ -769,12 +782,61 @@ h(T, k, q'') = c(u, v |\theta_c)f(T|\theta_T)f(k|\theta_k) f_{q''}
     \begin{column}{0.5\textwidth}
         \begin{figure}[H]%
             \centering
-             \includegraphics[width=0.85\linewidth]{/dissertation/figs/synth/pinH5TempOut}
+            \includegraphics[width=0.85\linewidth]{/dissertation/figs/synth/ctf_asm0_z_twall}       
             \caption{\centering Original CTF single pin \\ temperature result.}%
         \end{figure}
     \end{column}
     \begin{column}{0.5\textwidth}
          \begin{figure}[H]%
+            \centering
+             \includegraphics[width=0.85\linewidth]{/dissertation/figs/synth/pinH5TempOut}
+            
+            \caption{\centering Augmented CTF temperature \\ result.}%
+            \label{fig:ctf_twall_aug}%
+        \end{figure}
+    \end{column}
+\end{columns}
+\end{frame}
+
+% =========================================================================== %
+\begin{frame}
+\frametitle{Synthetic CFD Data}
+\vspace{-18pt}
+\begin{itemize}
+    \item Augment baseline CTF result by a user-specified bias, $\mathbf b$ and stochastic component, $\varepsilon(\mathbf z; \theta)$:
+    \begin{align}
+    \mathbf X &= \mathbf \mu_{ctf} + \mathbf b + \mathbf \varepsilon \nonumber \\
+    &=
+    \begin{pmatrix}
+    T \\
+    k \\
+    q''
+    \end{pmatrix}
+    =
+    \begin{pmatrix}
+    \mu_{T} \\
+    \mu_k \\
+    \mu_{q''}
+    \end{pmatrix}_{ctf}
+    + \begin{pmatrix}
+    b_{T} \\
+    b_k \\
+    b_{q''}
+    \end{pmatrix}
+    + \mathbf{\varepsilon} (\mathbf z; \mathbf \theta) \nonumber
+    \end{align}
+\end{itemize}
+\vspace{-20pt}
+\begin{columns}
+    \begin{column}{0.5\textwidth}
+        \begin{figure}[H]%
+            \centering
+            \includegraphics[width=0.85\linewidth]{/dissertation/figs/synth/ctf_pin_h5_temperature}
+            \caption{\centering Original CTF single pin \\ temperature result.}%
+        \end{figure}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+        \begin{figure}[H]%
             \centering
             \includegraphics[width=0.85\linewidth]{/dissertation/figs/synth/cfd_pin_temperature}
             \caption{\centering Augmented CTF temperature \\ result.}%
