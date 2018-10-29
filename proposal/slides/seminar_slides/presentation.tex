@@ -668,13 +668,17 @@ h(T, k, q'') = c(u, v |\theta_c)f(T|\theta_T)f(k|\theta_k) f_{q''}
 \begin{frame}
 \vspace{-8pt}
     \[
-    y = x\ \mathrm{sin}(x) +12 \mathcal H(x-5)+\varepsilon; \ \ x\in [0,10]
+    y = x\ \mathrm{sin}(x) +12 \mathcal H(x-5)+\varepsilon; \ \ x\in [0,10]; \ \ \varepsilon \sim \mathcal N(0,2)
     \]
 \scriptsize{
 \begin{itemize}
     % \item $\mathcal H$ denotes the Heaviside function. 
-    \item Synthetic noise, $\varepsilon \sim \mathcal N(0,2)$ 
+    % \item Synthetic noise, $\varepsilon \sim \mathcal N(0,2)$ 
     \item 5000 total samples were drawn from the test function.  The test data was spatially aggregated to 100 axial levels to mimic CTF axial grid spacing.
+    \item Quantile Loss minimized by gradient boosted model:
+    \[
+    L(y, F(p);\tau) = \left[ (1-\tau) \sum_{y \leq F(p)}( y_i - F(p) ) \right] - \left[ \tau \sum_{y > F(p)} (y_i - F(p)) \right]
+    \]
 \end{itemize}   
 }
 \vspace{-32pt}
@@ -732,7 +736,28 @@ h(T, k, q'') = c(u, v |\theta_c)f(T|\theta_T)f(k|\theta_k) f_{q''}
 % =========================================================================== %
 \begin{frame}
 \begin{itemize}
-    \item Augment baseline CTF result by a user-specified stochastic component:
+    \item Augment baseline CTF result by a user-specified bias, $\mathbf b$ and stochastic component, $\varepsilon(\mathbf z; \theta)$:
+    \begin{align}
+    \mathbf X &= \mathbf \mu_{ctf} + \mathbf b + \mathbf \varepsilon \nonumber \\
+    &=
+    \begin{pmatrix}
+    T \\
+    k \\
+    q''
+    \end{pmatrix}
+    =
+    \begin{pmatrix}
+    \mu_{T} \\
+    \mu_k \\
+    \mu_{q''}
+    \end{pmatrix}_{ctf}
+    + \begin{pmatrix}
+    b_{T} \\
+    b_k \\
+    b_{q''}
+    \end{pmatrix}
+    + \mathbf{\varepsilon} (\mathbf z; \mathbf \theta) \nonumber
+    \end{align}
 \end{itemize}
 \end{frame}
 
@@ -1247,7 +1272,7 @@ Both patches share the \emph{same} PDF of TKE, however, the spatial distribution
     \item Compute features shown in the table below in each CTF face.
     \item Subtract CFD result from CTF result (compute residuals).
     \item Compute copula properties on each CTF face which best matches the CFD temperature vs TKE dependence structure.
-    \item Pair each feature set with the CFD-CTF residuals \& store feature/data pairs in an HDF5 file.
+    \item Pair each feature set with the CFD-CTF residuals \& store feature/data pairs in a training database.
     \item Repeat for all available CFD/CTF matching pins.
 \end{itemize}
 \vspace{-20pt}
@@ -2238,6 +2263,13 @@ The likelihood function for a copula is given by equation \ref{eq:lik}.  For any
 \hat \theta_{c,ML} = \mathrm{argmin}_{\theta_c}[-\mathrm{ln}\mathcal{L}(\theta_{c} ; \mathbf w, \mathbf v)]
 \label{eq:nlog_lik}
 \end{equation}
+
+
+\begin{equation}
+\mathrm{AIC} = 2k - 2\mathrm{ln}(\mathcal{L})
+\label{eq:cop_aic}
+\end{equation}
+Where $k$ is the number of free parameters in the model. 
 
 \end{frame}
 
