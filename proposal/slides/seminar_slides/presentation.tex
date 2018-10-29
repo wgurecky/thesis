@@ -735,8 +735,11 @@ h(T, k, q'') = c(u, v |\theta_c)f(T|\theta_T)f(k|\theta_k) f_{q''}
 \end{frame}
 
 \section[Synthetic Data]{Synthetic CFD Data Source for Model Validation}
+\subsection*{Sythetic Data Generation}
 % =========================================================================== %
 \begin{frame}
+\frametitle{Synthetic CFD Data}
+\vspace{-18pt}
 \begin{itemize}
     \item Augment baseline CTF result by a user-specified bias, $\mathbf b$ and stochastic component, $\varepsilon(\mathbf z; \theta)$:
     \begin{align}
@@ -761,6 +764,36 @@ h(T, k, q'') = c(u, v |\theta_c)f(T|\theta_T)f(k|\theta_k) f_{q''}
     + \mathbf{\varepsilon} (\mathbf z; \mathbf \theta) \nonumber
     \end{align}
 \end{itemize}
+\vspace{-20pt}
+\begin{columns}
+    \begin{column}{0.5\textwidth}
+        \begin{figure}[H]%
+            \centering
+             \includegraphics[width=0.85\linewidth]{/dissertation/figs/synth/pinH5TempOut}
+            \caption{\centering Original CTF single pin \\ temperature result.}%
+        \end{figure}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+         \begin{figure}[H]%
+            \centering
+            \includegraphics[width=0.85\linewidth]{/dissertation/figs/synth/cfd_pin_temperature}
+            \caption{\centering Augmented CTF temperature \\ result.}%
+            \label{fig:ctf_twall_aug}%
+        \end{figure}
+    \end{column}
+\end{columns}
+\end{frame}
+
+% =========================================================================== %
+\begin{frame}
+\frametitle{Synthetic CFD Data CTF Face Sampling}
+\vspace{-18pt}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\linewidth]{/dissertation/figs/synth/patch_scatter_0_4_0_6_v2}
+    \caption{\centering Single patch synthetic data vs hi2lo sampled data from patch centered on the rod at (3.14 $[rad]$, 2.85 $[m]$) at 300$[days]$.}
+    \label{fig:patchscatter}
+\end{figure}
 \end{frame}
 
 \section[Applied Methods]{Applied Methods: Monte Carlo Crud Integration \& Propagating Crud Through Time}
@@ -2295,6 +2328,46 @@ u_{1_i} = \mathrm{argmin}_{u_1} \left[ h(u_1|u_{2_i}) - u_{2_i} \right],\ \mathr
 \label{eq:h_inv_sample}
 \end{equation}
 \end{frame}
+
+% =========================================================================== %
+\setbeamercolor{background canvas}{bg=white}
+\begin{frame}
+\frametitle{Crud Sensitivity to Copula Parameters}
+\vspace{-18pt}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{/dissertation/figs/synth/patch_crud_fit_80}
+    \caption{\centering Single CTF face crud sensitivity to copula parameters.}
+    \label{fig:patchcrudfit80}
+\end{figure}
+\end{frame}
+
+% =========================================================================== %
+\setbeamercolor{background canvas}{bg=white}
+\begin{frame}
+\frametitle{Sample Size Study}
+\vspace{-18pt}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{/dissertation/figs/synth/nsample_study/cmpr_pin_totals_violin_nsample}
+    \caption{\centering Effect of sample size on the integrated crud result variance.}
+    \label{fig:cmprpintotalsviolinnsample}
+\end{figure}
+\end{frame}
+
+% =========================================================================== %
+\setbeamercolor{background canvas}{bg=white}
+\begin{frame}
+\frametitle{Resample Step Size Study}
+\vspace{-18pt}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{/dissertation/figs/synth/tstep_study/cmpr_pin_totals_violin}
+    \caption{\scriptsize Resample frequency vs. crud variance.  80 independent trials for each of the step size case.}
+    \label{fig:cmprpintotalsviolin}
+\end{figure}
+\end{frame}
+
 
 %\section{}
 %% =========================================================================== %
