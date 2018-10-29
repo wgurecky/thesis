@@ -192,9 +192,7 @@
 \vspace{-12pt}
 \begin{scriptsize}
     \begin{itemize}
-        \item Deposited on rod surface where temperature is high - near or above saturation point - and where local shear stresses are low.
-        \item Crud uptakes and retains boron from the coolant which drives
-        crud induced power shift (CIPS).       
+        \item Deposited on rod surface where temperature is high - near or above saturation point - and where local shear stresses are low.      
         \[
         \frac{d N_{\mathrm{\ce{NiFe}},c}}{dt} = (\alpha_{\mathrm{nb}} + \alpha_{b}q''_{b} )N_{\mathrm{\ce{NiFe}}, \mathrm{cool}} - \gamma_k k
         \]
@@ -242,14 +240,15 @@
 \subsection*{Motivation}
 \begin{frame}
 \frametitle{Crud Impacts on Industry}
-\vspace{-24pt}
+\vspace{-8pt}
 \begin{itemize}
-    \item CIPS influences the burnup distribution reducing overall fuel utilization and can reduce shutdown margin  \cite{lange2017}.
-    \item Plants seeking power uprates or lifetime extensions must prove the facility can operate within thermal limits.  Crud can complicate the analysis by shifting the power distribution and influencing surface heat transfer behavior which must be accounted for in DNB computations.
-    \item Though rare, CILC failures require impacted assemblies to drastically reduce power and miss their burnup target.
-    \item Crud ultrasonic/chemical shock treatment is an extra step to perform during reloading operations, costing time and potentially increasing radiation exposure risk to plant workers.
+	\item \textbf{Goal: Provide predictive capability to avoid CIPS limited fuel loading patterns.}
+    \item CIPS influences the burnup distribution and shutdown margin \cite{lange2017}
+    \item Plants seeking power uprates or lifetime extensions must prove the facility can operate within thermal limits.  Crud impacts surface heat transfer analysis
+    \item CILC failures require impacted assemblies to reduce power
+    \item Extra steps to perform during reloading operations, costing time and potentially increasing radiation exposure risk to plant workers.
 \end{itemize}
-\textbf{Goal: Provide predictive capability to avoid CIPS limited fuel loading patterns.}
+
 \end{frame}
 
 % =========================================================================== %
@@ -259,11 +258,11 @@
 \begin{itemize}
     \item \textbf{Incorrect boundary conditions provided to the crud code.}
     \begin{itemize}
-        \item Fine scale flow details around spacer grids are not resolved by subchannel codes.  It is imperative for CILC analysis to capture the influence of the spacer grids on the crud deposition rate.  
-        \item It is also important to account for the presence of spacer grids on crud growth when predicting CIPS.
+        \item Fine scale flow details around spacer grids are not resolved by subchannel codes. 
+        \item Fine scale flow impacts crud growth
     \end{itemize}
-    \item Incorrect simulated crud chemistry, pore fill mechanisms, and intra-crud species transport models.
-    \item Difficulty accounting for the source of corrosion products and nickel and iron particulate entrained in the primary coolant loop.
+    \item Incomplete simulated crud physics
+    \item Uncertainty in source of corrosion products entrained in the primary coolant loop
     \begin{itemize}
         \item Requires understanding of the metallurgy of all primary loop components. 
         \item Plants of different make and vintage require a predictive corrosion and erosion source term models.
@@ -293,7 +292,7 @@
 % =========================================================================== %
 \subsection*{State of Hi2lo}
 \begin{frame}[shrink=10]
-\frametitle{Prior Hil2o Work: HTC Spatial Remapping Procedure}
+\frametitle{Prior Hi2lo Work: HTC Spatial Remapping Procedure}
 \begin{columns}
     \begin{column}{0.5\textwidth}
         \begin{itemize}
@@ -317,7 +316,7 @@
 % =========================================================================== %
 \subsection*{State of Hi2lo}
 \begin{frame}
-\frametitle{Prior Hil2o Work: HTC Spatial Remapping Procedure}
+\frametitle{Prior Hi2lo Work: HTC Spatial Remapping Procedure}
 \begin{figure}[!htbp]
 \centering
 \begin{minipage}{.5\textwidth}
@@ -561,8 +560,8 @@ h(T, k, q'') = c(u, v |\theta_c)f(T|\theta_T)f(k|\theta_k) f_{q''}
         
         \item What form do the marginal and copula distributions take?
         \begin{itemize}
-            \item Adopt a non-parametric representation of the temperature and TKE marginal distribution on each CTF face.  The CFD born distributions do not conform to a known parametric distribution family and cannot be reliably transformed to be Gaussian-like since this transformation would vary from CTF face to face.
-            \item Choose a copula from a library of parametric copula families via KL divergence or AIC based best-fitting metrics.
+            \item Adopt a non-parametric representation of the temperature and TKE marginal distribution on each CTF face. 
+            \item Choose copula from library of parametric families
         \end{itemize}        
         \item By what method are the distribution parameters predicted?
         \begin{itemize}
@@ -1050,12 +1049,12 @@ h(T, k, q'') = & f_T(T;\hat \theta_T) f_k(k;\hat \theta_k) f_{q''} \cdot \nonumb
 \begin{figure}[!htbp]
 \centering
 \begin{minipage}{.5\textwidth}
-  \includegraphics[width=5cm]{figs/dboron_dt_tke.png}
+  \includegraphics[width=0.95\linewidth]{figs/dboron_dt_tke.png}
 \caption{\centering Crud growth rate TKE \\ sensitivity vs. Time. \\ $T=620[K], q''=100[W/cm^2]$.} 
 \label{fig:crud_pre_map}
 \end{minipage}%
 \begin{minipage}{.5\textwidth}
-  \includegraphics[width=5cm]{figs/dboron_dt_t.png}
+  \includegraphics[width=0.95\linewidth]{figs/dboron_dt_t.png}
 \caption{\centering Crud growth rate Temperature \\ sensitivity vs. Time. \\ $TKE=0.01[J/kg], q''=100[W/cm^2]$..}
 \label{fig:crud_post_map}
 \end{minipage}
@@ -1355,9 +1354,10 @@ Both patches share the \emph{same} PDF of TKE, however, the spatial distribution
 
 % =========================================================================== %
 \subsection*{Feature Extraction}
-\begin{frame}[shrink=20]
+\begin{frame}
 \frametitle{CFD Data Preprocessing}
 \vspace{-20pt}
+\scriptsize{
 \begin{itemize}
     \item Execute paired CFD and CTF simulations.
     \begin{itemize}
@@ -1372,10 +1372,11 @@ Both patches share the \emph{same} PDF of TKE, however, the spatial distribution
     \item Pair each feature set with the CFD-CTF residuals \& store feature/data pairs in a training database.
     \item Repeat for all available CFD/CTF matching pins.
 \end{itemize}
-\vspace{-20pt}
+}
+\vspace{-8pt}
 \begin{table}[h]
     \begin{center}
-        
+        \tiny
         \begin{tabular}[h]{|l | l | l | l |}
             \hline
             Sym & Label & Feature & Unit \\
