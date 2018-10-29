@@ -666,34 +666,36 @@ h(T, k, q'') = c(u, v |\theta_c)f(T|\theta_T)f(k|\theta_k) f_{q''}
 % =========================================================================== %
 \subsection*{Gradient Boosting Quantile Regression Example}
 \begin{frame}
-\vspace{-8pt}
+\vspace{-18pt}
     \[
     y = x\ \mathrm{sin}(x) +12 \mathcal H(x-5)+\varepsilon; \ \ x\in [0,10]; \ \ \varepsilon \sim \mathcal N(0,2)
     \]
+    \vspace{-10pt}
 \scriptsize{
 \begin{itemize}
     % \item $\mathcal H$ denotes the Heaviside function. 
     % \item Synthetic noise, $\varepsilon \sim \mathcal N(0,2)$ 
     \item 5000 total samples were drawn from the test function.  The test data was spatially aggregated to 100 axial levels to mimic CTF axial grid spacing.
     \item Quantile Loss minimized by gradient boosted model:
+    \vspace{-4pt}
     \[
-    L(y, F(p);\tau) = \left[ (1-\tau) \sum_{y \leq F(p)}( y_i - F(p) ) \right] - \left[ \tau \sum_{y > F(p)} (y_i - F(p)) \right]
+    L(y, \mathcal F(p);\tau) = \left[ (1-\tau) \sum_{y \leq \mathcal F(p)}( y_i - \mathcal F(p) ) \right] - \left[ \tau \sum_{y > \mathcal F(p)} (y_i - \mathcal F(p)) \right]
     \]
 \end{itemize}   
 }
-\vspace{-32pt}
+\vspace{-26pt}
 \begin{columns}
     \begin{column}{0.5\textwidth}
         \begin{figure}
             \centering
-            \includegraphics[width=1.1\linewidth]{dissertation/figs/grad_boost/1d_boosted_regression_quantile_ex_0_5}
+            \includegraphics[width=1.0\linewidth]{dissertation/figs/grad_boost/1d_boosted_regression_quantile_ex_0_5}
             \caption{\centering \scriptsize Median prediction over 80 trials.}
         \end{figure}
     \end{column}
     \begin{column}{0.5\textwidth}  %%<--- here
         \begin{figure}
             \centering
-            \includegraphics[width=1.1\linewidth]{dissertation/figs/grad_boost/1d_boosted_regression_quantile_ex_0_95}
+            \includegraphics[width=1.0\linewidth]{dissertation/figs/grad_boost/1d_boosted_regression_quantile_ex_0_95}
             \caption{\centering \scriptsize $\hat{q}_{\tau=0.95}$ prediction over 80 trials.}
         \end{figure}
     \end{column}
