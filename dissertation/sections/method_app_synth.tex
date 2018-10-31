@@ -143,12 +143,12 @@ Next synthetic noise was generated using copula and marginal distribution settin
 \end{table}
 
 Samples are drawn with probability proportional to the inverse distance to the nearest specified node.
-Let the subscript $(\cdot)_u$ denote the location of the upstream span and $(\cdot)_d$ denote the downstream grid. $d_{u_j}$ and  $d_{d_j}$ denote the distance from the centroid of the CTF face to the nearest upstream and downstream copula nodes respectively.  
+Let the subscript $(\cdot)_u$ denote the location of the upstream span and $(\cdot)_d$ denote the downstream grid. $d_{u_j}$ and  $d_{d_j}$ denote the distance from the centroid of the CTF face to the nearest upstream and downstream copula nodes respectively.
 
 The mixture joint density model in any given CTF face is specified by equation \ref{eq:dist_weighted_synth}.
 \begin{equation}
-    h_j = \left( \frac{d_{u_j}}{|d_{d} - d_{u}|} \right) h_u +
-    \left( \frac{d_{d_j}}{|d_{d} - d_{u}|} \right) h_d
+    h_j = \left( \frac{d_{u_j}}{d_{d} + d_{u}} \right) h_u +
+    \left( \frac{d_{d_j}}{d_{d} + d_{u}} \right) h_d
     \label{eq:dist_weighted_synth}
 \end{equation}
 Where $h_u$ and $h_d$ are the upstream and downstream joint density models respectively with parameters specified in table \ref{tab:synth_settings}.
