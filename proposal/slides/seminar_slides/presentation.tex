@@ -290,6 +290,27 @@
 
 
 % =========================================================================== %
+\subsection*{CFD and Subchannel Mesh Background}
+\begin{frame}
+\frametitle{CTF (subchannel) and CFD Meshes for a Single Pin}
+\vspace{-20pt}
+\begin{figure}
+	\centering
+	\begin{minipage}{.4\textwidth}
+		\centering
+		\includegraphics[width=3cm]{figs/cfd_ctf_mesh_v.png}
+		\caption{\centering \scriptsize CTF (top).  CFD (bottom) }
+	\end{minipage}%
+	\begin{minipage}{.4\textwidth}
+		\centering
+		\includegraphics[width=2cm]{figs/ctf_mesh_v.png}
+	\end{minipage}
+\end{figure}
+\cite{salko17}
+\end{frame}
+
+
+% =========================================================================== %
 \subsection*{State of Hi2lo}
 \begin{frame}[shrink=10]
 \frametitle{Prior Hi2lo Work: HTC Spatial Remapping Procedure}
@@ -354,26 +375,6 @@
 \label{cfd_crud}
 \end{figure}
 \cite{slattery16}
-\end{frame}
-
-% =========================================================================== %
-\subsection*{CFD and Subchannel Mesh Background}
-\begin{frame}
-\frametitle{CTF (subchannel) and CFD Meshes for a Single Pin}
-\vspace{-20pt}
-\begin{figure}
-        \centering
-        \begin{minipage}{.4\textwidth}
-            \centering
-            \includegraphics[width=3cm]{figs/cfd_ctf_mesh_v.png}
-            \caption{\centering \scriptsize CTF (top).  CFD (bottom) }
-        \end{minipage}%
-        \begin{minipage}{.4\textwidth}
-            \centering
-            \includegraphics[width=2cm]{figs/ctf_mesh_v.png}
-        \end{minipage}
-\end{figure}
-\cite{salko17}
 \end{frame}
 
 % =========================================================================== %
@@ -990,7 +991,7 @@ h(T, k, q'') = & f_T(T;\hat \theta_T) f_k(k;\hat \theta_k) f_{q''} \cdot \nonumb
     \item Importance sampling trial results on a single CTF face. {\color{utred}Red} denotes importance samples and {\color{utblue}blue} denotes standard Monte Carlo samples.  
 \end{itemize}
 \[ \frac{\sigma^2_{MC}}{\sigma^2_{I}} \approx (\num{4.979e-6})^2 / (\num{3.503e-6})^2  \approx 2.02 \]
-\vspace{-18pt}
+\vspace{-12pt}
 %\begin{columns}
 %    \begin{column}{0.5\textwidth}
 %\begin{figure}[]
@@ -1260,71 +1261,6 @@ Both patches share the \emph{same} PDF of TKE, however, the spatial distribution
 \end{frame}
 
 
-% =========================================================================== %
-\subsection*{Hi2lo method for time dependent crud prediction}
-\begin{frame}
-\frametitle{Hi2lo Method Recap}
-\vspace{-28pt}
-\begin{columns}
-     \vspace{22pt}
-    \begin{column}{0.5\textwidth}
-        
-        Upfront:
-        \begin{enumerate}
-            \item Preprocess CFD data
-            \item Train ML models
-         \end{enumerate}
-     \vspace{18pt}
-        At Runtime:
-         \begin{enumerate}
-            \item Evaluate ML models
-            \item Reconstruct Joint Densities
-            \item Sample Distributions
-            \item Importance Weights
-            \item Spatial Remapping
-            \item Compute Crud
-        \end{enumerate}
-    \end{column}
- \begin{column}{0.5\textwidth}
-\begin{algorithm}[H]
-    % \captionsetup{labelfont={sc,bf}, labelsep=newline}
-    \algsetup{linenosize=\tiny}
-    \tiny      
-    \begin{algorithmic}[1]      
-        \STATE \textbf{Initialization}  
-        \STATE (1) Pre-process training set.  
-        \STATE $\ \ $   (1b) Fit distribution parameters to CFD data: $\theta(\mathbf p, \mathbf z)$.  
-        \STATE $\ \ $   (1c) \textbf{def:}  $\ \theta \leftarrow \mathcal F_M(\mathbf p, \mathbf z | \gamma)$
-        \STATE (2) Train model:  \\ $\hat{\mathcal F_M} =  \mathrm{argmin}_{\mathcal F}$ 
-        $L(\mathcal{F}_M (\mathbf p, \mathbf z| \gamma), \theta(\mathbf p, \mathbf z)) $
-        \FOR {VERA State, $v$}
-        \FOR {CTF face, $j$}
-        \STATE Evaluate ML model $\hat \theta_j \leftarrow \hat{\mathcal F_M}(\mathbf p_j, \mathbf z_j)$ 
-        \STATE Reconstruct margins (CDFs) from quantiles:  \\
-        $\ \ \hat F_{j,T}$ , $\hat F_{j,k}$
-        \STATE Def $q''$ margin  $f_{j,q''} = \delta_{(q''_\mathrm{j,ctf})}$
-        \STATE Reconstruct joint distribution: $\hat h_j(\cdot |\hat \theta_j)$
-        \ENDFOR
-        \FOR {Resample time step, $s,\ \Delta t_s$}
-        \FOR {CTF face, $j$}
-        \STATE Def importance sampling distribution: $\tilde h_j$
-        \STATE Draw samples $\mathbf x \sim \tilde h_j$ \;
-        \STATE Compute importance weights $\omega = \hat h_j(\mathbf x) /  \tilde h_j(\mathbf x) $
-        \STATE Re-map samples  $\mathbf x', \omega' \xleftarrow[\text{ }]{\text{R}} \mathbf x, \omega $
-        \STATE Time average importance weights
-        \STATE Grow crud:
-        $\ \ \mathbf C_s = \mathcal G(x'_i; \mathbf C_{s-1}, \mathbf I, \Delta t_s)$ \\
-        \STATE Integrate Crud mass at step $s$ in patch $j$.
-        \ENDFOR
-        \ENDFOR
-        \ENDFOR
-    \end{algorithmic}
-    \label{algo:hi2lo_crud_algo}
-\end{algorithm}
-    \end{column}
-\end{columns}
-\end{frame}
-
 \section[ML Results]{Machine Learning Driven Hi2lo: Results Provided 5x5 Full-Height Assembly CFD Data}
 % =========================================================================== %
 \subsection*{Training Data}
@@ -1424,6 +1360,71 @@ Both patches share the \emph{same} PDF of TKE, however, the spatial distribution
                 \includegraphics[width=1.0\linewidth]{/dissertation/figs/preproc/copula_params_pin_4}
             \end{figure}
 \end{column}
+\end{columns}
+\end{frame}
+
+% =========================================================================== %
+\subsection*{Hi2lo method for time dependent crud prediction}
+\begin{frame}
+\frametitle{Hi2lo Method Recap}
+\vspace{-28pt}
+\begin{columns}
+	\vspace{22pt}
+	\begin{column}{0.5\textwidth}
+		
+		Upfront:
+		\begin{enumerate}
+			\item Preprocess CFD data
+			\item Train ML models
+		\end{enumerate}
+		\vspace{18pt}
+		At Runtime:
+		\begin{enumerate}
+			\item Evaluate ML models
+			\item Reconstruct Joint Densities
+			\item Sample Distributions
+			\item Importance Weights
+			\item Spatial Remapping
+			\item Compute Crud
+		\end{enumerate}
+	\end{column}
+	\begin{column}{0.5\textwidth}
+		\begin{algorithm}[H]
+			% \captionsetup{labelfont={sc,bf}, labelsep=newline}
+			\algsetup{linenosize=\tiny}
+			\tiny      
+			\begin{algorithmic}[1]      
+				\STATE \textbf{Initialization}  
+				\STATE (1) Pre-process training set.  
+				\STATE $\ \ $   (1b) Fit distribution parameters to CFD data: $\theta(\mathbf p, \mathbf z)$.  
+				\STATE $\ \ $   (1c) \textbf{def:}  $\ \theta \leftarrow \mathcal F_M(\mathbf p, \mathbf z | \gamma)$
+				\STATE (2) Train model:  \\ $\hat{\mathcal F_M} =  \mathrm{argmin}_{\mathcal F}$ 
+				$L(\mathcal{F}_M (\mathbf p, \mathbf z| \gamma), \theta(\mathbf p, \mathbf z)) $
+				\FOR {VERA State, $v$}
+				\FOR {CTF face, $j$}
+				\STATE Evaluate ML model $\hat \theta_j \leftarrow \hat{\mathcal F_M}(\mathbf p_j, \mathbf z_j)$ 
+				\STATE Reconstruct margins (CDFs) from quantiles:  \\
+				$\ \ \hat F_{j,T}$ , $\hat F_{j,k}$
+				\STATE Def $q''$ margin  $f_{j,q''} = \delta_{(q''_\mathrm{j,ctf})}$
+				\STATE Reconstruct joint distribution: $\hat h_j(\cdot |\hat \theta_j)$
+				\ENDFOR
+				\FOR {Resample time step, $s,\ \Delta t_s$}
+				\FOR {CTF face, $j$}
+				\STATE Def importance sampling distribution: $\tilde h_j$
+				\STATE Draw samples $\mathbf x \sim \tilde h_j$ \;
+				\STATE Compute importance weights $\omega = \hat h_j(\mathbf x) /  \tilde h_j(\mathbf x) $
+				\STATE Re-map samples  $\mathbf x', \omega' \xleftarrow[\text{ }]{\text{R}} \mathbf x, \omega $
+				\STATE Time average importance weights
+				\STATE Grow crud:
+				$\ \ \mathbf C_s = \mathcal G(x'_i; \mathbf C_{s-1}, \mathbf I, \Delta t_s)$ \\
+				\STATE Integrate Crud mass at step $s$ in patch $j$.
+				\ENDFOR
+				\ENDFOR
+				\ENDFOR
+			\end{algorithmic}
+			\label{algo:hi2lo_crud_algo}
+		\end{algorithm}
+	\end{column}
 \end{columns}
 \end{frame}
 
@@ -2349,11 +2350,11 @@ Source: Peter Prettenhofer, PyData (2014).
 \setbeamercolor{background canvas}{bg=white}
 \begin{frame}
 \frametitle{Fitting Copula}
-The likelihood function for a copula is given by equation \ref{eq:lik}.  For any given sample pair, $w_i, v_i$, each factor in the likelihood function describes how probable it was for that sample originated from the underlying copula distribution with parameter $\theta_c$.
+The likelihood function for a copula is given by equation \ref{eq:lik}. 
 \index{Copula!Fitting}
 
 \begin{equation}
-\mathcal{L}= \prod_{i=1}^N c(w_i, v_i|\theta_c)
+\mathcal{L}(\theta|w_i, v_i)= \prod_{i=1}^N c(w_i, v_i|\theta_c)
 \label{eq:lik}
 \end{equation}
 
