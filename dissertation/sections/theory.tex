@@ -197,7 +197,7 @@ In order to estimate a sample quantile, $\hat q_\tau$, given the empirical CDF $
     \label{fig:qloss}
 \end{figure}
 
-In this work, a set of sample quantiles, $\hat \theta_\tau = \{q_{\tau_0}, \dots, q_{\tau_i}, \dots q_{N_Q} \}$, are used to construct step-wise cumulative distributions, $\hat F$, for the cladding outer temperature and near-wall TKE surface fields.  $N_Q$ denotes the number of quantiles used in the CDF reconstruction and is a user set parameter. The stepwise quantile function with prescribed quantiles is given by equation \ref{eq:cdf_from_qtau}.
+In this work, a set of sample quantiles, $\hat \theta_\tau = \{\hat q_{\tau_0}, \dots, \hat q_{\tau_i}, \dots \hat q_{N_Q} \}$, are used to construct step-wise cumulative distributions, $\hat F$, for the cladding outer temperature and near-wall TKE surface fields.  $N_Q$ denotes the number of quantiles used in the CDF reconstruction and is a user set parameter. The stepwise quantile function with prescribed quantiles is given by equation \ref{eq:cdf_from_qtau}.
 \index{Quantiles!Emperical}
 
 \begin{equation}
@@ -225,7 +225,7 @@ It can be shown that the sample quantiles are distributed according to equation 
 
 \begin{figure}[H]%
     \centering
-    \subfloat[Empirical quantiles for a normal distrubtion. 500 trials shown. $0.1, 0.5, 0.9$ quantiles denoted by dashed verticle lines.]{{\includegraphics[width=0.4\linewidth]{figs/quantile_theory/q_gauss_residual} }}%
+    \subfloat[Empirical quantiles for a normal distribution. 500 trials shown. $0.1, 0.5, 0.9$ quantiles denoted by dashed verticle lines.]{{\includegraphics[width=0.4\linewidth]{figs/quantile_theory/q_gauss_residual} }}%
     \qquad
         \subfloat[Empirical vs theoretical $0.1$ quantile distribution.]{{\includegraphics[width=0.4\linewidth]{figs/quantile_theory/q_gauss_residual_conditional_0_1} }}%
     \qquad
@@ -233,13 +233,13 @@ It can be shown that the sample quantiles are distributed according to equation 
     \qquad
         \subfloat[Empirical vs theoretical $0.9$ quantile distribution.]{{\includegraphics[width=0.4\linewidth]{figs/quantile_theory/q_gauss_residual_conditional_0_9} }}%
     \qquad
-    \caption[Distribution of quantiles for a normally distributed RV.]{Distribution of quantiles for a normally distributed RV: $X \sim \mathcal{N}(0, 1)$.  Theoretical quantile standard deviation given by equation \ref{eq:theory_qdist_1}.}%
+    \caption[Distribution of quantiles for a normally distributed RV.]{Distribution of quantiles for a normally distributed RV: $X \sim \mathcal{N}(0, 10)$.  Theoretical quantile standard deviation given by equation \ref{eq:theory_qdist_1}.}%
     \label{fig:normal_q_theory}%
 \end{figure}
 
 \begin{figure}[H]%
     \centering
-    \subfloat[Empirical quantiles for a beta distrubtion. 500 trials shown. $0.1, 0.5, 0.9$ quantiles denoted by dashed verticle lines.]{{\includegraphics[width=0.4\linewidth]{figs/quantile_theory/q_beta_residual} }}%
+    \subfloat[Empirical quantiles for a beta distribution. 500 trials shown. $0.1, 0.5, 0.9$ quantiles denoted by dashed verticle lines.]{{\includegraphics[width=0.4\linewidth]{figs/quantile_theory/q_beta_residual} }}%
     \qquad
     \subfloat[Empirical vs theoretical $0.1$ quantile distribution.]{{\includegraphics[width=0.4\linewidth]{figs/quantile_theory/q_beta_residual_conditional_0_1} }}%
     \qquad
@@ -247,7 +247,7 @@ It can be shown that the sample quantiles are distributed according to equation 
     \qquad
     \subfloat[Empirical vs theoretical $0.9$ quantile distribution.]{{\includegraphics[width=0.4\linewidth]{figs/quantile_theory/q_beta_residual_conditional_0_9} }}%
     \qquad
-    \caption[Distribution of quantiles for a beta distributed RV.]{Distribution of quantiles for a beta distributed RV: $X \sim \beta(1, 2)$}%
+    \caption[Distribution of quantiles for a beta distributed RV.]{Distribution of quantiles for a beta distributed RV: $X \sim \beta(2, 5)$}%
     \label{fig:beta_g_theory}%
 \end{figure}
 
@@ -309,11 +309,11 @@ The modern gradient boosting algorithm was developed by Friedman et. al. (1998) 
 \index{Gradient Boosting}
 
 \begin{equation}
-\mathcal F_M = \text{argmin}_F \E_{y, \mathbf p} (L(y, F(\mathbf p)))
+\mathcal F_M = \text{argmin}_{\mathcal F} \E_{y, \mathbf p} (L(y, \mathcal F(\mathbf p)))
 \end{equation}
 Where $L(\cdot)$ is a differentiable loss function.  $\mathbf p$ are known as predictive features and $y$ is the response.  The paired set $\{\mathbf p, y \}$ is referred to as the training data set.  In the standard gradient boosting algorithm the functional form of $F$ is chosen to be an additive model of the form \ref{eq:single_cart_model}:
 \begin{equation}
-F(\mathbf p, \mathbf{\gamma}, \mathbf a; \mathbf b) = \sum_{m=0}^M \gamma_m h_m(\mathbf p, a_m; b_m)
+\mathcal F_M(\mathbf p, \mathbf{\gamma}, \mathbf a; \mathbf b) = \sum_{m=0}^M \gamma_m h_m(\mathbf p, a_m; b_m)
 \label{eq:single_cart_model}
 \end{equation} 
 Where $M$ is the number of constituent sub-models and $\{\gamma_m, a_m\}$ are coefficients and free parameters requiring fitting in each sub-model.  $b_m$ represent sub-model hyper parameters that are fixed at user set values.
@@ -334,15 +334,15 @@ Each sub-model, $h_m$, is referred to as a weak learner and is defined to be a t
     \begin{algorithmic}[1]
     \STATE \textbf{Initialization} 
     \STATE (1) Training set $\{(p_i, y_i)\}_{i=1}^n$. 
-    \STATE (2) Differentiable loss function $L(y, F(p))$. 
+    \STATE (2) Differentiable loss function $L(y, \mathcal F(p))$. 
     \STATE (3) Number of iterations ${{M}}$.
     \STATE (4)   Initialize model with a constant value:
-        $F_0(p) = \underset{\gamma}{\arg\min} \sum_{i=1}^n L(y_i, \gamma).$
+        $\mathcal F_0(p) = \underset{\gamma}{\arg\min} \sum_{i=1}^n L(y_i, \gamma).$
     
     \FOR {${{m}} = 1$ to ${{M}}$}
         \STATE Compute the pseudo-residuals:  
         \FOR {$i=1,\ldots,n $}
-            \STATE $r_{im} = -\frac{\partial L(y_i, F_{m-1}(p_i))}{\partial F_{m-1}(p_i)}$
+            \STATE $r_{im} = -\frac{\partial L(y_i, \mathcal F_{m-1}(p_i))}{\partial \mathcal F_{m-1}(p_i)}$
         \ENDFOR
         
         \STATE Fit a weak learner $h_m(p; a_m)$ to pseudo-residuals, $r_{m}$: \\
@@ -350,12 +350,12 @@ Each sub-model, $h_m$, is referred to as a weak learner and is defined to be a t
             $\ \ $ Training data set is $\{(p_i, r_{im})\}_{i=1}^n$ \;
         
         \STATE Compute multiplier $\gamma_m$ :
-        $\gamma_m = \underset{\gamma}{\operatorname{arg\,min}} \sum_{i=1}^n L\left(y_i, F_{m-1}(p_i) + \gamma h^*_m(p_i)\right)$\;
+        $\gamma_m = \underset{\gamma}{\operatorname{arg\,min}} \sum_{i=1}^n L\left(y_i, \mathcal F_{m-1}(p_i) + \gamma h^*_m(p_i)\right)$\;
         \STATE Update the model:
-        $F_m(p) = F_{m-1}(p) + \nu \gamma_m h^*_m(p).$
+        $\mathcal F_m(p) = \mathcal F_{m-1}(p) + \nu \gamma_m h^*_m(p).$
     
     \ENDFOR
-    \STATE Output $F_M(p).$
+    \STATE Output $\mathcal F_M(p).$
     \end{algorithmic}
 \label{alg:boosting}
 \end{algorithm}
@@ -365,7 +365,7 @@ Where $\nu$ is a tunable constant in $(0, 1]$ called the learning rate.  A value
 
 For gradient boosted quantile regression, the loss function given by equation \ref{eq:qloss_fn} is substituted into algorithm \ref{alg:boosting}.
 \begin{equation}
-L(y, F(p);\tau) = \left[ (1-\tau) \sum_{y \leq F(p)}( y_i - F(p) ) \right] - \left[ \tau \sum_{y > F(p)} (y_i - F(p)) \right]
+L(y, \mathcal F(p);\tau) = \left[ (1-\tau) \sum_{y \leq \mathcal F(p)}( y_i - \mathcal F(p) ) \right] - \left[ \tau \sum_{y > \mathcal F(p)} (y_i - \mathcal F(p)) \right]
 \end{equation}
 Where $\tau$ is the user set quantile of interest. For instance, if the 95\% quantile is desired then $\tau=0.95$.
 
@@ -375,22 +375,29 @@ Where $\tau$ is the user set quantile of interest. For instance, if the 95\% qua
 \subsection{Monte Carlo Crud Estimation}
 \label{chap:mc_crud}
 
-Before applying a sampling procedure to the temperature and TKE surface fields on a given CTF face, the the joint density function is reconstructed from a copula and marginal distributions.  The margins are defined by their quantile functions as shown in equation \ref{eq:cdf_from_qtau}.  After separate reconstruction of the margins and applying the boundary heat flux independence assumption shown previously in equation \ref{eq:simple_vine_model}, equation \ref{eq:joint_t_tke_q} defines the joint density.
+Before applying a sampling procedure to the temperature and TKE surface fields on a given CTF face, the the joint density function is reconstructed from copula and marginal distributions.   On CTF face $j$, the gradient boosted model is queried for the conditional quantiles and the copula shape parameter:
+
+\begin{align}
+\hat \theta_j \leftarrow  & {\mathcal F_M}(\mathbf p_j, \mathbf z_j) \nonumber \\
+ \hat \theta_j =& \{\hat \theta_{j,c}, \hat \theta_{j,\{T,k\}} \}
+\end{align}
+The CTF face index is dropped in the remainder of this section to reduce subindex clutter.
+
+Provided estimates for the conditional quantiles, $\hat \theta_{\{T,k\}}$ in each face, the margins are defined by their quantile functions as shown in equation \ref{eq:cdf_from_qtau}.  After separate reconstruction of the margins and applying the boundary heat flux independence assumption shown previously in equation \ref{eq:simple_vine_model}, equation \ref{eq:joint_t_tke_q} defines the joint density.
 
 \begin{equation}
 h(T, k, q'') = f_T(T;\hat \theta_T) f_k(k;\hat \theta_k) f_{j,q''} 
-c_{T,k}(F_T(T;\hat \theta_{\tau,T})F_k(k;\hat \theta_{\tau,k});\hat \theta_c)
+[ c_{T,k}(F_T(T;\hat \theta_{T})F_k(k;\hat \theta_{k});\hat \theta_c)]
 \label{eq:joint_t_tke_q}
 \end{equation} 
-Where $\theta_\tau$ represent conditional quantiles predicted by the data driven model.  These distribution parameters will be dropped in the remainder of this section.
 
-After reconstruction of the joint temperature, boundary heat flux and turbulent kinetic energy distribution on each patch, one draws samples from the joint distribution via methods outlined by section \ref{sec:sampling_copula} in equation \ref{eq:h_inv_sample}.  
+After reconstruction of the joint temperature, boundary heat flux and turbulent kinetic energy distribution on each patch, the goal is to draw samples from the copula based distribution with arbitrary margins.  This is accomplished through the methods outlined by section \ref{sec:sampling_copula} in equation \ref{eq:h_inv_sample}.  
 
 With the ability to draw samples from a multivariate distribution now established, the Monte Carlo approximation of integral \ref{eq:expected_crud} follows and is represented by equation \ref{eq:mc_expected_crud}.  Let $X=\{T,k,q''\}$.
 \index{Monte Carlo Sampling}
 
 \begin{equation}
-\E(\mathcal G(X)) \approx \frac{1}{N} \sum_i^N \mathcal G(X_i) h(X_i), \ \mathbf{X} \sim {h}
+\E(\mathcal G(X)) \approx \frac{1}{N} \sum_i^N \mathcal G(X_i), \ \mathbf{X} \sim {h}
 \label{eq:mc_expected_crud}
 \end{equation}
 
@@ -401,44 +408,42 @@ Rather than sampling from the density function $h$, one may draw samples from an
 \label{eq:mc_imp_expected_crud}
 \end{equation}
 \index{Importance Sampling}
-In principal the proposal distribution, $\tilde h$, may be radically different from the target density, $h$.  A method for determining a near optimal proposal distribution is provided in section \ref{sec:Importance Sampling}.
-
-\textbf{TODO:} Fix symbol consistency issues.
-Substituting the joint density function defined by \ref{eq:sklar2} in to () yields:
+In principal the proposal distribution, $\tilde h$, may be radically different from the target density, $h$. In practice computing the optimal choice for the proposal density distribution is non-trivial.   The generic original and proposal densities can be written simply as shown in equation \ref{eq:mc_imp_int_2}. A method for determining a near optimal proposal distribution is provided in section \ref{sec:Importance Sampling}.
 
 \begin{align}
-    h(x_1, x_2..) &= c(u_1, u_2, ...) f(x_1) f(x_2) \nonumber \\
-    \tilde h(x_1, x_2..) &= \tilde c(u_1, u_2, ...) \tilde f(x_1) \tilde f(x_2)
+    h(T, k, q'') &= c(F_T(T), F_k(k)) f_T f_k f_{j,q''}  \nonumber \\
+    \tilde h(T, k, q'') &= \tilde c(\tilde F_T(T), \tilde F_k(k)) \tilde f_T \tilde f_k f_{j,q''} 
 \label{eq:mc_imp_int_2}
 \end{align}
 
 \begin{equation}
-\E(\mathcal G(x)) \approx \frac{1}{N} \sum_i^N \mathcal G_i(x) \omega_i(x), \ x \sim \tilde{f_1} \tilde f_2 \tilde c(u_1, u_2)
+\E(\mathcal G(X)) \approx \frac{1}{N} \sum_i^N \mathcal G(X_i) \omega(X_i), \ \mathbf X \sim \tilde c(\tilde F_T(T), \tilde F_k(k)) \tilde f_T \tilde f_k f_{j,q''} 
 \label{eq:mc_imp_int2}
 \end{equation}
 
 with the probability ratio of the target density to the proposal given by \ref{eq:imp_prob_ratio}:
 
 \begin{equation}
-\omega_i = \frac{h_i}{\tilde h_i} = \frac{f_1(x_i) f_2(x_i)c(u_1, u_2)}{\tilde f_1(x_i) \tilde f_2(x_i) \tilde c(u_1, u_2)}
+\omega_i = \frac{h_i}{\tilde h_i} = \frac{f_T(T_i) f_k(k_i)c(F_T(T), F_k(k))}
+  {\tilde f_T(T_i) \tilde f_k(k_i) \tilde c(\tilde F_T(T), \tilde F_k(k))}
 \label{eq:imp_prob_ratio}
 \end{equation}
 
-In the case that the proposal and target copula densities are assumed to be the same equation \ref{eq:imp_prob_ratio} may be rewritten as \ref{eq:imp_prob_ratio2}.
+%In the case that the proposal and target copula densities are assumed to be the same equation \ref{eq:imp_prob_ratio} may be rewritten as \ref{eq:imp_prob_ratio2}.
+%
+%\begin{equation}
+%\omega_i = \frac{f_1(x_i) f_2(x_i)}{\tilde f_1(x_i) \tilde f_2(x_i)}
+%\label{eq:imp_prob_ratio2}
+%\end{equation}
+%
+%In this work the target and proposal copula are taken to be the same function.
+
+In some scenarios the proposal or target density is only known up to a constant, e.g. $h^* = c h(X)$.  In this case the probability ratio is known up to a constant of proportionality and requires renormalization: 
 
 \begin{equation}
-\omega_i = \frac{f_1(x_i) f_2(x_i)}{\tilde f_1(x_i) \tilde f_2(x_i)}
-\label{eq:imp_prob_ratio2}
-\end{equation}
-
-In this work the target and proposal copula are taken to be the same function.
-
-In some scenarios the proposal or target density is only known up to a constant, e.g. $h^* = c h(x)$.  In this case the probability ratio is known up to a constant of proportionality and requires renormalization: 
-
-\begin{equation}
-\E(\mathcal G(x)) \approx \frac{ \sum_i^N \mathcal G_i(x) \omega_i(x)}{\sum_i^N \omega_i(x)}
+\E(\mathcal G(X)) \approx \frac{ \sum_i^N \mathcal G_i(X) \omega_i(X)}{\sum_i^N \omega_i(x)}
 ,
- \ x \sim \tilde{f_1} \tilde f_2 \tilde c(u_1, u_2)
+ \ \mathbf X \sim \tilde c(\tilde F_T(T), \tilde F_k(k)) \tilde f_T \tilde f_k f_{j,q''} 
 \end{equation}
 
 This is known as self normalizing importance sampling.  Traditional importance sampling may be applied in this case since $h$ and $\tilde{h}$ are properly normalized density functions in this hi2lo application which integrate to 1 over their respective support.
@@ -571,7 +576,7 @@ Algorithm \ref{algo:hi2lo_crud_algo} begins with the same pre-processing and mac
               \STATE Evaluate equation \ref{eq:expected_crud} via importance sampling \\
                 $\ \ \mathbf C_s = \mathcal G(x'_i; \mathbf C_{s-1}, \mathbf I, \Delta t_s)$ \\
               \STATE Crud mass at step $s$ in patch $j$:
-                $\ \ C_{s,j,m} = \left( \frac{A_j}{\sum_i^M \bar \omega'_i} \right) \sum_i^M C_{s,i,j,m} \bar \omega'_i$
+                $\ \ C_{s,j,m} = \left( \frac{A_j}{\sum_i^N \bar \omega'_i} \right) \sum_i^N C_{s,i,j,m} \bar \omega'_i$
           \ENDFOR
         \ENDFOR
         \ENDFOR

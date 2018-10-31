@@ -1,0 +1,42 @@
+1) GJ
+2) k. not k. add adj. to theory.  Data prep detail. (preproc)
+3) Too many words.  Kll the words.  Leave crud images.  Remove crud "toy equation". 
+	describe what crud is concisely.
+	add source to images. 
+	Remove propositions (of .., on ...) 
+	MAMABA in VERA core sim.
+	CIPS.???  Metion challenge problems!!!!
+	Follow: (Open, challenge, action, resolution)
+4) Move slide ???  Arrow by power increase (denote what is changing) keep it DRY. move captions to bullets at top.
+5) Align figs vert.  (full foot cite).  Make refernces grey or lighter
+6) Consider better title.  
+	- Burnup distriubtion shift. eg: fuel utilization & shutdown margin.
+	- Impacts DNB calculations
+	- CILC  (put in footnote)
+	- Goal: Predict crud.
+7) too much text.  Chop to frag. noo..
+8) Shorten bullets.  Remove second bullet.
+9) Put ref in footnote.  Simplify.  (full foot cite).
+10) CRUD -> crud .  bold prior -> bold post.  Place on.  Add reference.
+11) Remove repleated CFD/Crud... DRY
+12) Meshing CFD vs CTF.  Label CTF and CFD images.
+13) Investigate weird shadowbox. (z, theta) -> correct to proper notation.  Careful with bolding variables (means vector.)
+	- draw attention to formula.  Lighten the parameter defs (or smaller.)
+	- remove 'is' replace with :
+14) Objectives are too complicated. 
+15) Define sym on the bottom of slide move fig up.
+16) This is good.  NVM.  Remove prep phrase.  Make CFD and CTF different color. Script G  
+17) To predict h on each CTF face.  Remove  "Compute the total".  
+	Remove expected total crud bullet.  Put A and del t in parens.
+	replace defs with :
+	"integral via Monte Carlo.
+18) do duummy var in CDF def. w.  Subscripts for CDFs.  Remove "has"  and "describes".
+	decompose h(.) as:
+	Move the marginal density parameters up to defs.
+19) Kill.
+20) Put "assumptions" on the top.  Remove Assume from bullets.  Remove repeated theta defs at end.
+21) Fix second bullet.  Add image of mappting thetas to CTF faces.
+22)
+23) Add introduction to gradient boosting.
+
+30) replace (a) and (b) with labels.

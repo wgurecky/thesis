@@ -30,18 +30,23 @@
 \graphicspath{{./figs/}}
 
 %The base themes we inherit from
-\usetheme[headheight=1.0cm]{boxes}                 
+\usetheme{Darmstadt}
+%\usetheme[headheight=1.0cm]{boxes}                 
 \usecolortheme{default}                 
 
 \definecolor{utorange}{RGB}{191, 87, 0}
 \definecolor{utblack}{RGB}{51, 63, 72}
 \definecolor{cffffff}{RGB}{255,255,255}
+\definecolor{utred}{HTML}{a85048}
+\definecolor{utblue}{HTML}{4e6e98}
+\definecolor{utgreen}{HTML}{366e30}
 
-\pgfdeclareimage[width=0.7\textwidth]{CockrellSchool}{./figs/CockrellSchool}
+% \pgfdeclareimage[width=0.7\textwidth]{CockrellSchool}{./figs/CockrellSchool}
 
 %The titlebar showing the Dept name and UT-Austin logo
-\addheadbox{section in head/foot}{\raisebox{-8em}{\pgfuseimage{CockrellSchool}}}
+% \addheadbox{section in head/foot}{\raisebox{-8em}{\pgfuseimage{CockrellSchool}}}
 %\addheadbox{section in head/foot}{\raisebox{0.0em}{\includegraphics[width=1.0\textwidth]{\beamer@Cockrell@dept}}}
+
 
 %Theme settings
 %Title page
@@ -94,7 +99,8 @@
   {\flushright
   \usebeamerfont{author}\usebeamercolor[fg]{author}\insertauthor\par
   \usebeamerfont{institute}\usebeamercolor[fg]{institute}\insertinstitute\par
-  \usebeamerfont{date}\usebeamercolor[fg]{institute}\insertdate\par
+  % \usebeamerfont{date}\usebeamercolor[fg]{institute}\insertdate\par
+  \usebeamerfont{date}\usebeamercolor[fg]{institute}October 30, 2018\par
   }
 }
 
@@ -107,11 +113,13 @@
 
 %Use biber for special bibliogrphay.  The next few lines are all custom hacks to
 %make nice footnote citation in beamer.
-\usepackage[hyperref=true,style=verbose,labeldate=true,minnames=2,maxnames=10,maxbibnames=99,backend=biber]{biblatex}
+%\usepackage[hyperref=true,style=verbose,labeldate=true,minnames=2,maxnames=10,maxbibnames=99,backend=biber]{biblatex}
+\usepackage[hyperref=true,style=verbose,labeldate=true,minnames=2,maxnames=10,maxbibnames=99,backend=bibtex]{biblatex}
+%\usepackage[hyperref=true,labeldate=true,minnames=2,maxnames=10,maxbibnames=99,backend=bibtex]{biblatex}
 %Use utorange for hyperlinks
 \hypersetup{colorlinks=true, allcolors=utblack, linkcolor=utblack, urlcolor=utorange}
 
-%\renewcommand*{\labelnamepunct}{\addcolon\addspace}
+\renewcommand*{\labelnamepunct}{\addcolon\addspace}
 \DeclareFieldFormat[article,inbook,incollection,inproceedings,patent,thesis,unpublished]
 {title}{#1\isdot}
 \renewbibmacro*{cite:short}{%
@@ -167,6 +175,7 @@
   }%
 }
 \begin{frame}
+    \frametitle{Questions?}
     \vspace{1.5cm}
     \begin{center}
         \includegraphics[width=1.48\textwidth]{CockrellSchool}
