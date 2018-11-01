@@ -40,7 +40,7 @@ Synthetic data generation begins by running standalone CTF on a single quarter s
 \end{align}
 Where $\bm \varepsilon(\mathbf z, \bm \theta)$ is a user controlled spatially dependent residual random vector with a mean of 0.  This residual is
 shifted by a bias vector
-$\mathbf b$, where $\mathbf z=\{z, \varphi\}$ is the axial and azimuthal location on the rod surface.
+$\mathbf b$ and where $\mathbf z$ is the axial and azimuthal location on the rod surface.
 $\bm \theta$ represents user specified distribution parameters.
 
 Equation \ref{eq:synth_aug} represents three continuous random surface fields.  In practice a large number of independent and identically distributed samples are drawn in each CTF face from the underlying random field.  Individual surface samples may be specified by equation \ref{eq:synth_aug_discrete}.
@@ -381,6 +381,7 @@ The importance  mixture quantile functions are defined in equations \ref{eq:imp_
 \tilde Q_{j,k} &= \lambda_{0,k} \hat Q_{j,k}  + \lambda_{1,k} Q_{\beta_k}(k; \vartheta_k),  \label{eq:imp_mix_k} \\
 \tilde Q_{j,T} &= \lambda_{0,T} \hat Q_{j,T}  + \lambda_{1,T} Q_{\beta_T}(T; \vartheta_T);  \label{eq:imp_mix_T} \\
 \sum_i \lambda_i &= 1, \ \ \tilde F_{j,T} = \tilde Q^{-1}_{j,T},\ \  \tilde F_{j,k} = \tilde Q^{-1}_{j,k}
+\label{eq:imp_mix_dists}
 \end{align}
 Where $\tilde Q_{j,T}$ is the quantile function for the proposal temperature distribution in the $j^{th}$ CTF face. $\lambda_i$ are user set mixture weights. Standard Monte Carlo sampling can be recovered by setting $\lambda_{0,k}=1,\ \lambda_{0,T}=1$ and  $\lambda_{1,k}=0,\ \lambda_{1,T}=0$.
 
