@@ -305,11 +305,12 @@ A data driven machine learning model is considered to predict quantiles required
     \label{fig:cart}
 \end{figure}
 
-The modern gradient boosting algorithm was developed by Friedman et. al. (1998) \cite{friedman1998}, \cite{friedman2001}.  The development of generalized boosting was significant because it re-envisioned previous boosting algorithms such as AdaBoost as special cases of gradient boosting with specific loss functions.  Gradient boosting is a numerical optimization procedure carried out in function space with the goal of finding a function $\mathcal F_M$ that maps the inputs $\mathbf p$ to $y$ where $\mathcal F_M$ is given by:
+The modern gradient boosting algorithm was developed by Friedman et. al. (1998) \cite{friedman1998}, \cite{friedman2001}.  The development of generalized boosting was significant because it re-envisioned previous boosting algorithms such as AdaBoost as special cases of gradient boosting with specific loss functions.  Gradient boosting is a numerical optimization procedure carried out in function space with the goal of finding a function $\mathcal F_M$ that maps the inputs $\mathbf p$ to $y$ where $\mathcal F_M$ is given by equation \ref{eq:boosting_problem}.
 \index{Gradient Boosting}
 
 \begin{equation}
 \mathcal F_M = \text{argmin}_{\mathcal F} \E_{y, \mathbf p} (L(y, \mathcal F(\mathbf p)))
+\label{eq:boosting_problem}
 \end{equation}
 Where $L(\cdot)$ is a differentiable loss function.  $\mathbf p$ are known as predictive features and $y$ is the response.  The paired set $\{\mathbf p, y \}$ is referred to as the training data set.  In the standard gradient boosting algorithm the functional form of $F$ is chosen to be an additive model of the form \ref{eq:single_cart_model}:
 \begin{equation}
@@ -464,7 +465,7 @@ Order statistics are well defined for a single dimensional random variable but i
     m_i = w_T \left( \frac{T_i - T_{min}}{T_{max} - T_{min}} \right) + w_k \left( \frac{k_i - k_{min}}{k_{max} - k_{min}} \right) +  w_q'' \left( \frac{q^{''}_i - q^{''}_{min}}{q_{max} - q_{min}} \right)
 \label{eq:weighting}
 \end{equation}
-Where the sample remapping coefficients $\mathbf w$ are set at runtime by the hi2lo model user and sum to 1:
+Where the sample remapping coefficients $\{w_T, w_k, w_{q''}\}$ are set at runtime by the hi2lo model user and sum to 1:
 \begin{equation}
 w_T + w_k + w_{q''} = 1
 \end{equation}

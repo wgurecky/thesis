@@ -16,15 +16,15 @@ A phenomena known as crud Induced Power Shift (CIPS) is caused by the presence
 of elevated \ce{^{10}B} concentrations in the crud layer.  Since crud is preferentially
 deposited on the fuel rods' in hot regions of the core and \ce{^{10}B} is a strong neutron absorber, the crud buildup leads to a slight shift in
 power production towards the bottom of the core under steady state operation.
-Crud induced power shift impacts the burnup distribution over a cycle
+Crud induced power shift impacts the burnup distribution over a cycle, reduces shutdown margin,
 and is important to account for when computing thermal
-margins of the fuel.  The prediction
+margins of the fuel \cite{lange2017}.  The prediction
 of CIPS is especially important for older facilities seeking to uprate power
-output.  Additionally, the presence of crud on the rod surface has been shown
+output or extend their operational lifetime.  Additionally, the presence of crud on the rod surface has been shown
 to exacerbate local oxide penetration rates of some zirconium alloys \cite{adamson07}.
 This is known as crud induced local corrosion (CILC).  Improvements in crud
 simulation techniques ultimately improve the ability to predict the CIPS and
-CILC phenomena for a given loading pattern.  If significant CIPS or CILC can be accurately predicted provided a candidate loading pattern significant cost savings are possible by ensuring the target burnup is not missed due to the presence of excess crud in the core \cite{lange2017}.  Loading patterns which would yeild unfavorable crud buildup could be avoided.
+CILC phenomena for a given fuel loading pattern.  If significant CIPS or CILC can be accurately predicted provided a candidate loading pattern significant cost savings are possible by ensuring the target burnup is not missed due to the presence of excess crud in the core \cite{lange2017}.  Loading patterns which would yeild unfavorable crud buildup could be avoided.
 \index{Crud} \index{Crud!CILC} \index{Crud!CIPS}
 
 The Virtual Environment for Reactor Applications (VERA) is a key component of
@@ -56,7 +56,7 @@ The traditional approach must be modified to accommodate the CILC and CIPS
 challenge problems.  Here arises the need to retain not only the effect of
 fine-scale physics on the bulk, but also to predict if certain temperature or
 near-wall turbulent kinetic energy (TKE) thresholds are exceeded in a given subchannel volume.  Furthermore, for a
-complete treatment of thermal hydraulic impacts on crud growth, the
+complete characterization of thermal hydraulic impacts on crud growth, the
 scale-bridging model must describe completely the frequency distribution of
 extreme TH events above a given threshold.
 
@@ -85,7 +85,7 @@ Prior to this work, hi2lo efforts directed at improving subchannel thermal hydra
 
 \section{Crud Background}
 
-The buildup of crud results from the deposition of metal particulates and corrosion products entrained in the primary coolant loop of a light water reactor.  These impurities arise from erosion and corrosion processes.  Of all the coolant impurities, the largest contributor the initial formation of a crud layer on the outer cladding surface is Nickle Ferrite.  The initial build up of Nickle Ferrite may be described by the ordinary differential equation (ODE) shown in equation \ref{eq:crud_nife}.
+The buildup of crud results from the deposition of metal particulates and corrosion products entrained in the primary coolant loop of a light water reactor on the exterior surface of the fuel rods.  These impurities arise from erosion and corrosion processes elsewhere in the loop.  Of all the coolant impurities, the largest contributor the initial formation of a crud layer on the outer cladding surface is Nickle Ferrite.  The initial build up of Nickle Ferrite may be described by the ordinary differential equation (ODE) shown in equation \ref{eq:crud_nife}.
 \index{Crud}
 
 \begin{equation}
@@ -93,13 +93,13 @@ The buildup of crud results from the deposition of metal particulates and corros
 \label{eq:crud_nife}
 \end{equation}
 
-Where $N_{\mathrm{NiFe},c}$ is the concentration of Nickel Ferrite in the crud within a small finite volume on the cladding surface.  $N_{\mathrm{NiFe}, \mathrm{cool}}$ is the concentration of nickel and iron impurities in the coolant.  $\alpha_b$ and $\alpha_{nb}$ represent boiling and non-boiling rate constants respectively.  The boiling component of the boundary heat flux (BHF) on the outer cladding surface is given by $q''_b [W/m^2]$. $\gamma_k$ is an erosion multiplier and $k$ is the near-wall local TKE.  Crud typically forms where temperatures are high and where sub cooled boiling occurs on the rod surface.
+Where $N_{\mathrm{NiFe},c}$ is the concentration of Nickel Ferrite in the crud within a small finite volume on the cladding surface.  $N_{\mathrm{NiFe}, \mathrm{cool}}$ is the concentration of nickel and iron impurities in the coolant.  $\alpha_b$ and $\alpha_{nb}$ represent boiling and non-boiling rate constants respectively.  The boiling component of the boundary heat flux (BHF) on the outer cladding surface is given by $q''_b [W/m^2]$. Note that  $q''_b$ is only non-zero when $T>T_{sat}$. $\gamma_k$ is an erosion multiplier and $k$ is the near-wall local TKE.  Crud typically forms where temperatures are high and where sub cooled boiling occurs on the rod surface.
 \index{Crud!Formation}
 
 The primary porous matrix of crud is \ce{NiFe_2O_4}, however, there are other constituents such as Nickel oxide, \ce{Ni_2FeBO_5} and \ce{Li_2B_4O_7} compounds \cite{Henshaw2006TheCO} \cite{mongoose17}. In particular, the porous matrix of \ce{NiFe_2O_4} is filled in by precipitated \ce{Li_2B_4O_7} in regions which experience boiling, thus trapping boron inside the crud layer.  The net result of the trapped boron in the crud layer is a shift in power towards the bottom of the core.
 \index{Crud!Boron}
 
-For the purpose of pressurized water reactor (PWR) core simulation crud is modeled at the core wide scale.  In this application, typically TH boundary conditions are supplied to the crud simulation code by subchannel models.  Additionally, high fidelity CFD/crud coupling work has been conducted that predicted striping patterns, or high variations in azimuthal crud growth, downstream of spacer grids \cite{slattery16}.  The coupled CFD/crud results were shown to be qualitatively consistent with the available experimental crud scrape data which also shows high azimuthal variation downstream spacer grids \cite{kendrick13}.
+For the purpose of pressurized water reactor (PWR) core simulation crud is modeled at the core wide scale.  In this application, typically TH boundary conditions are supplied to the crud simulation code by subchannel models.  Additionally, high fidelity CFD/crud coupling work has been conducted that predicted striping patterns, or high variations in azimuthal crud growth, downstream of spacer grids \cite{slattery16}.  The coupled CFD/crud results were shown to be qualitatively consistent with the available experimental crud scrape data which also shows high azimuthal variation downstream spacer grids \cite{kendrick13}. In contrast, no such striping patterns are resolved by the subchannel model.
 \index{Crud!Model} 
 
 Three primary concerns were identified with the current state of the art crud models used in core simulators in multi-cycle depletion applications.
@@ -116,7 +116,7 @@ Finally, the source and rate at which primary loop impurities buildup over time 
 \section{Hi2lo Discussion}
 
 Hi2lo, or high to low modeling, implies that a source of high fidelity gold standard data produced by an expensive to evaluate physics model is used to downscale and augment a low fidelity model of the same physics.
-Provided sparsely available high fidelity data, this mapping must be possible even in the case where matching high and low fidelity results do not exist.  The hi2lo strategy put forward in this work may be viewed as a particular implementation of a statistical downscaling (SD) based model, of which a large variety exist in the literature and some of which are described in chapter \ref{chap:lit}.  One interesting challenge in this work which is atypical of SD models is the requirement of co-prediction of multiple correlated fields, sometimes this is referred to as multiple target regression.
+Provided sparsely available high fidelity data, this mapping must be possible even in the case where matching high and low fidelity results do not exist.  Similarly, the hi2lo strategy put forward in this work may be viewed as a particular implementation of a statistical downscaling (SD) model, of which a large variety exist in the literature and some of which are described in chapter \ref{chap:lit}.  One interesting challenge in this work which is atypical of SD models is the requirement of co-prediction of multiple correlated fields, sometimes this is referred to as multiple target regression.
 \index{Hi2lo}
 
 % The hi2lo mapping, which includes downscaling and augmentation of the CTF-predicted low fidelity fuel rod surface temperature, TKE, and boundary heat flux surface fields, must possible given any CTF pin at any operating condition - even when only a relatively small number of high fidelity results are available.  
