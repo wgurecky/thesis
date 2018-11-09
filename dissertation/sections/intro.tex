@@ -14,7 +14,7 @@ The development of MAMBA and other VERA tools provided a starting point for the 
 
 A phenomena known as crud Induced Power Shift (CIPS) is caused by the presence
 of elevated \ce{^{10}B} concentrations in the crud layer.  Since crud is preferentially
-deposited on the fuel rods' in hot regions of the core and \ce{^{10}B} is a strong neutron absorber, the crud buildup leads to a slight shift in
+deposited on the fuel rods in hot regions of the core and \ce{^{10}B} is a strong neutron absorber, the crud buildup leads to a slight shift in
 power production towards the bottom of the core under steady state operation.
 Crud induced power shift impacts the burnup distribution over a cycle, reduces shutdown margin,
 and is important to account for when computing thermal
@@ -77,7 +77,7 @@ for a statistically driven approach which predicts the fractional
 area of a rod's surface in excess of some critical temperature - but not
 precisely where such maxima occur.
 
-In this approach the method does not predict the fine scale flow and temperature field on the pin surface, rather, this approach estimates the joint temperature, TKE, and BHF probability density on each CTF face.  The goal is retain the minimum amount of information required to predict the correct total amount of crud harbored in each CTF face.  The amount of crud deposition downstream of spacer grids is influenced by the presence of hot and cold spots present due to the turbulent flow induced by mixing vanes.  crud is highly sensitive to the rod surface temperature, particularly around the saturation point, and therefore it is important to account for these small scale flow features when providing boundary conditions to the crud simulation.
+In this approach the method does not predict the fine scale flow and temperature field on the pin surface, rather, this approach estimates the joint temperature, TKE, and BHF probability density on each CTF face.  The goal is retain the minimum amount of information required to predict the correct total amount of crud harbored in each CTF face.  The amount of crud deposition downstream of spacer grids is influenced by the presence of hot and cold spots present due to the turbulent flow induced by mixing vanes.  Crud is highly sensitive to the rod surface temperature, particularly around the saturation point, and therefore it is important to account for these small scale flow features when providing boundary conditions to the crud simulation.
 
 By capturing the action of local hot and cold spots on the crud deposition rate the hi2lo method accounts for more physics when making predictions of the total integrated boron mass in the crud layer than a subchannel code could provide alone.  An improvement in crud predictions in the immediate vicinity of mixing vanes results in an overall improvement in CIPS predictions since both the total integrated boron mass within the crud layer as well as the axial distribution of crud is of principle importance when predicting crud induced power shift.  Additionally, the ability to estimate the likelihood of extreme crud buildup events enables the hi2lo methods developed in this work to function as a crud induced local corrosion (CILC) scoping tool.  It is envisioned that such a tool will identify potential CILC hot spots where a significant amount of cladding is consumed by oxide ingress, resulting in potential fuel failure.  The effectiveness of the model in this role is governed by the magnitude of propagated uncertainties through the hi2lo model.
 
@@ -85,7 +85,7 @@ Prior to this work, hi2lo efforts directed at improving subchannel thermal hydra
 
 \section{Crud Background}
 
-The buildup of crud results from the deposition of metal particulates and corrosion products entrained in the primary coolant loop of a light water reactor on the exterior surface of the fuel rods.  These impurities arise from erosion and corrosion processes elsewhere in the loop.  Of all the coolant impurities, the largest contributor the initial formation of a crud layer on the outer cladding surface is Nickle Ferrite.  The initial build up of Nickle Ferrite may be described by the ordinary differential equation (ODE) shown in equation \ref{eq:crud_nife}.
+The buildup of crud results from the deposition of metal particulates and corrosion products entrained in the primary coolant loop of a light water reactor on the exterior surface of the fuel rods.  These impurities arise from erosion and corrosion processes elsewhere in the loop.  Of all the coolant impurities, the largest contributor the initial formation of a crud layer on the outer cladding surface is nickel ferrite.  The initial build up of nickel ferrite may be described by the ordinary differential equation (ODE) shown in equation \ref{eq:crud_nife}.
 \index{Crud}
 
 \begin{equation}
@@ -108,7 +108,7 @@ The first concerns passing incorrect boundary conditions to the crud model.  Han
 
 The second issue pertains to the physics models in the current crud model implementation.  There are missing or incomplete models for the formation of Nickel oxide in the crud layer, incorrect pore fill kinetics, and incorrect crud model parameters including parameters governing chimney heat transfer rates, Arrhenius rate constants, and species diffusion constants. These should be addressed via experiment and Bayesian model calibration which is beyond the scope of this work.
 
-Finally, the source and rate at which primary loop impurities buildup over time has come into question.  Different PWR designs of varying vintage have different metallurgy and components in the primary coolant loop circuit.  These inconsistencies make it non-trival to predict the release rate of Nickel and Iron impurities into the coolant loop in each of these plants.  Determining the source term magnitude from these primary loop corrosion and errosion born impurities is an area of ongoing research.
+Finally, the source and rate at which primary loop impurities buildup over time has come into question.  Different PWR designs of varying vintage have different metallurgy and components in the primary coolant loop circuit.  These inconsistencies make it non-trivial to predict the release rate of Nickel and Iron impurities into the coolant loop in each of these plants.  Determining the source term magnitude from these primary loop corrosion and errosion born impurities is an area of ongoing research.
 
 % A predictive crud capability integrated with the core simulator is desired by CASL. The aformentioned issues are before CILC and CIPS predictions can be made and accepted by plant designers and core loading specialists.
 

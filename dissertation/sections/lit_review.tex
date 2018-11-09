@@ -23,11 +23,11 @@ It is also possible to nest a high fidelity simulation within a coarse fidelity 
 
 \section{Kriging}
 
-Danie G. Krige developed an interpolation scheme centered around modeling the spatial-autocorrelation of a random field in an effort to make credible predictions of the spatial distribution of gold ore concentrations given sparse, uncertain estimates \cite{krige51}, \cite{Krige51a}.  This particular interpolation procedure came to bare his name. Following kriging's introduction, the technique has propagated through the geostatistics community.  Kriging is applicable when estimates of the mean and variance of a random field are desired in between sparse training data samples.  The technique can be viewed as a special case of Gaussian process regression \cite{Williams96}.  Kriging is related to Gaussian process regression since the underlying goal of both approaches is to model the spatial autocorrelation of a random field.  
+Danie G. Krige developed an interpolation scheme centered around modeling the spatial-autocorrelation of a random field in an effort to make credible predictions of the spatial distribution of gold ore concentrations given sparse, uncertain estimates \cite{krige51}, \cite{Krige51a}.  This particular interpolation procedure came to bear his name. Following kriging's introduction, the technique has propagated through the geostatistics community.  Kriging is applicable when estimates of the mean and variance of a random field are desired in between sparse training data samples.  The technique can be viewed as a special case of Gaussian process regression \cite{Williams96}.  Kriging is related to Gaussian process regression since the underlying goal of both approaches is to model the spatial autocorrelation of a random field.  
 % An example of application of kriging to a soil quality data set is left to Hengl et. al \cite{Hengl07}.
 \index{Kriging}
 
-Kriging or Gaussian process regression techniques are well suited when the distribution of residual about the interpolating model can be assumed to be normally distributed.  Simple kriging assumes that the mean of the underlaying field does not drift as a function location in the input space and therefore only requires the fitting of a variogram which describes the statistical spatial autocorrelation between the known data.  More advanced kriging strategies such as regression kriging (RK) forgo this simplification decomposing the interpolation problem into mean predicting and bias-correcting residual models \cite{Hengl07}.  In RK the spatial-autocorrelation in the residuals is modeled by a simple kriging model.  The mean response may be predicted by a variety of regression strategies, with a common choice being an ordinary least squares model though works which investigate the use of random forests or more advanced machine learning strategies in this role are pervasive \cite{LI20111647} \cite{LI2017112}.
+Kriging or Gaussian process regression techniques are well suited when the distribution of residual about the interpolating model can be assumed to be normally distributed.  Simple kriging assumes that the mean of the underlaying field does not drift as a function of location in the input space and therefore only requires the fitting of a variogram which describes the statistical spatial autocorrelation between the known data.  More advanced kriging strategies such as regression kriging (RK) forgo this simplification decomposing the interpolation problem into mean predicting and bias-correcting residual models \cite{Hengl07}.  In RK the spatial-autocorrelation in the residuals is modeled by a simple kriging model.  The mean response may be predicted by a variety of regression strategies, with a common choice being an ordinary least squares model though works which investigate the use of random forests or more advanced machine learning strategies in this role are pervasive \cite{LI20111647} \cite{LI2017112}.
 \index{Kriging!Regression Kriging}
 
 The initial approach taken to construct a RK model shown in equation \ref{eq:decomp} shows strong parallels to the hi2lo method developed in the current work.  A key difference is that the primary focus of an RK model is to capture spatial auto-correlations in the field data where the current work does not seek to model spatial-autocorrelation of a random field since such information is extraneous when making crud predictions with a one-dimensional crud model.   If the ability to predict the full 2D surface distributions of the FOI are desired then a RK model could yield the requisite fine scale surface distributions with uncertainty estimates provided future study.
@@ -78,7 +78,7 @@ c(q_n,q_1) & \cdots & c(q_n,q_n)
 \label{eq:simple_krige_weights}
 \end{equation}
 
-A common choice for the kernel is the squared-exponential covariance function provied in equation \ref{eq:cov_kernel}.
+A common choice for the kernel is the squared-exponential covariance function provided in equation \ref{eq:cov_kernel}.
 \begin{equation}
     c(d) = e^{-(d/v)^2}
     \label{eq:cov_kernel}
@@ -144,7 +144,7 @@ Where the first term accounts for the effect of grid flow restriction and the se
     \caption{S. Yao empirical Nusselt number ratio vs. distance from upstream spacer grid.}
     \label{fig:gridnueff}
 \end{figure}
-This work is important because it repents an early approach to building experimentally informed hi2lo subchannel models.  The Yao model is still employed by modern subchannel codes such as CTF to obtain more accurate rod surface temperature distributions near the spacer grids.
+This work is important because it represents an early approach to building experimentally informed hi2lo subchannel models.  The Yao model is still employed by modern subchannel codes such as CTF to obtain more accurate rod surface temperature distributions near the spacer grids.
 
     Similar to Yao's approach for capturing rod-enhanced heat transfer,  B. Salko et al. developed a CFD-Informed hi2lo spatial remapping procedure for CILC/CIPS screening \cite{salko17}.  Rather than establishing a general empirical relationship between grid geometric features and the flow field, Salko developed grid specific maps.  The developed multiplier maps are applicable only to the grid designed on which they are based.  In contrast to Yao's approach, this approach enables the retention of much higher resolution flow field features in the multiplier maps.  In addition to generating heat transfer multiplier maps, this method developed a TKE mapping procedure since both fields are required for accurate crud predictions.  Both maps are applied in conjunction to a baseline CTF result to produce grid enhanced surface temperature and TKE distributions at runtime of the CTF model.
     
@@ -194,7 +194,7 @@ This work is important because it repents an early approach to building experime
     \end{algorithm}
     Where $h_{ctf}(\cdot)$ is a callable CTF function that returns an effective multiphase HTC, $h_{eff}$.
 
-    The TKE remap is constructed by evaluation the ratio given in equation \ref{eq:tke_map} on all CTF faces.
+    The TKE remap is constructed by evaluating the ratio given in equation \ref{eq:tke_map} on all CTF faces.
     \begin{equation}
        \mathbf m_{k} = \frac{k_{cfd}}{k_{0}}
        \label{eq:tke_map}
@@ -212,7 +212,7 @@ Crud is grown on the coupling mesh using augmented temperature and TKE surface f
  \end{equation}
 Where $A$ is the area of the CTF face and $a_i$ is the area of each cell face on the crud coupling mesh.
 
-A key assumption that the multiplier maps are insensitive flow rate was made in the first implementation of this downscaling technique.  However this assumption is not strictly true: The multiplier maps carry some dependence on the inlet flow conditions.  An increase in flow rate changes the shape and extent of the wake region downstream of spacer grids which impacts the rod surface temperature and TKE fields.
+A key assumption that the multiplier maps are insensitive to flow rate was made in the first implementation of this downscaling technique.  However this assumption is not strictly true: The multiplier maps carry some dependence on the inlet flow conditions.  An increase in flow rate changes the shape and extent of the wake region downstream of spacer grids which impacts the rod surface temperature and TKE fields.
 
     An extension of the multiplier map hi2lo procedure could linearly interpolate between multiplier maps developed at high and low inlet flow rate conditions.
     \begin{align*}
