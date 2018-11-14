@@ -91,7 +91,7 @@ The objective of feature engineering is to select a predictive variable set that
 \end{center}
 \end{table}
 
-The predictive variables given in table \ref{tab:features} were selected based on two criteria:  Availability and orthogonality.  In order to evaluate the trained machine learning model at a TH state point each conditioning variable should be made available by VERA or must be computable from CTF results and supplied as input to the trained machine learning models.   The exogenous variable set given in table \ref{tab:features} comprise the local core conditions, or TH conditions at any given CTF face.  The machine learning model uses the local core conditions as the exogenous feature set, thus these features must be supplied to the fitted gradient boosted regressors at runtime in order to evaluate the model.
+The predictive variables given in table \ref{tab:features} were selected based on two criteria:  Availability and orthogonality.  In order to evaluate the trained machine learning model at a TH state point each conditioning variable should be made available by VERA or must be computable from CTF results and supplied as input to the trained machine learning models.   The exogenous variable set given in table \ref{tab:features} comprise the local core conditions at any given CTF face.  The machine learning model uses the local core conditions as the exogenous feature set, thus these features must be supplied to the fitted gradient boosted regressors at runtime in order to evaluate the model.
 
 % This has to be true since when evaluating the hi2lo model the inputs to the hi2lo model are required to be derived from either previously stored information or information made available by CTF at runtime.
 
@@ -258,14 +258,14 @@ Note that since a LOO CV technique was used for comparing the predicted distribu
 
 \begin{figure}[H]%
     \centering
-    \subfloat[TKE quantile regression results. CFD in dashed line.  Predicted values as solid. Azimuthally Integrated.]{{\includegraphics[width=0.45\linewidth]{figs/ml_fit/q_tke_regression_3} }}%
+    \subfloat[TKE quantile regression results. CFD in dashed line.  Predicted values as solid. Azimuthally integrated.]{{\includegraphics[width=0.45\linewidth]{figs/ml_fit/q_tke_regression_3} }}%
     \qquad
     \subfloat[Q-Q plot of TKE quantile regression predictions from LOO cross validation study]{{\includegraphics[width=0.45\linewidth]{figs/ml_fit/qq_tke_pin_3} }}%
     \caption[Q-Q LOO TKE pin 3 results.]{Pin 3 TKE quantile regression predictions from LOO cross validation study.}%
     \label{fig:tkepin3}%
 \end{figure}
 
-Shown in the axial plots in figure \ref{fig:tkepin1} to \ref{fig:tkepin3}, the TKE distribution is drastically influenced by spacer grids.  The maximum near-wall TKE sharply increases following a spacer grid followed by a decay towards a more orderly flow.  The location of minimum predicted near wall TKE also immediately follows the spacer grids.  In addition to increasing the net turbulent kinetic energy of the flow, mixing vanes also produce eddy regions of stagnant flow thus giving rise to regions of low near wall TKE.  The hi2lo model retains both of these properties of the flow field resolved by CFD.    
+Shown in the axial plots in figures \ref{fig:tkepin1} to \ref{fig:tkepin3}, the TKE distribution is drastically influenced by spacer grids.  The maximum near-wall TKE sharply increases following a spacer grid followed by a decay towards a more orderly flow.  The location of minimum predicted near wall TKE also immediately follows the spacer grids.  In addition to increasing the net turbulent kinetic energy of the flow, mixing vanes also produce eddy regions of stagnant flow thus giving rise to regions of low near wall TKE.  The hi2lo model retains both of these properties of the flow field resolved by CFD.
 
 Good overall performance of the TKE quantile regression models may be attributed to high pin-to-pin and span-to-span similarities of the surface TKE distributions. The observation of high span-to-span repeatability of the TKE distributions is consistent with those found in other hi2lo studies by Salko et. al \cite{salko17}.
 
@@ -298,7 +298,9 @@ Temperature residual quantile regression results are given in figures \ref{fig:t
     \label{fig:temppin3}%
 \end{figure}
 
-Inspecting the axial quantile difference figures \ref{fig:temppin1}a to \ref{fig:temppin3}a, on average the extreme quantiles exhibit the largest axial RMS prediction errors.  This is expected behavior since the estimates the extreme quantiles from a sample population is naturally fraught with high variance as described by equation \ref{eq:theory_qdist_1}.  Recall that this fact was also experimentally demonstrated using a simple test quantile regression problem in section \ref{chap:GBRT}.  In both cases the distribution of the residuals between the gradient boosted quantile predictions and the empirical sample quantiles increased in variance when estimating the more extreme conditional quantiles.
+Inspecting the axial quantile difference figures \ref{fig:temppin1}a to \ref{fig:temppin3}a, on average the extreme quantiles exhibit the largest axial RMS prediction errors.  The magnitude of the extreme quantile prediction errors may also gauged by inspecting the upper and lower regions in the Q-Q plots.
+
+Estimates of the extreme quantiles from a sample population are naturally fraught with high variance as described by equation \ref{eq:theory_qdist_1}.  Recall that this fact was also experimentally demonstrated using a simple test quantile regression problem in section \ref{chap:GBRT}.  In both cases the distribution of the residuals between the gradient boosted quantile predictions and the empirical sample quantiles increased in variance when estimating the more extreme conditional quantiles.
 
 
 \subsection{Kendall's $\tau$ Regression}
@@ -614,25 +616,25 @@ Consistent under prediction of crud across the assembly was not observed. The to
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\linewidth]{figs/5x5/imp/tot_bmass_rel_asm_errors_hmap}
-    \caption{5x5 Integrated crud boron mass relative error distribution. Top down bundle view.}
+    \caption{5x5 integrated crud boron mass relative error distribution. Top down bundle view.}
     \label{fig:totbmassrelasmerrorshmap}
 \end{figure}
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\linewidth]{figs/5x5/imp/tot_boron_asm_errors_hmap}
-    \caption{5x5 Integrated crud boron mass absolute error distribution. Top down bundle view. }
+    \caption{5x5 integrated crud boron mass absolute error distribution. Top down bundle view. }
     \label{fig:totboronasmerrorshmap}
 \end{figure}
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\linewidth]{figs/5x5/imp/tot_cmass_asm_errors_hmap}
-    \caption{5x5 Integrated crud mass absolute error distribution. Top down bundle view.}
+    \caption{5x5 integrated crud mass absolute error distribution. Top down bundle view.}
     \label{fig:totcmassasmerrorshmap}
 \end{figure}
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\linewidth]{figs/5x5/imp/tot_cmass_rel_asm_errors_hmap}
-    \caption{5x5 Integrated crud mass relative error distribution. Top down bundle view.}
+    \caption{5x5 integrated crud mass relative error distribution. Top down bundle view.}
     \label{fig:totcmassrelasmerrorshmap}
 \end{figure}
 
