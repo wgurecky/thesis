@@ -169,15 +169,15 @@ Examples of valid copula are given in figure \ref{fig:montage_cop}.  A wide rang
 \subsection{Fitting Copula}
 \label{sec:fitting_copula}
 
-Fitting copula to empirical data can be carried out by the method of maximum likelihood (ML).  Consider the bivariate case where $N$ sample pairs, $\{w_i, v_i\}_{i\in [ 1,N ] }$  are known. The likelihood function for a copula is given by equation \ref{eq:lik}.  For any given sample pair, each factor in the likelihood function describes how probable it was for that sample originated from the underlying copula distribution with parameter $\theta_c$.
+Fitting copula to empirical data can be carried out by the method of maximum likelihood (ML).  Consider the bivariate case where $N$ sample pairs, $\{w_i, v_i\}_{i\in [ 1,N ] }$  are known. The likelihood function for a copula is given by equation \ref{eq:lik}.  The likelihood is a function of the distribution parameter $\theta_c$ with the data, $\{\mathbf w,\mathbf v \}$, held fixed. When integrated over all possible parameter values the integrated result does not necessarily take on a value of unity and therefore cannot be strictly interpreted as a probability density. Each constituent factor in the likelihood function can be interpreted as the relative likelihood that the sample pair $\{w_i, v_i\}$ arose from the copula density function with parameter $\theta_c$.
 \index{Copula!Fitting}
 
 \begin{equation}
-\mathcal{L}= \prod_{i=1}^N c(w_i, v_i|\theta_c)
+    \mathcal{L}(\theta_c;\mathbf w,\mathbf v)= \prod_{i=1}^N c(w_i, v_i|\theta_c)
 \label{eq:lik}
 \end{equation}
 
-Where $\theta$ is the free copula shape parameter.
+Where $\theta_c$ is the free copula shape parameter.
 Typically the negative log-likelihood, $-\mathrm{ln}\mathcal{L}$, is used in when performing ML estimation of a distribution parameter since the problem is typically cast in terms of a minimization problem.  
 \begin{equation}
 \hat \theta_{c,ML} = \mathrm{argmin}_{\theta_c}[-\mathrm{ln}\mathcal{L}(\theta_{c} ; \mathbf w, \mathbf v)]
@@ -185,7 +185,7 @@ Typically the negative log-likelihood, $-\mathrm{ln}\mathcal{L}$, is used in whe
 \end{equation}
 \index{Maximum Likelihood}
 
-To minimize the negative log likelihood in equation \ref{eq:nlog_lik}  one computes the partial derivative with respect to $\theta_c$ and finds the value $\hat \theta_{c,ML}$ for which this expression reaches zero.  This can be carried out by Newton's method.  If the partial derivatives of the copula's negative log likelihood are difficult to compute one can estimate them by finite difference. 
+To minimize the negative log likelihood in equation \ref{eq:nlog_lik}  one computes the partial derivative with respect to $\theta_c$ and finds the value $\hat \theta_{c,ML}$ for which this expression reaches zero.  This can be carried out by Newton's method.  If the partial derivatives of the copula's negative log likelihood are impossible to compute analytically one can estimate them by finite difference.
 
 In order to determine which copula family best represents the data, an arsenal of statistical tests can be applied to select the copula which best fits the data.  Here, we consider two methods:  (1) Comparing Akaike information criterion (AIC) and (2) graphically comparing each fitted copula.  
 
@@ -239,7 +239,7 @@ Equation \ref{eq:tauar} relates an Archimedean copula's parameter to $\rho_\tau$
 \rho_\tau = 1 + 4 \int_0^1 \frac{\varphi(\theta_c,t)}{\varphi'(\theta_c, t)}dt
 \label{eq:tauar}
 \end{equation}
-Where $\varphi(t)$ is the copula's generator function and $\varphi'(t)$ is the first derivative of the generator function with respect to $t$. A list of copula generator functions can be found in \cite{Nelsen2006}. 
+Where $\varphi(t)$ is the copula's generator function and $\varphi'(t)$ is the first derivative of the generator function with respect to $t$. A list of copula generator functions may be found in introductory copula texts \cite{Nelsen2006}.
 
 %\subsection*{Archimedean Copula}
 
