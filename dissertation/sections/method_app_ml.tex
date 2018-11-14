@@ -441,7 +441,6 @@ Circumventing these difficulties is a non-trivial undertaking.  Without making a
     \label{fig:dist_hi2loimppinzcthick}
 \end{figure}
 
-
 % Redundant since we already have tempearture and TKE results
 % \begin{figure}[H]
 %    \centering
@@ -459,9 +458,9 @@ Circumventing these difficulties is a non-trivial undertaking.  Without making a
 \subsection{Multi Pin Comparisons}
 \label{sec:multi_pin_result}
 
-Results for each pin in the LOO cross validation study are presented here.  There was random variation in the prediction accuracy of the model across the 5x5 assembly with no apparent spatial bias in the model prediction errors towards the edge of the assembly, as one may expect.  This would indicate that some pins in the 5x5 assembly are, in a sense, more unique with respect to thermal hydraulic flow conditions than others.  Pins where a small difference between the hi2lo model predictions and the gold-standard CFD result show that the pin's thermal hydraulic conditions are well represented in the training set.
+Results for each pin in the LOO cross validation study are presented here.  There was random variation in the prediction accuracy of the model across the 5x5 assembly with no apparent spatial bias in the model prediction errors towards the edge of the assembly, as one may expect.  This would indicate that some pins in the 5x5 assembly are, in a sense, more unique with respect to thermal hydraulic flow conditions than others.  Some pins, especially pin 9, show a small difference between the hi2lo model predictions and the gold-standard CFD result.  The thermal hydraulic conditions surrounding these high performing pins are well represented in the training set.
 
-In table \ref{tab:loo_crud_bmass} and \ref{tab:loo_crud_cmass} rod integrated crud results for each pin are given at 300 days of simulation time.  The worst performing pin with respect to boron deposition prediction was pin 4 by relative percent difference between the hi2lo result and the CFD driven crud result.  The Kendall's $\tau$ boosted regressor produced large prediction errors as measured by the LOO cross validation for this pin, as shown in table \ref{tab:loo_rms}.  Incorrect predictions made for the correlation coefficient act in concert with a net under-prediction of the temperature quantiles, as shown in figure \ref{fig:qqtwallmontagesm}, giving rise to a significant ($\approx -48\%$) net under prediction of the total crud mass on pin 4.
+In table \ref{tab:loo_crud_bmass} and \ref{tab:loo_crud_cmass} rod integrated crud results for each pin are given at 300 days of simulation time.  The worst performing pin with respect to boron deposition prediction was pin 4 by relative percent difference between the hi2lo result and the CFD driven crud result.  The boosted regressor produced large Kendall's $\tau$ prediction errors for this pin as shown in table \ref{tab:loo_rms}.  Incorrect predictions made for Kendall's $\tau$ acted in concert with a net under-prediction of the temperature quantiles, as shown in figure \ref{fig:qqtwallmontagesm}, which gave rise to a significant ($\approx -48\%$) net under prediction of the total crud mass on pin 4.  This highlights the importance of correctly predicting the conditional quantiles of the temperature distribution on the rod surface as a function of local core conditions since crud growth is highly sensitive to the outer cladding temperature.
 
 
 % Hi2lo Bmass results
@@ -667,10 +666,10 @@ A strong positive correlation was observed between the root-mean-squared crud er
 
 
 \begin{itemize}
-	\item Pre-processing the data set requires generating paired CFD and subchannel results with congruent geometries and inlet boundary conditions.  The fine CFD data is first aggregated onto the subchannel grid.  Explanatory features are extracted from the available subchannel results and paried with statistical properties of the residual distribution of the CFD result about the subchannel result in each subchannel face. The paired explanatory feature set and distribution properties are written to an HDF5 file for use as a training data set.
+	\item Pre-processing the data set requires generating paired CFD and subchannel results with congruent geometries and inlet boundary conditions.  The fine CFD data is first aggregated onto the subchannel grid.  Explanatory features are extracted from the available subchannel results and paired with statistical properties of the residual distribution of the CFD result about the subchannel result in each subchannel face. The paired explanatory feature set and distribution properties are written to an HDF5 file for use as a training data set.
     \item Crud predictions made by the hi2lo model were compared against CFD/crud coupled results and CTF/crud results.  The axial and integrated crud results produced by the hi2lo model compared favorably to the CFD results.  The impact of spacer grids on the crud distribution was captured by the hi2lo model.  Shown in figure \ref{fig:asmcmasstime}, the assembly integrated crud mass results for the 5x5 assembly differed from the gold-standard CFD assembly integrated results by -8.8360e-01 $[g]$ for a relative difference of -8.9\%.
     \item A leave-one-out cross validation strategy was utilized to estimate the predictive performance of the model.
-    \item The prediction accuracy of the temperature and TKE quantile regression models was summarized though Q-Q plots for each pin in the LOO cross validation study.
+    \item The prediction accuracy of the temperature and TKE quantile regression models was summarized through Q-Q plots for each pin in the LOO cross validation study.
     \item The prediction accuracy of the Kendall's $\tau$ regression model was assessed using the root-mean-square error for each pin in the LOO cross validation study.  \item Correlations between the errors committed by the machine learning models and the crud prediction errors were computed.  High uncertainty associated with these correlation measures did not permit a statistically significant link between poor Kendall's $\tau$ predictive performance and poor crud predictions to be drawn.
     \item The copula classifier performed poorly given the current set of considered explanatory variables and limited size of the training data set.  A Gaussian copula was assumed on each CTF face in place of the poorly predicted copula family from the classifier.  Recalling the results shown in section \ref{sec:crud_copula_sensi}, this is not expected to reduce crud prediction accuracy.
 \end{itemize}
