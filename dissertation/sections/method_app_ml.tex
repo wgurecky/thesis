@@ -46,15 +46,13 @@ Next, correlation statistics are computed from the residual distributions.
 Copula fitting by the maximum likelihood method with AIC model selection is carried out on each CTF face.  Additionally, the empirical Kendall's $\tau$ rank correlation coefficient is computed from the raw CFD data on each CTF face. Figure \ref{fig:copula_predicted} shows the copula parameters estimated from the raw CFD data on each pin as a function of axial position for the first 4 pins in the 5x5 CFD model.  There is a marked change in behavior of the copula between the pins.  This was an unexpected find since the flow patterns were speculated to be reasonably consistent from pin to pin.  Also, the influence of spacer grids on the correlation coefficient between the temperature and TKE fields is visible.  Across spacer grids the correlation coefficient sharply falls indicating a tighter coupling between the TKE and temperature surface fields as the flow necks down when entering a grid.  This is followed by a sharp change in Kendall's $\tau$ towards zero indicating the temperature and TKE surface fields become less correlated immediately following the mixing vanes.  This change in correlation behavior is posited to be due to turbulent mixing effects.  The computed copula parameters are also stored alongside the raw temperature, TKE, and boundary heat flux aggregated residual distribution data in the HDF5 table.
 
 \begin{figure}[H]%
+    \captionsetup[subfigure]{justification=centering}
     \centering
-    \subfloat[Pin 1]{{\includegraphics[width=0.45\linewidth]{figs/preproc/copula_params_pin_1} }}%
-    \qquad
-    \subfloat[Pin 2]{{\includegraphics[width=0.45\linewidth]{figs/preproc/copula_params_pin_2} }}%
-    \qquad
-        \subfloat[Pin 3]{{\includegraphics[width=0.45\linewidth]{figs/preproc/copula_params_pin_3} }}%
-    \qquad
-        \subfloat[Pin 4]{{\includegraphics[width=0.45\linewidth]{figs/preproc/copula_params_pin_4} }}%
-    \qquad
+    \subfloat[Pin 1]{{\includegraphics[width=0.53\linewidth]{figs/preproc/copula_params_pin_1} }}\hspace*{-1.0em}%
+    \subfloat[Pin 2]{{\includegraphics[width=0.53\linewidth]{figs/preproc/copula_params_pin_2} }}\hspace*{-1.0em}%
+    \\
+    \subfloat[Pin 3]{{\includegraphics[width=0.53\linewidth]{figs/preproc/copula_params_pin_3} }}\hspace*{-1.0em}%
+    \subfloat[Pin 4]{{\includegraphics[width=0.53\linewidth]{figs/preproc/copula_params_pin_4} }}\hspace*{-1.0em}%
     \caption[Best fitting copula to CFD data.]{Best fitting copula determined by AIC model selection as a function of axial rod position.}%
     \label{fig:copula_predicted}%
 \end{figure}
@@ -117,7 +115,7 @@ An estimate of the per pin crud prediction errors incurred when evaluating the t
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.3\linewidth]{figs/drawings/5x5_loo}
+    \includegraphics[width=0.4\linewidth]{figs/drawings/5x5_loo}
     \caption[Example pin layout for leave-one-out cross validation procedure.]{Example pin layout for leave-one-out cross validation procedure.  The gradient boosted models are trained on CFD and CTF data extracted from the blue pins.  Crud predictions are made on the missing pin.}
     \label{fig:5x5loo}
 \end{figure}
@@ -239,28 +237,28 @@ The two sample KS test is generally regarded as a statistically weak, requiring 
 Note that since a LOO CV technique was used for comparing the predicted distributions to the empirical CFD distributions complications in the KS test which arise when the parameters of the predicted distribution are estimated from the target empirical data set were avoided \cite{kstestInfo}.   Under these circumstances the KS test would no longer be valid though methods based on bootstrap resampling have been proposed to resolve this specific limitation of the traditional KS test \cite{kstestInfo}.
 
 \begin{figure}[H]%
+    \captionsetup[subfigure]{justification=centering}
     \centering
-    \subfloat[TKE quantile regression results. CFD in dashed line.  Predicted values as solid. Azimuthally integrated.]{{\includegraphics[width=0.45\linewidth]{figs/ml_fit/q_tke_regression_1} }}%
-    \qquad
-    \subfloat[Q-Q plot of TKE quantile regression predictions from LOO cross validation study]{{\includegraphics[width=0.45\linewidth]{figs/ml_fit/qq_tke_pin_1} }}%
+    \subfloat[][TKE quantile regression results. \\ CFD in dashed line.  Predicted values as solid. \\ Azimuthally integrated.]{{\includegraphics[width=0.53\linewidth]{figs/ml_fit/q_tke_regression_1} }}\hspace*{-1.0em}%
+    \subfloat[][Q-Q plot of TKE quantile regression \\ predictions from LOO cross validation study]{{\includegraphics[width=0.56\linewidth]{figs/ml_fit/qq_tke_pin_1} }}%
     \caption[Q-Q LOO TKE pin 1 results.]{Pin 1 TKE quantile regression predictions from LOO cross validation study.}%
     \label{fig:tkepin1}%
 \end{figure}
 
 \begin{figure}[H]%
+    \captionsetup[subfigure]{justification=centering}
     \centering
-    \subfloat[TKE quantile regression results. CFD in dashed line.  Predicted values as solid. Azimuthally integrated.]{{\includegraphics[width=0.45\linewidth]{figs/ml_fit/q_tke_regression_2} }}%
-    \qquad
-    \subfloat[Q-Q plot of TKE quantile regression predictions from LOO cross validation study]{{\includegraphics[width=0.45\linewidth]{figs/ml_fit/qq_tke_pin_2} }}%
+    \subfloat[][TKE quantile regression results. \\ CFD in dashed line.  Predicted values as solid. \\ Azimuthally integrated.]{{\includegraphics[width=0.53\linewidth]{figs/ml_fit/q_tke_regression_2} }}\hspace*{-1.0em}%
+    \subfloat[][Q-Q plot of TKE quantile regression \\ predictions from LOO cross validation study]{{\includegraphics[width=0.56\linewidth]{figs/ml_fit/qq_tke_pin_2} }}%
     \caption[Q-Q LOO TKE pin 2 results.]{Pin 2 TKE quantile regression predictions from LOO cross validation study.}%
     \label{fig:tkepin2}%
 \end{figure}
 
 \begin{figure}[H]%
+    \captionsetup[subfigure]{justification=centering}
     \centering
-    \subfloat[TKE quantile regression results. CFD in dashed line.  Predicted values as solid. Azimuthally integrated.]{{\includegraphics[width=0.45\linewidth]{figs/ml_fit/q_tke_regression_3} }}%
-    \qquad
-    \subfloat[Q-Q plot of TKE quantile regression predictions from LOO cross validation study]{{\includegraphics[width=0.45\linewidth]{figs/ml_fit/qq_tke_pin_3} }}%
+    \subfloat[][TKE quantile regression results. \\ CFD in dashed line.  Predicted values as solid. \\ Azimuthally integrated.]{{\includegraphics[width=0.53\linewidth]{figs/ml_fit/q_tke_regression_3} }}\hspace*{-1.0em}%
+    \subfloat[][Q-Q plot of TKE quantile regression \\ predictions from LOO cross validation study]{{\includegraphics[width=0.56\linewidth]{figs/ml_fit/qq_tke_pin_3} }}%
     \caption[Q-Q LOO TKE pin 3 results.]{Pin 3 TKE quantile regression predictions from LOO cross validation study.}%
     \label{fig:tkepin3}%
 \end{figure}
@@ -272,28 +270,28 @@ Good overall performance of the TKE quantile regression models may be attributed
 Temperature residual quantile regression results are given in figures \ref{fig:temppin1} to \ref{fig:temppin3}.  Similar to the TKE conditional quantiles, the conditional temperature distribution exhibits sharp changes in behavior across the spacer grids. Unlike the TKE residual distribution the surface temperature distributions do not exhibit the same degree of similarity from span to span or from pin to pin.  The presence of discontinuities in the temperature distributions enforced the choice of the gradient boosted tree machine learning algorithm which is resilient to steep gradients in the response surface.
 
 \begin{figure}[H]%
+    \captionsetup[subfigure]{justification=centering}
     \centering
-    \subfloat[Temperature quantile regression results. CFD in dashed line.  Predicted values as solid. Azimuthally integrated.]{{\includegraphics[width=0.45\linewidth]{figs/ml_fit/q_twall_regression_1} }}%
-    \qquad
-    \subfloat[Q-Q plot of Temperature quantile regression predictions from LOO cross validation study]{{\includegraphics[width=0.45\linewidth]{figs/ml_fit/qq_twall_pin_1} }}%
+    \subfloat[][Temperature quantile regression results. \\ CFD in dashed line.  Predicted values as solid. \\ Azimuthally integrated.]{{\includegraphics[width=0.53\linewidth]{figs/ml_fit/q_twall_regression_1} }}\hspace*{-1.0em}%
+    \subfloat[][Q-Q plot of Temperature quantile regression \\ predictions from LOO cross validation study]{{\includegraphics[width=0.56\linewidth]{figs/ml_fit/qq_twall_pin_1} }}%
     \caption[Q-Q LOO Temperature pin 1 results.]{Pin 1 Temperature quantile regression predictions from LOO cross validation study.}%
     \label{fig:temppin1}%
 \end{figure}
 
 \begin{figure}[H]%
+    \captionsetup[subfigure]{justification=centering}
     \centering
-    \subfloat[Temperature quantile regression results. CFD in dashed line.  Predicted values as solid. Azimuthally integrated.]{{\includegraphics[width=0.45\linewidth]{figs/ml_fit/q_twall_regression_2} }}%
-    \qquad
-    \subfloat[Q-Q plot of Temperature quantile regression predictions from LOO cross validation study]{{\includegraphics[width=0.45\linewidth]{figs/ml_fit/qq_twall_pin_2} }}%
+    \subfloat[][Temperature quantile regression results. \\ CFD in dashed line.  Predicted values as solid. \\ Azimuthally integrated.]{{\includegraphics[width=0.53\linewidth]{figs/ml_fit/q_twall_regression_2} }}\hspace*{-1.0em}%
+    \subfloat[][Q-Q plot of Temperature quantile regression \\ predictions from LOO cross validation study]{{\includegraphics[width=0.56\linewidth]{figs/ml_fit/qq_twall_pin_2} }}%
     \caption[Q-Q LOO Temperature pin 2 results.]{Pin 2 Temperature quantile regression predictions from LOO cross validation study.}%
     \label{fig:temppin2}%
 \end{figure}
 
 \begin{figure}[H]%
+    \captionsetup[subfigure]{justification=centering}
     \centering
-    \subfloat[Temperature quantile regression results. CFD in dashed line.  Predicted values as solid. Azimuthally integrated.]{{\includegraphics[width=0.45\linewidth]{figs/ml_fit/q_twall_regression_3} }}%
-    \qquad
-    \subfloat[Q-Q plot of Temperature quantile regression predictions from LOO cross validation study]{{\includegraphics[width=0.45\linewidth]{figs/ml_fit/qq_twall_pin_3} }}%
+    \subfloat[][Temperature quantile regression results. \\ CFD in dashed line.  Predicted values as solid. \\ Azimuthally integrated.]{{\includegraphics[width=0.53\linewidth]{figs/ml_fit/q_twall_regression_3} }}\hspace*{-1.0em}%
+    \subfloat[][Q-Q plot of Temperature quantile regression \\ predictions from LOO cross validation study]{{\includegraphics[width=0.56\linewidth]{figs/ml_fit/qq_twall_pin_3} }}%
     \caption[Q-Q LOO Temperature pin 3 results.]{Pin 3 Temperature quantile regression predictions from LOO cross validation study.}%
     \label{fig:temppin3}%
 \end{figure}
@@ -313,14 +311,11 @@ The worst performing pin with respect to $\hat \rho_\tau$ prediction was pin 8, 
 
 \begin{figure}[H]%
     \centering
-    \subfloat[Pin 1]{{\includegraphics[width=0.45\linewidth]{figs/ml_fit/ktau_regression_1} }}%
-    \qquad
-    \subfloat[Pin 2]{{\includegraphics[width=0.45\linewidth]{figs/ml_fit/ktau_regression_2} }}%
-    \qquad
-    \subfloat[Pin 3]{{\includegraphics[width=0.45\linewidth]{figs/ml_fit/ktau_regression_3} }}%
-    \qquad
-    \subfloat[Pin 4]{{\includegraphics[width=0.45\linewidth]{figs/ml_fit/ktau_regression_4} }}%
-    \qquad
+    \subfloat[Pin 1]{{\includegraphics[width=0.53\linewidth]{figs/ml_fit/ktau_regression_1} }}\hspace*{-1.0em}%
+    \subfloat[Pin 2]{{\includegraphics[width=0.53\linewidth]{figs/ml_fit/ktau_regression_2} }}\hspace*{-1.0em}%
+    \\
+    \subfloat[Pin 3]{{\includegraphics[width=0.53\linewidth]{figs/ml_fit/ktau_regression_3} }}\hspace*{-1.0em}%
+    \subfloat[Pin 4]{{\includegraphics[width=0.53\linewidth]{figs/ml_fit/ktau_regression_4} }}\hspace*{-1.0em}%
     \caption[Kendall's $\tau$ regression LOO results.]{Azimuthally integrated Kendall's $\tau$ regression results from LOO cross validation study.}%
     \label{fig:ktauregression}%
 \end{figure}
@@ -334,7 +329,7 @@ Figure \ref{fig:confusionmatrixavg} summarizes the LOO cross validation results 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\linewidth]{figs/confusion_matrix_avg}
+    \includegraphics[width=0.6\linewidth]{figs/confusion_matrix_avg}
     \caption[Copula classifier confusion matrix.]{Copula classifier confusion matrix.}
     \label{fig:confusionmatrixavg}
 \end{figure}
@@ -424,9 +419,8 @@ Circumventing these difficulties is a non-trivial undertaking.  Without making a
 
 \begin{figure}[H]%
     \centering
-    \subfloat[Hi2lo pin boron mass.]{{\includegraphics[width=0.46\linewidth]{figs/5x5/imp/tstep_5/pin_1/hi2lo_imp_pin_z_bmass} }}%
-    \qquad
-    \subfloat[CFD pin boron mass.]{{\includegraphics[width=0.46\linewidth]{figs/5x5/cfd/tstep_5/pin_1/CFD_pin_z_bmass} }}%
+    \subfloat[Hi2lo pin boron mass.]{{\includegraphics[width=0.53\linewidth]{figs/5x5/imp/tstep_5/pin_1/hi2lo_imp_pin_z_bmass} }}\hspace*{-1.0em}%
+    \subfloat[CFD pin boron mass.]{{\includegraphics[width=0.53\linewidth]{figs/5x5/cfd/tstep_5/pin_1/CFD_pin_z_bmass} }}%
     \caption[Pin 1 crud boron mass density results at 300 days]{Pin 1 crud boron mass density results at 300 days.  Select crud quantiles are indicated via colored bands.  The agreement of the mean axial crud boron density distribution between the hi2lo vs CFD models is better than in the upper quantiles. }%
     \label{fig:dist_hi2loimppinzbmass}
 \end{figure}
@@ -434,9 +428,8 @@ Circumventing these difficulties is a non-trivial undertaking.  Without making a
 
 \begin{figure}[H]%
     \centering
-    \subfloat[Hi2lo pin crud thickness.]{{\includegraphics[width=0.46\linewidth]{figs/5x5/imp/tstep_5/pin_1/hi2lo_imp_pin_z_cthick} }}%
-    \qquad
-    \subfloat[CFD pin crud thickness.]{{\includegraphics[width=0.46\linewidth]{figs/5x5/cfd/tstep_5/pin_1/CFD_pin_z_cthick} }}%
+    \subfloat[Hi2lo pin crud thickness.]{{\includegraphics[width=0.53\linewidth]{figs/5x5/imp/tstep_5/pin_1/hi2lo_imp_pin_z_cthick} }}\hspace*{-1.0em}%
+    \subfloat[CFD pin crud thickness.]{{\includegraphics[width=0.53\linewidth]{figs/5x5/cfd/tstep_5/pin_1/CFD_pin_z_cthick} }}%
     \caption[Pin 1 crud thickness results at 300 days]{Pin 1 crud thickness results at 300 days.  Select crud quantiles are indicated via colored bands.  The maximum crud thickness predicted by the hi2lo model is approximately 70 microns at 300 days.  Likewise the maximum crud thickness predicted by coupled CFD/crud computations was approximately 72 microns.  Additionally note that the the mean crud thickness deviates from the median indicating asymmetry in the crud thickness density distribution.}%
     \label{fig:dist_hi2loimppinzcthick}
 \end{figure}
