@@ -504,13 +504,13 @@ In figure \ref{fig:stepscheme} dotted arrows represent sampling from a probabili
       & \underline{\mathrm{\underline{VERA\ STATE:\ }} \ell = 0} & & & & \underline{\mathrm{\underline{VERA\ STATE:\ }} \ell = 1} & & \\  %m-1
       & \hat H^{\ell_0}_{} \leftarrow \mathcal F_M(\mathbf p^{\ell_0}) & & & & \hat H^{\ell_1 }_{} \leftarrow \mathcal F_M(\mathbf p^{\ell_1}) & & \\  %m-2
       & & &\\  %m-3
-    \{\mathbf X, \omega \}^{\ell_0} & \{\mathbf X, \omega \}^{\ell_0} & \{...\}^{\ell_0} & \ \ \ ...\ \ \ \  & \{\mathbf X, \omega \} & \{\mathbf X, \omega \} & ... \\ %m-4
+    \{\mathbf X, \omega \}^{\ell_0}_{s_0} & \{\mathbf X, \omega \}^{\ell_0}_{s_1} & \{...\}^{\ell_0}_{s_2} & \ \ \ .\ \ \ \  & \{\mathbf X, \omega \}^{\ell_1}_{s_3} & \{\mathbf X, \omega \}^{\ell_1}_{s_4} & \{...\}^{\ell_1}_{s_5} \\ %m-4
                            &\\ %m-5
-    \{\mathbf X', \bar \omega' \} & \{\mathbf X', \bar \omega' \} & \{...\}^{\ell_0}  & ... &  \{\mathbf X, \omega \} & \{\mathbf X', \bar \omega' \} & ... \\ %m-6
+    \{\mathbf X', \bar \omega' \}^{\ell_0}_{s_0} & \{\mathbf X', \bar \omega' \}^{\ell_0}_{s_1} & \{...\}^{\ell_0}_{s_2}  & . &  \{\mathbf X', \bar \omega' \}^{\ell_1}_{s_3} & \{\mathbf X', \bar \omega' \}^{\ell_1}_{s_4} & \{...\}^{\ell_1}_{s_5} \\ %m-6
      . & . & . & . & . & . & . &  \\ %m-7
-    \{\mathbf C, \bar \omega' \} & \{\mathbf C, \bar \omega' \} & \{...\}^{\ell_0} &  ... &  \{\mathbf X, \omega \} & \{\mathbf C, \bar \omega' \} & ... \\ %m-8
+    \{\mathbf C, \bar \omega' \}^{\ell_0}_{s_0} & \{\mathbf C, \bar \omega' \}^{\ell_0}_{s_1} & \{...\}^{\ell_0}_{s_2} &  . &  \{\mathbf C, \bar \omega' \}^{\ell_1}_{s_3} & \{\mathbf C, \bar \omega' \}^{\ell_1}_{s_4} & \{...\}^{\ell_1}_{s_5} \\ %m-8
                            &\\ %m-9
-    C_{m,s_0}^{\ell_0} & C_{m,s_1}^{\ell_0} & C_{m,s_2}^{\ell_0} & ... &  C_m  & C_m & C_{m,s}^{\ell_1} \\ %m-10
+    C_{m,s_0}^{\ell_0} & C_{m,s_1}^{\ell_0} & C_{m,s_2}^{\ell_0} & . &  C_{m,s_3}^{\ell_1}  & C_{m,s_4}^{\ell_1} & C_{m,s_5}^{\ell_1} \\ %m-10
   };
   \path[-stealth]
   (m-10-1) edge [solid,|-|] node [below]{$\Delta t_s$} (m-10-2)
@@ -528,9 +528,12 @@ In figure \ref{fig:stepscheme} dotted arrows represent sampling from a probabili
            (m-4-6) edge node [right] {$\mathcal R$} (m-6-6)
            (m-4-7) edge node [right] {$\mathcal R$} (m-6-7)
   %
-          (m-6-1) edge node [right] {$\mathcal G(\mathbf X'|\mathbf C_{0})$} (m-8-1)
-          (m-6-2) edge node [right] {$\mathcal G(\mathbf X'|\mathbf C_{s-1})$} (m-8-2)
-          (m-6-3) edge node [right] {$\mathcal G(\mathbf X'|\mathbf C_{s-1})$} (m-8-3)
+          (m-6-1) edge node [right] {$\mathcal G(\mathbf X')$} (m-8-1)
+          (m-6-2) edge node [right] {$\mathcal G(\mathbf X'|\mathbf C_{s_0})$} (m-8-2)
+          (m-6-3) edge node [right] {$\mathcal G(\mathbf X'|\mathbf C_{s_1})$} (m-8-3)
+           (m-6-5) edge node [right] {$\mathcal G(\mathbf X'|\mathbf C_{s_2})$} (m-8-5)
+           (m-6-6) edge node [right] {$\mathcal G(\mathbf X'|\mathbf C_{s_3})$} (m-8-6)
+           (m-6-7) edge node [right] {$\mathcal G(\mathbf X'|\mathbf C_{s_4})$} (m-8-7)
   %
           (m-8-1) edge node [right] {$\sum$} (m-10-1)
           (m-8-2) edge node [right] {$\sum$} (m-10-2)
@@ -545,7 +548,7 @@ In figure \ref{fig:stepscheme} dotted arrows represent sampling from a probabili
             (m-8-5) edge (m-7-6)
             (m-8-6) edge (m-7-7);
 \end{tikzpicture}
-\caption{Multi-state point time stepping overview. Dashed arrows represent sampling from a distribution.  Solid arrows represent functional mapping or operation.}
+\caption{Multi-state point time stepping overview. Dashed arrows represent sampling from a distribution.  Solid arrows represent a functional mapping or operation.}
 \label{fig:stepscheme}
 \end{figure}
 
