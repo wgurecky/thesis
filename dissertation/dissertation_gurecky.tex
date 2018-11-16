@@ -32,7 +32,11 @@
 \usepackage{siunitx} % Provides the \SI{}{} and \si{} and \num{}
 \usepackage[normalem]{ulem}  % stike-through by \sout{}
 \usepackage{tikz}
-\usetikzlibrary{matrix}
+\usetikzlibrary{matrix,arrows,decorations.markings,bending,positioning}
+\usepackage{ifthen}
+\usepackage{pgf}
+\pgfmathsetseed{\number\pdfrandomseed}
+
 
 % UT diss template setup
 \usepackage{utdiss2}

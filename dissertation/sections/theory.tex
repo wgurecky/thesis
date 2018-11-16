@@ -470,10 +470,67 @@ w_T + w_k + w_{q''} = 1
 Next the order statistics of $\mathbf m$ are computed such that $\mathbf m' = \{ m_{(0)} < m_{(1)}< ... m_{(N)} \}$.  As shown in figure \ref{fig:samplemapping}, the ordered samples are then emplaced on the CTF patch in an organized manner.  The sample space is denoted by $\Omega$ and a specific temperature, TKE, and boundary heat flux sample is denoted by $\mathcal F_i$ as a single dot residing inside the sample space.  The path taken on the patch surface is user controllable and is taken to be a simple serpentine left-to-right pattern in this work.
 Typical values for the remapping coefficients are $w_T=0.6, w_k=0.4, w_{q''}=0$.  With this setting, relatively high temperate and low TKE samples are likely to remain in the same location on the rod surface over multiple resampling events.
 
-\begin{figure}[H]
+%\begin{figure}[H]
+%    \centering
+%    \includegraphics[width=0.4\linewidth]{../proposal/slides/seminar_slides/figs/sample_mapping}
+%    \caption{Sample remapping.}
+%    \label{fig:samplemapping}
+%\end{figure}
+
+\begin{figure}
     \centering
-    \includegraphics[width=0.4\linewidth]{../proposal/slides/seminar_slides/figs/sample_mapping}
-    \caption{Sample remapping.}
+    \begin{tikzpicture}
+    \pgfmathsetseed{42}
+    \pgfmathparse{0.5*rand}\let\r=\pgfmathresult
+    \pgfmathparse{0.5*rand}\let\t=\pgfmathresult
+% Sample space (blob)
+\draw plot [smooth cycle] coordinates {(-1+\r,7.6-\r) (-1,9.8+\t) (1.2, 10.5) (4.2, 10.8+\t) (7,10.1-\t) (7,7.2) (4.3-\r, 7.3) } node at (7.5,8) {\large $\Omega$};
+\draw plot [smooth cycle] coordinates {(1.5,7.6) (1.5,9.92) (5.2, 10.14) (5.8, 7.6) } ;
+% Random samples
+\foreach \u in {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29}{
+    \pgfmathparse{3.5+2.5*rand}\let\a=\pgfmathresult
+    \pgfmathparse{8.5+0.9*rand}\let\z=\pgfmathresult
+    \draw [fill=black] (\a, \z) circle (0.06cm);
+}
+\draw [fill=black] (3.5, 8.5) circle (0.07cm);
+% Arrow map
+\node (a) at (3.5, 8.5) {};
+\node (b) at (3.5, 4.5) {};
+\draw [->] (a) to [bend left] node [midway,left] {\large $\mathcal R$} (b);
+\draw [decoration={markings,mark=at position 1 with
+    {\arrow[scale=3,>=stealth]{>}}},postaction={decorate}] (a) to [bend left] (b);
+% CTF face
+\draw (0,0) grid (6,5);
+\draw [line width=0.1cm] (0,0) -- (0,5);
+\draw [line width=0.1cm] (0,0) -- (6,0);
+\draw [line width=0.1cm] (6,0) -- (6,5);
+\draw [line width=0.1cm] (0,5) -- (6,5);
+% dots in grid
+\foreach \x in {0.5,1.5,2.5,3.5,4.5,5.5} {
+\foreach \a in {0.5,1.5,2.5,3.5,4.5}
+{
+    \draw [fill=black] (\x, \a) circle (0.08cm);
+}
+}
+\fill (0.5,4.2) node {$m'_{(0)}$};
+\fill (1.5,4.2) node {$m'_{(1)}$};
+\fill (5.5,0.2) node {$m'_{(N)}$};
+\foreach \c in {0.5,1.5,2.5,3.5,4.5}{
+    \draw [dashed] (0.5,\c) -- (5.5, \c);
+}
+% draw serp path
+\draw [dashed] (5.5, 4.5) -- (5.5, 3.5);
+\draw [dashed] (5.5, 2.5) -- (5.5, 1.5);
+\draw [dashed] (0.5, 3.5) -- (0.5, 2.5);
+\draw [dashed] (0.5, 1.5) -- (0.5, 0.5);
+\draw [decoration={markings,mark=at position 1 with
+    {\arrow[scale=3,>=stealth]{>}}},postaction={decorate}] (4.5,0.5) -- (5,0.5);
+% figure text
+\node[text width=4cm] at (2.2,5.44) {\scriptsize $\mathbf m'=\{ m_{(0)}<..< m_{(N)} \}$};
+\node[text width=5cm] at (4.5,9.9) {$\mathcal F_i=\{T_i, k_i, q''_i\}; m_i$};
+\draw [|-|] (3.5, 8.5) -- (3.5, 9.7);
+    \end{tikzpicture}
+    \caption{Sample remapping.  A single CTF face is shown as the bold square with a grid overlay partitioning the patch surface.  In this figure the number of samples per CTF face is $N=30$.}
     \label{fig:samplemapping}
 \end{figure}
 
