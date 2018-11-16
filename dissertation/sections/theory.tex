@@ -162,39 +162,101 @@ Here a non parametric representation of univariate distributions is given by uti
 Let the quantile function be represented by $Q=F^{-1}$ where $F$ is a cumulative density function (CDF).
 \index{Cumulative density function}
 
+%\begin{figure}[H]
+%    \centering
+%    \includegraphics[width=0.3\linewidth]{../proposal/slides/seminar_slides/figs/margins_cdf_2}
+%    \caption[CDF from quantiles.]{Piecewise linear CDF interpolated from a set of quantiles.}
+%    \label{fig:marginscdf2}
+%\end{figure}
+
 \begin{figure}[H]
-    \centering
-    \includegraphics[width=0.3\linewidth]{../proposal/slides/seminar_slides/figs/margins_cdf_2}
+	\centering
+	\begin{tikzpicture}
+	% scalingn params
+	\pgfmathparse{2.0}\let\s=\pgfmathresult
+	% x y axes
+	\draw [line width=0.05cm] (0, 0) -- (3.0*\s, 0);
+	\draw [line width=0.05cm] (0.0, 0.0) -- (0.0, 2.0*\s);
+	\draw [dashed]  (-0.1*\s, 1.8*\s) -- (3.0*\s, 1.8*\s);
+	% plot nodes
+	\draw [fill=black] (0.0, 0.0) circle (0.08cm);
+	\draw [fill=black] (0.5*\s, 0.1*\s) circle (0.08cm);
+	\draw [fill=black] (1.2*\s, 0.5*\s) circle (0.08cm);
+	\draw [fill=black] (1.8*\s, 1.2*\s) circle (0.08cm);
+	\draw [fill=black] (2.1*\s, 1.68*\s) circle (0.08cm);
+	\draw [fill=black] (2.6*\s, 1.8*\s) circle (0.08cm);
+	% Plot lines connecting nodes
+	\draw [line width=0.03cm] (0, 0) -- (0.5*\s, 0.1*\s);
+	\draw [line width=0.03cm] (0.5*\s, 0.1*\s) -- (1.2*\s, 0.5*\s);
+	\draw [line width=0.03cm] (1.2*\s, 0.5*\s) -- (1.8*\s, 1.2*\s);
+	\draw [line width=0.03cm] (1.8*\s, 1.2*\s) -- (2.1*\s, 1.68*\s);
+	\draw [line width=0.03cm]  (2.1*\s, 1.68*\s) -- (2.6*\s, 1.8*\s);
+	% mark a single node
+	\draw [line width=0.02cm] (1.8*\s, 0) -- (1.8*\s, 1.2*\s);
+	\draw [line width=0.02cm] (0.0, 1.2*\s) -- (1.8*\s, 1.2*\s);
+	% figure text
+	\node[text width=1cm] at (1.5, 1.32*\s) {$\tau_i$};
+	\node[text width=1cm] at (2.1*\s, 0.8*\s) {$\hat q_{\tau_i}$};
+	\node[text width=1cm] at (-0.1*\s,1.0*\s) {\large $\tau $};
+	\node[text width=1cm] at (-0.1*\s,1.8*\s) {\large $1 $};
+	\node[text width=2cm] at (1.8*\s, -0.2*\s) {\large $\hat q_{\tau}$};
+	\end{tikzpicture}
     \caption[CDF from quantiles.]{Piecewise linear CDF interpolated from a set of quantiles.}
     \label{fig:marginscdf2}
 \end{figure}
 
 \index{Quantiles}
-The $\tau^{th}$ quantile is $q_\tau = F^{-1}(\tau); $ where $\ F(t)=P[T \leq t]$.
+The $\tau^{th}$ quantile is $q_\tau = Q(\tau); $ where $\ F(t)=P[T \leq t]$.
 $\tau \in [0, 1]$
 
-The quantile loss function is given by equation \ref{eq:qloss_fn}.
+The quantile loss function is given by equation \ref{eq:qloss_fn} and depicted in figure \ref{fig:qloss}.
 \begin{equation}
-\rho_\tau( u) =  u \cdot (\tau - \mathbb{I}_{( u < 0)})
+\mathcal Q_\tau( u) =  u \cdot (\tau - \mathbb{I}_{( u < 0)})
 \label{eq:qloss_fn}
 \end{equation}
 Where $\mathbb{I}$ is the indicator function which returns 1 if the argument is true and 0 otherwise.
-In order to estimate a sample quantile, $\hat q_\tau$, given the empirical CDF $F$, minimize: $\E[\rho_\tau(T - q_\tau)]$ where $T$, the temperature, is treated as a random variable distributed according to $F_T$.  Considering a sample set $\{T_0, T_i, \dots T_N \}$ the desired quantile $q_\tau$ may be estimated by equation \ref{eq:qtau_est}.
+In order to estimate a sample quantile, $\hat q_\tau$, given the empirical CDF $F$, minimize: $\E[\mathcal Q_\tau(T - q_\tau)]$ where $T$, the temperature, is treated as a random variable distributed according to $F_T$.  Considering a sample set $\{T_0, T_i, \dots T_N \}$ the desired quantile $q_\tau$ may be estimated by equation \ref{eq:qtau_est}.
 \begin{equation}
             \left.\begin{aligned}
-            \hat q_{\tau} &= argmin_{q_\tau} \E[\rho_\tau(u)];\ \  u = T - q_\tau  \\
-            \approx & argmin_{q_\tau}  \frac{1}{N} \sum_i^N \rho_\tau(u_i); \ u_i = T_i - q_\tau \\
+            \hat q_{\tau} &= argmin_{q_\tau} \E[\mathcal Q_\tau(u)];\ \  u = T - q_\tau  \\
+            \approx & argmin_{q_\tau}  \frac{1}{N} \sum_i^N \mathcal Q_\tau(u_i); \ u_i = T_i - q_\tau \\
             \approx & argmin_{q_\tau} \left[ (1-\tau) \sum_{T \leq q_\tau}( T_i - q_\tau ) - \tau \sum_{T > q_\tau} (T_i - q_\tau) \right]
             \end{aligned}\right.
             \label{eq:qtau_est}
 \end{equation}
 \index{Quantiles!Loss Function}
 
+%\begin{figure}[H]
+%    \centering
+%    \includegraphics[width=0.4\linewidth]{../proposal/slides/seminar_slides/figs/q_loss}
+%    \caption[Quantile loss function.]{Quantile loss function.}
+%    \label{fig:qloss}
+%\end{figure}
+
 \begin{figure}[H]
-    \centering
-    \includegraphics[width=0.4\linewidth]{../proposal/slides/seminar_slides/figs/q_loss}
+	\centering
+	\begin{tikzpicture}
+	% scalingn params
+	\pgfmathparse{2.0}\let\s=\pgfmathresult
+	% x y axes
+	\draw [line width=0.05cm] (-2.0*\s, 0) -- (2.0*\s, 0);
+	\draw [line width=0.05cm] (0.0, 0.0) -- (0.0, 2.0*\s);
+	% Plot lines
+	\draw [line width=0.05cm] (0.0, 0.0) -- (-1.0*\s, 2.0*\s);
+	\draw [line width=0.05cm] (0.0, 0.0) -- (2.0*\s, 1.0*\s);
+	% slope indicators
+	\draw [line width=0.03cm]  (-0.5*\s, 0.5*\s) -- (-0.5*\s, 1.0*\s);
+	\draw [line width=0.03cm]  (-0.5*\s, 0.5*\s) -- (-0.25*\s, 0.5*\s);
+	%
+	\draw [line width=0.03cm]  (1.5*\s,  0.5*\s)  -- (1.5*\s, 0.75*\s);
+	\draw [line width=0.03cm]  (1.5*\s,  0.5*\s)  -- (1.0*\s, 0.5*\s);
+	% figure text
+	\node[text width=2cm] at (-0.1*\s,2.0*\s) {$\mathcal Q_{\tau}(u)$};
+	\node[text width=2cm] at (-0.5*\s,0.5*\s) {$\tau-1$};
+	\node[text width=1cm] at (1.9*\s,0.5*\s) {$\tau$};
+	\end{tikzpicture}
     \caption[Quantile loss function.]{Quantile loss function.}
-    \label{fig:qloss}
+\label{fig:qloss}
 \end{figure}
 
 In this work, a set of sample quantiles, $\hat \theta_\tau = \{\hat q_{\tau_0}, \dots, \hat q_{\tau_i}, \dots \hat q_{N_Q} \}$, are used to construct step-wise cumulative distributions, $\hat F$, for the cladding outer temperature and near-wall TKE surface fields.  $N_Q$ denotes the number of quantiles used in the CDF reconstruction and is a user set parameter. The stepwise quantile function with prescribed quantiles is given by equation \ref{eq:cdf_from_qtau}.
@@ -222,6 +284,7 @@ It can be shown that the sample quantiles are distributed according to equation 
     \label{eq:theory_qdist_1}
 \end{align}
 
+In equation \ref{eq:theory_qdist_1} the variance associated with a sample quantile depends on the CDF and PDF of the true distribution function of interest.  The underlying CDF from which a sample population is typically unknown and the goal is often to infer properties of this distribution from the sample population.  Therefore, it is not possible to employ equation \ref{eq:theory_qdist_1} directly to compute the variance of a given sample quantile unless the underlying CDF is known.  Note that this is indeed the case in section \ref{chap:GBRT} where the large sample quantile theory is employed to check the residuals of a quantile regression procedure because the underlying distribution of the data was prespecified to be Gaussian.  However, from more complex cases where the nature of the distribution functions is unknown, such as with raw CFD data, equation  \ref{eq:theory_qdist_1} is not directly useful but still can be used to aid interpretation of the quantile regression predictions.
 
 \begin{figure}[H]%
     \captionsetup[subfigure]{justification=centering}
