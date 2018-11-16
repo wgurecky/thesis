@@ -95,7 +95,7 @@ A strategy to compute the unknowns of the joint distribution on each CTF face is
 \end{algorithm}
 Where $L(\cdot)$ is a generic differentiable loss function.  A discussion on the machine learning model and loss function follows in section \ref{chap:GBRT}.  The reconstruction of the joint density function $\hat H$ from copula and univariate quantile functions is discussed in section \ref{chap:quantiles}.  Monte Carlo and importance sampling are discussed in section \ref{chap:mc_crud}.
 
-Algorithm \ref{algo:basic_crud_algo} may be broken down into five generic components.  \emph{Lines 2-5:} Establish a relationship between the local core geometry and thermal hydraulic conditions to the behavior of surface temperature, TKE and boundary heat flux distributions using a pre-computed suite of CFD results. \emph{Line 7:} The prediction of joint distribution parameters. These parameters will take the form of conditional quantiles and parameters of a copula in the present work. \emph{Line 8:} The reconstruction of the joint temperature, TKE, and boundary heat flux distribution in each CTF face given predictions provided by evaluating the data driven model $\mathcal F_M$ at the local core conditions adjacent to the CTF under consideration. \emph{Line 9:} Sampling from the reconstructed distribution.  \emph{Line 10:} Integration of the crud density by a Monte Carlo procedure.
+Algorithm \ref{algo:basic_crud_algo} may be broken down into five generic components.  \emph{Lines 2-5:} Establish a relationship between the local core geometry and thermal hydraulic conditions to the behavior of surface temperature, TKE and boundary heat flux distributions using a pre-computed suite of CFD results. \emph{Line 7:} The prediction of joint distribution parameters. These parameters will take the form of conditional quantiles and parameters of a copula in the present work. \emph{Line 8:} The reconstruction of the joint temperature, TKE, and boundary heat flux distribution in each CTF face given predictions provided by evaluating the data driven model $\mathcal F_M$ at the local core conditions adjacent to the CTF face under consideration. \emph{Line 9:} Sampling from the reconstructed distribution.  \emph{Line 10:} Integration of the crud density by a Monte Carlo procedure.
 
 % A critical question to answer is:  Can a data driven machine learning model adequately predict the parameters of a probability distribution on each CTF face: $Var[(\hat \theta_j \leftarrow \mathcal M(\mathbf p_{j}, \gamma))] < \epsilon$?  There is some uncertainty in the optimal machine learning model parameters.  This propagates to the distribution parameters which ultimately governs the uncertainty of the crud results.  An adequate model in this context reduces the uncertainty in the final crud estimate to some acceptable level.
 
@@ -484,23 +484,80 @@ Since the crud simulation package utilized in this work is one-dimensional, the 
 
 Propagating the importance weights through discrete resampling steps requires special attention to ensure bias is not introduced into the crud results when moving through multiple time steps and VERA states.  The key observation is that the importance weights computed at a given resampling event should neither be double-counted nor discarded in subsequent resampling steps.  Instead, the importance weights are time averaged to achieve the correct importance weights used to evaluate the total crud mass on the rod surface at any given time step (resampling step).
 
-Figure \ref{fig:stepscheme} depicts the time stepping scheme for a single patch. The patch index is not shown to reduce visual clutter. The VERA state-point time index is denoted by $t$.  At the beginning of each VERA state-point the power distribution and thermal hydraulic conditions in the core change.  Here it is assumed there is a constant power profile and constant flow conditions over a VERA depletion step.
+Figure \ref{fig:stepscheme} depicts the time stepping scheme for a single patch. The patch index is not shown to reduce visual clutter. The VERA state-point index is denoted by $\ell$.  At the beginning of each VERA state-point the power distribution and thermal hydraulic conditions in the core change.  Here it is assumed there is a constant power profile and constant flow conditions over a VERA depletion step.
 
-In figure \ref{fig:stepscheme} dotted arrows represent sampling from a probability distribution.  $\mathcal R$ is the spatial reordering map from sample space to a position on the rod surface. $\mathcal G$ represents the crud generation function provided by the crud simulation package which takes thermal hydraulic boundary conditions as input in addition to the previous crud state and produces a new crud state.  Resampling events are performed at time intervals $\Delta t_s$ and this interval is set at runtime by the user.  The influence of the resampling interval size is discussed in section \ref{sec:resample_freq_study}.  The resample index is denoted by $n$.  The subscript, $(\cdot)_s$ , denotes evaluation at a resampling event.  A prime-notated variable,  $(\cdot)'$, represents a spatially re-mapped sample as in figure \ref{fig:samplemapping}.  At each resampling event the temperature, TKE and boundary heat flux samples are drawn from the reconstructed joint probability $\hat H^t$.  Assume that the sample time step is constant and equal to $\Delta t_s$.
+In figure \ref{fig:stepscheme} dotted arrows represent sampling from a probability distribution.  $\mathcal R$ is the spatial reordering map from sample space to a position on the rod surface. $\mathcal G$ represents the crud generation function provided by the crud simulation package which takes thermal hydraulic boundary conditions as input in addition to the previous crud state and produces a new crud state.  Resampling events are performed at time intervals $\Delta t_s$ and this interval is set at runtime by the user.  The influence of the resampling interval size is discussed in section \ref{sec:resample_freq_study}.  The resample index is denoted by $s$.  The subscript, $(\cdot)_s$ , denotes evaluation at a resampling event.  A prime-notated variable,  $(\cdot)'$, represents a spatially re-mapped sample as in figure \ref{fig:samplemapping}.  At each resampling event the temperature, TKE and boundary heat flux samples are independently drawn from the reconstructed joint probability $\hat H^\ell$.  Assume that the resample time step is constant and equal to $\Delta t_s$.
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.7\linewidth]{figs/step_scheme}
-    \caption{Multi-state point time stepping overview.}
-    \label{fig:stepscheme}
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=0.7\linewidth]{figs/step_scheme}
+%     \caption{Multi-state point time stepping overview.}
+%     \label{fig:stepscheme}
+% \end{figure}
+
+\begin{figure}
+\centering
+\begin{tikzpicture}
+\footnotesize
+\matrix (m) [matrix of math nodes,row sep=0.9em,column sep=0.5em,minimum width=0.5em]
+  {
+      & \underline{\mathrm{\underline{VERA\ STATE:\ }} \ell = 0} & & & & \underline{\mathrm{\underline{VERA\ STATE:\ }} \ell = 1} & & \\  %m-1
+      & \hat H^{\ell_0}_{} \leftarrow \mathcal F_M(\mathbf p^{\ell_0}) & & & & \hat H^{\ell_1 }_{} \leftarrow \mathcal F_M(\mathbf p^{\ell_1}) & & \\  %m-2
+      & & &\\  %m-3
+    \{\mathbf X, \omega \}^{\ell_0} & \{\mathbf X, \omega \}^{\ell_0} & \{...\}^{\ell_0} & \ \ \ ...\ \ \ \  & \{\mathbf X, \omega \} & \{\mathbf X, \omega \} & ... \\ %m-4
+                           &\\ %m-5
+    \{\mathbf X', \bar \omega' \} & \{\mathbf X', \bar \omega' \} & \{...\}^{\ell_0}  & ... &  \{\mathbf X, \omega \} & \{\mathbf X', \bar \omega' \} & ... \\ %m-6
+     . & . & . & . & . & . & . &  \\ %m-7
+    \{\mathbf C, \bar \omega' \} & \{\mathbf C, \bar \omega' \} & \{...\}^{\ell_0} &  ... &  \{\mathbf X, \omega \} & \{\mathbf C, \bar \omega' \} & ... \\ %m-8
+                           &\\ %m-9
+    C_{m,s_0}^{\ell_0} & C_{m,s_1}^{\ell_0} & C_{m,s_2}^{\ell_0} & ... &  C_m  & C_m & C_{m,s}^{\ell_1} \\ %m-10
+  };
+  \path[-stealth]
+  (m-10-1) edge [solid,|-|] node [below]{$\Delta t_s$} (m-10-2)
+  (m-2-2) edge [dashed,->] (m-4-1)
+          edge [dashed,->] (m-4-2)
+          edge [dashed,->] (m-4-3)
+   (m-2-6) edge [dashed,->] (m-4-5)
+           edge [dashed,->] (m-4-6)
+           edge [dashed,->] (m-4-7)
+  % vert linkages
+          (m-4-1) edge node [right] {$\mathcal R$} (m-6-1)
+          (m-4-2) edge node [right] {$\mathcal R$} (m-6-2)
+          (m-4-3) edge node [right] {$\mathcal R$} (m-6-3)
+           (m-4-5) edge node [right] {$\mathcal R$} (m-6-5)
+           (m-4-6) edge node [right] {$\mathcal R$} (m-6-6)
+           (m-4-7) edge node [right] {$\mathcal R$} (m-6-7)
+  %
+          (m-6-1) edge node [right] {$\mathcal G(\mathbf X'|\mathbf C_{0})$} (m-8-1)
+          (m-6-2) edge node [right] {$\mathcal G(\mathbf X'|\mathbf C_{s-1})$} (m-8-2)
+          (m-6-3) edge node [right] {$\mathcal G(\mathbf X'|\mathbf C_{s-1})$} (m-8-3)
+  %
+          (m-8-1) edge node [right] {$\sum$} (m-10-1)
+          (m-8-2) edge node [right] {$\sum$} (m-10-2)
+          (m-8-3) edge node [right] {$\sum$} (m-10-3)
+           (m-8-5) edge node [right] {$\sum$} (m-10-5)
+           (m-8-6) edge node [right] {$\sum$} (m-10-6)
+           (m-8-7) edge node [right] {$\sum$} (m-10-7)
+  % diag linkages
+          (m-8-1) edge (m-7-2)
+          (m-8-2) edge (m-7-3)
+          (m-8-3) edge (m-7-5)
+            (m-8-5) edge (m-7-6)
+            (m-8-6) edge (m-7-7);
+\end{tikzpicture}
+\caption{Multi-state point time stepping overview. Dashed arrows represent sampling from a distribution.  Solid arrows represent functional mapping or operation.}
+\label{fig:stepscheme}
 \end{figure}
 
-Since the resampling time step size is constant the sample time is computed by multiplying the resampling event index by the constant resampling step size:
+A dependency in time is introduced by the crud growth step because the current crud growth rate depends on the previous crud state (e.g. a severely thick crud deposit will behave differently than a small crud deposit).  This time dependence is denoted by the diagonal arrows linking the crud states together across resampling events in figure \ref{fig:stepscheme}.
+
+Since the resampling time step size is constant the time corresponding to any given sample event is computed by multiplying the resampling event index by the constant resampling step size:
 \begin{equation}
 t_{s_n} = n\Delta t_s
 \end{equation}
 
 The time averaged sample weights are in general updated by equation \ref{eq:time_sample_weights1} at each resampling step.
+Recall that the ratio of the target density and the sampling distribution density is denoted by $\omega$ and is given in equation \ref{eq:imp_prob_ratio}.
 
 \begin{equation}
 \bar \omega'_{{s_n},i} =
@@ -511,7 +568,6 @@ The time averaged sample weights are in general updated by equation \ref{eq:time
 Where $i$ is the sample index within a single CTF face.
 
 After applying the constant resample step size assumption the time averaged sample weights are updated at each resampling step according to equation \ref{eq:time_sample_weights3}.
-The ratio of the target density and the sampling distribution density is denoted by $\omega$ and is given in equation \ref{eq:imp_prob_ratio}.
 
 \begin{align}
 \bar \omega'_{{s_n},i} &= \left( \frac{(n-1) \Delta t_s}{n \Delta t_s} \right) \bar \omega'_{n-1,i} + \left( \frac{\Delta t_s}{n \Delta t_s} \right) \omega'_{n,i} \nonumber \\
@@ -532,7 +588,7 @@ The crud stepping strategy is explicit in time as the next crud samples are draw
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.6\linewidth]{figs/theory/crud_samples_dt}
-    \caption[Time step procedure depicted for a single CTF face]{Time step procedure depicted for a single CTF face.  The re-stepping index $n$ and the patch index $j$ are dropped to reduce clutter.}
+    \caption[Time step procedure depicted for a single CTF face]{Time step procedure depicted for a single CTF face.  A single resampling event is shown.}
     \label{fig:crudsamplesdt}
 \end{figure}
 
