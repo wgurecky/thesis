@@ -361,7 +361,7 @@ A data driven machine learning model is considered to predict quantiles required
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.6\linewidth]{../proposal/slides/seminar_slides/figs/cart}
+    \includegraphics[width=0.59\linewidth]{../proposal/slides/seminar_slides/figs/cart}
     \caption[Regression tree stump.]{Single CART Regression tree stump comparing a fit of depth 1 and 2 to $y=sin(x) + \varepsilon,\ x\in[0,2\pi], \varepsilon \sim \mathcal N(0,0.001)$.}
     \label{fig:cart}
 \end{figure}
@@ -388,7 +388,7 @@ gradient boosting greedily fits the sub-models to the gradient of the loss funct
     \label{eq:l2_loss_pseudo_r}
 \end{align}
 
-Each sub-model, $h_m$, is referred to as a weak learner and is defined to be a typical classification or regression tree (CART) depending on the problem context.  Methods for pruning the decision trees and optimizing the numerical implementation of finding the best splits when fitting the tree to the pseudo-residuals are left to Friedman et. al. \cite{friedman2002}.  Examples of single fitted CART trees with a depth of 1 and 2 are shown in figure \ref{fig:cart}.  Decision trees produce a piecewise constant prediction, and therefore since the final boosted model is a linear combination of decision tree models (weak learners), the fitted boosted model is piecewise constant.
+Each sub-model, $h_m$, is referred to as a weak learner and is defined to be a typical classification or regression tree (CART) depending on the problem context.  Methods for pruning the decision trees and optimizing the numerical implementation of finding the best splits when fitting the tree to the pseudo-residuals are left to Friedman et. al. \cite{friedman2002}.  Examples of single fitted CART trees with a depth of 1 and 2 are shown in figure \ref{fig:cart}.  As the depth of the tree is increased the decision tree prediction converges onto the data; however, a single decision tree of large depth is prone to over fitting the data.  Decision trees produce a piecewise constant prediction, and therefore since the final boosted model is a linear combination of decision tree models (weak learners), the fitted boosted model is piecewise constant.
 
 \begin{algorithm}[H]
     \captionsetup{labelfont={sc,bf}, labelsep=newline}
