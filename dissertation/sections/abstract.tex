@@ -3,22 +3,21 @@
 \utabstract
 \index{Abstract}%
 \indent
-The development of a physics-directed, statistically based,
+A physics-directed, statistically based,
 surrogate model of the small scale flow features that impact Chalk River unidentified deposit (crud) growth is presented in this work. 
 The objective of the surrogate is to provide additional details of the rod surface temperature, heat
 flux, and near-wall turbulent kinetic energy fields which cannot be explicitly captured by the subchannel code, CTF. 
 
-Operating as a mapping from the high fidelity computational fluid dynamics (CFD) data to the low fidelity subchannel grid, the surrogate provides CFD-informed boundary conditions to the crud model executed on the subchannel pin surface mesh. The surface temperature, heat
+Operating as a mapping from the high fidelity computational fluid dynamics (CFD) data to the low fidelity subchannel grid (hi2lo), the model provides CFD-informed boundary conditions to the crud model executed on the subchannel pin surface mesh. The surface temperature, heat
 flux, and turbulent kinetic energy, henceforth referred to as the fields of interest (FOI),
 govern the growth rate of crud on the surface of the rod and the
-precipitation of boron in the porous crud layer. Therefore the surrogate predicts the behavior of the
+precipitation of boron in the porous crud layer. Therefore the model predicts the behavior of the
 FOIs as a function of position in the core and local thermal-hydraulic (TH) conditions.
 
-The subchannel code is substantially faster to execute than CFD
-and produces an estimate for all the relevant TH quantities at a coarse spatial resolution everywhere in
-the core.  The solution provided by CTF is augmented by a predicted stochastic
+The subchannel code produces an estimate for all crud-relevant TH quantities at a coarse spatial resolution everywhere in
+the core and executes substantially faster than CFD.  In the hi2lo approach, the solution provided by the subchannel code is augmented by a predicted stochastic
 component of the FOI informed by CFD results to provide a more detailed description of the target
-FOIs than CTF can provide alone.  To this end, a novel method based on the marriage of copula and
+FOIs than subchannel can provide alone.  To this end, a novel method based on the marriage of copula and
 gradient boosting techniques is proposed. This methodology forgoes a spatial interpolation procedure
 for a statistically driven approach, which predicts the fractional area of a rod’s surface in excess of some
 critical temperature but not precisely where such maxima occur on the rod surface.
@@ -29,3 +28,5 @@ of the FOI into independent copula and marginal models. The free parameters with
 are predicted using a combination of supervised regression and classification machine learning techniques
 with training data sets supplied by a suite of precomputed CFD results spanning a typical pressurized water reactor TH
 envelope.
+
+Compared to the subchannel standalone case, the hi2lo method more accurately preserves the influence of spacer grids on the crud growth rate.  Or more precisely, the hi2lo method recovers key statistical properties of the FOI which impact crud growth.  Compared to gold standard high fidelity CFD/crud coupled results, in a single assembly test case, the hi2lo model produced a relative total crud mass difference of -8.8\% compared to the standalone subchannel relative crud mass difference of 194.4\%.
