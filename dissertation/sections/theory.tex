@@ -80,10 +80,10 @@ A strategy to compute the unknowns of the joint distribution on each CTF face is
     \begin{algorithmic}[1]
     \STATE \textbf{Initialization}
     \STATE (1) Pre-process training set.
-    \STATE $\ \ $   (1b) Fit the joint distribution parameters to known CFD data: $\theta(\mathbf p, \mathbf z)$.
-    \STATE $\ \ $   (1c) \textbf{def:}  $\ \theta \leftarrow \mathcal F_M(\mathbf p, \mathbf z | \gamma)$
+    \STATE $\ \ $   (1b) Fit the joint distribution parameters, $\theta$, to known CFD data. 
+    \STATE $\ \ $   (1c) \textbf{def:}  $\ \theta \leftarrow \mathcal F_M(\mathbf p, \mathbf z )$
     \STATE (2) Train model:  $\hat{\mathcal F_M} =  \mathrm{argmin}_{\mathcal F}$
-      $\E \left[ L(\mathcal{F}_M (\mathbf p, \mathbf z| \gamma), \theta(\mathbf p, \mathbf z)) \right]$
+      $\E \left[ L(\mathcal{F}_M (\mathbf p, \mathbf z), \theta) \right]$
 \FOR {CTF face, $j$}
     \STATE Evaluate ML model $\hat \theta_j \leftarrow \hat{\mathcal F_M}(\mathbf p_j, \mathbf z_j)$ \;
     \STATE Reconstruct $\hat H_j(\cdot |\hat \theta_j)$ \;
@@ -211,15 +211,15 @@ $\tau \in [0, 1]$
 
 The quantile loss function is given by equation \ref{eq:qloss_fn} and depicted in figure \ref{fig:qloss}.
 \begin{equation}
-\mathcal Q_\tau( u) =  u \cdot (\tau - \mathbb{I}_{( u < 0)})
+\mathcal W_\tau( u) =  u \cdot (\tau - \mathbb{I}_{( u < 0)})
 \label{eq:qloss_fn}
 \end{equation}
 Where $\mathbb{I}$ is the indicator function which returns 1 if the argument is true and 0 otherwise.
-In order to estimate a sample quantile, $\hat q_\tau$, given the empirical CDF $F$, minimize: $\E[\mathcal Q_\tau(T - q_\tau)]$ where $T$, the temperature, is treated as a random variable distributed according to $F_T$.  Considering a sample set $\{T_0, T_i, \dots T_N \}$ the desired quantile $q_\tau$ may be estimated by equation \ref{eq:qtau_est}.
+In order to estimate a sample quantile, $\hat q_\tau$, given the empirical CDF $F$, minimize: $\E[\mathcal W_\tau(T - q_\tau)]$ where $T$, the temperature, is treated as a random variable distributed according to $F_T$.  Considering a sample set $\{T_0, T_i, \dots T_N \}$ the desired quantile $q_\tau$ may be estimated by equation \ref{eq:qtau_est}.
 \begin{equation}
             \left.\begin{aligned}
-            \hat q_{\tau} &= argmin_{q_\tau} \E[\mathcal Q_\tau(u)];\ \  u = T - q_\tau  \\
-            \approx & argmin_{q_\tau}  \frac{1}{N} \sum_i^N \mathcal Q_\tau(u_i); \ u_i = T_i - q_\tau \\
+            \hat q_{\tau} &= argmin_{q_\tau} \E[\mathcal W_\tau(u)];\ \  u = T - q_\tau  \\
+            \approx & argmin_{q_\tau}  \frac{1}{N} \sum_i^N \mathcal W_\tau(u_i); \ u_i = T_i - q_\tau \\
             \approx & argmin_{q_\tau} \left[ (1-\tau) \sum_{T \leq q_\tau}( T_i - q_\tau ) - \tau \sum_{T > q_\tau} (T_i - q_\tau) \right]
             \end{aligned}\right.
             \label{eq:qtau_est}
@@ -251,7 +251,7 @@ In order to estimate a sample quantile, $\hat q_\tau$, given the empirical CDF $
 	\draw [line width=0.03cm]  (1.5*\s,  0.5*\s)  -- (1.5*\s, 0.75*\s);
 	\draw [line width=0.03cm]  (1.5*\s,  0.5*\s)  -- (1.0*\s, 0.5*\s);
 	% figure text
-	\node[text width=2cm] at (-0.1*\s,2.0*\s) {$\mathcal Q_{\tau}(u)$};
+	\node[text width=2cm] at (-0.1*\s,2.0*\s) {$\mathcal W_{\tau}(u)$};
 	\node[text width=2cm] at (-0.5*\s,0.5*\s) {$\tau-1$};
 	\node[text width=1cm] at (1.9*\s,0.5*\s) {$\tau$};
 	\end{tikzpicture}
@@ -728,9 +728,9 @@ Algorithm \ref{algo:hi2lo_crud_algo} begins with the same pre-processing and mac
         \STATE \textbf{Initialization}
         \STATE (1) Pre-process training set.
         \STATE $\ \ $   (1b) Fit the joint distribution parameters to known CFD data: $\theta(\mathbf p, \mathbf z)$.
-        \STATE $\ \ $   (1c) \textbf{def:}  $\ \theta \leftarrow \mathcal F_M(\mathbf p, \mathbf z | \gamma)$
+        \STATE $\ \ $   (1c) \textbf{def:}  $\ \theta \leftarrow \mathcal F_M(\mathbf p, \mathbf z)$
         \STATE (2) Train model:  $\hat{\mathcal F_M} =  \mathrm{argmin}_{\mathcal F}$
-        $L(\mathcal{F}_M (\mathbf p, \mathbf z| \gamma), \theta(\mathbf p, \mathbf z)) $
+        $\E \left[ L(\mathcal{F}_M (\mathbf p, \mathbf z), \theta(\mathbf p, \mathbf z)) \right] $
         \FOR {VERA State, $v$}
         \FOR {CTF face, $j$}
           \STATE Evaluate ML model $\hat \theta_j \leftarrow \hat{\mathcal F_M}(\mathbf p_j, \mathbf z_j)$ \\
