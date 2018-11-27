@@ -8,7 +8,7 @@ Statistical downscaling (SD) methods seek a statistical link between low and hig
 In particular in the climate and weather data communities it is common to perform local bias-correction on coarsely resolved weather models provided local weather station measurements \cite{wilby1998} \cite{arelia2016} \cite{goly2014}. A common situation which lends itself to SD methods is to have disparate resolution sample data; one set is typically provided by a coarsely resolved global circulation model (GCM) and a secondary set of finely resolved local rain and wind field measurements is provided by local weather stations, satellite or radar sources.  In addition to the longitude and latitude of these measurements, the fine scale data may also be associated with auxiliary features at such as the terrain height.
 \index{Statistical Downscaling}
 
-Results from a SD model should be carefully interpreted since at fine scale resolutions point estimates for the fields represent a single realization of a random variable governed by a fitted underlaying distribution.  Depending on the models used to capture statistical variation in the spatial and temporal trends it is sometimes necessary to draw many samples from the SD model to estimate the mean and higher moments.  These mean and variance estimates can then be compared against a historical validation data set.
+Results from a SD model should be carefully interpreted since at fine scale resolutions point estimates for the fields represent a single realization of a random variable governed by a fitted underlying distribution.  Depending on the models used to capture statistical variation in the spatial and temporal trends it is sometimes necessary to draw many samples from the SD model to estimate the mean and higher moments.  These mean and variance estimates can then be compared against a historical validation data set.
 
 Precipitation estimates provided by statistically downscaled climate models are used as a boundary condition to local hydrology models for runoff \cite{wood2002}, flood \cite{hess2007}, and aquifer replenishment studies.  One may draw a parallel with the current crud simulation work where bias-corrected subchannel TH results are passed to a corrosion chemistry or crud simulation package. The problem is similar to the highly threshold sensitive crud problem since flood risk models require accurate predictions for the frequency and magnitudes of extreme rainfall events which are difficult to quantify with coarse scale GCMs alone.
 
@@ -27,7 +27,7 @@ Danie G. Krige developed an interpolation scheme centered around modeling the sp
 % An example of application of kriging to a soil quality data set is left to Hengl et. al \cite{Hengl07}.
 \index{Kriging}
 
-Kriging or Gaussian process regression techniques are well suited when the distribution of residual about the interpolating model can be assumed to be normally distributed.  Simple kriging assumes that the mean of the underlaying field does not drift as a function of location in the input space and therefore only requires the fitting of a variogram which describes the statistical spatial autocorrelation between the known data.  More advanced kriging strategies such as regression kriging (RK) forgo this simplification decomposing the interpolation problem into mean predicting and bias-correcting residual models \cite{Hengl07}.  In RK the spatial-autocorrelation in the residuals is modeled by a simple kriging model.  The mean response may be predicted by a variety of regression strategies, with a common choice being an ordinary least squares model though works which investigate the use of random forests or more advanced machine learning strategies in this role are pervasive \cite{LI20111647} \cite{LI2017112}.
+Kriging or Gaussian process regression techniques are well suited when the distribution of residual about the interpolating model can be assumed to be normally distributed.  Simple kriging assumes that the mean of the underlying field does not drift as a function of location in the input space and therefore only requires the fitting of a variogram which describes the statistical spatial autocorrelation between the known data.  More advanced kriging strategies such as regression kriging (RK) forgo this simplification decomposing the interpolation problem into mean predicting and bias-correcting residual models \cite{Hengl07}.  In RK the spatial-autocorrelation in the residuals is modeled by a simple kriging model.  The mean response may be predicted by a variety of regression strategies, with a common choice being an ordinary least squares model though works which investigate the use of random forests or more advanced machine learning strategies in this role are pervasive \cite{LI20111647} \cite{LI2017112}.
 \index{Kriging!Regression Kriging}
 
 The initial approach taken to construct a RK model shown in equation \ref{eq:decomp} shows strong parallels to the hi2lo method developed in the current work.  A key difference is that the primary focus of an RK model is to capture spatial auto-correlations in the field data where the current work does not seek to model spatial-autocorrelation of a random field since such information is extraneous when making crud predictions with a one-dimensional crud model.   If the ability to predict the full 2D surface distributions of the FOI are desired then a RK model could yield the requisite fine scale surface distributions with uncertainty estimates provided future study.
@@ -100,9 +100,9 @@ In this RK approach, the subchannel code could provide mean predictions of relev
 
 \section{Subchannel Hi2lo}
 
-The utilization of CFD data to improve subchannel thermal hydraulic models does not necessarily take on a statistical downscaling characteristic.  Oftentimes the strategy by which one uses CFD data to improve a subchannel model can be developed using standard Bayesian inference techniques in which model parameters are inferred through comparing the low fidelity model to high fidelity experimental or CFD data.  This typifies an inverse problem which oftentimes involves  model calibration, model selection and experimental design aspects.  A wide array of literature exists on each of these topics and will not be interrogated here.  Instead, a pointed literature review of the latest CFD-informed subchannel work is considered.
+The utilization of CFD data to improve subchannel thermal hydraulic models does not necessarily take on a statistical downscaling characteristic.  Oftentimes the strategy by which one uses CFD data to improve a subchannel model can be developed using standard Bayesian inference techniques in which subchannel model parameters are inferred through comparing the low fidelity model to high fidelity experimental or CFD data.  This typifies an inverse problem which oftentimes involves  model calibration, model selection and experimental design aspects.  A wide array of literature exists on each of these topics and will not be interrogated here.  Instead, a pointed literature review of the latest CFD-informed subchannel work is considered.
 
- M. Avramova developed CFD informed grid mixing models in CTF.  Avramova's work leveraged CFD results to improve the momentum balance and grid mixing models in CTF \cite{avramova2007}.  The lateral momentum equations implemented in CTF are provided in equation \ref{eq:ctf_lat_mom}.
+ M. Avramova developed CFD informed grid mixing models in CTF.  Avramova's work leveraged CFD results to improve the grid-enhanced cross flow and turbulent mixing models in CTF \cite{avramova2007}.  The lateral momentum equations implemented in CTF are provided in equation \ref{eq:ctf_lat_mom}.
 
     	\begin{align}
     	& \frac{\partial }{\partial t}(\alpha_l \rho_l \mathbf U_l)
@@ -112,20 +112,20 @@ The utilization of CFD data to improve subchannel thermal hydraulic models does 
     	&+ M^L_l + M^d_l + M^T_l + M_l^{GDXF}
         \label{eq:ctf_lat_mom}
     	\end{align}
-Where $l$ denotes the liquid phase and $\alpha$ is the volume fraction liquid.  The terms $M^L, M^d, M^T, M_l^{GDXF}$ account for droplet or bubble entrainment, phase interfacial drag, turbulent mixing and grid directed cross flow respectively.  Avramova devised a method to use CFD computations to obtain an accurate prediction of $M_l^{GDXF}$ for a variety of grid designs.
+Where $l$ denotes the liquid phase and $\alpha$ is the volume fraction liquid, $\bm \tau$ represents the shear tensor, $P$ is the static pressure, $\mathbf U$ is the velocity vector, $\rho_l$ is the liquid phase density, and $\mathbf g$ is the gravitational acceleration vector.  The terms $M^L, M^d, M^T, M_l^{GDXF}$ account for droplet or bubble entrainment, phase interfacial drag, turbulent mixing and grid directed cross flow respectively.  Avramova devised a method to use CFD computations to obtain an accurate prediction of $M_l^{GDXF}$ for a variety of grid designs.
 The grid directed cross flow momentum source term used in Avramova's model is defined by equation \ref{eq:grid_en_xflow_coeff}.
     	\begin{equation}
     	M_l^{GDXF} = f^2_{sg}(z) u_l^2 \rho_l A_g S_g
         \label{eq:grid_en_xflow_coeff}
     	\end{equation}
-        Where $u_l$ is the axial liquid velocity and the cross flow factor is given by equation \ref{eq:f_factor}.
+        Where $u_l$ is the axial liquid velocity, $A_g$ is the subchannel gap area, $S_g$ is a constant which takes on a value in $\{-1, 0, 1\}$ depending on the vane orientation. The cross flow factor, $f_{sg}$, is given by equation \ref{eq:f_factor}.
     	\begin{equation}
     	f_{sg}(z) = \frac{V^{CFD}_l(z-z_{in})}{U^{CFD}_{in}}
         \label{eq:f_factor}
     	\end{equation}
-        $U^{CFD}_{in}$ is the subchannel average axial inlet velocity to the spacer grid under consideration and $V^{CFD}_l(z-z_{in})$ is the suchannel averaged CFD predicted lateral velocity downstream from the spacer grid.
+        $U^{CFD}_{in}$ is the subchannel average axial inlet velocity to the spacer grid under consideration and $V^{CFD}_l(z-z_{in})$ is the subchannel averaged CFD predicted lateral velocity downstream from the spacer grid.
 
- The effectiveness of the grid enhanced cross flow model was determined by comparing exit bulk temperature profiles across a variety of assembly designs against experimental and CFD results.  The results indicated a marked improvement in the rod-assembly outlet temperature distribution at little additional computational cost as compared to CTF without CFD informed grid enhanced cross flow corrections.  
+ The effectiveness of the grid enhanced cross flow model was determined by comparing exit bulk temperature profiles across a variety of assembly designs against experimental and CFD results.  The results indicated a marked improvement in the rod-assembly outlet temperature distribution at little additional computational cost as compared to CTF without CFD informed grid enhanced cross flow corrections.    Aramova's work succeeded in reproducing the correct bulk fluid behavior near spacer grids in CTF as compared to gold standard CFD results; however the goal was not to recover small scale flow features.  A different approach is required to capture the influence of spacer grids on the crud deposition rate.
  
  The next bodies of work are closer in alignment with traditional downscaling techniques.  These hi2lo procedures are not statistical in nature, but rather seek to correct spatial biases in the field predictions made by a low fidelity subchannel code using a purely deterministic multiplier mapping procedure.
     
@@ -137,11 +137,11 @@ S. Yao et al. developed an empirical model of the heat transfer coefficient down
 \label{eq:yao_htc}
 \end{equation}
 Where the first term accounts for the effect of grid flow restriction and the second term represents the contribution of vane induced swirl on the heat transfer.
-
+A graphical representation of Yao's model fit to experimentally determined Nusselt number data for a variety of grid designs is shown in figure \ref{fig:gridnueff}.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.6\linewidth]{../proposal/images/grid_nu_eff}
-    \caption{S. Yao empirical Nusselt number ratio vs. distance from upstream spacer grid.}
+    \caption[S. Yao empirical Nusselt number ratio vs. distance from upstream spacer.]{S. Yao empirical Nusselt number ratio vs. distance from upstream spacer grid plotted for a variety of grid designs \cite{yao82}.}
     \label{fig:gridnueff}
 \end{figure}
 This work is important because it represents an early approach to building experimentally informed hi2lo subchannel models.  The Yao model is still employed by modern subchannel codes such as CTF to obtain more accurate rod surface temperature distributions near the spacer grids.
