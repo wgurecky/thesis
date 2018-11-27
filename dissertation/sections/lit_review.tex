@@ -1,6 +1,8 @@
 %! TEX root = ../dissertation_gurecky.tex
 
-The process of correcting thermal hydraulic predictions provided by a subchannel code using higher fidelity CFD results can be viewed as a particular application of a statistical downscaling model.  There are abundant examples of statistical downscaling techniques in the weather forecasting and geological literature.  One commonality across all studied procedures is the presence of a high and low fidelity data source and a goal to make credible predictions of the target field between known coarsely resolved sample locations.  The problem is one of data amalgamation, where the resultant downscaling model preserves some average aspects of the low fidelity model with the added benefits of uncertainty and spatial fidelity afforded by the finer scale data.
+Correcting and augmenting coarse fidelity thermal hydraulic predictions provided by a quickly executing subchannel code by using higher fidelity CFD results can be viewed as an instance of applied statistical downscaling.   There are abundant examples of statistical downscaling techniques in the weather forecasting and geostatistics literature.  This section begins with an overview of statistical downscaling techniques followed by a narrowed review of past hi2lo work directed at improving subchannel codes.  Finally, past subchannel hi2lo efforts are connected with an interpolation procedure known as kriging.  It is shown that the kriging process decomposes the hi2lo problem into mean-predicting and stochastic components.  This general decomposition strategy will be slightly modified and applied in the following chapters.
+
+One commonality across all studied procedures is the presence of a high and low fidelity data source and a goal to make credible predictions of the target field between known coarsely resolved sample locations.  The problem is one of data amalgamation, where the resultant downscaling model preserves some average aspects of the low fidelity model with the added benefits of uncertainty and spatial fidelity afforded by the finer scale data.
 
 \section{Statistical Downscaling}
 
@@ -20,82 +22,6 @@ Several factors prohibit the application of BCSD techniques directly to the hi2l
 It is also possible to nest a high fidelity simulation within a coarse fidelity weather simulation. Boundary conditions and constraints are supplied by the coarse fidelity model to the nested regional high resolution weather model.  The practice of coupling regional weather models with coarse scale global models is sometimes referred to as dynamical downscaling \cite{Caldwell2009}, though, this weather modeling strategy can also be viewed as a particular implementation of a tightly coupled multiscale model.  The construction of dynamical downscaling models are not the focus of the current hi2lo work and will not be discussed further.
 
 % There are examples of such coupled multiscale thermal hydraulic simulation in reactor physics (see literature on coupled coarse RELAP and CFD models.  CFD is used where the flow is 'complicated' but RELAP handles the primary loop piping and heat exchanger)
-
-\section{Kriging}
-
-Danie G. Krige developed an interpolation scheme centered around modeling the spatial-autocorrelation of a random field in an effort to make credible predictions of the spatial distribution of gold ore concentrations given sparse, uncertain estimates \cite{krige51}, \cite{Krige51a}.  This particular interpolation procedure came to bear his name. Following kriging's introduction, the technique has propagated through the geostatistics community.  Kriging is applicable when estimates of the mean and variance of a random field are desired in between sparse training data samples.  The technique can be viewed as a special case of Gaussian process regression \cite{Williams96}.  Kriging is related to Gaussian process regression since the underlying goal of both approaches is to model the spatial autocorrelation of a random field.  
-% An example of application of kriging to a soil quality data set is left to Hengl et. al \cite{Hengl07}.
-\index{Kriging}
-
-Kriging or Gaussian process regression techniques are well suited when the distribution of residual about the interpolating model can be assumed to be normally distributed.  Simple kriging assumes that the mean of the underlying field does not drift as a function of location in the input space and therefore only requires the fitting of a variogram which describes the statistical spatial autocorrelation between the known data.  More advanced kriging strategies such as regression kriging (RK) forgo this simplification decomposing the interpolation problem into mean predicting and bias-correcting residual models \cite{Hengl07}.  In RK the spatial-autocorrelation in the residuals is modeled by a simple kriging model.  The mean response may be predicted by a variety of regression strategies, with a common choice being an ordinary least squares model though works which investigate the use of random forests or more advanced machine learning strategies in this role are pervasive \cite{LI20111647} \cite{LI2017112}.
-\index{Kriging!Regression Kriging}
-
-The initial approach taken to construct a RK model shown in equation \ref{eq:decomp} shows strong parallels to the hi2lo method developed in the current work.  A key difference is that the primary focus of an RK model is to capture spatial auto-correlations in the field data where the current work does not seek to model spatial-autocorrelation of a random field since such information is extraneous when making crud predictions with a one-dimensional crud model.   If the ability to predict the full 2D surface distributions of the FOI are desired then a RK model could yield the requisite fine scale surface distributions with uncertainty estimates provided future study.
-
-The following example examines case of kriging the surface temperature field, $\hat T_\mathtt{RK}$.
-Let $\mathbf{q}$ represent a predictive feature array comprised of the local subchannel axial velocity,
-TKE, and boundary heat flux from CTF.  Also included in the feature array is the spatial coordinates, $\mathbf s$.  The set $\{u, k, q'' \}$ are referred to as auxiliary features since they are functions of $\mathbf s$.
-
-\begin{equation}
-    \mathbf{q} = \{u(\mathbf s), k(\mathbf s), q''(\mathbf s), \mathbf s \}_{\mathrm{ctf}}
-\end{equation}
-
-First the target FOI is decomposed into a deterministic and stochastic component, as in equation \ref{eq:decomp}.
-\begin{equation}
-    T(\mathbf s) = \mu_{\mathrm{ctf}}(\mathbf s) + \varepsilon(\mathbf s)
-\label{eq:decomp}
-\end{equation}
-
-First, the mean surface temperature field behavior is estimated by either a least squares fit to the CTF result, or by using the CTF result directly.  The least squares problem involves solving the linear system shown in equation \ref{eq:lin_ctf_reg} for the coefficients $\hat{\beta}_{\mathrm{ctf}}$.
-
-\begin{equation}
-    \hat \beta_{\mathrm{ctf}} = \mathrm{argmin}_{\beta_{\mathrm{ctf}}} ||\mathbf T_{\mathrm{ctf}} - \mathbf q \beta_{\mathrm{ctf}}||^2
-\label{eq:lin_ctf_reg}
-\end{equation}
-
-Substituting the ordinary least squares coefficients into equation \ref{eq:decomp} the random field can be expressed by equation \ref{eq:decomp_2}.
-
-\begin{equation}
-    T(\mathbf s) = \mathbf q(\mathbf s) \hat \beta_{\mathrm{ctf}} + \varepsilon(\mathbf s)
-\label{eq:decomp_2}
-\end{equation}
-
-In matrix form, the RK model evaluated at a point $\mathbf{s}_0 $ on the rod surface is given by equation \ref{eq:rk_eval} \cite{Hengl07}.
-
-\begin{equation}
-    \hat T_\mathtt{RK}(\mathbf{s}_0 ) = \mathbf{q}_\mathbf{0}^\mathbf{T} \cdot \mathbf{\hat \beta}_\mathtt{ctf} + \mathbf{\lambda }_\mathbf{0}^\mathbf{T} \cdot (\mathbf T_{\mathrm{cfd}}
-- \mathbf{q} \cdot \mathbf{\hat \beta }_\mathtt{ctf} )
-\label{eq:rk_eval}
-\end{equation}
-Where $\mathbf{q}_\mathbf{0}= \mathbf{q}(\mathbf s_0)$. The kriging weights at the sample location, $\mathbf{\lambda_0}$, are estimated by \ref{eq:simple_krige_weights} with the covariance matrix generation function: $c(q_i, q_0)= \mathrm{Cov}(\mathbf e(q_i), \mathbf e(q_0))$ also known as a kriging kernel.  The residual vector between the CFD surface field estimates and the CTF prediction is given by $\mathbf e = (\mathbf T_{\mathrm{cfd}} - \mathbf{q} \cdot \mathbf{\hat \beta }_\mathtt{ctf}$). 
-\begin{equation}
-\begin{pmatrix}\lambda_{0_1} \\ \vdots \\ \lambda_{0_n} \end{pmatrix}=
-\begin{pmatrix}c(q_1,q_1) & \cdots & c(q_1,q_n) \\
-\vdots & \ddots & \vdots  \\
-c(q_n,q_1) & \cdots & c(q_n,q_n) 
-\end{pmatrix}^{-1}
-\begin{pmatrix}c(q_1,q_0) \\ \vdots \\ c(q_n,q_0) \end{pmatrix}
-\label{eq:simple_krige_weights}
-\end{equation}
-
-A common choice for the kernel is the squared-exponential covariance function provided in equation \ref{eq:cov_kernel}.
-\begin{equation}
-    c(d) = e^{-(d/v)^2}
-    \label{eq:cov_kernel}
-\end{equation}
-Where $v$ is scaling parameter and $d$ is the euclidean distance between points: $d=||q_0 - q_n||$.
-The parameters of the kernel, or $v$ in this case, are estimated from the available CFD data.
-
-The residual vector, $\mathbf e$, naively includes all available CFD data points, but in practice a cut-off distance from the sample location, $\mathbf s_0$, can be specified to drastically reduce the amount of information required to construct and evaluate a covariance model.  This effectively reduces the length of the vectors $\mathbf{\lambda_0}$ and $\mathbf e$.
-
-\begin{figure}[hbtp]
-\centering
-\includegraphics[scale=.3]{images/rk_example.png}
-\caption[Regression kriging example.]{Regression kriging example \cite{Hengl07}.}
-\label{fit:rk}
-\end{figure}
-
-In this RK approach, the subchannel code could provide mean predictions of relevant TH surface fields and residual distributions could be developed from the CFD data.  A kriging model could then be fit to the residual distributions, in effect supplying a bias correction to the subchannel predictions with the added benefit of supplying uncertainty estimates.  However, variance estimates made by the RK model assume that residuals are normally distributed which is not necessarily the case for CFD-Subchannel rod-surface fields.
 
 
 \section{Subchannel Hi2lo}
@@ -127,7 +53,7 @@ The grid directed cross flow momentum source term used in Avramova's model is de
 
  The effectiveness of the grid enhanced cross flow model was determined by comparing exit bulk temperature profiles across a variety of assembly designs against experimental and CFD results.  The results indicated a marked improvement in the rod-assembly outlet temperature distribution at little additional computational cost as compared to CTF without CFD informed grid enhanced cross flow corrections.    Aramova's work succeeded in reproducing the correct bulk fluid behavior near spacer grids in CTF as compared to gold standard CFD results; however the goal was not to recover small scale flow features.  A different approach is required to capture the influence of spacer grids on the crud deposition rate.
  
- The next bodies of work are closer in alignment with traditional downscaling techniques.  These hi2lo procedures are not statistical in nature, but rather seek to correct spatial biases in the field predictions made by a low fidelity subchannel code using a purely deterministic multiplier mapping procedure.
+ The next bodies of work are closer in alignment with traditional downscaling techniques.  These hi2lo procedures are not statistical in nature, but rather seek to correct spatial biases in the field predictions made by a low fidelity subchannel code using a purely deterministic multiplier mapping procedure.  The corrective multiplier maps are derived from either experimentally gathered or CFD sources.
     
 S. Yao et al. developed an empirical model of the heat transfer coefficient downstream of spacer grids \cite{yao82}.
     An empirical relationship between the Nusselt number ratio and the vane angle, $\phi$, blockage ratio $\epsilon$, dimensionless distance from the grid, $x/D$, and fraction of flow area impeded by the vanes, $A$, was produced.  This relationship is provided in equation \ref{eq:yao_htc}.
@@ -150,14 +76,13 @@ This work is important because it represents an early approach to building exper
     
     First, an intermediate coupling mesh is constructed on the rod surface with a resolution between the CFD mesh and the CTF grid.  Next, the raw CFD surface fields are then mapped to the coupling mesh.  In this approach crud is to be grown on the intermediate coupling grid.  In theory, this grid can be refined to be equivalent to the CFD mesh size and indeed this would reduce interpolation error in the hi2lo procedure \cite{salko17}.
        
-    The multiplier maps capture the ratio of the CFD predicted HTC and TKE surface distributions to the same surface distributions on a bare rod without spacer grids present.
-    Convective HTC remap is described by equations \label{eq:htc_remap_ctf_1} and \label{eq:htc_remap_ctf_2}.
+    Shown in equation \ref{eq:htc_remap_ctf_1},  the multiplier maps capture the ratio of the CFD predicted HTC and TKE surface distributions to the same surface distributions on a bare rod without spacer grids present.
     
     \begin{equation}
         \mathbf m_h = \frac{(Nu)_{cfd}}{(Nu)_{0}} = \frac{h_{cfd} L_{cfd} k_{0} }{h_{0}k_{cfd} L_{0}}
          \label{eq:htc_remap_ctf_1}
     \end{equation}
-    Where $Nu$ is the Nusselt number.  Assuming equal length scales and thermal conductivities:
+    Where $Nu$ is the Nusselt number.  Assuming equal length scales, $L_{cfd}$, and thermal conductivities, $k$, the Nusselt number ration simplifies to equation \ref{eq:htc_remap_ctf_2}.
     \begin{equation}
         \mathbf m_h = \frac{h_{cfd}}{h_{0}} = \frac{q_{cfd}(T-T_\infty)_{0}}{q_{0}(T-T_\infty)_{cfd}}
         \label{eq:htc_remap_ctf_2}
@@ -237,7 +162,104 @@ Some simplifications are made in the application of this mapping.  For a given a
 
 The multiplier map may not be transferable to other assemblies in the core due to geometric effects including the orientation of neighboring assemblies and TH/neutronic feedbacks.  This represents a limitation to the spatial mapping procedure as unique maps must be generated for different assemblies in the core.
 
-T. Blyth produced CFD informed grid enhanced heat transfer models for the advanced subchannel code, CTF \cite{blyth2014} \cite{blyth2017}.  Blyth's work presented strategies for processing CFD data for use in generating enhanced heat transfer maps and for computing form loss coefficients across spacer grids.  Blyth's work served as a precursor to Salko's CFD informed method for developing HTC and TKE maps.
+T. Blyth produced CFD informed grid enhanced heat transfer models for the advanced subchannel code, CTF \cite{blyth2014} \cite{blyth2017}.  Blyth's work presented strategies for processing CFD data for use in generating enhanced heat transfer maps and for computing form loss coefficients across spacer grids.  Blyth's work served as a precursor to Salko's CFD informed method for developing HTC and TKE maps.  Blyth's grid enhanced heat transfer model followed the form given in equation \ref{eq:blyth_htc_map} which is identical to the approach taken by Yao and latter applied by Salko \cite{yao82} \cite{salko17}.
+
+\begin{equation}
+\mathbf m_h = \frac{h_{cfd}}{h_0}
+\label{eq:blyth_htc_map}
+\end{equation}
+
+Results from this work indicated that the a CFD driven hi2lo approach could capture more intricate details of the flow field when compared to the Yao heat transfer enhancement model.  These intricate details were later found to be important to account for when modeling crud on the rods' surface \cite{slattery16}.   This was expected because the spatial fidelity targeted by the approach of Blyth and Salko was fundamentally different than Yao's previous work.  Furthermore, in contrast to the Yao model which can be tuned to accommodate different vane angles and blockage ratios,  Blyth's approach requires CFD computations for each grid design of interest. 
+As a consequence the hi2lo approaches developed by Blyth and Salko require a large up front computational cost driven by the necessary CFD computations for each grid design of interest.
+
+\section{Kriging}
+
+Taking Salko and Blyth's work as a starting point, one might consider developing a predictive surrogate model built from multiple CFD computations which produces a hi2lo spatial map of the form indicated by equation \ref{eq:blyth_htc_map}.  The desired method would allow one to interpolate between known geometric configurations and core states at which the upfront CFD computations were performed.  The predicted hi2lo map from this procedure would also need to produce error bounds on the interpolated spatial HTC and TKE field maps.  If the model's hi2lo field mapping errors follow a Gaussian-like distribution a technique known as kriging could be a suitable candidate to produce the desired geometry and flow dependent HTC maps.  In this case the errors are defined as the model HTC prediction subtracted from the gold standard CFD HTC predictions.
+
+Kriging was originally developed to address the problem of finding the most probable location of quality gold ore deposits given previous sparse samples of the surrounding ore body.  This interpolation method centered around modeling the spatial-autocorrelation of a random field in an effort to make credible predictions of the spatial distribution of gold ore concentrations given sparse, uncertain estimates \cite{krige51}, \cite{Krige51a}.   The technique can be viewed as a special case of Gaussian process regression \cite{Williams96}.  Kriging is related to Gaussian process regression since the underlying goal of both approaches is to model the spatial autocorrelation of a random field.  This section will use the kriging nomenclature, however, the literature on Gaussian process regression can be useful in similar or identical contexts.
+
+Since it's inception, kriging has been successfully employed to build surrogate models of complex physics.  Notably, kriging approaches have been used to construct a surrogate model of airfoil performance to enable efficient optimization of many design parameters [refs].    Kriging techniques have also been used to build spatial-temporal surrogates of rainfall for the assessment of flooding risks [refs].  Kriging is generally applicable when estimates of the mean and variance of a random field are desired in between sparse training data samples.  
+% An example of application of kriging to a soil quality data set is left to Hengl et. al \cite{Hengl07}.
+\index{Kriging}
+
+Here the application of kriging to a spatially dependent temperature field is considered.  An brief introduction to the kriging procedure is given followed by an the application to a CFD and CTF data source.  The goal is to interpolate high fidelity CFD field data in between existing CFD data sets at known grid orientation and core condition state points.
+
+Simple kriging assumes that the mean of the underlying field does not drift as a function of location in the input space and therefore only requires the fitting of a covarience function which describes the statistical spatial autocorrelation between the known data [refs].  
+
+\begin{equation}
+f(z) = \mu_f + \epsilon(z),\ \epsilon \sim \mathcal N(0, C(z;\theta))
+\end{equation}
+Where $\mu_f$ is a constant and $C()$ is the covarience function with parameters $\theta$.
+
+Advanced kriging strategies such as regression kriging (RK) forgo the assumption of constant mean by decomposing the interpolation problem into mean-predicting and bias-correcting residual models \cite{Hengl07}.  In an RK framework, the spatial-autocorrelation in the residuals computed about the mean are captured by a simple kriging model.  The mean response may be predicted by a variety of regression strategies, with a common choice being an ordinary least squares model though works which investigate the use of random forests or more advanced machine learning strategies in this role are pervasive \cite{LI20111647} \cite{LI2017112}.
+\index{Kriging!Regression Kriging}
+
+The initial approach taken to construct a RK model shown in equation \ref{eq:decomp} shows strong parallels to the hi2lo method developed in the current work.  A key difference is that the primary focus of an RK model is to capture spatial auto-correlations in the field data where the current work does not seek to model spatial-autocorrelation of a random field since such information is extraneous when making crud predictions with a one-dimensional crud model.   If the ability to predict the full 2D surface distributions of the FOI are desired then a RK model could yield the requisite fine scale surface distributions with uncertainty estimates provided future study.
+
+The following example examines case of kriging the surface temperature field, $\hat T_\mathtt{RK}$.
+Let $\mathbf{q}$ represent a predictive feature array comprised of the local subchannel axial velocity,
+TKE, and boundary heat flux from CTF.  Also included in the feature array is the spatial coordinates, $\mathbf s$.  The set $\{u, k, q'' \}$ are referred to as auxiliary features since they are functions of $\mathbf s$.
+
+\begin{equation}
+\mathbf{q} = \{u(\mathbf s), k(\mathbf s), q''(\mathbf s), \mathbf s \}_{\mathrm{ctf}}
+\end{equation}
+
+First the target FOI is decomposed into a deterministic and stochastic component, as in equation \ref{eq:decomp}.
+\begin{equation}
+T(\mathbf s) = \mu_{\mathrm{ctf}}(\mathbf s) + \varepsilon(\mathbf s)
+\label{eq:decomp}
+\end{equation}
+
+First, the mean surface temperature field behavior is estimated by either a least squares fit to the CTF result, or by using the CTF result directly.  The least squares problem involves solving the linear system shown in equation \ref{eq:lin_ctf_reg} for the coefficients $\hat{\beta}_{\mathrm{ctf}}$.
+
+\begin{equation}
+\hat \beta_{\mathrm{ctf}} = \mathrm{argmin}_{\beta_{\mathrm{ctf}}} ||\mathbf T_{\mathrm{ctf}} - \mathbf q \beta_{\mathrm{ctf}}||^2
+\label{eq:lin_ctf_reg}
+\end{equation}
+
+Substituting the ordinary least squares coefficients into equation \ref{eq:decomp} the random field can be expressed by equation \ref{eq:decomp_2}.
+
+\begin{equation}
+T(\mathbf s) = \mathbf q(\mathbf s) \hat \beta_{\mathrm{ctf}} + \varepsilon(\mathbf s)
+\label{eq:decomp_2}
+\end{equation}
+
+In matrix form, the RK model evaluated at a point $\mathbf{s}_0 $ on the rod surface is given by equation \ref{eq:rk_eval} \cite{Hengl07}.
+
+\begin{equation}
+\hat T_\mathtt{RK}(\mathbf{s}_0 ) = \mathbf{q}_\mathbf{0}^\mathbf{T} \cdot \mathbf{\hat \beta}_\mathtt{ctf} + \mathbf{\lambda }_\mathbf{0}^\mathbf{T} \cdot (\mathbf T_{\mathrm{cfd}}
+- \mathbf{q} \cdot \mathbf{\hat \beta }_\mathtt{ctf} )
+\label{eq:rk_eval}
+\end{equation}
+Where $\mathbf{q}_\mathbf{0}= \mathbf{q}(\mathbf s_0)$. The kriging weights at the sample location, $\mathbf{\lambda_0}$, are estimated by \ref{eq:simple_krige_weights} with the covariance matrix generation function: $c(q_i, q_0)= \mathrm{Cov}(\mathbf e(q_i), \mathbf e(q_0))$ also known as a kriging kernel.  The residual vector between the CFD surface field estimates and the CTF prediction is given by $\mathbf e = (\mathbf T_{\mathrm{cfd}} - \mathbf{q} \cdot \mathbf{\hat \beta }_\mathtt{ctf}$). 
+\begin{equation}
+\begin{pmatrix}\lambda_{0_1} \\ \vdots \\ \lambda_{0_n} \end{pmatrix}=
+\begin{pmatrix}c(q_1,q_1) & \cdots & c(q_1,q_n) \\
+\vdots & \ddots & \vdots  \\
+c(q_n,q_1) & \cdots & c(q_n,q_n) 
+\end{pmatrix}^{-1}
+\begin{pmatrix}c(q_1,q_0) \\ \vdots \\ c(q_n,q_0) \end{pmatrix}
+\label{eq:simple_krige_weights}
+\end{equation}
+
+A common choice for the kernel is the squared-exponential covariance function provided in equation \ref{eq:cov_kernel}.
+\begin{equation}
+c(d) = e^{-(d/v)^2}
+\label{eq:cov_kernel}
+\end{equation}
+Where $v$ is scaling parameter and $d$ is the euclidean distance between points: $d=||q_0 - q_n||$.
+The parameters of the kernel, or $v$ in this case, are estimated from the available CFD data.
+
+The residual vector, $\mathbf e$, naively includes all available CFD data points, but in practice a cut-off distance from the sample location, $\mathbf s_0$, can be specified to drastically reduce the amount of information required to construct and evaluate a covariance model.  This effectively reduces the length of the vectors $\mathbf{\lambda_0}$ and $\mathbf e$.
+
+\begin{figure}[hbtp]
+	\centering
+	\includegraphics[scale=.3]{images/rk_example.png}
+	\caption[Regression kriging example.]{Regression kriging example \cite{Hengl07}.}
+	\label{fit:rk}
+\end{figure}
+
+In this RK approach, the subchannel code could provide mean predictions of relevant TH surface fields and residual distributions could be developed from the CFD data.  A kriging model could then be fit to the residual distributions, in effect supplying a bias correction to the subchannel predictions with the added benefit of supplying uncertainty estimates.  However, variance estimates made by the RK model assume that residuals are normally distributed which is not necessarily the case for CFD-Subchannel rod-surface fields.
 
 
 \section{Copula}
