@@ -169,47 +169,9 @@ Let the quantile function be represented by $Q=F^{-1}$ where $F$ is a cumulative
 %    \label{fig:marginscdf2}
 %\end{figure}
 
-\begin{figure}[H]
-	\centering
-	\begin{tikzpicture}
-	% scalingn params
-	\pgfmathparse{2.0}\let\s=\pgfmathresult
-	% x y axes
-	\draw [line width=0.05cm] (0, 0) -- (3.0*\s, 0);
-	\draw [line width=0.05cm] (0.0, 0.0) -- (0.0, 2.0*\s);
-	\draw [dashed]  (-0.1*\s, 1.8*\s) -- (3.0*\s, 1.8*\s);
-	% plot nodes
-	\draw [fill=black] (0.0, 0.0) circle (0.08cm);
-	\draw [fill=black] (0.5*\s, 0.1*\s) circle (0.08cm);
-	\draw [fill=black] (1.2*\s, 0.5*\s) circle (0.08cm);
-	\draw [fill=black] (1.8*\s, 1.2*\s) circle (0.08cm);
-	\draw [fill=black] (2.1*\s, 1.68*\s) circle (0.08cm);
-	\draw [fill=black] (2.6*\s, 1.8*\s) circle (0.08cm);
-	% Plot lines connecting nodes
-	\draw [line width=0.03cm] (0, 0) -- (0.5*\s, 0.1*\s);
-	\draw [line width=0.03cm] (0.5*\s, 0.1*\s) -- (1.2*\s, 0.5*\s);
-	\draw [line width=0.03cm] (1.2*\s, 0.5*\s) -- (1.8*\s, 1.2*\s);
-	\draw [line width=0.03cm] (1.8*\s, 1.2*\s) -- (2.1*\s, 1.68*\s);
-	\draw [line width=0.03cm]  (2.1*\s, 1.68*\s) -- (2.6*\s, 1.8*\s);
-	% mark a single node
-	\draw [line width=0.02cm] (1.8*\s, 0) -- (1.8*\s, 1.2*\s);
-	\draw [line width=0.02cm] (0.0, 1.2*\s) -- (1.8*\s, 1.2*\s);
-	% figure text
-	\node[text width=1cm] at (1.5, 1.32*\s) {$\tau_i$};
-	\node[text width=1cm] at (2.1*\s, 0.8*\s) {$\hat q_{\tau_i}$};
-	\node[text width=1cm] at (-0.1*\s,1.0*\s) {\large $\tau $};
-	\node[text width=1cm] at (-0.1*\s,1.8*\s) {\large $1 $};
-	\node[text width=2cm] at (1.8*\s, -0.2*\s) {\large $\hat q_{\tau}$};
-	\end{tikzpicture}
-    \caption[CDF from quantiles.]{Piecewise linear CDF interpolated from a set of quantiles.}
-    \label{fig:marginscdf2}
-\end{figure}
-
 \index{Quantiles}
 The $\tau^{th}$ quantile is $q_\tau = Q(\tau); $ where $\ F(t)=P[T \leq t]$.
-$\tau \in [0, 1]$
-
-The quantile loss function is given by equation \ref{eq:qloss_fn} and depicted in figure \ref{fig:qloss}.
+$\tau \in [0, 1]$. The quantile loss function is given by equation \ref{eq:qloss_fn} and depicted in figure \ref{fig:qloss}.
 \begin{equation}
 \mathcal W_\tau( u) =  u \cdot (\tau - \mathbb{I}_{( u < 0)})
 \label{eq:qloss_fn}
@@ -259,7 +221,7 @@ In order to estimate a sample quantile, $\hat q_\tau$, given the empirical CDF $
 \label{fig:qloss}
 \end{figure}
 
-In this work, a set of sample quantiles, $\hat \theta_\tau = \{\hat q_{\tau_0}, \dots, \hat q_{\tau_i}, \dots \hat q_{N_Q} \}$, are used to construct step-wise cumulative distributions, $\hat F$, for the cladding outer temperature and near-wall TKE surface fields.  $N_Q$ denotes the number of quantiles used in the CDF reconstruction and is a user set parameter. The stepwise quantile function with prescribed quantiles is given by equation \ref{eq:cdf_from_qtau}.
+In this work, a set of sample quantiles, $\hat \theta_\tau = \{\hat q_{\tau_0}, \dots, \hat q_{\tau_i}, \dots \hat q_{N_Q} \}$, are used to construct step-wise cumulative distributions, $\hat F$, for the cladding outer temperature and near-wall TKE surface fields.  $N_Q$ denotes the number of quantiles used in the CDF reconstruction and is a user set parameter. The stepwise quantile function with prescribed quantiles is given by equation \ref{eq:cdf_from_qtau} and depicted in figure \ref{fig:marginscdf2}.
 \index{Quantiles!Emperical}
 
 \begin{equation}
@@ -268,6 +230,44 @@ In this work, a set of sample quantiles, $\hat \theta_\tau = \{\hat q_{\tau_0}, 
 \end{equation}
 The reconstructed CDF can then in turn be used to build a histogram.  In place of the stepwise representation, a monotone piecewise cubic hermite interpolating polynomial (PCHIP) may be fit to the stepwise conditional quantile distribution to generate a differentiable CDF.
 The PCHIP interpolation preserves monotonicity of the CDF if the provided quantiles are strictly monotone \cite{Fritsch80}.  This condition is enforced in the software; any violation of the monotone restriction would indicate a software bug in the quantile regression code.  Inverse transform sampling is used to draw samples from the univariate distributions.
+
+\begin{figure}
+	\centering
+	\begin{tikzpicture}
+	% scalingn params
+	\pgfmathparse{2.0}\let\s=\pgfmathresult
+	% x y axes
+	\draw [line width=0.05cm] (0, 0) -- (3.0*\s, 0);
+	\draw [line width=0.05cm] (0.0, 0.0) -- (0.0, 2.0*\s);
+	\draw [dashed]  (-0.1*\s, 1.8*\s) -- (3.0*\s, 1.8*\s);
+	% plot nodes
+	\draw [fill=black] (0.0, 0.0) circle (0.08cm);
+	\draw [fill=black] (0.5*\s, 0.1*\s) circle (0.08cm);
+	\draw [fill=black] (1.2*\s, 0.5*\s) circle (0.08cm);
+	\draw [fill=black] (1.8*\s, 1.2*\s) circle (0.08cm);
+	\draw [fill=black] (2.1*\s, 1.68*\s) circle (0.08cm);
+	\draw [fill=black] (2.6*\s, 1.8*\s) circle (0.08cm);
+	% Plot lines connecting nodes
+	\draw [line width=0.03cm] (0, 0) -- (0.5*\s, 0.1*\s);
+	\draw [line width=0.03cm] (0.5*\s, 0.1*\s) -- (1.2*\s, 0.5*\s);
+	\draw [line width=0.03cm] (1.2*\s, 0.5*\s) -- (1.8*\s, 1.2*\s);
+	\draw [line width=0.03cm] (1.8*\s, 1.2*\s) -- (2.1*\s, 1.68*\s);
+	\draw [line width=0.03cm]  (2.1*\s, 1.68*\s) -- (2.6*\s, 1.8*\s);
+	% mark a single node
+	\draw [line width=0.02cm] (1.8*\s, 0) -- (1.8*\s, 1.2*\s);
+	\draw [line width=0.02cm] (0.0, 1.2*\s) -- (1.8*\s, 1.2*\s);
+	% figure text
+	\node[text width=1cm] at (1.5, 1.32*\s) {$\tau_i$};
+	\node[text width=1cm] at (2.1*\s, 0.8*\s) {$\hat q_{\tau_i}$};
+	\node[text width=1cm] at (2.3*\s, 1.5*\s) {$\hat F_T$};
+	\node[text width=1cm] at (-0.1*\s,1.0*\s) {\large $\tau $};
+	\node[text width=1cm] at (-0.1*\s,1.8*\s) {\large $1 $};
+	\node[text width=2cm] at (1.8*\s, -0.2*\s) {\large $\hat q_{\tau}$};
+	\node[text width=2cm] at (2.8*\s, -0.2*\s) {\large $T$};
+	\end{tikzpicture}
+	\caption[CDF from quantiles.]{Piecewise linear CDF interpolated from a set of quantiles.}
+	\label{fig:marginscdf2}
+\end{figure}
 
 Other strategies to approximate univariate density functions from a set of sample statistics are abundant.  One alternative to quantile regression is to relate sample moments to the parameters of some parametric distribution.  In this procedure a set of moment conditions is defined for the target parametric model.  Then the method of moments (MoM) can be used to determine the parameters of the parametric model which best satisfy the moment conditions in the L2 norm sense.  The MoM is applicable when the number of defined moment conditions is greater than or equal to the number of free distribution parameters.
 
@@ -357,7 +357,7 @@ The sampled temperatures may be tallied over each CTF face to estimate the fract
 \subsection{Gradient Boosted Regression Trees}
 \label{chap:GBRT}
 
-A data driven machine learning model is used to predict quantiles, $\{ \hat \theta_\tau \}$, required to reconstruct cumulative density functions as shown in equation \ref{eq:cdf_from_qtau}.  The desired quantiles of the cladding surface temperature and TKE fields are conditioned upon the local core state denoted here by $\mathbf p$.  $\mathbf p$ is a vector of local thermal hydraulic conditions in the core and local geometric grid and pin factors.  The purpose of this vector is to uniquely identify each CTF face in the core though some set of explanatory features.  The problem is then of conditional quantile prediction and this is performed by gradient boosted regression trees in this work.
+A data driven machine learning model is used to predict quantiles, $\{ \hat \theta_\tau \}$, required to reconstruct cumulative density functions as shown in equation \ref{eq:cdf_from_qtau}.  The desired quantiles of the cladding surface temperature and TKE fields are conditioned upon the local core state denoted here by $\mathbf p$.  The vector $\mathbf p$ contains the local thermal hydraulic conditions in the core and local geometric grid and pin factors.  The purpose of this vector is to uniquely identify each CTF face in the core though some set of explanatory features.  The problem is then of conditional quantile prediction and this is performed by gradient boosted regression trees in this work.
 
 \begin{figure}[H]
     \centering
@@ -373,12 +373,12 @@ The modern gradient boosting algorithm was developed by Friedman et. al. (1998) 
 \mathcal F_M = \text{argmin}_{\mathcal F} \E_{y, \mathbf p} (L(y, \mathcal F(\mathbf p)))
 \label{eq:boosting_problem}
 \end{equation}
-Where $L(\cdot)$ is a differentiable loss function.  $\mathbf p$ are known as predictive features and $y$ is the response.  The paired set $\{\mathbf p, y \}$ is referred to as the training data set.  In the standard gradient boosting algorithm the functional form of $F$ is chosen to be an additive model of the form \ref{eq:single_cart_model}:
+Where $L(\cdot)$ is a differentiable loss function.  $\mathbf p$ are known as predictive features and $y$ is the response.  The paired set $\{\mathbf p, y \}$ is referred to as the training data set.  In the standard gradient boosting algorithm the functional form of $\mathcal F$ is chosen to be an additive model of the form \ref{eq:single_cart_model}:
 \begin{equation}
 \mathcal F_M(\mathbf p, \mathbf{\gamma}, \mathbf a; \mathbf b) = \sum_{m=0}^M \gamma_m h_m(\mathbf p, a_m; b_m)
 \label{eq:single_cart_model}
 \end{equation}
-Where $M$ is the number of constituent sub-models and $\{\gamma_m, a_m\}$ are coefficients and free parameters requiring fitting in each sub-model.  $b_m$ represent sub-model hyper parameters that are fixed at user set values.
+Where $M$ is the number of constituent sub-models and $\{\gamma_m, a_m\}$ are coefficients and free parameters requiring fitting in each sub-model.  $b_m$ represent sub-model hyperparameters that are fixed at user set values.
 Rather than fitting all sub-models simultaneously,
 gradient boosting greedily fits the sub-models to the gradient of the loss function in a stage wise fashion as shown in algorithm \ref{alg:boosting}.  The loop depicted in line number 8-10 performs the computation of the loss function gradient at each boosted iteration $m$ in the algorithm.  In the literature the vector of gradients is sometimes referred to as the pseudo residuals vector since if the loss function is taken to be the L2 loss, the gradient of the loss is proportional to the residual vector as shown in equation \ref{eq:l2_loss_pseudo_r}.
 
@@ -388,7 +388,9 @@ gradient boosting greedily fits the sub-models to the gradient of the loss funct
     \label{eq:l2_loss_pseudo_r}
 \end{align}
 
-Each sub-model, $h_m$, is referred to as a weak learner and is defined to be a typical classification or regression tree (CART) depending on the problem context.  Methods for pruning the decision trees and optimizing the numerical implementation of finding the best splits when fitting the tree to the pseudo-residuals are left to Friedman et. al. \cite{friedman2002}.  Examples of single fitted CART trees with a depth of 1 and 2 are shown in figure \ref{fig:cart}.  As the depth of the tree is increased the decision tree prediction converges onto the data; however, a single decision tree of large depth is prone to over fitting the data.  Decision trees produce a piecewise constant prediction, and therefore since the final boosted model is a linear combination of decision tree models (weak learners), the fitted boosted model is piecewise constant.
+Each sub-model, $h_m$, is referred to as a weak learner and is defined to be a typical classification or regression tree (CART) depending on the problem context.  Methods for fitting, pruning the decision trees and optimizing the numerical implementation of finding the best splits when fitting the tree to the pseudo-residuals are left to Friedman et. al. \cite{friedman2002}.  Provided CART trees are used for the weak learners, the free (sub-) model parameters $a_m$ take the form of split locations and regional constants which are fitted to produce a piecewise constant predictor.  In this case the user set hyperparameters, $b_m$, are taken to be the maximum tree depth allowed when fitting each weak learner to the pseudo-residuals.
+
+Examples of single fitted CART trees with a depth of 1 and 2 are shown in figure \ref{fig:cart}.  As the depth of the tree is increased the decision tree prediction converges onto the data; however, a single decision tree of large depth is prone to over fitting the data.  Decision trees produce a piecewise constant prediction, and therefore since the final boosted model is a linear combination of decision tree models (weak learners), the fitted boosted model is piecewise constant.
 
 \begin{algorithm}[H]
     \captionsetup{labelfont={sc,bf}, labelsep=newline}
