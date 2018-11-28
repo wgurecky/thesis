@@ -2,6 +2,7 @@
 \usepackage{tikz}
 \usepackage{graphicx}
 \usepackage{pgf}
+\usepackage{color}
 \usetikzlibrary{patterns}
 
 \begin{document}
@@ -11,30 +12,33 @@
 \begin{tikzpicture}
 % define variables
 \pgfmathparse{0.7}\let\r=\pgfmathresult
+\linespread{1}% <--- locally defined vertical line spacing in nodes
 % fill subchannel with light blue
 \begin{scope}
 \clip (0,0) rectangle (2,2);
-\draw[pattern=north west lines,pattern color=black!30] (0,0) rectangle (2,2) (0,0) circle[radius=\r] (0,2) circle[radius=\r]  (2,2) circle[radius=\r]  (2,0) circle[radius=\r];
+\draw[pattern=north west lines,pattern color=black!20] (0,0) rectangle (2,2) (0,0) circle[radius=\r] (0,2) circle[radius=\r]  (2,2) circle[radius=\r]  (2,0) circle[radius=\r];
 \end{scope}
 
 % draw grid
-\foreach \y in {0, 2, 4}{
-	\draw[dashed] (-1, \y)  -- (4+1.0, \y);
+\foreach \y in {0, 2}{
+	\draw[densely dashed] (-1, \y)  -- (2+1.0, \y);
 }
-\foreach \x in {0, 2, 4}{
-	\draw[dashed] (\x, -1)  -- (\x, 4+1.0);
+\foreach \x in {0, 2}{
+	\draw[densely dashed] (\x, -1)  -- (\x, 2+1.0);
 }
 % draw pins
-\foreach \x in {0, 2, 4}{
-\foreach \y in {0, 2, 4}{
+\foreach \x in {0, 2}{
+\foreach \y in {0, 2}{
 	\draw[fill=white] (\x, \y) circle (\r);
 }}
 
 % highlight a pin subhcannel face (CTF face)
-\draw [red,very thick,domain=0:90] plot ( {\r*cos(\x)}, {\r*sin(\x)} ) ;
+\draw [blue,very thick,domain=0:90] plot ( {\r*cos(\x)}, {\r*sin(\x)} ) ;
 
 % text
-\node[draw, fill=white, text width=1.4cm] at (1,1) {\scriptsize subchannel};
+\node[text width=1.4cm, font=\scriptsize] at (1,1) { subchannel};
+\node at (2,0) {\scriptsize pin};
+\node[text width=1.2cm, font=\scriptsize] at (0.5, 0.2) {{\color{blue}  CTF\\ Face}};
 \end{tikzpicture}
 
 
