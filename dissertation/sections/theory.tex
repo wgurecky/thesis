@@ -36,7 +36,7 @@ CTF estimates mean TH conditions everywhere in the core at a low spatial resolut
         \item $\mathbf X$ is a three component vector representing the cladding surface temperature, turbulent kinetic energy and boundary heat flux.
         \item $\mathbf z$ denotes spatial coordinates and $\mathbf p$ represents a set of auxiliary predictors.  Auxiliary predictors are covariates that describe local core conditions and may be geometric or thermal hydraulic in nature.   Specific auxiliary predictors are introduced in Chapter \ref{sec:ml_cfd}.  Table \ref{tab:features} contains a detailed description of the auxiliary predictive features used in this work.
         \item  $\varepsilon$ is a three-component random vector comprised of temperature, turbulent kinetic energy and boundary heat flux fields.  $\varepsilon$ is distributed according to a CFD informed model with $\theta$ representing free model parameters which are determined from the CFD data.
-        \item $\bm b$ is bias between the low and high fidelity models ($\bm \mu_{CTF} - \bm \mu_{CFD}$).  Despite providing identical inlet boundary conditions to both codes bias exists due to algorithmic differences, closure model differences, and meshing differences between the two codes.
+        \item $\bm b$ is bias between the low and high fidelity models ($\bm \mu_{CTF} - \bm \mu_{CFD}$).  Despite providing identical inlet boundary conditions to both codes bias exists due to algorithmic, closure model and meshing differences between the two codes.
         \item Field averages, $\bm \mu$, are piecewise constant over each CTF patch.
         % \item Note this is a additive model where Salko constructed a multiplicative model.
 \end{itemize}
