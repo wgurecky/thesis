@@ -1,8 +1,9 @@
 \documentclass{standalone}
+\usepackage[dvipsnames]{xcolor}
 \usepackage{tikz}
 \usepackage{graphicx}
 \usepackage{pgf}
-\usepackage{color}
+
 \usetikzlibrary{patterns}
 
 \begin{document}
@@ -33,12 +34,12 @@
 }}
 
 % highlight a pin subhcannel face (CTF face)
-\draw [blue,very thick,domain=0:90] plot ( {\r*cos(\x)}, {\r*sin(\x)} ) ;
+\draw [RoyalBlue!80,very thick,domain=0:90] plot ( {\r*cos(\x)}, {\r*sin(\x)} ) ;
 
 % text
 \node[text width=1.4cm, font=\scriptsize] at (1,1) { subchannel};
 \node at (2,0) {\scriptsize pin};
-\node[text width=1.2cm, font=\scriptsize] at (0.5, 0.2) {{\color{blue}  CTF\\ Face}};
+\node[text width=1.2cm, font=\scriptsize] at (0.5, 0.2) {{\color{RoyalBlue!80}  CTF\\ Face}};
 \end{tikzpicture}
 
 
