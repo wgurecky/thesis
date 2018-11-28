@@ -357,12 +357,12 @@ The sampled temperatures may be tallied over each CTF face to estimate the fract
 \subsection{Gradient Boosted Regression Trees}
 \label{chap:GBRT}
 
-A data driven machine learning model is considered to predict quantiles required to reconstruct cumulative density functions as in equation \ref{eq:cdf_from_qtau}.  The desired quantiles of the cladding surface temperature and TKE fields are conditioned upon the local core conditions denoted here by $\mathbf p$.  The problem is then of conditional quantile prediction and this is performed by gradient boosted regression trees in this work.
+A data driven machine learning model is used to predict quantiles, $\{ \hat \theta_\tau \}$, required to reconstruct cumulative density functions as shown in equation \ref{eq:cdf_from_qtau}.  The desired quantiles of the cladding surface temperature and TKE fields are conditioned upon the local core state denoted here by $\mathbf p$.  $\mathbf p$ is a vector of local thermal hydraulic conditions in the core and local geometric grid and pin factors.  The purpose of this vector is to uniquely identify each CTF face in the core though some set of explanatory features.  The problem is then of conditional quantile prediction and this is performed by gradient boosted regression trees in this work.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.59\linewidth]{../proposal/slides/seminar_slides/figs/cart}
-    \caption[Regression tree stump.]{Single CART Regression tree stump comparing a fit of depth 1 and 2 to $y=sin(x) + \varepsilon,\ x\in[0,2\pi], \varepsilon \sim \mathcal N(0,0.001)$.}
+    \caption[Regression tree stump.]{Single CART Regression tree stump comparing a fit of depth 1 and 2 to the function $y=sin(x) + \varepsilon,\ x\in[0,2\pi], \varepsilon \sim \mathcal N(0,0.001)$.}
     \label{fig:cart}
 \end{figure}
 
