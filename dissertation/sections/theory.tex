@@ -362,7 +362,7 @@ A data driven machine learning model is used to predict quantiles, $\{ \hat \the
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.59\linewidth]{../proposal/slides/seminar_slides/figs/cart}
-    \caption[Regression tree stump.]{Single CART Regression tree stump comparing a fit of depth 1 and 2 to the function $y=sin(x) + \varepsilon,\ x\in[0,2\pi], \varepsilon \sim \mathcal N(0,0.001)$.}
+    \caption[Regression tree stump.]{Single CART regression tree stump comparing a fit of depth 1 and 2 to the function $y=sin(x) + \varepsilon,\ x\in[0,2\pi], \varepsilon \sim \mathcal N(0,0.001)$.}
     \label{fig:cart}
 \end{figure}
 
@@ -431,7 +431,7 @@ For gradient boosted quantile regression, the loss function given by equation \r
 \begin{equation}
 L(y, \mathcal F(p);\tau) = \left[ (1-\tau) \sum_{y \leq \mathcal F(p)}( y_i - \mathcal F(p) ) \right] - \left[ \tau \sum_{y > \mathcal F(p)} (y_i - \mathcal F(p)) \right]
 \end{equation}
-Where $\tau$ is the user set quantile of interest. For instance, if the 95\% quantile is desired then $\tau=0.95$.
+Where $\tau$ is the user set quantile of interest. For instance, if the 95\% percentile is desired then $\tau=0.95$.
 
 % boosting tree results
 \input{./sections/appendix/app_c.tex}
