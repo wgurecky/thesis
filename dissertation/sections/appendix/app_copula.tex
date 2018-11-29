@@ -224,11 +224,11 @@ For example, by graphical inspection of figure \ref{fig:kc_fn_compare}, the Gumb
 
 Kendall's tau is a measure of concordance.  Consider two correlated and uniformly distributed random variables, $X, Y$.
 %  If a rank $x_{(i)}$ is drawn for the first variable, the likelihood that you will also have drawn the rank $y_{(i)}$ of the second to be at least as great as the first is proportional to Kendall's tau.  More precisely, 
-Let $(X_i, Y_i)$ and $(X_j, Y_j)$ be identically distributed sample pairs from some joint cumulative distribution so that $X\ and\ Y$ will take on values in $[0,1]$, then Kendall's tau is given by equation \ref{eq:ktau} \cite{Nelsen2006}.  
+Let $(X_1, Y_1)$ and $(X_2, Y_2)$ be identically distributed random vectors from some joint cumulative distribution so that individual samples from $X\ and\ Y$ will take on values in $[0,1]$, then Kendall's tau is given by equation \ref{eq:ktau} \cite{Nelsen2006}.  
 \index{Kendall's Tau}
 
 \begin{equation}
-\rho_\tau = P[(X_i - X_j)(Y_i-Y_j)>0] - P[(X_i - X_j)(Y_i - Y_j)<0]
+\rho_\tau = P[(X_1 - X_2)(Y_1-Y_2)>0] - P[(X_1 - X_2)(Y_1 - Y_2)<0]
 \label{eq:ktau}
 \end{equation}
 
