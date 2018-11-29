@@ -20,7 +20,7 @@ Shown in figure \ref{fig:model_overview}, on a given CTF rod surface patch, esti
 In figure \ref{fig:model_overview}, $f$ denotes a probability density function.  Integration of this density function may be interpreted as computing a fractional area of the rod surface that exists within the specified integration limits.
 \begin{figure}[!htbp]
     \centering
-    \includegraphics[width=12cm]{../proposal/images/model_relations.png}
+    \includegraphics[width=12cm]{figs/theory/model_relations.png}
     \caption{On a single coarse CTF patch: Differences in crud prediction between CFD and CTF models.}
     \label{fig:model_overview}
 \end{figure}
@@ -63,7 +63,7 @@ Consider a hypothetical case where the CFD results are normally distributed abou
 \end{align}
 Where $\Sigma_{xx} = \sigma_x^2$ and $\Sigma_{xy} = cov(x,y)$.
 
-Equation \ref{eq:expected_crud} estimates the expected crud mass $C_m$ that accumulates on each CTF patch in time $\delta t$.  Let $\mathbf X= \{T, k, q''\}$ denote a random vector of temperature, TKE, and BHF. $\mathbf I$ represents additional known crud parameters, $\mathbf C_o$ is the crud state at the start of the time step.  Let the joint density function of $\bf X$ be denoted by $h$, and it's CDF be denoted by $H$.  The crud model, $\mathcal G(\cdot)$, is common to all CTF faces.  The joint cumulative density's parameters are predicted from the available high resolution CFD data in every CTF face.  In the case of an assumed normal distribution model there are nine unknowns which require fitting:  $\theta = \{ \sigma^2_T, \sigma^2_k, \sigma^2_{q''}, \Sigma_{kT}, \Sigma_{q''T}, \Sigma_{q''k}, c_T, c_k, c_{q''} \}$.  In the subsequent sections we will seek to relax the normality assumption of the CFD residuals about the CTF result.
+Equation \ref{eq:expected_crud} estimates the expected crud mass $C_m$ that accumulates on each CTF patch in time $\delta t$.  Let the CTF face of interest have area $A$.  Let $\mathbf X= \{T, k, q''\}$ denote a random vector of temperature, TKE, and BHF. $\mathbf I$ represents additional known crud parameters, $\mathbf C_o$ is the crud state at the start of the time step.  Let the joint density function of $\bf X$ be denoted by $h$, and it's CDF be denoted by $H$.  The crud model, $\mathcal G(\cdot)$, is common to all CTF faces.  The joint cumulative density's parameters are predicted from the available high resolution CFD data in every CTF face.  In the case of an assumed normal distribution model there are nine unknowns which require fitting:  $\theta = \{ \sigma^2_T, \sigma^2_k, \sigma^2_{q''}, \Sigma_{kT}, \Sigma_{q''T}, \Sigma_{q''k}, c_T, c_k, c_{q''} \}$.  In the subsequent sections we will seek to relax the normality assumption of the CFD residuals about the CTF result.
 
 \begin{align}
         C_m &= A \mu_{m} \nonumber \\
@@ -390,7 +390,7 @@ gradient boosting greedily fits the sub-models to the gradient of the loss funct
 
 Each sub-model, $h_m$, is referred to as a weak learner and is defined to be a typical classification or regression tree (CART) depending on the problem context.  Methods for fitting, pruning the decision trees and optimizing the numerical implementation of finding the best splits when fitting the tree to the pseudo-residuals are left to Friedman et. al. \cite{friedman2002}.  Provided CART trees are used for the weak learners, the free (sub-) model parameters $a_m$ take the form of split locations and regional constants which are fitted to produce a piecewise constant predictor.  In this case the user set hyperparameters, $b_m$, are taken to be the maximum tree depth allowed when fitting each weak learner to the pseudo-residuals.
 
-Examples of single fitted CART trees with a depth of 1 and 2 are shown in figure \ref{fig:cart}.  As the depth of the tree is increased the decision tree prediction converges onto the data; however, a single decision tree of large depth is prone to over fitting the data.  Decision trees produce a piecewise constant prediction, and therefore since the final boosted model is a linear combination of decision tree models (weak learners), the fitted boosted model is piecewise constant.
+Examples of single dimensional fitted CART trees with a depth of 1 and 2 are shown in figure \ref{fig:cart}.  As the depth of a tree is increased the decision tree prediction converges onto the data; however, a single decision tree of large depth is prone to over fitting the data.  Decision trees produce a piecewise constant prediction, and therefore since the final boosted model is a linear combination of decision tree models (weak learners), the fitted boosted model is piecewise constant.
 
 \begin{algorithm}[H]
     \captionsetup{labelfont={sc,bf}, labelsep=newline}
@@ -535,13 +535,6 @@ w_T + w_k + w_{q''} = 1
 Next the order statistics of $\mathbf m$ are computed such that $\mathbf m' = \{ m_{(0)} < m_{(1)}< ... m_{(N)} \}$.  As shown in figure \ref{fig:samplemapping}, the ordered samples are then emplaced on the CTF patch in an organized manner.  The sample space is denoted by $\Omega$ and a specific temperature, TKE, and boundary heat flux sample is denoted by $\mathcal F_i$ as a single dot residing inside the sample space.  The path taken on the patch surface is user controllable and is taken to be a simple serpentine left-to-right pattern in this work.
 Typical values for the remapping coefficients are $w_T=0.6, w_k=0.4, w_{q''}=0$.  With this setting, relatively high temperate and low TKE samples are likely to remain in the same location on the rod surface over multiple resampling events.
 
-%\begin{figure}[H]
-%    \centering
-%    \includegraphics[width=0.4\linewidth]{../proposal/slides/seminar_slides/figs/sample_mapping}
-%    \caption{Sample remapping.}
-%    \label{fig:samplemapping}
-%\end{figure}
-
 \begin{figure}
     \centering
     \begin{tikzpicture}
@@ -609,13 +602,6 @@ Propagating the importance weights through discrete resampling steps requires sp
 Figure \ref{fig:stepscheme} depicts the time stepping scheme for a single patch. The patch index is not shown to reduce visual clutter. The VERA state-point index is denoted by $\ell$.  At the beginning of each VERA state-point the power distribution and thermal hydraulic conditions in the core change.  Here it is assumed there is a constant power profile and constant flow conditions over a VERA depletion step.
 
 In figure \ref{fig:stepscheme} dotted arrows represent sampling from a probability distribution.  $\mathcal R$ is the spatial reordering map from sample space to a position on the rod surface. $\mathcal G$ represents the crud generation function provided by the crud simulation package which takes thermal hydraulic boundary conditions as input in addition to the previous crud state and produces a new crud state.  Resampling events are performed at time intervals $\Delta t_s$ and this interval is set at runtime by the user.  The influence of the resampling interval size is discussed in section \ref{sec:resample_freq_study}.  The resample index is denoted by $s$.  The subscript, $(\cdot)_s$ , denotes evaluation at a resampling event.  A prime-notated variable,  $(\cdot)'$, represents a spatially re-mapped sample as in figure \ref{fig:samplemapping}.  At each resampling event the temperature, TKE and boundary heat flux samples are independently drawn from the reconstructed joint probability $\hat H^\ell$.  Assume that the resample time step is constant and equal to $\Delta t_s$.
-
-% \begin{figure}[H]
-%     \centering
-%     \includegraphics[width=0.7\linewidth]{figs/step_scheme}
-%     \caption{Multi-state point time stepping overview.}
-%     \label{fig:stepscheme}
-% \end{figure}
 
 \begin{figure}
 \centering
