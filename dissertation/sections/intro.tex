@@ -109,6 +109,29 @@ Finally, the source and rate at which primary loop impurities buildup over time 
 
 % A predictive crud capability integrated with the core simulator is desired by CASL. The aformentioned issues are before CILC and CIPS predictions can be made and accepted by plant designers and core loading specialists.
 
+\section{Subchannel Background}
+
+It is helpful to review subchannel terminology before exploring CTF specific crud applications.  The CTF theory manual provides a detailed explanation of the subchannel discretization and the geometric terms used in subchannel codes \cite{salko12}.  Figure \ref{fig:ctf_subchannel} shows a top down view of four pins in a typical PWR lattice arrangement.  The subchannel is filled with diagonally hashed lines.  Each subchannel contacts four surrounding pins and the wetted surface formed between the pin and subchannel is referred to as a CTF face throughout this dissertation.  In CTF, each pin's outer cladding surface is divided into four azimuthal segments.
+\index{CTF}
+
+\begin{figure}[H]
+	\centering
+	\includestandalone[width=0.35\textwidth]{figs/drawings/ctf_subchannel}
+	\caption{Top down view of the subchannel discretization of a PWR pin configuration.}
+	\label{fig:ctf_subchannel}
+\end{figure}
+\index{CTF!Face}
+\index{Subchannel}
+
+For the typical PWR rods arrangements considered in this work, the rod is axially divided into approximately 2 centimeter segments.  A 3D depiction of the axial subchannel discretization is given in figure \ref{fig:ctf_axial_dis}.  Additionally in this figure, a CTF patch is highlighted in blue.  A CTF patch and CTF face will be used interchangeably throughout this document as they both refer to a small centimeter-scale patch on the rod surface in contact with a neighboring subchannel.
+
+\begin{figure}[H]
+	\centering
+	\includestandalone[width=0.25\textwidth]{figs/drawings/ctf_subchannel_3d_pin}
+	\caption{A subchannel discretization superimposed over a 3D representation of a single pin.}
+	\label{fig:ctf_axial_dis}
+\end{figure}
+
 
 \section{Hi2lo Discussion}
 
