@@ -141,7 +141,7 @@ Crud is grown on the coupling mesh using augmented temperature and TKE surface f
      C_m = \frac{1}{A} \sum_i^N \mathcal G(\hat T_{s_i}, \hat k_i, q''_i) a_i
  \label{eq:ctf_hi2lo_crud_est}
  \end{equation}
-Where $A$ is the area of the CTF face and $a_i$ is the area of each cell face on the crud coupling mesh.
+Where $A$ is the area of the CTF face and $a_i$ is the area of each cell face on the crud coupling mesh.  The impact of the simultaneous application of both the HTC and TKE maps on the crud distribution are shown for a single rod in figure \ref{fig:htc_remap_crud}.  In the base case without the hi2lo maps applied, no azimuthal variation is observed in the crud distribution for this single quarter symmetric test case.  However, when the hi2lo maps were employed the influence of the spacer grids on the crud distribution becomes visible.  
 
 A key assumption that the multiplier maps are insensitive to flow rate was made in the first implementation of this downscaling technique.  However this assumption is not strictly true: The multiplier maps carry some dependence on the inlet flow conditions.  An increase in flow rate changes the shape and extent of the wake region downstream of spacer grids which impacts the rod surface temperature and TKE fields.
 
@@ -159,7 +159,7 @@ A key assumption that the multiplier maps are insensitive to flow rate was made 
     \subfloat[CTF/MAMBA crud predictions without hi2lo remapping on a quarter symmetric pin.]{{\includegraphics[width=0.45\linewidth]{../proposal/images/ctf_crud_orig} }}%
     \qquad
     \subfloat[CTF/MAMBA crud predictions using hi2lo remapping on a quarter symmetric pin.]{{\includegraphics[width=0.45\linewidth]{../proposal/images/ctf_crud_reconstructed} }}% 
-    \caption[The impact of spatial HTC hi2lo remapping on CTF/MAMBA crud predictions.]{The impact of spatial HTC hi2lo remapping on CTF/MAMBA crud predictions.}%
+    \caption[The impact of spatial HTC hi2lo remapping on CTF/MAMBA crud predictions.]{The impact of spatial HTC hi2lo remapping on CTF/MAMBA crud predictions \cite{salko17}.}%
     \label{fig:htc_remap_crud}%
 \end{figure}
 
