@@ -551,7 +551,7 @@ At each resample step the crud mass was summed over all pins in the assembly.  T
     \label{fig:asmcmasstime}
 \end{figure}
 
-The RMS axial crud distribution errors are summarized in table \ref{tab:loo_rms}.  To facilitate examination of the hi2lo model predictions for geometric biases across the assembly top-down views of the RMS crud mass and boron mass error distributions were generated and presented in figure \ref{fig:l2boronasmerrorshmap} and \ref{fig:l2cmassasmerrorshmap} respectively.  The pins which reside on the edge of the assembly did not exhibit any increase in crud error on average.  The root mean squared error is given by: $RMS = \sqrt{\frac{1}{J}\sum^J_j(\mathrm{Hi2lo}_j - \mathrm{CFD}_j)^2}$ where $j$ is the CTF face index on a given pin.
+The RMS axial crud distribution errors are summarized in table \ref{tab:loo_rms}.  To examine the hi2lo model predictions for geometric biases across the assembly, top-down views of the RMS crud mass and boron mass error distributions were generated and presented in figure \ref{fig:l2boronasmerrorshmap} and \ref{fig:l2cmassasmerrorshmap} respectively.  The pins which reside on the edge of the assembly did not exhibit any increase in crud RMS error on average.  The root mean squared error is given by: $RMS = \sqrt{\frac{1}{J}\sum^J_j(\mathrm{Hi2lo}_j - \mathrm{CFD}_j)^2}$ where $j$ is the CTF face index on a given pin.  A large RMS error corresponds to a large mismatch in the axial crud distribution between the hi2lo model and the CFD/crud model predictions.
 
 % RMS error table
 \begin{table}[h]
@@ -605,7 +605,7 @@ The RMS axial crud distribution errors are summarized in table \ref{tab:loo_rms}
     \label{fig:l2cmassasmerrorshmap}
 \end{figure}
 
-Consistent under prediction of crud across the assembly was not observed. The top down assembly view of the crud prediction error distribution provided in figures \ref{fig:totbmassrelasmerrorshmap} and \ref{fig:totcmassrelasmerrorshmap} do not exhibit a tilt or other regular geometric pattern.  The hi2lo model over predicts the total amount of crud for some pins in the assembly, particularly pins 14 and 16 but strongly under predicts the total crud in pin 4.  This high variance in the prediction errors across the assembly can be partially attributed to small training sample size, however a more in depth cross validation should be conducted as part of a future study in which a larger CFD training pool is available.  
+Consistent under prediction of crud across the assembly was not observed. The top down assembly view of the crud prediction relative error distribution provided in figures \ref{fig:totbmassrelasmerrorshmap} and \ref{fig:totcmassrelasmerrorshmap} do not exhibit a tilt or other regular geometric pattern which would be indicative of location specific bias.  The hi2lo model over predicts the total amount of crud for some pins in the assembly, particularly pins 14 and 16 but strongly under predicts the total crud in pin 4.  This high variance in the prediction errors across the assembly can be partially attributed to small training sample size; however, a more in depth cross validation should be conducted as part of a future study in which a larger CFD training pool is available.
 
 \begin{figure}[H]
     \centering
@@ -619,6 +619,9 @@ Consistent under prediction of crud across the assembly was not observed. The to
     \caption{5x5 integrated crud boron mass absolute error distribution. Top down bundle view. }
     \label{fig:totboronasmerrorshmap}
 \end{figure}
+
+The per pin absolute crud errors are given in figures \ref{fig:totboronasmerrorshmap} and \ref{fig:totcmassasmerrorshmap}. The absolute difference maps reiterate the that the crud errors do not exhibit a geometric bias or radial tilt.
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\linewidth]{figs/5x5/imp/tot_cmass_asm_errors_hmap}
