@@ -10,7 +10,7 @@ One commonality across all studied procedures is the presence of a high and low 
 
 Statistical downscaling (SD) methods attempt to preserve statistical properties of sparsely available, historical, high fidelity data when making forecasts in time or space. The forecasting model typically executes quickly and has low spatial and temporal resolution.  In general, the goal at runtime of the SD-enhanced low fidelity forecasting tool is to obtain mean and higher moment estimates of a random field at a very fine resolution.
 
-In the climate community it is common to perform local bias-correction of coarsely resolved weather models so that the results retain some specified properties of past historical statistical trends \cite{wilby1998} \cite{arelia2016} \cite{goly2014}.  In climate studies low fidelity data is typically provided by a coarsely resolved global circulation model (GCM) and a secondary set of finely resolved local rain and wind field measurements are provided by local weather stations, satellite or radar sources.  In addition to the longitude and latitude of these measurements, the fine scale data may also be associated with auxiliary features at such as the terrain height.
+In the climate community it is common to perform local bias-correction of coarsely resolved weather models so that the results retain some specified properties of past historical statistical trends \cite{wilby1998} \cite{arelia2016}.  In climate studies low fidelity data is typically provided by a coarsely resolved global circulation model (GCM) and a secondary set of finely resolved local rain and wind field measurements are provided by local weather stations, satellite or radar sources \cite{goly2014}.  In addition to the longitude and latitude of these measurements, the fine scale data may also be associated with auxiliary features at such as the terrain height.
 \index{Statistical Downscaling}
 
 % Results from a SD model should be carefully interpreted since at fine scale resolutions point estimates for the fields represent a single realization of a random variable governed by a fitted underlying distribution.  Depending on the models used to capture statistical variation in the spatial and temporal trends it is sometimes necessary to draw many samples from the SD model to estimate the mean and higher moments.  These mean and variance estimates can then be compared against a historical validation data set.
@@ -82,7 +82,7 @@ This work is important because it represents an early approach to building exper
     
     First, an intermediate coupling mesh is constructed on the rod surface with a resolution between the CFD mesh and the CTF grid.  Next, the raw CFD surface fields are then mapped to the coupling mesh.  In this approach crud is to be grown on the intermediate coupling grid.  In theory, this grid can be refined to be equivalent to the CFD mesh size and indeed this would reduce interpolation error in the hi2lo procedure \cite{salko17}.
        
-    Shown in equation \ref{eq:htc_remap_ctf_1},  the multiplier maps capture the ratio of the CFD predicted HTC and TKE surface distributions to the same surface distributions on a bare rod without spacer grids present.
+    Shown in equation \ref{eq:htc_remap_ctf_1},  the multiplier maps capture the ratio of the CFD predicted HTC and TKE surface distributions to the same surface distributions on a bare rod without spacer grids present.  The bare rod heat transfer coefficient is denoted by $h_0$ and the grid-influenced heat transfer coefficient surface field is denoted by $h_{cfd}$.
     
     \begin{equation}
         \mathbf m_h = \frac{(Nu)_{cfd}}{(Nu)_{0}} = \frac{h_{cfd} L_{cfd} k_{0} }{h_{0}k_{cfd} L_{0}}
@@ -93,7 +93,7 @@ This work is important because it represents an early approach to building exper
         \mathbf m_h = \frac{h_{cfd}}{h_{0}} = \frac{q_{cfd}(T-T_\infty)_{0}}{q_{0}(T-T_\infty)_{cfd}}
         \label{eq:htc_remap_ctf_2}
     \end{equation}
-    It is important to note that a uniform heat flux is used in both the bare and full rod case so that $q_{cfd}/q_0 =1 $.
+    It is important to note that a uniform heat flux is used in both the bare and full gridded rod case so that $q_{cfd}/q_0 =1 $.
     The HTC remap is applied to the original CTF HTC by equation \ref{eq:htc_remap_ctf_3}.
     \begin{equation}
         \hat h_{l} = \mathbf m_h h_{ctf}
@@ -104,7 +104,7 @@ This work is important because it represents an early approach to building exper
         q'' = q''_{conv} + q''_{boil} = (\hat h_l)(T-T_{\infty}) + q''_{boil}(T)
     \end{equation}
     In order to compute augmented hi2lo surface temperatures
-    several iterations are required to converge upon the correct surface temperature, $\hat T_s$ due to the surface boiling term.
+    several iterations are required to converge upon the correct surface temperature, $\hat T_s$, due to the surface boiling term as shown in algorithm \ref{alg:salko_hi2lo_alg}.  
 
     \begin{algorithm}[H]
         \captionsetup{labelfont={sc,bf}, labelsep=newline}
@@ -122,8 +122,9 @@ This work is important because it represents an early approach to building exper
         \ENDFOR 
     \STATE \textbf{return}: $\hat T_s = T^{i+1}_s$
     \end{algorithmic}
+    \label{alg:salko_hi2lo_alg}
     \end{algorithm}
-    Where $h_{ctf}(\cdot)$ is a callable CTF function that returns an effective multiphase HTC, $h_{eff}$.
+    Where $h_{ctf}(\cdot)$ is a callable CTF function that returns an effective multiphase HTC, $h_{eff}$.  An under relaxation factor, $\omega$, is supplied to aid convergence of the fixed point iterations at high heat fluxes since the function $h_{ctf}(\cdot)$ is nonlinear in surface boiling regimes approaching departure from nucleate boiling.  Additional details on surface boiling heat transfer behavior are given in appendix \ref{chap:app_d}.
 
     The TKE remap is constructed by evaluating the ratio given in equation \ref{eq:tke_map} on all CTF faces.
     \begin{equation}
