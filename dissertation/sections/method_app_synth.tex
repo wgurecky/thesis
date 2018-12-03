@@ -194,12 +194,12 @@ Provided that crud growth exhibits a temperature thresholding behavior about the
 
 Figure \ref{fig:patchscatter} examines the surface frequency distributions of temperature, crud boron mass and TKE for the CTF patch denoted by the red box in figure \ref{fig:hi2lo_tke_t}.  A marked change in behavior of the crud boron mass vs cladding surface temperature scatter plot is exhibited at approximately $ 619[K]$.  For samples which fell at or below this temperature, little crud was grown and thus the deposited crud boron mass is small.  Past this temperature threshold, there is an approximately linear relationship between the surface temperature and the crud deposition rate.  
 
-An additional feature of note in figure  \ref{fig:patchscatter} is the shape of the TKE vs. surface temperature scatter plot.  The dependence structure exhibits tighter coupling between these two fields at lower TKE values and less correlation at higher TKE.  This behavior was imposed by specifying a clayton copula in this location on the rod surface with the copula parameters given in table \ref{tab:synth_settings}.  The ability of the copula fitting routines to correctly preserve this skewed dependence structure is demonstrated in the figure and could not be achieved with Gaussian models.
+An additional feature of note in figure  \ref{fig:patchscatter} is the asymmetric dispersion of the TKE vs. surface temperature scatter plot.  The dependence structure exhibits tighter coupling between these two fields at lower TKE values and less correlation at higher TKE.  This behavior was imposed by specifying a Clayton copula in this location on the rod surface with the copula parameters given in table \ref{tab:synth_settings}.  The ability of the copula fitting routines to correctly preserve this skewed dependence structure is demonstrated in the figure and could not be achieved with multivariate Gaussian models.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.99\linewidth]{figs/synth/patch_scatter_0_4_0_6}
-    \caption[Single patch synthetic CFD data vs hi2lo sampled data.]{Single patch synthetic data vs hi2lo sampled data from patch centered on the rod at (3.14 $[rad]$, 2.85 $[m]$) at 300$[days]$.}
+    \caption[Single patch synthetic CFD data vs hi2lo sampled data.]{Single patch synthetic data vs hi2lo sampled data from patch centered on the rod at (3.14 $[rad]$, 2.85 $[m]$) at 300$[days]$.  The location of this patch is outlined in red in figure \ref{fig:hi2lo_tke_t}(b).}
     \label{fig:patchscatter}
 \end{figure}
 
