@@ -92,7 +92,7 @@ The original baseline CTF results are shown in figures \ref{fig:ctf_twall_orig} 
 \begin{figure}[H]%
     \centering
     \subfloat[Axial CTF cladding surface temperature result.]{{\includegraphics[width=0.53\linewidth]{figs/synth/ctf_asm0_z_twall} }}\hspace*{-1.0em}%
-    \subfloat[2D rod map of CTF result.]{{\includegraphics[width=0.53\linewidth]{figs/synth/ctf_pin_h5_temperature} }}%
+    \subfloat[2-D rod map of CTF result.]{{\includegraphics[width=0.53\linewidth]{figs/synth/ctf_pin_h5_temperature} }}%
     \caption[Single pin CTF baseline temperature result.  160\% nominal power conditions.]{Single pin CTF baseline temperature result.  160\% nominal power conditions.}%
     \label{fig:ctf_twall_orig}%
 \end{figure}
@@ -100,7 +100,7 @@ The original baseline CTF results are shown in figures \ref{fig:ctf_twall_orig} 
 \begin{figure}[H]%
     \centering
     \subfloat[Axial CTF cladding surface TKE result.]{{\includegraphics[width=0.53\linewidth]{figs/synth/ctf_asm0_z_tke} }}\hspace*{-1.0em}%
-    \subfloat[2D rod map of CTF result.]{{\includegraphics[width=0.53\linewidth]{figs/synth/ctf_pin_h5_tke} }}%
+    \subfloat[2-D rod map of CTF result.]{{\includegraphics[width=0.53\linewidth]{figs/synth/ctf_pin_h5_tke} }}%
     \caption[Single pin CTF baseline TKE result.  160\% nominal power conditions.]{Single pin CTF baseline TKE result.  160\% nominal power conditions.}%
     \label{fig:ctf_tke_orig}%
 \end{figure}
@@ -157,7 +157,7 @@ The copula models were sampled in each span, the original CTF result was augment
 \begin{figure}[H]%
     \centering
     \subfloat[Spatial axial augmented CTF result.]{{\includegraphics[width=0.53\linewidth]{figs/synth/pinH5TempOut} }}\hspace*{-1.0em}%
-    \subfloat[2D rod map of synthetically augmented CTF result.]{{\includegraphics[width=0.53\linewidth]{figs/synth/cfd_pin_temperature} }}%
+    \subfloat[2-D rod map of synthetically augmented CTF result.]{{\includegraphics[width=0.53\linewidth]{figs/synth/cfd_pin_temperature} }}%
     \caption[Augmented CFD result.]{Augmented CTF temperature result.}%
     \label{fig:ctf_twall_aug}%
 \end{figure}
@@ -165,7 +165,7 @@ The copula models were sampled in each span, the original CTF result was augment
 \begin{figure}[H]%
     \centering
     \subfloat[Spatial axial augmented CTF result.]{{\includegraphics[width=0.53\linewidth]{figs/synth/pinH5TkeOut} }}\hspace*{-1.0em}%
-    \subfloat[2D rod map of synthetically augmented CTF result.]{{\includegraphics[width=0.53\linewidth]{figs/synth/cfd_pin_tke} }}%
+    \subfloat[2-D rod map of synthetically augmented CTF result.]{{\includegraphics[width=0.53\linewidth]{figs/synth/cfd_pin_tke} }}%
     \caption[Augmented CFD TKE result.]{Augmented CTF TKE result.}%
     \label{fig:ctf_tke_aug}%
 \end{figure}
@@ -208,7 +208,7 @@ An additional feature of note in figure  \ref{fig:patchscatter} is the asymmetri
     \centering
     \subfloat[Hi2lo temperature reconstruction.]{{\includegraphics[width=0.58\linewidth]{figs/synth/best_fit/struct_pin_twall} }}\hspace*{-3.1em}%
     \subfloat[Hi2lo TKE reconstruction.]{{\includegraphics[width=0.58\linewidth]{figs/synth/best_fit/struct_pin_tke_marked} }}%
-    \caption[Hi2lo reconstruction of 2D surface temperature and TKE fields from synthetic CFD data source. ]{Hi2lo reconstruction of 2D surface temperature and TKE fields from synthetic CFD data source. No azimuthal variation is observed in this quarter symmetric case. }%
+    \caption[Hi2lo reconstruction of 2-D surface temperature and TKE fields from synthetic CFD data source. ]{Hi2lo reconstruction of 2-D surface temperature and TKE fields from synthetic CFD data source. No azimuthal variation is observed in this quarter symmetric case. }%
     \label{fig:hi2lo_tke_t}%
 \end{figure}
 
@@ -311,7 +311,7 @@ The standard deviation of the rod integrated crud results at 300 days simulation
 		\caption[Estimated sensitivity of the pin-integrated crud boron variance to the number of samples used per CTF face.]{Estimated sensitivity of the pin-integrated crud boron variance to the number of samples used per CTF face. Variance estimated using 80 independent trials.}
 		\begin{tabular}[h]{| c | C | C |}
 			\hline
-			N  & Mean Pin Crud Boron Total $[g]$ & Pin Integrated Crud Boron Variance $[g]$ \\
+			N  & Mean Pin Crud Boron Total $[g]$ & Pin Integrated Crud Boron Std. Dev. $[g]$ \\
 			\hline  \hline
 			100 &  2.78953e-04  & 3.80e-6  \\
 			400 &  2.78301e-04  & 1.69e-6  \\
