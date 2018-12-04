@@ -3,7 +3,7 @@
 %-----------------------------------------------------------------------------%
 \subsection{Copula}
 
-In this section, Sklar's theorem is provided along with examples of copula functions
+A copula is a function which relates marginal probability distributions to a multidimensional joint distribution.  Copula provide a flexible alternative to multidimensional Gaussian based models.  Copula are utilized in this work because of their ability to capture non-Gaussian dependence structure between two or more correlated random variables, for instance temperature and the TKE at a given point on a rod's surface.  Furthermore, Sklar's theorem is used in this work in order to decompose joint distributions into a product of uni-variate marginal distributions and a copula function.  In this section, Sklar's theorem is provided along with examples of copula functions
 and techniques to draw samples from them. 
 
 The product rule of probability is shown in equation \ref{eq:prod_prob}.  To clarify notation used in this section: The comma denotes the conjunction ``and'' and the bar, $|$, is read ``given''.
@@ -32,7 +32,7 @@ Where $X_1, ... X_d$ are random variables.
 
 The process of decomposing a multivariate distribution into uni-variate marginal
 distributions and an object which describes their conditional dependence was
-formalized by Sklar (1959) \cite{Sklar1959}.  Shown in equation \ref{eq:sklar1},  Sklar's Theorem
+formalized by Sklar \cite{Sklar1959}.  Shown in equation \ref{eq:sklar1},  Sklar's Theorem
 defines a \emph{copula} cumulative density function, $C$.
 \index{Sklar's Thorem}
 
