@@ -190,7 +190,7 @@ Where $n=20$ in this case since the predicted CDFs are supported at 20 locations
 
 By inspecting the KS test results presented in tables \ref{tab:ks_tke} and \ref{tab:ks_temp} it can be concluded that the prediction of the conditional temperature distribution on each CTF axial edit was far more difficult than predicting the conditional TKE distribution.  A large maximum KS temperature distribution distance was seen for the majority of the pins in the assembly. The worst performing pins in this respect were pin 4, pin 9, and pin 20. This is due to the aforementioned high span-to-span and pin-to-pin repeatability of the TKE distributions and conversely the low repeatability of the temperature distribution.  Since the maximum KS distance may occur in CTF axial edit which do not contain temperatures in excess of the saturation point, the maximum KS distance is not an indicator of poor crud predictive performance.  The presented KS tests only serve to quantify the ability of the gradient boosted quantile regressors to reproduce the expected distributions.
 
-Pin-average KS distances indicate that the the null hypothesis was not rejected in the majority of CTF axial zones, however.  This indicates that the distributions predicted by the gradient boosted quantile regressors were, on average, statistically indistinguishable from the empirical CFD distributions. 
+Pin-average KS distances, $KS_\mu$, indicate that the the null hypothesis was not rejected in the majority of CTF axial zones, however.  This indicates that the TKE distributions predicted by the gradient boosted quantile regressors were, on average, statistically indistinguishable from the empirical CFD distributions. 
 
 \begin{table}[h]
     \begin{center}
