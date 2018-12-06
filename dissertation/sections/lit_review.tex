@@ -203,15 +203,15 @@ T(z) = \mu_{T, \mathrm{ctf}}(z) + \epsilon,\ \epsilon \sim \mathcal {GP}(0, K(\m
 Here $\epsilon$ is a zero mean \emph{Gaussian process}  \cite{rasmussen2004gaussian}.
 Where $K(\mathbf z_1, \mathbf z_2;\theta)$ is a function  with free parameters, $\theta=\{\theta_0,\theta_1\}$, that generates a valid covariance matrix.  Assume that the mean temperature field, $\mu_{T, \mathrm{ctf}}$, is given by the subchannel code and that fine scale CFD temperature field data, $T_{cfd}$, is available at locations $\mathbf z = \{z_0, z_1, .. z_N\}$ where $N$ is the number of CFD mesh elements on the rod surface.  The residuals are given by: $\mathbf e = \mu_{T, \mathrm{ctf}}(\mathbf z) - T_{cfd}(\mathbf z)$.  
 
-$K(\cdot)$ generates an matrix which describes the spatial autocorrelation present in the CFD field data.  The commonly used squared-exponential covarience generation function is provided in equation \ref{eq:sq_exp_cov} \cite{rasmussen2004gaussian}.
+$K(\cdot)$ generates a matrix which describes the spatial autocorrelation present in the CFD field data.  The commonly used squared-exponential covarience generation function is provided in equation \ref{eq:sq_exp_cov} \cite{rasmussen2004gaussian}.
 
 \begin{equation}
-K_{ij}(\mathbf z_1, \mathbf z_2;\theta) = \frac{1}{\theta_0} e^{- \frac{||z_{1,i} - z_{2,j}||^2}{\theta_1^2}}
+K_{ij}(\mathbf z_1, \mathbf z_2;\theta) = \theta_0^2 e^{- \frac{||z_{1,i} - z_{2,j}||^2}{\theta_1^2}}
 \label{eq:sq_exp_cov}
 \end{equation}
 Where $i$ and $j$ are indices of the vectors $\mathbf z_1$ and $\mathbf z_2$ respectively.
 The parameters of the covariance function can be fit to the known residual vector, $\mathbf e$, using a maximum likelihood approach. 
-The log likelihood function for the covariance model is given by equation \ref{eq:ln_like_gpr}.
+The log likelihood function for the covariance model is given by equation \ref{eq:ln_like_gpr} \cite{snelson2006tutorial}.
 
 % The likelihood function is given by equation \ref{eq:like_gpr} \cite{rasmussen2004gaussian}.
 %
@@ -222,7 +222,7 @@ The log likelihood function for the covariance model is given by equation \ref{e
 %\end{align}
 
 \begin{equation}
-ln \mathcal L(\theta|\mathbf e) = -\frac{1}{2} \mathbf e^T K(\mathbf z, \mathbf z; \theta)^{-1} \mathbf e - \frac{1}{2} ln (\mathrm{det}(K(\mathbf z, \mathbf z; \theta))) - \frac{n}{2}ln(2\pi)
+ln \mathcal L(\theta|\mathbf e) = -\frac{1}{2} \mathbf e^T K(\mathbf z, \mathbf z; \theta)^{-1} \mathbf e - \frac{1}{2} ln (\mathrm{det}(K(\mathbf z, \mathbf z; \theta))) - \frac{N}{2}ln(2\pi)
 \label{eq:ln_like_gpr}
 \end{equation}
 The optimal covariance function parameter values can be computed by solving the minimization problem in equation \ref{eq:ml_cov_fn}.
