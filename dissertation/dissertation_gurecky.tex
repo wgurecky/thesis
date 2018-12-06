@@ -2,11 +2,13 @@
 \documentclass[12pt]{report}
 \usepackage[right=1.125in, left=1.125in, top=1.125in, bottom=0.815in]{geometry}
 %\usepackage{geometry}
+\usepackage[dvipsnames]{xcolor}
 \usepackage{pdflscape}
 \usepackage{setspace}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
 \usepackage{amsfonts}
+\usepackage{standalone}
 \usepackage{amssymb}
 \usepackage{mathtools}
 \usepackage{listings}
@@ -18,20 +20,28 @@
 \usepackage{lipsum}
 \usepackage{pifont}
 \usepackage{float}
-\usepackage{color}
+%\usepackage{color}
+
 \usepackage{graphicx}
 \usepackage{subfig}
 \usepackage[]{algorithm}
 \usepackage{algorithmic}
 \usepackage{array}
 \usepackage{makeidx}
+\newcolumntype{A}{>{\centering\arraybackslash}m{1.8cm}}
 \newcolumntype{B}{>{\centering\arraybackslash}m{3cm}}
 \newcolumntype{C}{>{\centering\arraybackslash}m{4cm}}
+\newcolumntype{D}{>{\centering\arraybackslash}m{2.0cm}}
 \newcolumntype{L}{>{\arraybackslash}m{8cm}}
 \usepackage[version=3]{mhchem} % Package for chemical equation typesetting \ce{}
 \usepackage{siunitx} % Provides the \SI{}{} and \si{} and \num{}
 \usepackage[normalem]{ulem}  % stike-through by \sout{}
-% \usepackage[backend=bibtex,firstinits=true]{biblatex}
+\usepackage{tikz}
+\usetikzlibrary{matrix,arrows,decorations.markings,bending,positioning}
+\usepackage{ifthen}
+\usepackage{pgf}
+\pgfmathsetseed{\number\pdfrandomseed}
+
 
 % UT diss template setup
 \usepackage{utdiss2}
@@ -50,8 +60,8 @@
 [Kevin Clarno]
 {Stuart Slattery}
 
-% \previousdegrees{}
-\previousdegrees{B.S.M.E., M.S.E.}
+\previousdegrees{}
+% \previousdegrees{, B.S.M.E., M.S.E.}
 
 % image paths
 \graphicspath{{../proposal/}{./}{./figs/crud}}

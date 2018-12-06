@@ -3,7 +3,7 @@
 %-----------------------------------------------------------------------------%
 \subsection{Copula}
 
-In this section, Sklar's theorem is provided along with examples of copula functions
+A copula is a function which relates marginal probability distributions to a multidimensional joint distribution.  Copula provide a flexible alternative to multidimensional Gaussian based models.  Copula are utilized in this work because of their ability to capture non-Gaussian dependence structure between two or more correlated random variables, for instance temperature and the TKE at a given point on a rod's surface.  Furthermore, Sklar's theorem is used in this work in order to decompose joint distributions into a product of uni-variate marginal distributions and a copula function.  In this section, Sklar's theorem is provided along with examples of copula functions
 and techniques to draw samples from them. 
 
 The product rule of probability is shown in equation \ref{eq:prod_prob}.  To clarify notation used in this section: The comma denotes the conjunction ``and'' and the bar, $|$, is read ``given''.
@@ -32,7 +32,7 @@ Where $X_1, ... X_d$ are random variables.
 
 The process of decomposing a multivariate distribution into uni-variate marginal
 distributions and an object which describes their conditional dependence was
-formalized by Sklar (1959) \cite{Sklar1959}.  Shown in equation \ref{eq:sklar1},  Sklar's Theorem
+formalized by Sklar \cite{Sklar1959}.  Shown in equation \ref{eq:sklar1},  Sklar's Theorem
 defines a \emph{copula} cumulative density function, $C$.
 \index{Sklar's Thorem}
 
@@ -100,7 +100,7 @@ If the distribution $h$ is smooth and monotonic the inverse $h^{-1}$ exists.  Fo
 \end{figure}
 
 Computing the inverse analytically is oftentimes not possible for some classes of copula and therefore, the more general method shown in equation \ref{eq:h_inv_sample} is used.
-A random vector of length $N$ is drawn from the uniform distribution $\in [0, 1]$:  $\{\mathbf U_2\}$.  For each sample, $u_{2_i}$ in $\{\mathbf U_2\}$ the 1D line search problem given in equation \ref{eq:h_inv_sample} is solved.  This produces a sample vector of length $N$: $\{\mathbf U_1\}$.
+A random vector of length $N$ is drawn from the uniform distribution $\in [0, 1]$:  $\{\mathbf U_2\}$.  For each sample, $u_{2_i}$ in $\{\mathbf U_2\}$ the 1-D line search problem given in equation \ref{eq:h_inv_sample} is solved.  This produces a sample vector of length $N$: $\{\mathbf U_1\}$.
 
 \begin{equation}
 u_{1_i} = \mathrm{argmin}_{u_1} \left[ h(u_1|u_{2_i}) - u_{2_i} \right],\ \mathrm{with}\ 0 < u_1 < 1
@@ -169,15 +169,15 @@ Examples of valid copula are given in figure \ref{fig:montage_cop}.  A wide rang
 \subsection{Fitting Copula}
 \label{sec:fitting_copula}
 
-Fitting copula to empirical data can be carried out by the method of maximum likelihood (ML).  Consider the bivariate case where $N$ sample pairs, $\{w_i, v_i\}_{i\in [ 1,N ] }$  are known. The likelihood function for a copula is given by equation \ref{eq:lik}.  For any given sample pair, each factor in the likelihood function describes how probable it was for that sample originated from the underlying copula distribution with parameter $\theta_c$.
+Fitting copula to empirical data can be carried out by the method of maximum likelihood (ML).  Consider the bivariate case where $N$ sample pairs, $\{w_i, v_i\}_{i\in [ 1,N ] }$  are known. The likelihood function for a copula is given by equation \ref{eq:lik}.  The likelihood is a function of the distribution parameter $\theta_c$ with the data, $\{\mathbf w,\mathbf v \}$, held fixed. When integrated over all possible parameter values the integrated result does not necessarily take on a value of unity and therefore cannot be strictly interpreted as a probability density. Each constituent factor in the likelihood function can be interpreted as the relative likelihood that the sample pair $\{w_i, v_i\}$ arose from the copula density function with parameter $\theta_c$.
 \index{Copula!Fitting}
 
 \begin{equation}
-\mathcal{L}= \prod_{i=1}^N c(w_i, v_i|\theta_c)
+    \mathcal{L}(\theta_c;\mathbf w,\mathbf v)= \prod_{i=1}^N c(w_i, v_i|\theta_c)
 \label{eq:lik}
 \end{equation}
 
-Where $\theta$ is the free copula shape parameter.
+Where $\theta_c$ is the free copula shape parameter.
 Typically the negative log-likelihood, $-\mathrm{ln}\mathcal{L}$, is used in when performing ML estimation of a distribution parameter since the problem is typically cast in terms of a minimization problem.  
 \begin{equation}
 \hat \theta_{c,ML} = \mathrm{argmin}_{\theta_c}[-\mathrm{ln}\mathcal{L}(\theta_{c} ; \mathbf w, \mathbf v)]
@@ -185,7 +185,7 @@ Typically the negative log-likelihood, $-\mathrm{ln}\mathcal{L}$, is used in whe
 \end{equation}
 \index{Maximum Likelihood}
 
-To minimize the negative log likelihood in equation \ref{eq:nlog_lik}  one computes the partial derivative with respect to $\theta_c$ and finds the value $\hat \theta_{c,ML}$ for which this expression reaches zero.  This can be carried out by Newton's method.  If the partial derivatives of the copula's negative log likelihood are difficult to compute one can estimate them by finite difference. 
+To minimize the negative log likelihood in equation \ref{eq:nlog_lik}  one computes the partial derivative with respect to $\theta_c$ and finds the value $\hat \theta_{c,ML}$ for which this expression reaches zero.  This can be carried out by Newton's method.  If the partial derivatives of the copula's negative log likelihood are impossible to compute analytically one can estimate them by finite difference.
 
 In order to determine which copula family best represents the data, an arsenal of statistical tests can be applied to select the copula which best fits the data.  Here, we consider two methods:  (1) Comparing Akaike information criterion (AIC) and (2) graphically comparing each fitted copula.  
 
@@ -222,13 +222,13 @@ For example, by graphical inspection of figure \ref{fig:kc_fn_compare}, the Gumb
 
 \subsection*{Kendall's Tau}
 
-Kendall's tau is a measure of concordance.  Consider two correlated and ranked random variables, $X, Y$.
+Kendall's tau is a measure of concordance.  Consider two correlated and uniformly distributed random variables, $X, Y$.
 %  If a rank $x_{(i)}$ is drawn for the first variable, the likelihood that you will also have drawn the rank $y_{(i)}$ of the second to be at least as great as the first is proportional to Kendall's tau.  More precisely, 
-Let $(X_i, Y_i)$ and $(X_j, Y_j)$ be identically distributed sample pairs from some joint cumulative distribution so that $X\ and\ Y$ will take on values in $[0,1]$, then Kendall's tau is given by equation \ref{eq:ktau} \cite{Nelsen2006}.  
+Let $(X_1, Y_1)$ and $(X_2, Y_2)$ be identically distributed random vectors from some joint cumulative distribution so that individual samples from $X\ and\ Y$ will take on values in $[0,1]$, then Kendall's tau is given by equation \ref{eq:ktau} \cite{Nelsen2006}.  
 \index{Kendall's Tau}
 
 \begin{equation}
-\rho_\tau = P[(X_i - X_j)(Y_i-Y_j)>0] - P[(X_i - X_j)(Y_i - Y_j)<0]
+\rho_\tau = P[(X_1 - X_2)(Y_1-Y_2)>0] - P[(X_1 - X_2)(Y_1 - Y_2)<0]
 \label{eq:ktau}
 \end{equation}
 
@@ -239,7 +239,7 @@ Equation \ref{eq:tauar} relates an Archimedean copula's parameter to $\rho_\tau$
 \rho_\tau = 1 + 4 \int_0^1 \frac{\varphi(\theta_c,t)}{\varphi'(\theta_c, t)}dt
 \label{eq:tauar}
 \end{equation}
-Where $\varphi(t)$ is the copula's generator function and $\varphi'(t)$ is the first derivative of the generator function with respect to $t$. A list of copula generator functions can be found in \cite{Nelsen2006}. 
+Where $\varphi(t)$ is the copula's generator function and $\varphi'(t)$ is the first derivative of the generator function with respect to $t$. A list of copula generator functions may be found in introductory copula texts \cite{Nelsen2006}.
 
 %\subsection*{Archimedean Copula}
 

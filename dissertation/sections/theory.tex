@@ -1,12 +1,12 @@
 %! TEX root = ../dissertation_gurecky.tex
 
-A review of the solution detail afforded by CFD and subchannel thermal hydraulic codes is provided to begin this section along with consequences of their respective spatial discretization schemes on crud growth.  A simplified method for harnessing CFD results to improve expected-value computation of crud on a given CTF face is provided to introduce the hi2lo strategy.  Next, copula and quantile regression are discussed as a means model the joint distribution of temperature and TKE on the rod surface.   This is followed by an introduction to the gradient boosting machine learning method used to predict the behavior of the joint distribution as a function of local core conditions.  The Monte Carlo method for estimating the integral required to compute the expected crud value is given.  A review of importance sampling is also provided to provide a means to increase the sampling efficiency of the Monte Carlo integration procedure.
+A review of the solution detail afforded by CFD and subchannel thermal hydraulic codes is provided to begin this section along with consequences of their respective spatial discretization schemes on crud growth.  A simplified method for harnessing CFD results to improve expected-value computation of crud on a given CTF face is provided to introduce the hi2lo strategy.  Next, copula and quantile regression are discussed as a means to model the joint distribution of temperature and TKE on the rod surface.   This is followed by an introduction to the gradient boosting machine learning method used to predict the behavior of the joint distribution as a function of local core conditions.  The Monte Carlo method for estimating the integral required to compute the expected crud value is given.  A review of importance sampling is also provided to provide a means to increase the sampling efficiency of the Monte Carlo integration procedure.
 The section culminates in an integration of the copula, quantile regression, and importance sampling routines into a complete algorithm for time dependent crud prediction.
 
 \section{Model Approach}
 
 A fundamental difference between the CFD and CTF computations is the average size of the mesh cells.  In the azimuthal coordinate, CTF decomposes a single rod surface into four patches.  An example top down view of typical CFD and CTF meshes for a single pin are given in figure \ref{fig:cfd_ctf_mesh}.  Though both codes employ a finite volume spatial discretization, CFD can resolve the flow at much smaller length scales.  Additionally, each code employs a different set of closure models to the underlying set of coupled energy, mass, and momentum balances.  In practice these differences lead to large discrepancies in boiling, turbulent mixing, and rod surface temperature predictions between the two codes.
-\index{Subchannel} \index{CFD} 
+\index{Subchannel} \index{CFD}
 
 \begin{figure}[!htbp]
     \centering
@@ -15,12 +15,12 @@ A fundamental difference between the CFD and CTF computations is the average siz
     \label{fig:cfd_ctf_mesh}
 \end{figure}
 
-Shown in figure \ref{fig:model_overview}, on a given CTF rod surface patch, estimates for the surface temperature, TKE, and heat flux are provided as point estimates.  The predicted CTF quantities are an estimate for the average thermal hydraulic conditions over that coarse patch.   Consequentially, CTF crud predictions may significantly deviate from reality since crud growth is highly sensitive to the presence of subcooled boiling on the rod surface; if CTF predicts a rod surface temperature less than the saturation point in a given patch very little or no crud will form when in reality, a small portion of that rod surface could exist above the saturation point and thus harbor crud.  Small localized mistakes in crud predictions compound throughout the core, leading to poor CIPS estimates. 
+Shown in figure \ref{fig:model_overview}, on a given CTF rod surface patch, estimates for the surface temperature, TKE, and heat flux are provided as point estimates.  The predicted CTF quantities are an estimate for the average thermal hydraulic conditions over that coarse patch.   Consequently, CTF crud predictions deviate from reality since crud growth is highly sensitive to the presence of subcooled boiling on the rod surface; if CTF predicts a rod surface temperature less than the saturation point in a given patch little or no crud will form when in reality, a small portion of that rod surface could exist above the saturation point and thus harbor crud.  Small localized mistakes in crud predictions compound throughout the core, leading to poor CIPS estimates.
 
-In figure \ref{fig:model_overview}, $f$ denotes a probability density function.  Integration of this density function may be interpreted as computing a fractional area of the rod surface that exists within the specified integration limits.  
+In figure \ref{fig:model_overview}, $f$ denotes a probability density function.  Integration of this density function may be interpreted as computing a fractional area of the rod surface that exists within the specified integration limits.
 \begin{figure}[!htbp]
     \centering
-    \includegraphics[width=12cm]{../proposal/images/model_relations.png}
+    \includegraphics[width=12cm]{figs/theory/model_relations.png}
     \caption{On a single coarse CTF patch: Differences in crud prediction between CFD and CTF models.}
     \label{fig:model_overview}
 \end{figure}
@@ -33,15 +33,15 @@ CTF estimates mean TH conditions everywhere in the core at a low spatial resolut
 \end{equation}
 
 \begin{itemize}
-        \item $\mathbf X$ is a three component vector representing the cladding surface temperature, turbulent kinetic energy and boundary heat flux.
-        \item $\mathbf z$ denotes spatial coordinates and $\mathbf p$ represents a set of auxiliary predictors.  Auxiliary predictors are covariates that describe local core conditions and may be geometric or thermal hydraulic in nature.
-        \item  $\varepsilon$ is a three-component random vector comprised of temperature, turbulent kinetic energy and boundary heat flux fields.  $\varepsilon$ is distributed according to a CFD informed model with $\theta$ representing free model parameters which are determined from the CFD data. 
-        \item $\bm b$ is bias between the low and high fidelity models ($\bm \mu_{CTF} - \bm \mu_{CFD}$).  Despite providing identical inlet boundary conditions to both codes bias exists due to algorithmic differences, closure model differences, and meshing differences between the two codes.
+        \item $\mathbf X$ is a three component vector representing the cladding surface temperature, $T$, turbulent kinetic energy, $k$, and boundary heat flux, $q''$.
+        \item $\mathbf z$ denotes spatial coordinates and $\mathbf p$ represents a set of auxiliary predictors.  Auxiliary predictors are covariates that describe local core conditions and may be geometric or thermal hydraulic in nature.   Specific auxiliary predictors are introduced in Chapter \ref{sec:ml_cfd}.  Table \ref{tab:features} contains a detailed description of the auxiliary predictive features used in this work.
+        \item  $\varepsilon$ is a three-component random vector comprised of temperature, turbulent kinetic energy and boundary heat flux fields.  $\varepsilon$ is distributed according to a CFD informed model with $\theta$ representing free model parameters which are determined from the CFD data.
+        \item $\bm b$ is bias between the low and high fidelity models ($\bm \mu_{CTF} - \bm \mu_{CFD}$).  Despite providing identical inlet boundary conditions to both codes bias exists due to algorithmic, closure model and meshing differences between the two codes.
         \item Field averages, $\bm \mu$, are piecewise constant over each CTF patch.
         % \item Note this is a additive model where Salko constructed a multiplicative model.
 \end{itemize}
 
-Consider the hypothetical case where the CFD results are normally distributed about the CTF results such that $\varepsilon \sim \mathcal N(0, \bm \Sigma(\mathbf p, \mathbf z))$, where $ \bm \Sigma(\mathbf p, \mathbf z)$ is a covariance matrix that depends on local core conditions.  Shifting the distribution by a constant vector $\bm c=\bm b + \bm \mu_{ctf}$, results in a new distribution denoted by $h$ in equation \ref{eq:norm_noise}.
+Consider a hypothetical case where the CFD results are normally distributed about the CTF results such that $\varepsilon \sim \mathcal N(0, \bm \Sigma(\mathbf p, \mathbf z))$, where $ \bm \Sigma(\mathbf p, \mathbf z)$ is a covariance matrix that depends on local core conditions.  Shifting the distribution by a constant vector $\bm c=\bm b + \bm \mu_{ctf}$, results in a distribution denoted by $h$ in equation \ref{eq:norm_noise}.
 \begin{align}
     \left. h \right|_{(\bm p, \bm z)} & = \mathcal N(\bm c, \bm \Sigma(\mathbf p, \bm z)) \nonumber \\
     & = \left.
@@ -63,7 +63,7 @@ Consider the hypothetical case where the CFD results are normally distributed ab
 \end{align}
 Where $\Sigma_{xx} = \sigma_x^2$ and $\Sigma_{xy} = cov(x,y)$.
 
-Equation \ref{eq:expected_crud} estimates the expected crud mass $C_m$ that accumulates on each CTF patch in time $\delta t$.  Let $\mathbf X= \{T, k, q''\}$ denote a random vector of temperature, TKE, and BHF. $\mathbf I$ represents additional known crud parameters, $\mathbf C_o$ is the crud state at the start of the time step.  Let the joint density function of $\bf X$ be denoted by $h$, and it's CDF be denoted by $H$.  The crud model, $\mathcal G(\cdot)$, is common to all CTF faces.  The joint cumulative density's parameters are predicted from the available high resolution CFD data in every CTF face.  In the case of an assumed normal distribution model there are nine unknowns which require fitting:  $\theta = \{ \sigma^2_T, \sigma^2_k, \sigma^2_{q''}, \Sigma_{kT}, \Sigma_{q''T}, \Sigma_{q''k}, c_T, c_k, c_{q''} \}$.  In the subsequent sections we will seek to relax the normality assumption of the CFD residuals about the CTF result.
+Equation \ref{eq:expected_crud} estimates the expected crud mass $C_m$ that accumulates on each CTF patch in time $\delta t$.  Let the CTF face of interest have area $A$.  Let $\mathbf X= \{T, k, q''\}$ denote a random vector of temperature, TKE, and BHF. $\mathbf I$ represents additional known crud parameters, $\mathbf C_o$ is the crud state at the start of the time step.  Let the joint density function of $\bf X$ be denoted by $h$, and it's CDF be denoted by $H$.  The crud model, $\mathcal G(\cdot)$, is common to all CTF faces.  The joint cumulative density's parameters are predicted from the available high resolution CFD data in every CTF face.  In the case of an assumed normal distribution model there are nine unknowns which require fitting:  $\theta = \{ \sigma^2_T, \sigma^2_k, \sigma^2_{q''}, \Sigma_{kT}, \Sigma_{q''T}, \Sigma_{q''k}, c_T, c_k, c_{q''} \}$.  In the subsequent sections we will seek to relax the normality assumption of the CFD residuals about the CTF result.
 
 \begin{align}
         C_m &= A \mu_{m} \nonumber \\
@@ -77,13 +77,13 @@ A strategy to compute the unknowns of the joint distribution on each CTF face is
 \begin{algorithm}[H]
     \captionsetup{labelfont={sc,bf}, labelsep=newline}
     \caption{Generic hi2lo method for crud prediction.}
-    \begin{algorithmic}[1]     
-    \STATE \textbf{Initialization}  
-    \STATE (1) Pre-process training set.  
-    \STATE $\ \ $   (1b) Fit the joint distribution parameters to known CFD data: $\theta(\mathbf p, \mathbf z)$.  
-    \STATE $\ \ $   (1c) \textbf{def:}  $\ \theta \leftarrow \mathcal F_M(\mathbf p, \mathbf z | \gamma)$
+    \begin{algorithmic}[1]
+    \STATE \textbf{Initialization}
+    \STATE (1) Pre-process training set.
+    \STATE $\ \ $   (1b) Fit the joint distribution parameters, $\theta$, to known CFD data. 
+    \STATE $\ \ $   (1c) \textbf{def:}  $\ \theta \leftarrow \mathcal F_M(\mathbf p, \mathbf z )$
     \STATE (2) Train model:  $\hat{\mathcal F_M} =  \mathrm{argmin}_{\mathcal F}$
-      $\E \left[ L(\mathcal{F}_M (\mathbf p, \mathbf z| \gamma), \theta(\mathbf p, \mathbf z)) \right]$
+      $\E \left[ L(\mathcal{F}_M (\mathbf p, \mathbf z), \theta) \right]$
 \FOR {CTF face, $j$}
     \STATE Evaluate ML model $\hat \theta_j \leftarrow \hat{\mathcal F_M}(\mathbf p_j, \mathbf z_j)$ \;
     \STATE Reconstruct $\hat H_j(\cdot |\hat \theta_j)$ \;
@@ -93,9 +93,9 @@ A strategy to compute the unknowns of the joint distribution on each CTF face is
     \end{algorithmic}
 \label{algo:basic_crud_algo}
 \end{algorithm}
-Where $L(\cdot)$ is a generic differentiable loss function.  A discussion on the machine learning model and loss function follows in section \ref{chap:GBRT}.  The reconstruction of the joint density function $\hat H$ from copula and univariate quantile functions is discussed in section \ref{chap:quantiles}.  Monte Carlo and importance sampling are discussed in section \ref{chap:mc_crud}.   
+Where $L(\cdot)$ is a generic differentiable loss function.  A discussion on the machine learning model and loss function follows in section \ref{chap:GBRT}.  The reconstruction of the joint density function $\hat H$ from copula and univariate quantile functions is discussed in section \ref{chap:quantiles}.  Monte Carlo and importance sampling are discussed in section \ref{chap:mc_crud}.
 
-Algorithm \ref{algo:basic_crud_algo} may be broken down into five generic components.  \emph{Lines 2-5:} Establish a relationship between the local core geometry and thermal hydraulic conditions to the behavior of surface temperature, TKE and boundary heat flux distributions using a pre-computed suite of CFD results. \emph{Line 7:} The prediction of joint distribution parameters. These parameters will take the form of conditional quantiles and parameters of a copula in the present work. \emph{Line 8:} The reconstruction of the joint temperature, TKE, and boundary heat flux distribution in each CTF face given predictions provided by evaluating the data driven model $\mathcal F_M$ at the local core conditions adjacent to the CTF under consideration. \emph{Line 9:} Sampling from the reconstructed distribution.  \emph{Line 10:} Integration of the crud density by a Monte Carlo procedure.
+Algorithm \ref{algo:basic_crud_algo} may be broken down into five generic components.  \emph{Lines 2-5:} Establish a relationship between the local core geometry and thermal hydraulic conditions to the behavior of surface temperature, TKE and boundary heat flux distributions using a pre-computed suite of CFD results. \emph{Line 7:} The prediction of joint distribution parameters. These parameters will take the form of conditional quantiles and parameters of a copula in the present work. \emph{Line 8:} The reconstruction of the joint temperature, TKE, and boundary heat flux distribution in each CTF face given predictions provided by evaluating the data driven model $\mathcal F_M$ at the local core conditions adjacent to the CTF face under consideration. \emph{Line 9:} Sampling from the reconstructed distribution.  \emph{Line 10:} Integration of the crud density by a Monte Carlo procedure.
 
 % A critical question to answer is:  Can a data driven machine learning model adequately predict the parameters of a probability distribution on each CTF face: $Var[(\hat \theta_j \leftarrow \mathcal M(\mathbf p_{j}, \gamma))] < \epsilon$?  There is some uncertainty in the optimal machine learning model parameters.  This propagates to the distribution parameters which ultimately governs the uncertainty of the crud results.  An adequate model in this context reduces the uncertainty in the final crud estimate to some acceptable level.
 
@@ -114,12 +114,12 @@ Since the outer cladding temperature, near-wall TKE and boundary heat flux are u
 
 In a multiphysics simulation of a PWR core the coupled momentum, mass, and energy balances along with the appropriate closure models dictate the rod outer cladding surface temperature.  The Dittus Boelter relationship is used to relate the surface heat transfer coefficient with the local Reynolds number (see appendix \ref{chap:app_d}).  According to this relationship, larger Reynolds numbers corresponds to higher heat transfer coefficients.   Newton's law of cooling states $T_s = q''/h + T_{\infty}$ and $h$ may be computed via Dittus Boelter.  Therefore, the surface temperature $(T_s)$ is negatively correlated with the Reynolds number and where the local turbulent kinetic energy is large the rod surface temperature will be depressed if the local heat flux is held fixed.  It is also apparent that the surface temperature is positively correlated with the the local boundary heat flux.  In order to simplify the model only the dependency between the surface temperature and local turbulent kinetic energy is considered in hi2lo model.
 
-A statistical relationship between the surface temperature, TKE, and boundary heat flux in each CTF face is sought.  To this end vine copula provide a flexible framework to model high dimensional dependence structures \cite{Joe2015}. Vine copula are hierarchical tree models in which the edges represent bivariate copula and the nodes are univariate distributions.  The canonical vine (C-vine) copula shown in equation \ref{eq:ori_vine_model} may be used to express the trivariate ($n=3$) distribution of temperature, TKE, and $q''$ on the rod surface. 
+A statistical relationship between the surface temperature, TKE, and boundary heat flux in each CTF face is sought.  To this end vine copula provide a flexible framework to model high dimensional dependence structures \cite{Joe2015}. Vine copula are hierarchical tree models in which the edges represent bivariate copula and the nodes are univariate distributions.  The canonical vine (C-vine) copula shown in equation \ref{eq:ori_vine_model} may be used to express the trivariate ($n=3$) distribution of temperature, TKE, and $q''$ on the rod surface.
 \begin{equation}
 h(T, k, q'') = f_T f_k, f_{q''} \prod_{m=1}^{n-1} \prod_{e \in E_m} c_{ij|D_e}(u_{i|D_e}, u_{j|D_e})
 \label{eq:ori_vine_model}
 \end{equation}
-Where $m$ denotes the tree level in the vine and each bivariate copula model, $c$ defined on the edge $\{e\}$ is known as a pair copula.  The conditioning set at edge $e$, denoted $D_e$, is defined by a proximity condition  \cite{bedford2001}. $E_m$ denotes the set of all edges at level $m$. The graphical representation of the vine is provided in figure \ref{fig:cvine3var}. 
+Where $m$ denotes the tree level in the vine and each bivariate copula model, $c$ defined on the edge $\{e\}$ is known as a pair copula.  The conditioning set at edge $e$, denoted $D_e$, is defined by a proximity condition  \cite{bedford2001}. $E_m$ denotes the set of all edges at level $m$. The graphical representation of the vine is provided in figure \ref{fig:cvine3var}.
 % The complete nested tree model is sometimes referred to as a pair copula construction in the literature.
 Simplifying independence assumptions can be made based on the heat transfer processes on a fuel rod that lead to certain copula in the vine to take the form of a uniform density distribution on the unit square.
 
@@ -142,7 +142,7 @@ h(T, k, q'') \approx  f_T f_k, f_{q''} c_{T,k}(u_{T}, u_{k})  \cdot 1 \cdot 1
 \label{eq:simple_vine_model}
 \end{equation}
 Where $u_T=F(T)$ and $u_k = F(k)$. $F(\cdot)$ denotes the CDF.
-Furthermore, the marginal density function of the outer cladding boundary heat flux is assumed to be a Dirac delta function centered on the value provided by CTF (VERA).  We will apply this assumption in all sections which follow.
+Following the independence assumption, the marginal density function of the outer cladding boundary heat flux is assumed to be a Dirac delta function centered on the value provided by CTF (VERA).  We will apply this assumption in all sections which follow.
 Then in the $j^{th}$ CTF face the boundary heat flux marginal distribution is always given by equation \ref{eq:twall_dirac}.
 \begin{equation}
 f_{j,q''} = \delta_{(q''_{j, \mathrm{ctf}})}
@@ -158,46 +158,70 @@ f_{j,q''} = \delta_{(q''_{j, \mathrm{ctf}})}
 \subsection{Sample Quantiles}
 \label{chap:quantiles}
 
-Here a non parametric representation of univariate distributions is given by utilizing a set of sample quantiles.  
+Here a non parametric representation of univariate distributions is given by utilizing a set of sample quantiles.
 Let the quantile function be represented by $Q=F^{-1}$ where $F$ is a cumulative density function (CDF).
-\index{Cumulative density function}   
+\index{Cumulative density function}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.3\linewidth]{../proposal/slides/seminar_slides/figs/margins_cdf_2}
-    \caption[CDF from quantiles.]{Piecewise linear CDF interpolated from a set of quantiles.}
-    \label{fig:marginscdf2}
-\end{figure}
+%\begin{figure}[H]
+%    \centering
+%    \includegraphics[width=0.3\linewidth]{../proposal/slides/seminar_slides/figs/margins_cdf_2}
+%    \caption[CDF from quantiles.]{Piecewise linear CDF interpolated from a set of quantiles.}
+%    \label{fig:marginscdf2}
+%\end{figure}
 
 \index{Quantiles}
-The $\tau^{th}$ quantile is $q_\tau = F^{-1}(\tau); $ where $\ F(t)=P[T \leq t]$.
-$\tau \in [0, 1]$
-
-The quantile loss function is given by equation \ref{eq:qloss_fn}.
+The $\tau^{th}$ quantile is $q_\tau = Q(\tau); $ where $\ F(t)=P[T \leq t]$.
+$\tau \in [0, 1]$. The quantile loss function is given by equation \ref{eq:qloss_fn} and depicted in figure \ref{fig:qloss}.
 \begin{equation}
-\rho_\tau( u) =  u \cdot (\tau - \mathbb{I}_{( u < 0)})
+\mathcal W_\tau( u) =  u \cdot (\tau - \mathbb{I}_{( u < 0)})
 \label{eq:qloss_fn}
 \end{equation}
 Where $\mathbb{I}$ is the indicator function which returns 1 if the argument is true and 0 otherwise.
-In order to estimate a sample quantile, $\hat q_\tau$, given the empirical CDF $F$, minimize: $\E[\rho_\tau(T - q_\tau)]$ where $T$, the temperature, is treated as a random variable distributed according to $F_T$.  Considering a sample set $\{T_0, T_i, \dots T_N \}$ the desired quantile $q_\tau$ may be estimated by equation \ref{eq:qtau_est}.
+In order to estimate a sample quantile, $\hat q_\tau$, given the empirical CDF $F$, minimize: $\E[\mathcal W_\tau(T - q_\tau)]$ where $T$, the temperature, is treated as a random variable distributed according to $F_T$.  Considering a sample set $\{T_0, T_i, \dots T_N \}$ the desired quantile $q_\tau$ may be estimated by equation \ref{eq:qtau_est}.
 \begin{equation}
             \left.\begin{aligned}
-            \hat q_{\tau} &= argmin_{q_\tau} \E[\rho_\tau(u)];\ \  u = T - q_\tau  \\
-            \approx & argmin_{q_\tau}  \frac{1}{N} \sum_i^N \rho_\tau(u_i); \ u_i = T_i - q_\tau \\
+            \hat q_{\tau} &= argmin_{q_\tau} \E[\mathcal W_\tau(u)];\ \  u = T - q_\tau  \\
+            \approx & argmin_{q_\tau}  \frac{1}{N} \sum_i^N \mathcal W_\tau(u_i); \ u_i = T_i - q_\tau \\
             \approx & argmin_{q_\tau} \left[ (1-\tau) \sum_{T \leq q_\tau}( T_i - q_\tau ) - \tau \sum_{T > q_\tau} (T_i - q_\tau) \right]
             \end{aligned}\right.
             \label{eq:qtau_est}
 \end{equation}
 \index{Quantiles!Loss Function}
 
+%\begin{figure}[H]
+%    \centering
+%    \includegraphics[width=0.4\linewidth]{../proposal/slides/seminar_slides/figs/q_loss}
+%    \caption[Quantile loss function.]{Quantile loss function.}
+%    \label{fig:qloss}
+%\end{figure}
+
 \begin{figure}[H]
-    \centering
-    \includegraphics[width=0.4\linewidth]{../proposal/slides/seminar_slides/figs/q_loss}
+	\centering
+	\begin{tikzpicture}
+	% scalingn params
+	\pgfmathparse{2.0}\let\s=\pgfmathresult
+	% x y axes
+	\draw [line width=0.05cm] (-2.0*\s, 0) -- (2.0*\s, 0);
+	\draw [line width=0.05cm] (0.0, 0.0) -- (0.0, 2.0*\s);
+	% Plot lines
+	\draw [line width=0.05cm] (0.0, 0.0) -- (-1.0*\s, 2.0*\s);
+	\draw [line width=0.05cm] (0.0, 0.0) -- (2.0*\s, 1.0*\s);
+	% slope indicators
+	\draw [line width=0.03cm]  (-0.5*\s, 0.5*\s) -- (-0.5*\s, 1.0*\s);
+	\draw [line width=0.03cm]  (-0.5*\s, 0.5*\s) -- (-0.25*\s, 0.5*\s);
+	%
+	\draw [line width=0.03cm]  (1.5*\s,  0.5*\s)  -- (1.5*\s, 0.75*\s);
+	\draw [line width=0.03cm]  (1.5*\s,  0.5*\s)  -- (1.0*\s, 0.5*\s);
+	% figure text
+	\node[text width=2cm] at (-0.1*\s,2.0*\s) {$\mathcal W_{\tau}(u)$};
+	\node[text width=2cm] at (-0.5*\s,0.5*\s) {$\tau-1$};
+	\node[text width=1cm] at (1.9*\s,0.5*\s) {$\tau$};
+	\end{tikzpicture}
     \caption[Quantile loss function.]{Quantile loss function.}
-    \label{fig:qloss}
+\label{fig:qloss}
 \end{figure}
 
-In this work, a set of sample quantiles, $\hat \theta_\tau = \{\hat q_{\tau_0}, \dots, \hat q_{\tau_i}, \dots \hat q_{N_Q} \}$, are used to construct step-wise cumulative distributions, $\hat F$, for the cladding outer temperature and near-wall TKE surface fields.  $N_Q$ denotes the number of quantiles used in the CDF reconstruction and is a user set parameter. The stepwise quantile function with prescribed quantiles is given by equation \ref{eq:cdf_from_qtau}.
+In this work, a set of sample quantiles, $\hat \theta_\tau = \{\hat q_{\tau_0}, \dots, \hat q_{\tau_i}, \dots \hat q_{N_Q} \}$, are used to construct step-wise cumulative distributions, $\hat F$, for the cladding outer temperature and near-wall TKE surface fields.  $N_Q$ denotes the number of quantiles used in the CDF reconstruction and is a user set parameter. The stepwise quantile function with prescribed quantiles is given by equation \ref{eq:cdf_from_qtau} and depicted in figure \ref{fig:marginscdf2}.
 \index{Quantiles!Emperical}
 
 \begin{equation}
@@ -206,6 +230,44 @@ In this work, a set of sample quantiles, $\hat \theta_\tau = \{\hat q_{\tau_0}, 
 \end{equation}
 The reconstructed CDF can then in turn be used to build a histogram.  In place of the stepwise representation, a monotone piecewise cubic hermite interpolating polynomial (PCHIP) may be fit to the stepwise conditional quantile distribution to generate a differentiable CDF.
 The PCHIP interpolation preserves monotonicity of the CDF if the provided quantiles are strictly monotone \cite{Fritsch80}.  This condition is enforced in the software; any violation of the monotone restriction would indicate a software bug in the quantile regression code.  Inverse transform sampling is used to draw samples from the univariate distributions.
+
+\begin{figure}
+	\centering
+	\begin{tikzpicture}
+	% scalingn params
+	\pgfmathparse{2.0}\let\s=\pgfmathresult
+	% x y axes
+	\draw [line width=0.05cm] (0, 0) -- (3.0*\s, 0);
+	\draw [line width=0.05cm] (0.0, 0.0) -- (0.0, 2.0*\s);
+	\draw [dashed]  (-0.1*\s, 1.8*\s) -- (3.0*\s, 1.8*\s);
+	% plot nodes
+	\draw [fill=black] (0.0, 0.0) circle (0.08cm);
+	\draw [fill=black] (0.5*\s, 0.1*\s) circle (0.08cm);
+	\draw [fill=black] (1.2*\s, 0.5*\s) circle (0.08cm);
+	\draw [fill=black] (1.8*\s, 1.2*\s) circle (0.08cm);
+	\draw [fill=black] (2.1*\s, 1.68*\s) circle (0.08cm);
+	\draw [fill=black] (2.6*\s, 1.8*\s) circle (0.08cm);
+	% Plot lines connecting nodes
+	\draw [line width=0.03cm] (0, 0) -- (0.5*\s, 0.1*\s);
+	\draw [line width=0.03cm] (0.5*\s, 0.1*\s) -- (1.2*\s, 0.5*\s);
+	\draw [line width=0.03cm] (1.2*\s, 0.5*\s) -- (1.8*\s, 1.2*\s);
+	\draw [line width=0.03cm] (1.8*\s, 1.2*\s) -- (2.1*\s, 1.68*\s);
+	\draw [line width=0.03cm]  (2.1*\s, 1.68*\s) -- (2.6*\s, 1.8*\s);
+	% mark a single node
+	\draw [line width=0.02cm] (1.8*\s, 0) -- (1.8*\s, 1.2*\s);
+	\draw [line width=0.02cm] (0.0, 1.2*\s) -- (1.8*\s, 1.2*\s);
+	% figure text
+	\node[text width=1cm] at (1.5, 1.32*\s) {$\tau_i$};
+	\node[text width=1cm] at (2.1*\s, 0.8*\s) {$\hat q_{\tau_i}$};
+	\node[text width=1cm] at (2.3*\s, 1.5*\s) {$\hat F_T$};
+	\node[text width=1cm] at (-0.1*\s,1.0*\s) {\large $\tau $};
+	\node[text width=1cm] at (-0.1*\s,1.8*\s) {\large $1 $};
+	\node[text width=2cm] at (1.8*\s, -0.2*\s) {\large $\hat q_{\tau}$};
+	\node[text width=2cm] at (2.8*\s, -0.2*\s) {\large $T$};
+	\end{tikzpicture}
+	\caption[CDF from quantiles.]{Piecewise linear CDF interpolated from a set of quantiles.}
+	\label{fig:marginscdf2}
+\end{figure}
 
 Other strategies to approximate univariate density functions from a set of sample statistics are abundant.  One alternative to quantile regression is to relate sample moments to the parameters of some parametric distribution.  In this procedure a set of moment conditions is defined for the target parametric model.  Then the method of moments (MoM) can be used to determine the parameters of the parametric model which best satisfy the moment conditions in the L2 norm sense.  The MoM is applicable when the number of defined moment conditions is greater than or equal to the number of free distribution parameters.
 
@@ -222,59 +284,58 @@ It can be shown that the sample quantiles are distributed according to equation 
     \label{eq:theory_qdist_1}
 \end{align}
 
+In equation \ref{eq:theory_qdist_1} the variance associated with a sample quantile depends on the CDF and PDF of the true distribution function of interest.  The underlying CDF from which a sample population is typically unknown and the goal is often to infer properties of this distribution from the sample population.  Therefore, it is not possible to employ equation \ref{eq:theory_qdist_1} directly to compute the variance of a given sample quantile unless the underlying CDF is known.  Note that this is indeed the case in section \ref{chap:GBRT} where the large sample quantile theory is employed to check the residuals of a quantile regression procedure because the underlying distribution of the data was prespecified to be Gaussian.  However, from more complex cases where the nature of the distribution functions is unknown, such as with raw CFD data, equation  \ref{eq:theory_qdist_1} is not directly useful but still can be used to aid interpretation of the quantile regression predictions.
 
 \begin{figure}[H]%
+    \captionsetup[subfigure]{justification=centering}
     \centering
-    \subfloat[Empirical quantiles for a normal distribution. 500 trials shown. $0.1, 0.5, 0.9$ quantiles denoted by dashed verticle lines.]{{\includegraphics[width=0.4\linewidth]{figs/quantile_theory/q_gauss_residual} }}%
-    \qquad
-        \subfloat[Empirical vs theoretical $0.1$ quantile distribution.]{{\includegraphics[width=0.4\linewidth]{figs/quantile_theory/q_gauss_residual_conditional_0_1} }}%
-    \qquad
-        \subfloat[Empirical vs theoretical $0.5$ quantile distribution.]{{\includegraphics[width=0.4\linewidth]{figs/quantile_theory/q_gauss_residual_conditional_0_5} }}%
-    \qquad
-        \subfloat[Empirical vs theoretical $0.9$ quantile distribution.]{{\includegraphics[width=0.4\linewidth]{figs/quantile_theory/q_gauss_residual_conditional_0_9} }}%
+        \subfloat[][Empirical quantiles for a normal distribution. \\ 500 trials shown. $0.1, 0.5, 0.9$ quantiles \\ denoted by dashed verticle lines.]{{\includegraphics[width=0.52\linewidth]{figs/quantile_theory/q_gauss_residual} }}\hspace*{-1.0em}%
+        \subfloat[][Empirical vs theoretical $0.1$ quantile \\ distribution.]{{\includegraphics[width=0.52\linewidth]{figs/quantile_theory/q_gauss_residual_conditional_0_1} }}\hspace*{-1.0em}%
+        \\
+        \subfloat[][Empirical vs theoretical $0.5$ quantile \\ distribution.]{{\includegraphics[width=0.52\linewidth]{figs/quantile_theory/q_gauss_residual_conditional_0_5} }}\hspace*{-1.0em}%
+        \subfloat[][Empirical vs theoretical $0.9$ quantile distribution.]{{\includegraphics[width=0.52\linewidth]{figs/quantile_theory/q_gauss_residual_conditional_0_9} }}%
     \qquad
     \caption[Distribution of quantiles for a normally distributed RV.]{Distribution of quantiles for a normally distributed RV: $X \sim \mathcal{N}(0, 10)$.  Theoretical quantile standard deviation given by equation \ref{eq:theory_qdist_1}.}%
     \label{fig:normal_q_theory}%
 \end{figure}
 
-\begin{figure}[H]%
+\begin{figure}[H]%\\
+     \captionsetup[subfigure]{justification=centering}
     \centering
-    \subfloat[Empirical quantiles for a beta distribution. 500 trials shown. $0.1, 0.5, 0.9$ quantiles denoted by dashed verticle lines.]{{\includegraphics[width=0.4\linewidth]{figs/quantile_theory/q_beta_residual} }}%
-    \qquad
-    \subfloat[Empirical vs theoretical $0.1$ quantile distribution.]{{\includegraphics[width=0.4\linewidth]{figs/quantile_theory/q_beta_residual_conditional_0_1} }}%
-    \qquad
-    \subfloat[Empirical vs theoretical $0.5$ quantile distribution.]{{\includegraphics[width=0.4\linewidth]{figs/quantile_theory/q_beta_residual_conditional_0_5} }}%
-    \qquad
-    \subfloat[Empirical vs theoretical $0.9$ quantile distribution.]{{\includegraphics[width=0.4\linewidth]{figs/quantile_theory/q_beta_residual_conditional_0_9} }}%
+    \subfloat[][Empirical quantiles for a beta distribution. \\ 500 trials shown. $0.1, 0.5, 0.9$ quantiles \\ denoted by dashed verticle lines.]{{\includegraphics[width=0.52\linewidth]{figs/quantile_theory/q_beta_residual} }}\hspace*{-1.0em}%
+    \subfloat[][Empirical vs theoretical $0.1$ quantile \\ distribution.]{{\includegraphics[width=0.52\linewidth]{figs/quantile_theory/q_beta_residual_conditional_0_1} }}\hspace*{-1.0em}%
+    \\
+    \subfloat[][Empirical vs theoretical $0.5$ quantile \\ distribution.]{{\includegraphics[width=0.52\linewidth]{figs/quantile_theory/q_beta_residual_conditional_0_5} }}\hspace*{-1.0em}%
+    \subfloat[][Empirical vs theoretical $0.9$ quantile \\ distribution.]{{\includegraphics[width=0.52\linewidth]{figs/quantile_theory/q_beta_residual_conditional_0_9} }}%
     \qquad
     \caption[Distribution of quantiles for a beta distributed RV.]{Distribution of quantiles for a beta distributed RV: $X \sim \beta(2, 5)$}%
     \label{fig:beta_g_theory}%
 \end{figure}
 
 The sampled temperatures may be tallied over each CTF face to estimate the fractional area that exceeds some threshold temperature.  The probability of exceeding a threshold temperature is shown in equation \ref{eq:pr_thresh}.
-    
+
     \begin{equation}
     p_e = Pr(T > T^*) = 1 - \int_0^{T^*} f_T dT
     \label{eq:pr_thresh}
     \end{equation}
-    
+
     Let $q_p = F_T^{-1}(1 - p_e)$
     denote the quantile associated with the threshold probability, $p_e$.
     $F_T^{-1}$ is the inverse CDF function and $f_T$ is the probability density function of temperature on the patch.
-    
+
     The sample quantile corresponding to $p_e$ is distributed according to:
 
    \begin{eqnarray}
     q_p &\sim \mathcal N \left( F_T^{-1}(p), \sigma^2_{q_p} \right) \\
     \sigma^2_{q_p} &= \frac{p(1 - p)}{n[f_T(F_T^{-1}(p))]^2}
     \end{eqnarray}
-    
+
     The variance of upper tail probability mass estimate can be found by standard propagation of uncertainty principles:
    \begin{equation}
     \sigma_p^2 = \left(\frac{\partial p_e}{\partial q_p} \right)^2 \cdot \sigma_{q_p}^2 +\  HOT.
     \label{eq:pr_thresh_uncert}
     \end{equation}
-    
+
     Where
    \begin{eqnarray}
     \frac{\partial p_e}{\partial q_p} &= \frac{\partial}{\partial q_p} \left( 1 - \int_0^{q_p} f_T dT \right) \nonumber \\
@@ -282,12 +343,12 @@ The sampled temperatures may be tallied over each CTF face to estimate the fract
     &= -f_T(q_p)
     \end{eqnarray}
     This dictates that estimates of extreme upper tail integrals carry large relative uncertainties.
-    
+
 %    The approximate large sample distribution for $p_e$ can be obtained by a change of variables, since $p_e$ and $q_p$ are related by:
 %    \begin{equation}
  %   q_p = F_T^{-1}(1 - p_e)
-%    \end{equation}   
-%    Where $F_T^{-1}$ is the inverse CDF.  $p_e$ is distributed according to: 
+%    \end{equation}
+%    Where $F_T^{-1}$ is the inverse CDF.  $p_e$ is distributed according to:
 %    \begin{equation}
 %    f_{p_e} = f_{q_p} \left( F_T^{-1}(1-p_e), \sigma_{q_p}(p_e) \right) \cdot \left|{ \frac{\partial}{\partial p_e} F^{-1}(1-p_e) } \right|
 %    \end{equation}
@@ -296,28 +357,29 @@ The sampled temperatures may be tallied over each CTF face to estimate the fract
 \subsection{Gradient Boosted Regression Trees}
 \label{chap:GBRT}
 
-A data driven machine learning model is considered to predict quantiles required to reconstruct cumulative density functions as in equation \ref{eq:cdf_from_qtau}.  The desired quantiles of the cladding surface temperature and TKE fields are conditioned upon the local core conditions.  The problem is then of conditional quantile prediction and this is performed by gradient boosted regression trees in this work.
+A data driven machine learning model is used to predict quantiles, $\{ \hat \theta_\tau \}$, required to reconstruct cumulative density functions as shown in equation \ref{eq:cdf_from_qtau}.  The desired quantiles of the cladding surface temperature and TKE fields are conditioned upon the local core state denoted here by $\mathbf p$.  The vector $\mathbf p$ contains the local thermal hydraulic conditions in the core and local geometric grid and pin factors.  The purpose of this vector is to uniquely identify each CTF face in the core though some set of explanatory features.  The problem is then of conditional quantile prediction and this is performed by gradient boosted regression trees in this work.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\linewidth]{../proposal/slides/seminar_slides/figs/cart}
-    \caption[Regression tree stump.]{Single CART Regression tree stump comparing a fit of depth 1 and 2 to $y=sin(x) + \varepsilon,\ x\in[0,2\pi], \varepsilon \sim \mathcal N(0,0.001)$.}
+    \includegraphics[width=0.59\linewidth]{../proposal/slides/seminar_slides/figs/cart}
+    \caption[Regression tree stump.]{Single CART regression tree stump comparing a fit of depth 1 and 2 to the function $y=sin(x) + \varepsilon,\ x\in[0,2\pi], \varepsilon \sim \mathcal N(0,0.001)$.}
     \label{fig:cart}
 \end{figure}
 
-The modern gradient boosting algorithm was developed by Friedman et. al. (1998) \cite{friedman1998}, \cite{friedman2001}.  The development of generalized boosting was significant because it re-envisioned previous boosting algorithms such as AdaBoost as special cases of gradient boosting with specific loss functions.  Gradient boosting is a numerical optimization procedure carried out in function space with the goal of finding a function $\mathcal F_M$ that maps the inputs $\mathbf p$ to $y$ where $\mathcal F_M$ is given by:
+The modern gradient boosting algorithm was developed by Friedman et. al. (1998) \cite{friedman1998}, \cite{friedman2001}.  The development of generalized boosting was significant because it re-envisioned previous boosting algorithms such as AdaBoost as special cases of gradient boosting with specific loss functions.  Gradient boosting is a numerical optimization procedure carried out in function space with the goal of finding a function $\mathcal F_M$ that maps the inputs $\mathbf p$ to $y$ where $\mathcal F_M$ is given by equation \ref{eq:boosting_problem}.
 \index{Gradient Boosting}
 
 \begin{equation}
 \mathcal F_M = \text{argmin}_{\mathcal F} \E_{y, \mathbf p} (L(y, \mathcal F(\mathbf p)))
+\label{eq:boosting_problem}
 \end{equation}
-Where $L(\cdot)$ is a differentiable loss function.  $\mathbf p$ are known as predictive features and $y$ is the response.  The paired set $\{\mathbf p, y \}$ is referred to as the training data set.  In the standard gradient boosting algorithm the functional form of $F$ is chosen to be an additive model of the form \ref{eq:single_cart_model}:
+Where $L(\cdot)$ is a differentiable loss function.  $\mathbf p$ are known as predictive features and $y$ is the response.  The paired set $\{\mathbf p, y \}$ is referred to as the training data set.  In the standard gradient boosting algorithm the functional form of $\mathcal F$ is chosen to be an additive model of the form \ref{eq:single_cart_model}:
 \begin{equation}
 \mathcal F_M(\mathbf p, \mathbf{\gamma}, \mathbf a; \mathbf b) = \sum_{m=0}^M \gamma_m h_m(\mathbf p, a_m; b_m)
 \label{eq:single_cart_model}
-\end{equation} 
-Where $M$ is the number of constituent sub-models and $\{\gamma_m, a_m\}$ are coefficients and free parameters requiring fitting in each sub-model.  $b_m$ represent sub-model hyper parameters that are fixed at user set values.
-Rather than fitting all sub-models simultaneously, 
+\end{equation}
+Where $M$ is the number of constituent sub-models and $\{\gamma_m, a_m\}$ are coefficients and free parameters requiring fitting in each sub-model.  $b_m$ represent sub-model hyperparameters that are fixed at user set values.
+Rather than fitting all sub-models simultaneously,
 gradient boosting greedily fits the sub-models to the gradient of the loss function in a stage wise fashion as shown in algorithm \ref{alg:boosting}.  The loop depicted in line number 8-10 performs the computation of the loss function gradient at each boosted iteration $m$ in the algorithm.  In the literature the vector of gradients is sometimes referred to as the pseudo residuals vector since if the loss function is taken to be the L2 loss, the gradient of the loss is proportional to the residual vector as shown in equation \ref{eq:l2_loss_pseudo_r}.
 
 \begin{align}
@@ -326,34 +388,36 @@ gradient boosting greedily fits the sub-models to the gradient of the loss funct
     \label{eq:l2_loss_pseudo_r}
 \end{align}
 
-Each sub-model, $h_m$, is referred to as a weak learner and is defined to be a typical classification or regression tree (CART) depending on the problem context.  Methods for pruning the decision trees and optimizing the numerical implementation of finding the best splits when fitting the tree to the pseudo-residuals are left to Friedman et. al. \cite{friedman2002}.  Examples of single fitted CART trees with a depth of 1 and 2 are shown in figure \ref{fig:cart}.  Decision trees produce a piecewise constant prediction, and therefore since the final boosted model is a linear combination of decision tree models (weak learners), the fitted boosted model is piecewise constant.  
+Each sub-model, $h_m$, is referred to as a weak learner and is defined to be a typical classification or regression tree (CART) depending on the problem context.  Methods for fitting, pruning the decision trees and optimizing the numerical implementation of finding the best splits when fitting the tree to the pseudo-residuals are left to Friedman et. al. \cite{friedman2002}.  Provided CART trees are used for the weak learners, the free (sub-) model parameters $a_m$ take the form of split locations and regional constants which are fitted to produce a piecewise constant predictor.  In this case the user set hyperparameters, $b_m$, are taken to be the maximum tree depth allowed when fitting each weak learner to the pseudo-residuals.
+
+Examples of single dimensional fitted CART trees with a depth of 1 and 2 are shown in figure \ref{fig:cart}.  As the depth of a tree is increased the decision tree prediction converges onto the data; however, a single decision tree of large depth is prone to over fitting the data.  Decision trees produce a piecewise constant prediction, and therefore since the final boosted model is a linear combination of decision tree models (weak learners), the fitted boosted model is piecewise constant.
 
 \begin{algorithm}[H]
     \captionsetup{labelfont={sc,bf}, labelsep=newline}
     \caption{Gradient boosting algorithm \cite{friedman2002}.}
     \begin{algorithmic}[1]
-    \STATE \textbf{Initialization} 
-    \STATE (1) Training set $\{(p_i, y_i)\}_{i=1}^n$. 
-    \STATE (2) Differentiable loss function $L(y, \mathcal F(p))$. 
+    \STATE \textbf{Initialization}
+    \STATE (1) Training set $\{(p_i, y_i)\}_{i=1}^n$.
+    \STATE (2) Differentiable loss function $L(y, \mathcal F(p))$.
     \STATE (3) Number of iterations ${{M}}$.
     \STATE (4)   Initialize model with a constant value:
         $\mathcal F_0(p) = \underset{\gamma}{\arg\min} \sum_{i=1}^n L(y_i, \gamma).$
-    
+
     \FOR {${{m}} = 1$ to ${{M}}$}
-        \STATE Compute the pseudo-residuals:  
+        \STATE Compute the pseudo-residuals:
         \FOR {$i=1,\ldots,n $}
             \STATE $r_{im} = -\frac{\partial L(y_i, \mathcal F_{m-1}(p_i))}{\partial \mathcal F_{m-1}(p_i)}$
         \ENDFOR
-        
+
         \STATE Fit a weak learner $h_m(p; a_m)$ to pseudo-residuals, $r_{m}$: \\
             $\ \ \ h^* = \underset{a_m}{\operatorname{arg\,min}}(||h_m(p; a_m) - r_m||)$ \\
             $\ \ $ Training data set is $\{(p_i, r_{im})\}_{i=1}^n$ \;
-        
+
         \STATE Compute multiplier $\gamma_m$ :
         $\gamma_m = \underset{\gamma}{\operatorname{arg\,min}} \sum_{i=1}^n L\left(y_i, \mathcal F_{m-1}(p_i) + \gamma h^*_m(p_i)\right)$\;
         \STATE Update the model:
         $\mathcal F_m(p) = \mathcal F_{m-1}(p) + \nu \gamma_m h^*_m(p).$
-    
+
     \ENDFOR
     \STATE Output $\mathcal F_M(p).$
     \end{algorithmic}
@@ -367,7 +431,7 @@ For gradient boosted quantile regression, the loss function given by equation \r
 \begin{equation}
 L(y, \mathcal F(p);\tau) = \left[ (1-\tau) \sum_{y \leq \mathcal F(p)}( y_i - \mathcal F(p) ) \right] - \left[ \tau \sum_{y > \mathcal F(p)} (y_i - \mathcal F(p)) \right]
 \end{equation}
-Where $\tau$ is the user set quantile of interest. For instance, if the 95\% quantile is desired then $\tau=0.95$.
+Where $\tau$ is the user set quantile of interest. For instance, if the 95\% percentile is desired then $\tau=0.95$.
 
 % boosting tree results
 \input{./sections/appendix/app_c.tex}
@@ -386,12 +450,12 @@ The CTF face index is dropped in the remainder of this section to reduce subinde
 Provided estimates for the conditional quantiles, $\hat \theta_{\{T,k\}}$ in each face, the margins are defined by their quantile functions as shown in equation \ref{eq:cdf_from_qtau}.  After separate reconstruction of the margins and applying the boundary heat flux independence assumption shown previously in equation \ref{eq:simple_vine_model}, equation \ref{eq:joint_t_tke_q} defines the joint density.
 
 \begin{equation}
-h(T, k, q'') = f_T(T;\hat \theta_T) f_k(k;\hat \theta_k) f_{j,q''} 
+h(T, k, q'') = f_T(T;\hat \theta_T) f_k(k;\hat \theta_k) f_{j,q''}
 [ c_{T,k}(F_T(T;\hat \theta_{T})F_k(k;\hat \theta_{k});\hat \theta_c)]
 \label{eq:joint_t_tke_q}
-\end{equation} 
+\end{equation}
 
-After reconstruction of the joint temperature, boundary heat flux and turbulent kinetic energy distribution on each patch, the goal is to draw samples from the copula based distribution with arbitrary margins.  This is accomplished through the methods outlined by section \ref{sec:sampling_copula} in equation \ref{eq:h_inv_sample}.  
+After reconstruction of the joint temperature, boundary heat flux and turbulent kinetic energy distribution on each patch, the goal is to draw samples from the copula based distribution with arbitrary margins.  This is accomplished through the methods outlined by section \ref{sec:sampling_copula} in equation \ref{eq:h_inv_sample}.
 
 With the ability to draw samples from a multivariate distribution now established, the Monte Carlo approximation of integral \ref{eq:expected_crud} follows and is represented by equation \ref{eq:mc_expected_crud}.  Let $X=\{T,k,q''\}$.
 \index{Monte Carlo Sampling}
@@ -412,12 +476,12 @@ In principal the proposal distribution, $\tilde h$, may be radically different f
 
 \begin{align}
     h(T, k, q'') &= c(F_T(T), F_k(k)) f_T f_k f_{j,q''}  \nonumber \\
-    \tilde h(T, k, q'') &= \tilde c(\tilde F_T(T), \tilde F_k(k)) \tilde f_T \tilde f_k f_{j,q''} 
+    \tilde h(T, k, q'') &= \tilde c(\tilde F_T(T), \tilde F_k(k)) \tilde f_T \tilde f_k f_{j,q''}
 \label{eq:mc_imp_int_2}
 \end{align}
 
 \begin{equation}
-\E(\mathcal G(X)) \approx \frac{1}{N} \sum_i^N \mathcal G(X_i) \omega(X_i), \ \mathbf X \sim \tilde c(\tilde F_T(T), \tilde F_k(k)) \tilde f_T \tilde f_k f_{j,q''} 
+\E(\mathcal G(X)) \approx \frac{1}{N} \sum_i^N \mathcal G(X_i) \omega(X_i), \ \mathbf X \sim \tilde c(\tilde F_T(T), \tilde F_k(k)) \tilde f_T \tilde f_k f_{j,q''}
 \label{eq:mc_imp_int2}
 \end{equation}
 
@@ -438,12 +502,12 @@ with the probability ratio of the target density to the proposal given by \ref{e
 %
 %In this work the target and proposal copula are taken to be the same function.
 
-In some scenarios the proposal or target density is only known up to a constant, e.g. $h^* = c h(X)$.  In this case the probability ratio is known up to a constant of proportionality and requires renormalization: 
+In some scenarios the proposal or target density is only known up to a constant, e.g. $h^* = c h(X)$.  In this case the probability ratio is known up to a constant of proportionality and requires renormalization:
 
 \begin{equation}
 \E(\mathcal G(X)) \approx \frac{ \sum_i^N \mathcal G_i(X) \omega_i(X)}{\sum_i^N \omega_i(x)}
 ,
- \ \mathbf X \sim \tilde c(\tilde F_T(T), \tilde F_k(k)) \tilde f_T \tilde f_k f_{j,q''} 
+ \ \mathbf X \sim \tilde c(\tilde F_T(T), \tilde F_k(k)) \tilde f_T \tilde f_k f_{j,q''}
 \end{equation}
 
 This is known as self normalizing importance sampling.  Traditional importance sampling may be applied in this case since $h$ and $\tilde{h}$ are properly normalized density functions in this hi2lo application which integrate to 1 over their respective support.
@@ -464,55 +528,157 @@ Order statistics are well defined for a single dimensional random variable but i
     m_i = w_T \left( \frac{T_i - T_{min}}{T_{max} - T_{min}} \right) + w_k \left( \frac{k_i - k_{min}}{k_{max} - k_{min}} \right) +  w_q'' \left( \frac{q^{''}_i - q^{''}_{min}}{q_{max} - q_{min}} \right)
 \label{eq:weighting}
 \end{equation}
-Where the sample remapping coefficients $\mathbf w$ are set at runtime by the hi2lo model user and sum to 1:
+Where the sample remapping coefficients $\{w_T, w_k, w_{q''}\}$ are set at runtime by the hi2lo model user and sum to 1:
 \begin{equation}
 w_T + w_k + w_{q''} = 1
 \end{equation}
 Next the order statistics of $\mathbf m$ are computed such that $\mathbf m' = \{ m_{(0)} < m_{(1)}< ... m_{(N)} \}$.  As shown in figure \ref{fig:samplemapping}, the ordered samples are then emplaced on the CTF patch in an organized manner.  The sample space is denoted by $\Omega$ and a specific temperature, TKE, and boundary heat flux sample is denoted by $\mathcal F_i$ as a single dot residing inside the sample space.  The path taken on the patch surface is user controllable and is taken to be a simple serpentine left-to-right pattern in this work.
 Typical values for the remapping coefficients are $w_T=0.6, w_k=0.4, w_{q''}=0$.  With this setting, relatively high temperate and low TKE samples are likely to remain in the same location on the rod surface over multiple resampling events.
 
-\begin{figure}[H]
+\begin{figure}
     \centering
-    \includegraphics[width=0.4\linewidth]{../proposal/slides/seminar_slides/figs/sample_mapping}
-    \caption{Sample remapping.}
+    \begin{tikzpicture}
+    \pgfmathsetseed{42}
+    \pgfmathparse{0.5*rand}\let\r=\pgfmathresult
+    \pgfmathparse{0.5*rand}\let\t=\pgfmathresult
+% Sample space (blob)
+\draw plot [smooth cycle] coordinates {(-1+\r,7.6-\r) (-1,9.8+\t) (1.2, 10.5) (4.2, 10.8+\t) (7,10.1-\t) (7,7.2) (4.3-\r, 7.3) } node at (7.5,8) {\large $\Omega$};
+\draw plot [smooth cycle] coordinates {(1.5,7.6) (1.5,9.92) (5.2, 10.14) (5.8, 7.6) } ;
+% Random samples
+\foreach \u in {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29}{
+    \pgfmathparse{3.5+2.5*rand}\let\a=\pgfmathresult
+    \pgfmathparse{8.5+0.9*rand}\let\z=\pgfmathresult
+    \draw [fill=black] (\a, \z) circle (0.06cm);
+}
+\draw [fill=black] (3.5, 8.5) circle (0.07cm);
+% Arrow map
+\node (a) at (3.5, 8.5) {};
+\node (b) at (3.5, 4.5) {};
+\draw [->] (a) to [bend left] node [midway,left] {\large $\mathcal R$} (b);
+\draw [decoration={markings,mark=at position 1 with
+    {\arrow[scale=3,>=stealth]{>}}},postaction={decorate}] (a) to [bend left] (b);
+% CTF face
+\draw (0,0) grid (6,5);
+\draw [line width=0.1cm] (0,0) -- (0,5);
+\draw [line width=0.1cm] (0,0) -- (6,0);
+\draw [line width=0.1cm] (6,0) -- (6,5);
+\draw [line width=0.1cm] (0,5) -- (6,5);
+% dots in grid
+\foreach \x in {0.5,1.5,2.5,3.5,4.5,5.5} {
+\foreach \a in {0.5,1.5,2.5,3.5,4.5}
+{
+    \draw [fill=black] (\x, \a) circle (0.08cm);
+}
+}
+\fill (0.5,4.2) node {$m'_{(0)}$};
+\fill (1.5,4.2) node {$m'_{(1)}$};
+\fill (5.5,0.2) node {$m'_{(N)}$};
+\foreach \c in {0.5,1.5,2.5,3.5,4.5}{
+    \draw [dashed] (0.5,\c) -- (5.5, \c);
+}
+% draw serp path
+\draw [dashed] (5.5, 4.5) -- (5.5, 3.5);
+\draw [dashed] (5.5, 2.5) -- (5.5, 1.5);
+\draw [dashed] (0.5, 3.5) -- (0.5, 2.5);
+\draw [dashed] (0.5, 1.5) -- (0.5, 0.5);
+\draw [decoration={markings,mark=at position 1 with
+    {\arrow[scale=3,>=stealth]{>}}},postaction={decorate}] (4.5,0.5) -- (5,0.5);
+% figure text
+\node[text width=4cm] at (2.2,5.44) {\scriptsize $\mathbf m'=\{ m_{(0)}<..< m_{(N)} \}$};
+\node[text width=5cm] at (4.5,9.9) {$\mathcal F_i=\{T_i, k_i, q''_i\}; m_i$};
+\draw [|-|] (3.5, 8.5) -- (3.5, 9.7);
+    \end{tikzpicture}
+    \caption{Sample remapping.  A single CTF face is shown as the bold square with a grid overlay partitioning the patch surface.  In this figure the number of samples per CTF face is $N=30$.}
     \label{fig:samplemapping}
 \end{figure}
 
-Since the crud simulation package utilized in this work is one-dimensional, the pattern chosen for sample emplacement has no influence on the integrated crud result over a patch.  This would not be the case if the crud simulation package modeled a fully 3D crud layer as the state of the neighboring crud nodes in that case would matter.  Interestingly, since the hi2lo model user specifies the sample remapping pattern at run time, a physically realistic pattern could be prescribed on the rod surface - even prescribed as a function of local core conditions leading to a hybrid strategy between the current pure statistical hi2lo procedure and the spatial remapping procedure implemented by Salko et. al \cite{salko17}.
+Since the crud simulation package utilized in this work is one-dimensional, the pattern chosen for sample emplacement has no influence on the integrated crud result over a patch.  This would not be the case if the crud simulation package modeled a fully 3-D crud layer as the state of the neighboring crud nodes in that case would matter.  Interestingly, since the hi2lo model user specifies the sample remapping pattern at run time, a physically realistic pattern could be prescribed on the rod surface - even prescribed as a function of local core conditions leading to a hybrid strategy between the current pure statistical hi2lo procedure and the spatial remapping procedure implemented by Salko et. al \cite{salko17}.
 
 \subsection{Time Stepping Scheme}
 \label{sec:time_step_scheme}
 
 Propagating the importance weights through discrete resampling steps requires special attention to ensure bias is not introduced into the crud results when moving through multiple time steps and VERA states.  The key observation is that the importance weights computed at a given resampling event should neither be double-counted nor discarded in subsequent resampling steps.  Instead, the importance weights are time averaged to achieve the correct importance weights used to evaluate the total crud mass on the rod surface at any given time step (resampling step).
 
-Figure \ref{fig:stepscheme} depicts the time stepping scheme for a single patch. The patch index is not shown to reduce visual clutter. The VERA state-point time index is denoted by $t$.  At the beginning of each VERA state-point the power distribution and thermal hydraulic conditions in the core change.  Here it is assumed there is a constant power profile and constant flow conditions over a VERA depletion step. 
+Figure \ref{fig:stepscheme} depicts the time stepping scheme for a single patch. The patch index is not shown to reduce visual clutter. The VERA state-point index is denoted by $\ell$.  At the beginning of each VERA state-point the power distribution and thermal hydraulic conditions in the core change.  Here it is assumed there is a constant power profile and constant flow conditions over a VERA depletion step.
 
-In figure \ref{fig:stepscheme} dotted arrows represent sampling from a probability distribution.  $\mathcal R$ is the spatial reordering map from sample space to a position on the rod surface. $\mathcal G$ represents the crud generation function provided by the crud simulation package which takes thermal hydraulic boundary conditions as input in addition to the previous crud state and produces a new crud state.  Resampling events are performed at time intervals $\Delta t_s$ and this interval is set at runtime by the user.  The influence of the resampling interval size is discussed in section \ref{sec:resample_freq_study}.  The resample index is denoted by $n$.  The subscript, $(\cdot)_s$ , denotes evaluation at a resampling event.  A prime-notated variable,  $(\cdot)'$, represents a spatially re-mapped sample as in figure \ref{fig:samplemapping}.  At each resampling event the temperature, TKE and boundary heat flux samples are drawn from the reconstructed joint probability $\hat H^t$.  Assume that the sample time step is constant and equal to $\Delta t_s$.
+In figure \ref{fig:stepscheme} dotted arrows represent sampling from a probability distribution.  $\mathcal R$ is the spatial reordering map from sample space to a position on the rod surface. $\mathcal G$ represents the crud generation function provided by the crud simulation package which takes thermal hydraulic boundary conditions as input in addition to the previous crud state and produces a new crud state.  Resampling events are performed at time intervals $\Delta t_s$ and this interval is set at runtime by the user.  The influence of the resampling interval size is discussed in section \ref{sec:resample_freq_study}.  The resample index is denoted by $s$.  The subscript, $(\cdot)_s$ , denotes evaluation at a resampling event.  A prime-notated variable,  $(\cdot)'$, represents a spatially re-mapped sample as in figure \ref{fig:samplemapping}.  At each resampling event the temperature, TKE and boundary heat flux samples are independently drawn from the reconstructed joint probability $\hat H^\ell$.  Assume that the resample time step is constant and equal to $\Delta t_s$.
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.7\linewidth]{figs/step_scheme}
-    \caption{Multi-state point time stepping overview.}
-    \label{fig:stepscheme}
+\begin{figure}
+\centering
+\begin{tikzpicture}
+\footnotesize
+\matrix (m) [matrix of math nodes,row sep=0.9em,column sep=0.5em,minimum width=0.5em]
+  {
+      & \underline{\mathrm{\underline{VERA\ STATE:\ }} \ell = 0} & & & & \underline{\mathrm{\underline{VERA\ STATE:\ }} \ell = 1} & & \\  %m-1
+      & \hat H^{\ell_0}_{} \leftarrow \mathcal F_M(\mathbf p^{\ell_0}) & & & & \hat H^{\ell_1 }_{} \leftarrow \mathcal F_M(\mathbf p^{\ell_1}) & & \\  %m-2
+      & & &\\  %m-3
+    \{\mathbf X, \omega \}^{\ell_0}_{s_0} & \{\mathbf X, \omega \}^{\ell_0}_{s_1} & \{...\}^{\ell_0}_{s_2} & \ \ \ .\ \ \ \  & \{\mathbf X, \omega \}^{\ell_1}_{s_3} & \{\mathbf X, \omega \}^{\ell_1}_{s_4} & \{...\}^{\ell_1}_{s_5} \\ %m-4
+                           &\\ %m-5
+    \{\mathbf X', \bar \omega' \}^{\ell_0}_{s_0} & \{\mathbf X', \bar \omega' \}^{\ell_0}_{s_1} & \{...\}^{\ell_0}_{s_2}  & . &  \{\mathbf X', \bar \omega' \}^{\ell_1}_{s_3} & \{\mathbf X', \bar \omega' \}^{\ell_1}_{s_4} & \{...\}^{\ell_1}_{s_5} \\ %m-6
+     . & . & . & . & . & . & . &  \\ %m-7
+    \{\mathbf C, \bar \omega' \}^{\ell_0}_{s_0} & \{\mathbf C, \bar \omega' \}^{\ell_0}_{s_1} & \{...\}^{\ell_0}_{s_2} &  . &  \{\mathbf C, \bar \omega' \}^{\ell_1}_{s_3} & \{\mathbf C, \bar \omega' \}^{\ell_1}_{s_4} & \{...\}^{\ell_1}_{s_5} \\ %m-8
+                           &\\ %m-9
+    C_{m,s_0}^{\ell_0} & C_{m,s_1}^{\ell_0} & C_{m,s_2}^{\ell_0} & . &  C_{m,s_3}^{\ell_1}  & C_{m,s_4}^{\ell_1} & C_{m,s_5}^{\ell_1} \\ %m-10
+  };
+  \path[-stealth]
+  (m-10-1) edge [solid,|-|] node [below]{$\Delta t_s$} (m-10-2)
+  (m-2-2) edge [dashed,->] (m-4-1)
+          edge [dashed,->] (m-4-2)
+          edge [dashed,->] (m-4-3)
+   (m-2-6) edge [dashed,->] (m-4-5)
+           edge [dashed,->] (m-4-6)
+           edge [dashed,->] (m-4-7)
+  % vert linkages
+          (m-4-1) edge node [right] {$\mathcal R$} (m-6-1)
+          (m-4-2) edge node [right] {$\mathcal R$} (m-6-2)
+          (m-4-3) edge node [right] {$\mathcal R$} (m-6-3)
+           (m-4-5) edge node [right] {$\mathcal R$} (m-6-5)
+           (m-4-6) edge node [right] {$\mathcal R$} (m-6-6)
+           (m-4-7) edge node [right] {$\mathcal R$} (m-6-7)
+  %
+          (m-6-1) edge node [right] {$\mathcal G(\mathbf X')$} (m-8-1)
+          (m-6-2) edge node [right] {$\mathcal G(\mathbf X'|\mathbf C_{s_0})$} (m-8-2)
+          (m-6-3) edge node [right] {$\mathcal G(\mathbf X'|\mathbf C_{s_1})$} (m-8-3)
+           (m-6-5) edge node [right] {$\mathcal G(\mathbf X'|\mathbf C_{s_2})$} (m-8-5)
+           (m-6-6) edge node [right] {$\mathcal G(\mathbf X'|\mathbf C_{s_3})$} (m-8-6)
+           (m-6-7) edge node [right] {$\mathcal G(\mathbf X'|\mathbf C_{s_4})$} (m-8-7)
+  %
+          (m-8-1) edge node [right] {$\sum$} (m-10-1)
+          (m-8-2) edge node [right] {$\sum$} (m-10-2)
+          (m-8-3) edge node [right] {$\sum$} (m-10-3)
+           (m-8-5) edge node [right] {$\sum$} (m-10-5)
+           (m-8-6) edge node [right] {$\sum$} (m-10-6)
+           (m-8-7) edge node [right] {$\sum$} (m-10-7)
+  % diag linkages
+          (m-8-1) edge (m-7-2)
+          (m-8-2) edge (m-7-3)
+          (m-8-3) edge (m-7-5)
+            (m-8-5) edge (m-7-6)
+            (m-8-6) edge (m-7-7);
+\end{tikzpicture}
+\caption{Multi-state point time stepping overview. Dashed arrows represent sampling from a distribution.  Solid arrows represent a functional mapping or operation.}
+\label{fig:stepscheme}
 \end{figure}
 
-Since the resampling time step size is constant the sample time is computed by multiplying the resampling event index by the constant resampling step size:
+A dependency in time is introduced by the crud growth step because the current crud growth rate depends on the previous crud state (e.g. a severely thick crud deposit will behave differently than a small crud deposit).  This time dependence is denoted by the diagonal arrows linking the crud states together across resampling events in figure \ref{fig:stepscheme}.
+
+Since the resampling time step size is constant the time corresponding to any given sample event is computed by multiplying the resampling event index by the constant resampling step size:
 \begin{equation}
 t_{s_n} = n\Delta t_s
 \end{equation}
 
 The time averaged sample weights are in general updated by equation \ref{eq:time_sample_weights1} at each resampling step.
+Recall that the ratio of the target density and the sampling distribution density is denoted by $\omega$ and is given in equation \ref{eq:imp_prob_ratio}.
 
 \begin{equation}
-\bar \omega'_{{s_n},i} = 
-\left( \frac{\sum_{l}^{n-1}t_{s_l}}{\sum_l^n \Delta t_{s_l}} \right) \bar \omega'_{n-1,i} + 
+\bar \omega'_{{s_n},i} =
+\left( \frac{\sum_{l}^{n-1} \Delta t_{s_l}}{\sum_l^n \Delta t_{s_l}} \right) \bar \omega'_{n-1,i} +
 \left( \frac{\Delta t_{s_n}}{\sum_l^n \Delta t_{s_l}} \right) \omega'_{n,i}
 \label{eq:time_sample_weights1}
 \end{equation}
 Where $i$ is the sample index within a single CTF face.
 
 After applying the constant resample step size assumption the time averaged sample weights are updated at each resampling step according to equation \ref{eq:time_sample_weights3}.
-The ratio of the target density and the sampling distribution density is denoted by $\omega$ and is given in equation \ref{eq:imp_prob_ratio}. 
 
 \begin{align}
 \bar \omega'_{{s_n},i} &= \left( \frac{(n-1) \Delta t_s}{n \Delta t_s} \right) \bar \omega'_{n-1,i} + \left( \frac{\Delta t_s}{n \Delta t_s} \right) \omega'_{n,i} \nonumber \\
@@ -523,17 +689,17 @@ The ratio of the target density and the sampling distribution density is denoted
 After each resampling event the total crud mass, $C_m$ on a CTF face, is computed by a wighted sum given in equation \ref{eq:patch_sum_mass}.  The sampling and weighting procedure is depicted in figure \ref{fig:crudsamplesdt}.
 
 \begin{equation}
-C_{m} = \left(\frac{A}{\sum_i^M \bar \omega'_i}\right) \sum_i^M C'_i \bar \omega'_i
+C_{m} = \left(\frac{A}{\sum_i^N \bar \omega'_i}\right) \sum_i^N C'_i \bar \omega'_i
 \label{eq:patch_sum_mass}
 \end{equation}
-Where $M$ is the number of samples drawn per CTF face and $A$ is the surface area of the $j^{th}$ CTF face.  The re-stepping index $n$ and the patch index $j$ are dropped to reduce clutter in equation \ref{eq:patch_sum_mass}.
+Where $N$ is the number of samples drawn per CTF face and $A$ is the surface area of the $j^{th}$ CTF face.  The re-stepping index $n$ and the patch index $j$ are dropped to reduce clutter in equation \ref{eq:patch_sum_mass}.
 
-The crud stepping strategy is explicit in time as the next crud samples are drawn from knowledge of the previous crud state and the current thermal hydraulic conditions.  Feedback between the crud state and the underlaying density functions are not captured in the hi2lo stepping scheme.  The presence of crud influences the rod surface temperature distribution due to two competing effects: Providing favorable conditions for bubble nucleation and an increased thermal resistance.  Though these effects are slight they impact not only the mean rod surface temperature but also higher moments about the mean of the probability densities of surface temperature.  These higher order feedbacks are not currently considered, however it is possible to incorporate the current crud state into the explanatory variable set used by the machine learning model to resolve this feedback between the crud thickness and the higher order moments of temperature and TKE about the CTF prediction.  This remains as future work as the impact of the crud layer on the flow field is hypothesized to only significantly matter if the crud deposits significantly shifts the locations of the onset of nucleate boiling within the core.
+The crud stepping strategy is explicit in time as the next crud samples are drawn from knowledge of the previous crud state and the current thermal hydraulic conditions.  Feedback between the crud state and the underlying density functions are not captured in the hi2lo stepping scheme.  The presence of crud influences the rod surface temperature distribution due to two competing effects: Providing favorable conditions for bubble nucleation and an increased thermal resistance.  Though these effects are slight they impact not only the mean rod surface temperature but also higher moments about the mean of the probability densities of surface temperature.  These higher order feedbacks are not currently considered, however it is possible to incorporate the current crud state into the explanatory variable set used by the machine learning model to resolve this feedback between the crud thickness and the higher order moments of temperature and TKE about the CTF prediction.  This remains as future work as the impact of the crud layer on the flow field is hypothesized to only significantly matter if the crud deposits significantly shifts the locations of the onset of nucleate boiling within the core.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.6\linewidth]{figs/theory/crud_samples_dt}
-    \caption[Time step procedure depicted for a single CTF face]{Time step procedure depicted for a single CTF face.  The re-stepping index $n$ and the patch index $j$ are dropped to reduce clutter.}
+    \caption[Time step procedure depicted for a single CTF face]{Time step procedure depicted for a single CTF face.  A single resampling event is shown.}
     \label{fig:crudsamplesdt}
 \end{figure}
 
@@ -541,37 +707,37 @@ The crud stepping strategy is explicit in time as the next crud samples are draw
 
 The time stepping, importance sampling and surface sample remapping strategies may be included into algorithm \ref{algo:basic_crud_algo} to provide a detailed overview of the hi2lo procedure.  The expanded version of the hi2lo model is given in algorithm \ref{algo:hi2lo_crud_algo}.
 
-Algorithm \ref{algo:hi2lo_crud_algo} begins with the same pre-processing and machine learning procedure outlined in the generic hi2lo algorithm \ref{algo:basic_crud_algo}.  \emph{Lines 2-5:} An overview of the CFD data pre-processing procedure is given in section \ref{sec:preprocessing} and the gradient boosted quantile regression model fitting routine is discussed in section \ref{chap:GBRT}.  \emph{Line 9:} The details of reconstructing a cumulative density function using a set of predicted quantiles was discussed in section \ref{chap:quantiles}.  \emph{Line 10:} The simplified treatment of the boundary heat flux distribution was discussed in section \ref{sec:dep_structure} and the application of this simplification resulted in a compact representation of the joint distribution of temperature, TKE, and BHF in each CTF face given in equation \ref{eq:simple_vine_model}.   \emph{Lines 15-16:} Involves the construction of the importance sampling distributions.  The details of this procedure are given in section \ref{sec:Importance Sampling}.   \emph{Line 17-18:} Draws samples from the reconstructed joint distribution and follows the standard importance sampling procedure outlined in section \ref{chap:mc_crud}.  \emph{Line 19:} Performs the spatial remapping procedure required to preserve hot spot stationarity.  The details of this procedure may be found in section \ref{sec:hot_spot_stat}.  \emph{Line 20:} The importance weights are time averaged according to method provided in section \ref{sec:time_step_scheme} before the the crud distribution is integrated in each CTF face at each resampling step.
+Algorithm \ref{algo:hi2lo_crud_algo} begins with the same pre-processing and machine learning procedure outlined in the generic hi2lo algorithm \ref{algo:basic_crud_algo}.  \emph{Lines 2-5:} An overview of the CFD data pre-processing procedure is given in section \ref{sec:preprocessing} and the gradient boosted quantile regression model fitting routine is discussed in section \ref{chap:GBRT}.  \emph{Line 9:} Reconstructs the temperature and TKE CDFs from quantiles.  The details of reconstructing a cumulative density function using a set of predicted quantiles was discussed in section \ref{chap:quantiles}.  \emph{Line 10:} The simplified treatment of the boundary heat flux distribution was discussed in section \ref{sec:dep_structure} and the application of this simplification resulted in a compact representation of the joint distribution of temperature, TKE, and BHF in each CTF face given in equation \ref{eq:simple_vine_model}.   \emph{Lines 15-16:} Involves the construction of the importance sampling distributions.  The details of this procedure are given in section \ref{sec:Importance Sampling}.   \emph{Line 17-18:} Draws samples from the reconstructed joint distribution and follows the standard importance sampling procedure outlined in section \ref{chap:mc_crud}.  \emph{Line 19:} Performs the spatial remapping procedure required to preserve hot spot stationarity.  The details of this procedure may be found in section \ref{sec:hot_spot_stat}.  \emph{Line 20:} The importance weights are time averaged according to method provided in section \ref{sec:time_step_scheme} before the the crud distribution is integrated in each CTF face at each resampling step.
 
 \begin{algorithm}[H]
     \captionsetup{labelfont={sc,bf}, labelsep=newline}
     \caption{Statistically based hi2lo method for time dependent crud prediction.}
-    \begin{algorithmic}[1]      
-        \STATE \textbf{Initialization}  
-        \STATE (1) Pre-process training set.  
-        \STATE $\ \ $   (1b) Fit the joint distribution parameters to known CFD data: $\theta(\mathbf p, \mathbf z)$.  
-        \STATE $\ \ $   (1c) \textbf{def:}  $\ \theta \leftarrow \mathcal F_M(\mathbf p, \mathbf z | \gamma)$
+    \begin{algorithmic}[1]
+        \STATE \textbf{Initialization}
+        \STATE (1) Pre-process training set.
+        \STATE $\ \ $   (1b) Fit the joint distribution parameters to known CFD data: $\theta(\mathbf p, \mathbf z)$.
+        \STATE $\ \ $   (1c) \textbf{def:}  $\ \theta \leftarrow \mathcal F_M(\mathbf p, \mathbf z)$
         \STATE (2) Train model:  $\hat{\mathcal F_M} =  \mathrm{argmin}_{\mathcal F}$
-        $L(\mathcal{F}_M (\mathbf p, \mathbf z| \gamma), \theta(\mathbf p, \mathbf z)) $
+        $\E \left[ L(\mathcal{F}_M (\mathbf p, \mathbf z), \theta(\mathbf p, \mathbf z)) \right] $
         \FOR {VERA State, $v$}
         \FOR {CTF face, $j$}
           \STATE Evaluate ML model $\hat \theta_j \leftarrow \hat{\mathcal F_M}(\mathbf p_j, \mathbf z_j)$ \\
-               $\ \ \hat \theta_j = \{\hat \theta_{j,c}, \hat \theta_{j,\tau} \}$
+          $\ \ \hat \theta_j = \{\hat \theta_{j,c}, \hat \theta_{j,\{T,k\} }$
           \STATE Reconstruct margins (CDFs) from quantiles  \\
-            $\ \ \hat F_{j,T}= Q^{-1}(T; \{\hat{\theta}_{j,\tau} \})$ , $\hat F_{j,k}= Q^{-1}(k; \{\hat{\theta}_{j,\tau} \})$
+          $\ \ \hat F_{j,T}= Q^{-1}(T; \{\hat{\theta}_{j,\{T,k\} } \})$ , $\hat F_{j,k}= Q^{-1}(k; \{\hat{\theta}_{j,\{T,k\} } \})$
           \STATE Def $q''$ margin  $f_{j,q''} = \delta_{(q''_\mathrm{j,ctf})}$
           \STATE Reconstruct joint distribution $\hat h_j(\cdot |\hat \theta_j) = \hat f_{j,T} \hat f_{j,k} f_{j,q''} c(\hat F_{j,T}, \hat F_{j,k}; \hat \theta_{j,c})$ \;
         \ENDFOR
           \FOR {Resample time step, $s,\ \Delta t_s$}
             \FOR {CTF face, $j$}
-              \STATE Def importance  mixture quantile functions \\
-                $\ \ \tilde Q_{j,k} = \lambda_{0,k} \hat Q_{j,k}  + \lambda_{1,k} Q_{\beta_k}(k; \vartheta_k)$, 
+            \STATE Def importance  mixture quantile functions by equation \ref{eq:imp_mix_dists} \\
+                $\ \ \tilde Q_{j,k} = \lambda_{0,k} \hat Q_{j,k}  + \lambda_{1,k} Q_{\beta_k}(k; \vartheta_k)$,
                 $\ \ \tilde Q_{j,T} = \lambda_{0,T} \hat Q_{j,T}  + \lambda_{1,T} Q_{\beta_T}(T; \vartheta_T); $ \\
                 $\ \ \sum_i \lambda_i = 1, \ \ \tilde F_{j,T} = \tilde Q^{-1}_{j,T},\ \  \tilde F_{j,k} = \tilde Q^{-1}_{j,k} $
               \STATE Def importance sampling distribution $\tilde h_j = \tilde f_{j,T} \tilde f_{j,k} c(\tilde F_{j,T}, \tilde F_{j,k}; \hat \theta_{j,c}) $
               \STATE Draw samples $\mathbf x \sim \tilde h_j$ \;
               \STATE Compute importance weights $\omega = \hat h_j(\mathbf x) /  \tilde h_j(\mathbf x) $
-              \STATE Re-map samples  $\mathbf x', \omega' \xleftarrow[\text{ }]{\text{R}} \mathbf x, \omega $
+              \STATE Re-map samples  $\mathbf x', \omega' \xleftarrow[\text{ }]{\mathcal R} \mathbf x, \omega $
               \STATE Update importance weights by equation \ref{eq:time_sample_weights3}
               \STATE Evaluate equation \ref{eq:expected_crud} via importance sampling \\
                 $\ \ \mathbf C_s = \mathcal G(x'_i; \mathbf C_{s-1}, \mathbf I, \Delta t_s)$ \\
@@ -600,19 +766,19 @@ All model variables which are set at runtime are provided in table \ref{tab:hi2l
             \hline
             $N_{Q_{k}}$ & 20 & Number of quantiles used in TKE marginal distribution reconstruction. \\
             \hline
-            $N_{Q_{T}}$  & 20 & Number of quantiles used in temperature marginal distribution reconstruction. \\ 
+            $N_{Q_{T}}$  & 20 & Number of quantiles used in temperature marginal distribution reconstruction. \\
             \hline
-            $w_k$  & 0.6 & TKE weighting factor used to remap samples on the rod surface. \\ 
+            $w_k$  & 0.6 & TKE weighting factor used to remap samples on the rod surface. \\
             \hline
-            $w_T$  & 0.4 & Temperature weighting factor used to remap samples on the rod surface. \\ 
+            $w_T$  & 0.4 & Temperature weighting factor used to remap samples on the rod surface. \\
             \hline
-            $\vartheta_T$  & $\{1.0, 0.9 \}$ & Beta distribution parameters for temperature importance distribution. \\ 
+            $\vartheta_T$  & $\{1.0, 0.9 \}$ & Beta distribution parameters for temperature importance distribution. \\
             \hline
-            $\vartheta_k$  & $\{1.1, 1.2 \}$ & Beta distribution parameters for TKE importance distribution. \\ 
+            $\vartheta_k$  & $\{1.1, 1.2 \}$ & Beta distribution parameters for TKE importance distribution. \\
             \hline
-            $\lambda_{0,T},\lambda_{1,T}$  & $\{0.6, 0.4 \}$ & Mixture weighting parameters for temperature importance distribution. \\ 
+            $\lambda_{0,T},\lambda_{1,T}$  & $\{0.6, 0.4 \}$ & Mixture weighting parameters for temperature importance distribution. \\
             \hline
-            $\lambda_{0,k},\lambda_{1,k}$  & $\{0.7, 0.3 \}$ & Mixture weighting parameters for TKE importance distribution. \\ 
+            $\lambda_{0,k},\lambda_{1,k}$  & $\{0.7, 0.3 \}$ & Mixture weighting parameters for TKE importance distribution. \\
             \hline
             \hline
             $b_m$  & 4  & Gradient boosting model parameter: Max CART tree depth.  A larger CART tree depth value improves the quality of fit of each weak-learner but increases overfitting. \\
@@ -626,3 +792,4 @@ All model variables which are set at runtime are provided in table \ref{tab:hi2l
     \end{center}
 \end{table}
 
+Finally, the simplifications and assumptions made in the construction of the hi2lo model are reviewed.  The model requires that within a CTF face no spatial information is retained.  The crud simulation package, MAMBA, used in this work is a one-dimensional code and therefore this simplification has no influence on the integrated crud results within each CTF face.  The boundary heat flux is treated independently from the rod surface temperature or TKE.  This simplifies the copula model used to reconstruct the joint distribution in each face.  Hot spots are assumed to remain stationary on the rods' surface as a function of time.  This assumption can be slightly relaxed with tuning of the sample remapping procedure; however, this assumption simplifies the treatment of the time dependent nature of crud build up in the core.  The assumption takes into account that as time marches forward, the rate of crud growth depends on the previous crud state.  The viability of these assumptions will be investigated in the following sections.  The aim of the hi2lo model is to reproduce gold standard crud results provided by high fidelity CFD coupled crud simulations.  The application of the simplifications should not impede the ability of the model to reproduce the correct axial and total crud deposition on the rod surface.

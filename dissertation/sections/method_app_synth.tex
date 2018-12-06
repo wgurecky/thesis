@@ -4,9 +4,9 @@ In this chapter the univariate distribution reconstruction from quantiles, copul
 
 The synthetic data conforms to a known functional form with specified distribution and bias parameters. These properties are useful for benchmarking and validation investigations which seek to ensure that the fitted models retain key statistical properties from the synthetic data set. This chapter does not introduce machine learning components and does not explore forward model predictions.  See chapter \ref{sec:ml_cfd} for hi2lo model performance when used in a predictive capacity.
 
-The availability of synthetic data alleviates the need to generate comparatively expensive CFD results to test the hi2lo strategy.  Some aspects of CFD fields are preserved in the synthetic data, including expected biases between CFD and CTF results that arise due to discrepancies in wall heat transfer closure models, among other differences.  Turbulent dispersion of the temperature and near wall TKE distributions around spacer grids are emulated by the synthetic data model.  Additionally, the dependence structure between the cladding surface temperature, boundary heat flux, and near wall TKE may be enforced by the synthetic data generation tool.  Accounting for spatial auto-correlation in the surface fields was not pursued.  Spatial autocorrelation present in the surface fields within a CTF face is not captured, however.  Consequently the synthetic data is not a direct replacement to CFD data but serves as data source for method interrogation and integration testing.
+The availability of synthetic data alleviates the need to generate comparatively expensive CFD results to test the hi2lo strategy.  Some aspects of CFD fields are preserved in the synthetic data, including expected biases between CFD and CTF results that arise due to discrepancies in wall heat transfer closure models, among other differences.  Turbulent dispersion of the temperature and near wall TKE distributions around spacer grids are emulated by the synthetic data model.  Additionally, the dependence structure between the cladding surface temperature, boundary heat flux, and near wall TKE may be enforced by the synthetic data generation tool.  Accounting for spatial auto-correlation in the surface fields was not pursued.    Consequently the synthetic data is not a direct replacement to CFD data but serves as data source for method interrogation and integration testing.
 
-Semiparametric copula and marginal distributions are fit to the synthetic data in each CTF face independently.  Samples are drawn from the fitted joint temperature, TKE and BHF density models on each patch using standard Monte Carlo methods or importance sampling.  The surface samples are provided to a crud simulation package as cladding-surface boundary conditions.  Additional required bulk coolant properties such as the bulk fluid temperature and bulk concentration of soluble boron are supplied by CTF.
+The joint distribution model comprised of a copula and quantile functions are fit to the synthetic data in each CTF face independently.  The number of quantiles used to reconstruct the quantile functions is a user controllable quantity, and was set to 20 in this case.  Samples are drawn from the fitted joint temperature, TKE and BHF density models on each patch using standard Monte Carlo methods or importance sampling.  The surface samples are provided to a crud simulation package as cladding-surface boundary conditions.  Additional required bulk coolant properties such as the bulk fluid temperature and bulk concentration of soluble boron are supplied by CTF.
 
 Time dependent crud simulation is also discussed.  The interaction between the sample surface remapping strategy and the integrated crud results are discussed.  Furthermore, the process by which importance sample weights are averaged over discrete time steps is discussed.
 
@@ -40,7 +40,7 @@ Synthetic data generation begins by running standalone CTF on a single quarter s
 \end{align}
 Where $\bm \varepsilon(\mathbf z, \bm \theta)$ is a user controlled spatially dependent residual random vector with a mean of 0.  This residual is
 shifted by a bias vector
-$\mathbf b$, where $\mathbf z=\{z, \varphi\}$ is the axial and azimuthal location on the rod surface.
+$\mathbf b$ and where $\mathbf z$ is the axial and azimuthal location on the rod surface.
 $\bm \theta$ represents user specified distribution parameters.
 
 Equation \ref{eq:synth_aug} represents three continuous random surface fields.  In practice a large number of independent and identically distributed samples are drawn in each CTF face from the underlying random field.  Individual surface samples may be specified by equation \ref{eq:synth_aug_discrete}.
@@ -91,18 +91,16 @@ The original baseline CTF results are shown in figures \ref{fig:ctf_twall_orig} 
 
 \begin{figure}[H]%
     \centering
-    \subfloat[Axial CTF cladding surface temperature result.]{{\includegraphics[width=0.45\linewidth]{figs/synth/ctf_asm0_z_twall} }}%
-    \qquad
-    \subfloat[2D rod map of CTF result.]{{\includegraphics[width=0.45\linewidth]{figs/synth/ctf_pin_h5_temperature} }}%
+    \subfloat[Axial CTF cladding surface temperature result.]{{\includegraphics[width=0.53\linewidth]{figs/synth/ctf_asm0_z_twall} }}\hspace*{-1.0em}%
+    \subfloat[2-D rod map of CTF result.]{{\includegraphics[width=0.53\linewidth]{figs/synth/ctf_pin_h5_temperature} }}%
     \caption[Single pin CTF baseline temperature result.  160\% nominal power conditions.]{Single pin CTF baseline temperature result.  160\% nominal power conditions.}%
     \label{fig:ctf_twall_orig}%
 \end{figure}
 
 \begin{figure}[H]%
     \centering
-    \subfloat[Axial CTF cladding surface TKE result.]{{\includegraphics[width=0.45\linewidth]{figs/synth/ctf_asm0_z_tke} }}%
-    \qquad
-    \subfloat[2D rod map of CTF result.]{{\includegraphics[width=0.45\linewidth]{figs/synth/ctf_pin_h5_tke} }}%
+    \subfloat[Axial CTF cladding surface TKE result.]{{\includegraphics[width=0.53\linewidth]{figs/synth/ctf_asm0_z_tke} }}\hspace*{-1.0em}%
+    \subfloat[2-D rod map of CTF result.]{{\includegraphics[width=0.53\linewidth]{figs/synth/ctf_pin_h5_tke} }}%
     \caption[Single pin CTF baseline TKE result.  160\% nominal power conditions.]{Single pin CTF baseline TKE result.  160\% nominal power conditions.}%
     \label{fig:ctf_tke_orig}%
 \end{figure}
@@ -143,12 +141,12 @@ Next synthetic noise was generated using copula and marginal distribution settin
 \end{table}
 
 Samples are drawn with probability proportional to the inverse distance to the nearest specified node.
-Let the subscript $(\cdot)_u$ denote the location of the upstream span and $(\cdot)_d$ denote the downstream grid. $d_{u_j}$ and  $d_{d_j}$ denote the distance from the centroid of the CTF face to the nearest upstream and downstream copula nodes respectively.  
+Let the subscript $(\cdot)_u$ denote the location of the upstream span and $(\cdot)_d$ denote the downstream grid. $d_{u_j}$ and  $d_{d_j}$ denote the distance from the centroid of the CTF face to the nearest upstream and downstream copula nodes respectively.
 
 The mixture joint density model in any given CTF face is specified by equation \ref{eq:dist_weighted_synth}.
 \begin{equation}
-    h_j = \left( \frac{d_{u_j}}{|d_{d} - d_{u}|} \right) h_u +
-    \left( \frac{d_{d_j}}{|d_{d} - d_{u}|} \right) h_d
+    h_j = \left( \frac{d_{u_j}}{d_{d} + d_{u}} \right) h_u +
+    \left( \frac{d_{d_j}}{d_{d} + d_{u}} \right) h_d
     \label{eq:dist_weighted_synth}
 \end{equation}
 Where $h_u$ and $h_d$ are the upstream and downstream joint density models respectively with parameters specified in table \ref{tab:synth_settings}.
@@ -158,23 +156,21 @@ The copula models were sampled in each span, the original CTF result was augment
 
 \begin{figure}[H]%
     \centering
-    \subfloat[Spatial axial augmented CTF result.]{{\includegraphics[width=0.45\linewidth]{figs/synth/pinH5TempOut} }}%
-    \qquad
-    \subfloat[2D rod map of synthetically augmented CTF result.]{{\includegraphics[width=0.45\linewidth]{figs/synth/cfd_pin_temperature} }}%
+    \subfloat[Spatial axial augmented CTF result.]{{\includegraphics[width=0.53\linewidth]{figs/synth/pinH5TempOut} }}\hspace*{-1.0em}%
+    \subfloat[2-D rod map of synthetically augmented CTF result.]{{\includegraphics[width=0.53\linewidth]{figs/synth/cfd_pin_temperature} }}%
     \caption[Augmented CFD result.]{Augmented CTF temperature result.}%
     \label{fig:ctf_twall_aug}%
 \end{figure}
 
 \begin{figure}[H]%
     \centering
-    \subfloat[Spatial axial augmented CTF result.]{{\includegraphics[width=0.45\linewidth]{figs/synth/pinH5TkeOut} }}%
-    \qquad
-    \subfloat[2D rod map of synthetically augmented CTF result.]{{\includegraphics[width=0.45\linewidth]{figs/synth/cfd_pin_tke} }}%
+    \subfloat[Spatial axial augmented CTF result.]{{\includegraphics[width=0.53\linewidth]{figs/synth/pinH5TkeOut} }}\hspace*{-1.0em}%
+    \subfloat[2-D rod map of synthetically augmented CTF result.]{{\includegraphics[width=0.53\linewidth]{figs/synth/cfd_pin_tke} }}%
     \caption[Augmented CFD TKE result.]{Augmented CTF TKE result.}%
     \label{fig:ctf_tke_aug}%
 \end{figure}
 
-The augmented surface temperature and turbulent kinetic energy fields shown in figures \ref{fig:ctf_twall_aug} and \ref{fig:ctf_tke_aug} may be compared against the original CTF results provided in figures \ref{fig:ctf_twall_orig} and \ref{fig:ctf_tke_orig} respectively to qualitatively understand the fine scale surface variations introduced by the synthetic data model.  No azimuthal variations are present in the augmented fields which would be present if a physics based model, such as CFD, were used.  Additionally, no spatial auto-correlation in the temperature and TKE cladding surface fields are included in the synthetic data.  Spatial autocorrelation could be captured with a kriging model in the future, however, the one dimensional nature of the crud simulation code used in this work dictates that the fine scale spatial detail in the surface fields are irrelevant when computing surface-integrated crud quantities.
+The augmented surface temperature and turbulent kinetic energy fields shown in figures \ref{fig:ctf_twall_aug} and \ref{fig:ctf_tke_aug} may be compared against the original CTF results provided in figures \ref{fig:ctf_twall_orig} and \ref{fig:ctf_tke_orig} respectively to qualitatively understand the fine scale surface variations introduced by the synthetic data model.  No azimuthal variations are present in the augmented fields which would be present if a physics based model, such as CFD, were used.  Additionally, no spatial autocorrelation in the temperature and TKE cladding surface fields are included in the synthetic data.  Spatial autocorrelation could be captured with a kriging model in the future, however, the one dimensional nature of the crud simulation code used in this work dictates that the fine scale spatial detail in the surface fields are irrelevant when computing surface-integrated crud quantities.
 
 
 \subsection{Single Pin Reconstruction}
@@ -186,11 +182,11 @@ In each face the empirical quantile distributions of temperature, turbulent kine
 For the synthetic single pin data the hi2lo predicted fractional surface area above a saturation temperature threshold ($T_{sat}=618.1[K]$) in each CTF face is shown in figure \ref{fig:frac_a}.
 
 \begin{figure}[H]%
+    \captionsetup[subfigure]{justification=centering}
     \centering
-    \subfloat[CTF predicted fractional area of each CTF face above the saturation point.]{{\includegraphics[width=0.45\linewidth]{figs/synth/hi2lo/ctf_pin_t_threshold} }}%
-    \qquad
-    \subfloat[Hi2lo predicted fractional area of each CTF face above the saturation point.]{{\includegraphics[width=0.45\linewidth]{figs/synth/hi2lo/hi2lo_pin_t_threshold} }}%
-    \caption[]{Fraction of each CTF face above the saturation point predicted by CTF (left) and the hi2lo model (right).}%
+    \subfloat[][CTF predicted fractional area of each CTF \\ face above the saturation point.]{{\includegraphics[width=0.53\linewidth]{figs/synth/hi2lo/ctf_pin_t_threshold} }}\hspace*{-1.0em}%
+    \subfloat[][Hi2lo predicted fractional area of each \\ CTF face above the saturation point.]{{\includegraphics[width=0.53\linewidth]{figs/synth/hi2lo/hi2lo_pin_t_threshold} }}%
+    \caption{Fraction of each CTF face above the saturation point predicted by CTF (a) and the hi2lo model (b).}%
     \label{fig:frac_a}%
 \end{figure}
 
@@ -198,21 +194,21 @@ Provided that crud growth exhibits a temperature thresholding behavior about the
 
 Figure \ref{fig:patchscatter} examines the surface frequency distributions of temperature, crud boron mass and TKE for the CTF patch denoted by the red box in figure \ref{fig:hi2lo_tke_t}.  A marked change in behavior of the crud boron mass vs cladding surface temperature scatter plot is exhibited at approximately $ 619[K]$.  For samples which fell at or below this temperature, little crud was grown and thus the deposited crud boron mass is small.  Past this temperature threshold, there is an approximately linear relationship between the surface temperature and the crud deposition rate.  
 
-An additional feature of note in figure  \ref{fig:patchscatter} is the shape of the TKE vs. surface temperature scatter plot.  The dependence structure exhibits tighter coupling between these two fields at lower TKE values and less correlation at higher TKE.  This behavior was imposed by specifying a clayton copula in this location on the rod surface with the copula parameters given in table \ref{tab:synth_settings}.  The ability of the copula fitting routines to correctly preserve this skewed dependence structure is demonstrated in the figure and could not be achieved with Gaussian models.
+An additional feature of note in figure  \ref{fig:patchscatter} is the asymmetric dispersion of the TKE vs. surface temperature scatter plot.  The dependence structure exhibits tighter coupling between these two fields at lower TKE values and less correlation at higher TKE.  This behavior was imposed by specifying a Clayton copula in this location on the rod surface with the copula parameters given in table \ref{tab:synth_settings}.  The ability of the copula fitting routines to correctly preserve this skewed dependence structure is demonstrated in the figure and could not be achieved with multivariate Gaussian models.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.99\linewidth]{figs/synth/patch_scatter_0_4_0_6}
-    \caption[Single patch synthetic CFD data vs hi2lo sampled data.]{Single patch synthetic data vs hi2lo sampled data from patch centered on the rod at (3.14 $[rad]$, 2.85 $[m]$) at 300$[days]$.}
+    \caption[Single patch synthetic CFD data vs hi2lo sampled data.]{Single patch synthetic data vs hi2lo sampled data from patch centered on the rod at (3.14 $[rad]$, 2.85 $[m]$) at 300$[days]$.  The location of this patch is outlined in red in figure \ref{fig:hi2lo_tke_t}(b).}
     \label{fig:patchscatter}
 \end{figure}
 
 \begin{figure}[H]%
+    \captionsetup[subfigure]{justification=centering}
     \centering
-    \subfloat[Hi2lo temperature reconstruction.]{{\includegraphics[width=0.45\linewidth]{figs/synth/best_fit/struct_pin_twall} }}%
-    \qquad
-    \subfloat[Hi2lo TKE reconstruction.]{{\includegraphics[width=0.45\linewidth]{figs/synth/best_fit/struct_pin_tke_marked} }}%
-    \caption{Hi2lo reconstruction of 2D surface temperature and TKE fields from synthetic CFD data source. }%
+    \subfloat[Hi2lo temperature reconstruction.]{{\includegraphics[width=0.58\linewidth]{figs/synth/best_fit/struct_pin_twall} }}\hspace*{-3.1em}%
+    \subfloat[Hi2lo TKE reconstruction.]{{\includegraphics[width=0.58\linewidth]{figs/synth/best_fit/struct_pin_tke_marked} }}%
+    \caption[Hi2lo reconstruction of 2-D surface temperature and TKE fields from synthetic CFD data source. ]{Hi2lo reconstruction of 2-D surface temperature and TKE fields from synthetic CFD data source. No azimuthal variation is observed in this quarter symmetric case. }%
     \label{fig:hi2lo_tke_t}%
 \end{figure}
 
@@ -220,11 +216,11 @@ An additional feature of note in figure  \ref{fig:patchscatter} is the shape of 
 After samples are independently drawn in each CTF face the temperature, TKE, and boundary heat flux samples were passed to a crud simulation packages as the cladding-side boundary conditions.  The CTF bulk fluid properties were used as the coolant-side boundary conditions.  The crud simulation was stepped forward for 300 days with a resample step size of $\Delta t_s =50$ days.  400 samples per CTF face were drawn at each resampling event. The resultant crud distribution at 300 days is given in figure \ref{fig:hi2lopincmass}.  Good agreement between the hi2lo predictions and the target synthetic data for the axial crud, temperature, and TKE distributions is exhibited.
 
 \begin{figure}[H]%
+    \captionsetup[subfigure]{justification=centering}
     \centering
-    \subfloat[Hi2lo axial crud thickness.]{{\includegraphics[width=0.45\linewidth]{figs/synth/best_fit/struct_pin_z_cthick300} }}%
-    \qquad
-    \subfloat[Hi2lo axial crud mass desnity.]{{\includegraphics[width=0.45\linewidth]{figs/synth/best_fit/struct_pin_z_cmass_300} }}%
-    \caption{Hi2lo axial crud results compared to synthetic CFD/crud results at 300 days simulation time. }%
+    \subfloat[Hi2lo axial crud thickness.]{{\includegraphics[width=0.53\linewidth]{figs/synth/best_fit/struct_pin_z_cthick300} }}\hspace*{-1.0em}%
+    \subfloat[Hi2lo axial crud mass desnity.]{{\includegraphics[width=0.53\linewidth]{figs/synth/best_fit/struct_pin_z_cmass_300} }}%
+    \caption[Hi2lo axial crud results compared to synthetic CFD/crud results at 300 days simulation time.]{Hi2lo axial crud results compared to synthetic CFD/crud results at 300 days simulation time.  The CFD/crud result is shown in purple.}%
     \label{fig:hi2lopincmass}%
 \end{figure}
 
@@ -258,7 +254,7 @@ Here the sensitivity of the crud result to the copula parameters is investigated
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\linewidth]{figs/synth/patch_crud_fit_80}
+    \includegraphics[width=0.8\linewidth]{figs/synth/patch_crud_fit_80}
     \caption{Single CTF face crud sensitivity to copula parameters.}
     \label{fig:patchcrudfit80}
 \end{figure}
@@ -267,10 +263,9 @@ Next, two full single pin scenarios were considered. In the first scenario, show
 
 \begin{figure}[H]%
     \centering
-    \subfloat[Best fit copula via AIC metric used in each CTF face.]{{\includegraphics[width=0.45\linewidth]{figs/synth/copula_compare/struct_pin_z_cmass_300_bestfit} }}%
-    \qquad
-    \subfloat[Gaussian copula used in each CTF face.]{{\includegraphics[width=0.45\linewidth]{figs/synth/copula_compare/struct_pin_z_cmass_300_gauss_only} }}%
-    \caption[]{Influence of the choice parameters on the axial crud distribution.}%
+    \subfloat[Best fit copula via AIC metric used in each CTF face.]{{\includegraphics[width=0.53\linewidth]{figs/synth/copula_compare/struct_pin_z_cmass_300_bestfit} }}\hspace*{-1.0em}%
+    \subfloat[Gaussian copula used in each CTF face.]{{\includegraphics[width=0.53\linewidth]{figs/synth/copula_compare/struct_pin_z_cmass_300_gauss_only} }}%
+    \caption[Influence of the choice parameters on the axial crud distribution.]{Influence of the choice parameters on the axial crud distribution.  Synthetic CFD result shown in purple.}%
     \label{fig:crud_copula_fam_sensi}%
 \end{figure}
 
@@ -304,7 +299,7 @@ To isolate the impact of increasing the sample size on the crud variance, a sing
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\linewidth]{figs/synth/nsample_study/cmpr_pin_totals_violin_nsample}
+    \includegraphics[width=0.8\linewidth]{figs/synth/nsample_study/cmpr_pin_totals_violin_nsample}
     \caption{Effect of sample size on the integrated crud results.}
     \label{fig:cmprpintotalsviolinnsample}
 \end{figure}
@@ -316,7 +311,7 @@ The standard deviation of the rod integrated crud results at 300 days simulation
 		\caption[Estimated sensitivity of the pin-integrated crud boron variance to the number of samples used per CTF face.]{Estimated sensitivity of the pin-integrated crud boron variance to the number of samples used per CTF face. Variance estimated using 80 independent trials.}
 		\begin{tabular}[h]{| c | C | C |}
 			\hline
-			N  & Mean Pin Crud Boron Total $[g]$ & Pin Integrated Crud Boron Variance $[g]$ \\
+			N  & Mean Pin Crud Boron Total $[g]$ & Pin Integrated Crud Boron Std. Dev. $[g]$ \\
 			\hline  \hline
 			100 &  2.78953e-04  & 3.80e-6  \\
 			400 &  2.78301e-04  & 1.69e-6  \\
@@ -333,36 +328,35 @@ The standard deviation of the rod integrated crud results at 300 days simulation
 
 To obtain estimates for the efficiency gain offered by importance sampling to compute the expected crud value by equation \ref{eq:mc_imp_expected_crud}, a singe patch was studied under synthetic TH data.
 
-Here, the design of the sampling routines and the physics of crud growth is intertwined.  To compute the integral \ref{eq:expected_crud} efficiently it is favorable to sample the TH distribution in regions which result in relatively large amounts of crud growth.  To guide the design of the importance distributions the response surface of the crud simulation code is presented in figures \ref{fig:crud_sensi1} to \ref{fig:crud_sensi3}.  Larger surface temperatures result in a higher crud growth rate.  Larger local TKE results in smaller crud growth rates due to the effects of erosion.  Additionally of note is the relatively small influence of the boundary heat flux.  
-% Crud growth rates are less sensitive to the boundary heat flux than to the cladding outer surface temperature.
+Here, the design of the sampling routines and the physics of crud growth is intertwined.  To compute the integral \ref{eq:expected_crud} efficiently it is favorable to sample the TH distribution in regions which result in relatively large amounts of crud growth.  To guide the design of the importance distributions the response surface of the crud simulation code is presented in figures \ref{fig:crud_sensi1} to \ref{fig:crud_sensi3}.  Larger surface temperatures result in a higher crud growth rate.  Larger local TKE results in smaller crud growth rates due to the effects of erosion.  Note the relatively small influence of the boundary heat flux on the crud growth rate.  This is an important observation used to justify simplifications made in the joint density model previously provided in equation \ref{eq:simple_vine_model}.
 
 \begin{figure}[H]%
+    \captionsetup[subfigure]{justification=centering}
     \centering
-    \subfloat[Crud boron deposition sensitivity to temperature with TKE held fixed at $0.05$ {[J/kg]}]{{\includegraphics[width=0.45\linewidth]{../proposal/slides/seminar_slides/figs/dboron_dt_t} }}%
-    \qquad
-    \subfloat[Crud boron deposition sensitivity to TKE with temperature held fixed at $620$ {[K]}]{{\includegraphics[width=0.45\linewidth]{../proposal/slides/seminar_slides/figs/dboron_dt_tke} }}%
-    \caption[]{Crud marginal response to varying temperature and TKE.}%
+    \subfloat[][Crud boron deposition sensitivity  to \\ temperature with TKE held fixed at $0.05$ {[J/kg]}.]{{\includegraphics[width=0.51\linewidth]{../proposal/slides/seminar_slides/figs/dboron_dt_t} }}\hspace*{-1.0em}%
+    \subfloat[][Crud boron deposition sensitivity to TKE \\ with temperature held fixed at $620$ {[K]}.]{{\includegraphics[width=0.51\linewidth]{../proposal/slides/seminar_slides/figs/dboron_dt_tke} }}%
+    \caption[Crud marginal response to varying temperature and TKE at different times.]{Crud deposition rate sensitivity to varying temperature and TKE at different times.}%
     \label{fig:crud_sensi1}%
 \end{figure}
 
+In figure \ref{fig:crud_sensi1} the crud growth rate response is depicted at 100 day increments.  At temperatures exceeding the saturation temperature ($\approx 618[K]$) a marked change in crud growth rates is exhibited.  When the saturation temperature is exceeded on the rod surface there is a rise in crud deposition rates and the rate at which boron is precipitated inside the crud layer.
+
 \begin{figure}[H]%
+    \captionsetup[subfigure]{justification=centering}
     \centering
-    \subfloat[Crud boron deposition sensitivity with $q''=80 {[W/cm^2]}$.]{{\includegraphics[width=0.45\linewidth]{figs/crud/crud_t_tke_boron_response_80} }}%
-    \qquad
-    \subfloat[Crud boron deposition sensitivity $q''=120 {[W/cm^2]}$.]{{\includegraphics[width=0.45\linewidth]{figs/crud/crud_t_tke_boron_response_120} }}%
-    \caption[]{Crud boron response surface to varying temperature and TKE.}%
+    \subfloat[][Crud boron deposition sensitivity with \\ $q''=80 {[W/cm^2]}$.]{{\includegraphics[width=0.53\linewidth]{figs/crud/crud_t_tke_boron_response_80} }}\hspace*{-1.0em}%
+    \subfloat[][Crud boron deposition sensitivity \\  $q''=120 {[W/cm^2]}$.]{{\includegraphics[width=0.53\linewidth]{figs/crud/crud_t_tke_boron_response_120} }}%
+    \caption[Crud boron response to varying temperature and TKE.]{Crud boron response surface to varying temperature and TKE. The crud boron deposition rate is relatively insensitive to the boundary heat flux.}%
     \label{fig:crud_sensi2}%
 \end{figure}
 
 \begin{figure}[H]%
     \centering
-    \subfloat[Crud mass deposition sensitivity$q''=80 {[W/cm^2]}$.]{{\includegraphics[width=0.45\linewidth]{figs/crud/crud_t_tke_mass_response_bhf_80} }}%
-    \qquad
-    \subfloat[Crud mass deposition sensitivity $q''={[120 W/cm^2]}$.]{{\includegraphics[width=0.45\linewidth]{figs/crud/crud_t_tke_mass_response_bhf_120} }}%
-    \caption[]{Crud mass response surface to varying temperature and TKE.}%
+    \subfloat[][Crud mass deposition sensitivity \\ $q''=80 {[W/cm^2]}$.]{{\includegraphics[width=0.53\linewidth]{figs/crud/crud_t_tke_mass_response_bhf_80} }}\hspace*{-1.0em}%
+    \subfloat[][Crud mass deposition sensitivity \\ $q''={[120 W/cm^2]}$.]{{\includegraphics[width=0.53\linewidth]{figs/crud/crud_t_tke_mass_response_bhf_120} }}%
+    \caption[Crud mass response surface to varying temperature and TKE.]{Crud mass response surface to varying temperature and TKE. The crud mass deposition rate is relatively insensitive to the boundary heat flux.}%
     \label{fig:crud_sensi3}%
 \end{figure}
-
 
 Though an optimal importance distribution, $\tilde{h}^* $, can be found by equation \ref{eq:optimal_imp},
 
@@ -381,6 +375,7 @@ The importance  mixture quantile functions are defined in equations \ref{eq:imp_
 \tilde Q_{j,k} &= \lambda_{0,k} \hat Q_{j,k}  + \lambda_{1,k} Q_{\beta_k}(k; \vartheta_k),  \label{eq:imp_mix_k} \\
 \tilde Q_{j,T} &= \lambda_{0,T} \hat Q_{j,T}  + \lambda_{1,T} Q_{\beta_T}(T; \vartheta_T);  \label{eq:imp_mix_T} \\
 \sum_i \lambda_i &= 1, \ \ \tilde F_{j,T} = \tilde Q^{-1}_{j,T},\ \  \tilde F_{j,k} = \tilde Q^{-1}_{j,k}
+\label{eq:imp_mix_dists}
 \end{align}
 Where $\tilde Q_{j,T}$ is the quantile function for the proposal temperature distribution in the $j^{th}$ CTF face. $\lambda_i$ are user set mixture weights. Standard Monte Carlo sampling can be recovered by setting $\lambda_{0,k}=1,\ \lambda_{0,T}=1$ and  $\lambda_{1,k}=0,\ \lambda_{1,T}=0$.
 
@@ -388,20 +383,18 @@ Beta distributions, with quantile functions $Q_{\beta_k}$ and $Q_{\beta_T}$,  wi
 
 \begin{figure}[H]%
     \centering
-    \subfloat[Temperature distributions.]{{\includegraphics[width=0.45\linewidth]{figs/imp_patch/temperature_importance_marginal_compare} }}%
-    \qquad
-    \subfloat[TKE distributions.]{{\includegraphics[width=0.45\linewidth]{figs/imp_patch/tke_importance_marginal_compare} }}%
-    \caption[]{Proposal (red) vs. original (blue) marginal distributions for the (a) surface temperature and (b) TKE.  Generated using importance distribution parameters: $\vartheta_T = \{1, 0.9\}$,  $\vartheta_k = \{1.1, 1.2\}$,  $\lambda_{0,T}=0.6,\ \lambda_{1,T}=0.4$ and $\lambda_{0,k}=0.7,\ \lambda_{1,k}=0.3$.}%
+    \subfloat[Temperature distributions.]{{\includegraphics[width=0.53\linewidth]{figs/imp_patch/temperature_importance_marginal_compare} }}\hspace*{-1.0em}%
+    \subfloat[TKE distributions.]{{\includegraphics[width=0.53\linewidth]{figs/imp_patch/tke_importance_marginal_compare} }}%
+    \caption[Proposal and target density functions used for importance sampling.]{Proposal (red) vs. original (blue) marginal distributions for the (a) surface temperature and (b) TKE.  Generated using importance distribution parameters: $\vartheta_T = \{1, 0.9\}$,  $\vartheta_k = \{1.1, 1.2\}$,  $\lambda_{0,T}=0.6,\ \lambda_{1,T}=0.4$ and $\lambda_{0,k}=0.7,\ \lambda_{1,k}=0.3$.}%
     \label{fig:imp_sample2}%
 \end{figure}
 
 
 \begin{figure}[H]%
     \centering
-    \subfloat[Crud boron mass deposition.]{{\includegraphics[width=0.45\linewidth]{figs/imp_patch/bmass_sample_violin} }}%
-    \qquad
-    \subfloat[Crud mass deposition.]{{\includegraphics[width=0.45\linewidth]{figs/imp_patch/cmass_sample_violin} }}%
-    \caption[]{Importance sampling trial results on a single CTF face for (a) crud boron mass deposition and (b) Crud mass deposition at 300 days.  Red denotes importance samples and blue denotes standard Monte Carlo samples.  The sample population variance is shown above the figure for each case and the full sample distributions are given in the margins.}%
+    \subfloat[Crud boron mass deposition.]{{\includegraphics[width=0.53\linewidth]{figs/imp_patch/bmass_sample_violin} }}\hspace*{-1.0em}%
+    \subfloat[Crud mass deposition.]{{\includegraphics[width=0.53\linewidth]{figs/imp_patch/cmass_sample_violin} }}%
+    \caption[Importance sampling results.]{Importance sampling trial results on a single CTF face for (a) crud boron mass deposition and (b) Crud mass deposition at 300 days.  Red denotes importance samples and blue denotes standard Monte Carlo samples.  The sample population variance is shown above the figure for each case and the full sample distributions are given in the margins.}%
     \label{fig:imp_sample1}%
 \end{figure}
 
@@ -410,14 +403,14 @@ In figure \ref{fig:importancettkebmassscatter} the relative importance weight is
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.99\linewidth]{figs/imp_patch/importance_t_tke_bmass_scatter}
-    \caption[Importance sampled single patch crud result.]{Importance sampled single patch crud result. Key: \textbf{quant\_t\_imp}: Importance samples from quantile-reconstructed patch temperature $[K]$ distribution with $N_{Q_T}=20$,  \textbf{quant\_tke\_imp}: Importance samples from quantile-reconstructed patch TKE $[J/kg]$ distribution with $N_{Q_k}=20$,  \textbf{bmass}:  Resultant crud boron mass density samples in $[g/cm^2]$. Relative importance weights are denoted by the point size.}
+    \caption[Importance sampled single patch crud scatter plot result.]{Importance sampled single patch crud result. Key: \textbf{quant\_t\_imp}: Importance samples from quantile-reconstructed patch temperature $[K]$ distribution with $N_{Q_T}=20$,  \textbf{quant\_tke\_imp}: Importance samples from quantile-reconstructed patch TKE $[J/kg]$ distribution with $N_{Q_k}=20$,  \textbf{bmass}:  Resultant crud boron mass density samples in $[g/cm^2]$. Relative importance weights are denoted by the point size.}
     \label{fig:importancettkebmassscatter}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.99\linewidth]{figs/imp_patch/original_t_tke_bmass_scatter}
-    \caption[Standard Monte Carlo sampled patch crud result.]{Standard Monte Carlo sampled patch crud result. Key: \textbf{quant\_t}: Samples from quantile-reconstructed patch temperature $[K]$ distribution with $N_{Q_T}=20$,  \textbf{quant\_tke}: Samples from quantile-reconstructed patch TKE $[J/kg]$ distribution with $N_{Q_k}=20$,  \textbf{bmass}: Resultant crud boron mass density samples in $[g/cm^2]$.  }
+    \caption[Standard Monte Carlo sampled patch crud scatter plot result.]{Standard Monte Carlo sampled patch crud result. Key: \textbf{quant\_t}: Samples from quantile-reconstructed patch temperature $[K]$ distribution with $N_{Q_T}=20$,  \textbf{quant\_tke}: Samples from quantile-reconstructed patch TKE $[J/kg]$ distribution with $N_{Q_k}=20$,  \textbf{bmass}: Resultant crud boron mass density samples in $[g/cm^2]$.  }
     \label{fig:originalttkebmassscatter}
 \end{figure}
 \index{Importance Sampling!Application}
@@ -433,7 +426,7 @@ Stepping the crud simulation forward under the application of hi2lo supplied bou
 
 \subsubsection{Spatial Remapping with Time Stepping}
 
-The influence of hot-spot stationarity assumptions on the overall integrated crud mass on the rod as a function of time can be seen in figures \ref{fig:cmprpintotals0406} and \ref{fig:cmprpintotalsnoremap}.  When the surface temperature is allowed to randomly mix on each resampling event in each CTF face, the influence of the hot spots are smeared over the surface of the rod which leads to an overall under prediction in the total integrated crud mass.  Reordering the samples in each CTF face by their temperature improves the ability of the hi2lo model to preserve the impact of stationary hot and cold spots on the rod surface.  Good agreement with the original coupled synthetic CFD-Crud simulation data was achieved by tuning the constants introduced in equation \ref{eq:weighting} to values of $w_T = 0.4$, and of $w_k = 0.6$.  This weighting seeks to preserve a heuristic thermal-hydraulic metric on the rod surface  where the metric may be interpreted as some linear combination of cladding surface temperature and near-wall TKE. 
+The influence of hot-spot stationarity assumptions on the overall integrated crud mass on the rod as a function of time can be seen in figures \ref{fig:cmprpintotals0406} and \ref{fig:cmprpintotalsnoremap}.  When the surface temperature is allowed to randomly mix on each resampling event in each CTF face, the influence of the hot spots are smeared over the surface of the rod which leads to an overall under prediction in the total integrated crud mass.  Reordering the samples in each CTF face by their temperature improves the ability of the hi2lo model to preserve the impact of stationary hot and cold spots on the rod surface.  Good agreement with the original coupled synthetic CFD-Crud simulation data was achieved by tuning the constants introduced in equation \ref{eq:weighting} to values of $w_T = 0.4$, and of $w_k = 0.6$.  This weighting seeks to preserve a heuristic thermal-hydraulic metric on the rod surface  where the metric may be interpreted as some linear combination of cladding surface temperature and near-wall TKE.
 
 
 \begin{figure}[H]
@@ -449,26 +442,25 @@ The influence of hot-spot stationarity assumptions on the overall integrated cru
     \label{fig:cmprpintotalsnoremap}
 \end{figure}
 
-A spatial representation of the samples pre and post-remapping are shown in figure \ref{fig:remmap_comp}.  A visual representation of the remapping strategy presented is presented in figure \ref{fig:samplemapping}.  While the spatial distribution of the temperature and TKE fields are distinctly different after the remapping procedure is applied, the joint density distributions formed by the sample population over the patch are identical. 
+A spatial representation of the samples pre and post-remapping are shown in figure \ref{fig:remmap_comp}.  A visual representation of the remapping strategy presented is presented in figure \ref{fig:samplemapping}.  While the spatial distribution of the temperature and TKE fields are distinctly different after the remapping procedure is applied, the joint density distributions formed by the sample population over the patch are identical.
 
 \begin{figure}[H]%
     \centering
-    \subfloat[Remapped surface samples.]{{\includegraphics[width=0.45\linewidth]{figs/synth/patch_fields_0_4_0_6} }}%
-    \qquad
-    \subfloat[Non-remapped surface samples]{{\includegraphics[width=0.45\linewidth]{figs/synth/patch_fields_no_remap} }}%
-    \caption[Re-mapped and non-remaped temperature and TKE surface samples]{Re-mapped (a) and non remaped (b) temperature and TKE surface samples for a single CTF face.}%
+    \subfloat[Remapped surface samples.]{{\includegraphics[width=0.53\linewidth]{figs/synth/patch_fields_0_4_0_6} }}\hspace*{-1.0em}%
+    \subfloat[Non-remapped surface samples]{{\includegraphics[width=0.53\linewidth]{figs/synth/patch_fields_no_remap} }}%
+    \caption[Re-mapped and non-remapped temperature and TKE surface samples]{Re-mapped (a) and non remapped (b) temperature and TKE surface samples for a single CTF face.}%
     \label{fig:remmap_comp}%
 \end{figure}
 
 \subsection{Resample Frequency}
 \label{sec:resample_freq_study}
 
-The frequency at which the distribution functions are sampled from on each CTF face influences the variance in the predicted integrated crud results.  To investigate this behavior, a parameter sweep was conducted in which the same pin was.  50 independent trials were conducted for each step size.  Shown in figure \ref{fig:cmprpintotalsviolin} a smaller resampling steps size, $\Delta t_s$, results in a reduction in the variance of the rod integrated crud estimates at 300 days of simulation time.   Additionally, the sampling induced rod integrated crud mass uncertainties were shown to be approximately distributed according to a normal distribution.  It is also important to note that the variance of the rod integrated crud results increases as a function of time.
+The frequency at which the distribution functions are sampled from on each CTF face influences the variance in the predicted integrated crud results.  To investigate the behavior of the varience of the crud results as a function of resampling frequency, a parameter sweep was conducted in which crud was grown on the same pin with resampling time step sizes of 50, 100, and 300 $[days]$.  50 independent trials were conducted for each step size.  Shown in figure \ref{fig:cmprpintotalsviolin} a smaller resampling steps size, $\Delta t_s$, results in a reduction in the variance of the rod integrated crud estimates at 300 days of simulation time.   Additionally, the sampling induced rod integrated crud mass uncertainties were shown to be approximately distributed according to a normal distribution.  It is also important to note that the variance of the rod integrated crud results increases as a function of time.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\linewidth]{figs/synth/tstep_study/cmpr_pin_totals_violin}
-    \caption[Influence of the resample frequency on the predicted integrated crud variance.]{Influence of the resample frequency on the predicted rod integrated crud variance.  Variance estimates are given in the right hand side of the figure from 50 independent trials for each of the step size cases.}
+    \caption[Influence of the resample frequency on the predicted integrated crud variance.]{Influence of the resample frequency on the predicted rod integrated crud variance.  Crud variance estimates at 300 $[days]$ are given in the right hand side of the figure from 50 independent trials for each of the step size cases.}
     \label{fig:cmprpintotalsviolin}
 \end{figure}
 
