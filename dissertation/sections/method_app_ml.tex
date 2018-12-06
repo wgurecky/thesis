@@ -353,7 +353,7 @@ The presented case considered the 5x5 array operating at a single state with fix
 The comparisons presented are the result of the LOO cross validation study.
 Ergo the hi2lo model was used in a properly predictive manner since distribution parameters had to be inferred from the machine learning model at local core conditions outside of the training set.
 
-The error estimates provided by the present LOO cross validation study may be viewed as conservative.  The LOO strategy expunged an entire pin from an already limited training pool of only 25 pins . This is not representative a production-ready training data set.  A training set to be used in a production environment will have all possible pin geometries represented within it; that is all possible pin configurations within a bundle.  Not all combinations of inlet and power conditions will be simulated by CFD due to computational time limitations and so interpolation error may be expected even if a provided a geometrically rich training set.  
+The error estimates provided by the present LOO cross validation study may be viewed as conservative.  The LOO strategy expunged an entire pin from an already limited training pool of only 25 pins. This is not representative a production-ready training data set.  A training set to be used in a production environment will have all possible pin geometries represented within it; that is all possible pin configurations within a bundle.  Not all combinations of inlet and power conditions will be simulated by CFD due to computational time limitations.  Interpolation error can be expected even if provided a geometrically rich training set.  
 
 % If the flow fields are principally governed by geometric factors the 
 
@@ -551,7 +551,7 @@ At each resample step the crud mass was summed over all pins in the assembly.  T
     \label{fig:asmcmasstime}
 \end{figure}
 
-The RMS axial crud distribution errors are summarized in table \ref{tab:loo_rms}.  To examine the hi2lo model predictions for geometric biases across the assembly, top-down views of the RMS crud mass and boron mass error distributions were generated and presented in figure \ref{fig:l2boronasmerrorshmap} and \ref{fig:l2cmassasmerrorshmap} respectively.  The pins which reside on the edge of the assembly did not exhibit any increase in crud RMS error on average.  The root mean squared error is given by: $RMS = \sqrt{\frac{1}{J}\sum^J_j(\mathrm{Hi2lo}_j - \mathrm{CFD}_j)^2}$ where $j$ is the CTF face index on a given pin.  A large RMS error corresponds to a large mismatch in the axial crud distribution between the hi2lo model and the CFD/crud model predictions.
+The RMS axial crud distribution errors are summarized in table \ref{tab:loo_rms}.  To examine the hi2lo model predictions for geometric biases across the assembly, top-down views of the RMS boron mass and crud mass error distributions were generated and presented in figure \ref{fig:l2boronasmerrorshmap} and \ref{fig:l2cmassasmerrorshmap} respectively.  The pins which reside on the edge of the assembly did not exhibit any increase in crud RMS error on average.  The root mean squared error is given by: $RMS = \sqrt{\frac{1}{J}\sum^J_j(\mathrm{Hi2lo}_j - \mathrm{CFD}_j)^2}$ where $j$ is the CTF face index on a given pin and $J$ is the total number of CTF faces the pin.  A large RMS error corresponds to a large mismatch in the axial crud distribution between the hi2lo model and the CFD/crud model predictions.
 
 % RMS error table
 \begin{table}[h]

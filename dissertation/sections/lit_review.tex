@@ -88,12 +88,12 @@ This work is important because it represents an early approach to building exper
         \mathbf m_h = \frac{(Nu)_{cfd}}{(Nu)_{0}} = \frac{h_{cfd} L_{cfd} k_{0} }{h_{0}k_{cfd} L_{0}}
          \label{eq:htc_remap_ctf_1}
     \end{equation}
-    Where $Nu$ is the Nusselt number.  Assuming equal length scales, $L_{cfd}$, and thermal conductivities, $k$, the Nusselt number ration simplifies to equation \ref{eq:htc_remap_ctf_2}.
+    Where $Nu$ is the Nusselt number.  Assuming equal length scales, $L$, and thermal conductivities, $k$, the Nusselt number ratio simplifies to equation \ref{eq:htc_remap_ctf_2}.
     \begin{equation}
-        \mathbf m_h = \frac{h_{cfd}}{h_{0}} = \frac{q_{cfd}(T-T_\infty)_{0}}{q_{0}(T-T_\infty)_{cfd}}
+        \mathbf m_h = \frac{h_{cfd}}{h_{0}} = \frac{q''_{cfd}(T-T_\infty)_{0}}{q''_{0}(T-T_\infty)_{cfd}}
         \label{eq:htc_remap_ctf_2}
     \end{equation}
-    It is important to note that a uniform heat flux is used in both the bare and full gridded rod case so that $q_{cfd}/q_0 =1 $.
+    It is important to note that a uniform heat flux, $q''$, is used in both the bare and full gridded rod case so that $q''_{cfd}/q''_0 =1 $.
     The HTC remap is applied to the original CTF HTC by equation \ref{eq:htc_remap_ctf_3}.
     \begin{equation}
         \hat h_{l} = \mathbf m_h h_{ctf}
@@ -139,10 +139,10 @@ This work is important because it represents an early approach to building exper
 Crud is grown on the coupling mesh using augmented temperature and TKE surface fields. By this method the integrated crud mass over a CTF face is given by equation \ref{eq:ctf_hi2lo_crud_est}.
 
  \begin{equation}
-     C_m = \frac{1}{A} \sum_i^N \mathcal G(\hat T_{s_i}, \hat k_i, q''_i) a_i
+     C_m = \frac{1}{A} \sum_i^N a_i \mathcal G(\hat T_{s_i}, \hat k_i, q''_i) 
  \label{eq:ctf_hi2lo_crud_est}
  \end{equation}
-Where $A$ is the area of the CTF face and $a_i$ is the area of each cell face on the crud coupling mesh.  The impact of the simultaneous application of both the HTC and TKE maps on the crud distribution are shown for a single rod in figure \ref{fig:htc_remap_crud}.  In the base case without the hi2lo maps applied, no azimuthal variation is observed in the crud distribution for this single quarter symmetric test case.  However, when the hi2lo maps were employed the influence of the spacer grids on the crud distribution becomes visible.  
+Where $A$ is the area of the CTF face and $a_i$ is the area of each cell face on the crud coupling mesh.  The crud generation function is denoted by $\mathcal G$ and takes the surface temperature, TKE, and boundary heat flux as parameters.  The impact of the simultaneous application of both the HTC and TKE maps on the crud distribution are shown for a single rod in figure \ref{fig:htc_remap_crud}.  In the base case without the hi2lo maps applied, no azimuthal variation is observed in the crud distribution for this single quarter symmetric test case.  However, when the hi2lo maps were employed the influence of the spacer grids on the crud distribution becomes visible.  
 
 A key assumption that the multiplier maps are insensitive to flow rate was made in the first implementation of this downscaling technique.  However this assumption is not strictly true: The multiplier maps carry some dependence on the inlet flow conditions.  An increase in flow rate changes the shape and extent of the wake region downstream of spacer grids which impacts the rod surface temperature and TKE fields.
 
@@ -169,7 +169,7 @@ Some simplifications are made in the application of this mapping.  For a given a
 
 The multiplier map may not be transferable to other assemblies in the core due to geometric effects including the orientation of neighboring assemblies and TH/neutronic feedbacks.  This represents a limitation to the spatial mapping procedure as unique maps must be generated for different assemblies in the core.
 
-T. Blyth produced CFD informed grid enhanced heat transfer models for the advanced subchannel code, CTF \cite{blyth2014} \cite{blyth2017}.  Blyth's work presented strategies for processing CFD data for use in generating enhanced heat transfer maps and for computing form loss coefficients across spacer grids.  Blyth's work served as a precursor to Salko's CFD informed method for developing HTC and TKE maps.  Blyth's grid enhanced heat transfer model followed the form given in equation \ref{eq:blyth_htc_map} which is identical to the approach taken by Yao and latter applied by Salko \cite{yao82} \cite{salko17}.
+T. Blyth produced CFD informed grid enhanced heat transfer models for the advanced subchannel code, CTF \cite{blyth2014} \cite{blyth2017}.  Blyth's work presented strategies for processing CFD data for use in generating enhanced heat transfer maps and for computing form loss coefficients across spacer grids.  Blyth's work served as a precursor to Salko's CFD informed method for developing HTC and TKE maps.  Blyth's grid enhanced heat transfer model followed the form given in equation \ref{eq:blyth_htc_map} which was inspired by the approach taken by Yao and latter applied by Salko.
 
 \begin{equation}
 \mathbf m_h = \frac{h_{cfd}}{h_0}
