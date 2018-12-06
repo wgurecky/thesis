@@ -185,26 +185,43 @@ Taking Salko and Blyth's work as a starting point, one might consider developing
 
 Kriging was originally developed to address the problem of finding the most probable location of quality gold ore deposits given previous sparse samples of the surrounding ore body \cite{krige51}.  This interpolation method centered around modeling the spatial-autocorrelation of a random field in an effort to make credible predictions of the spatial distribution of gold ore concentrations given sparse, uncertain estimates \cite{Krige51a}.   The technique can be viewed as a special case of Gaussian process regression \cite{Williams96}.  Kriging is related to Gaussian process regression since the underlying goal of both approaches is to model the spatial autocorrelation of a random field.  This section will use the kriging nomenclature, however, the literature on Gaussian process regression can be useful in similar or identical contexts.
 
-Since its inception, kriging has been employed to build surrogate models of complex physics where mechanistic models are unavailable.  Notably, kriging approaches have been used to construct a surrogate model of aerospike nozzle performance to enable efficient optimization of many design parameters \cite{simpson2001kriging}.  Similarly, kriging has been applied to airfoil design optimization \cite{jeong2005efficient}.  In theses applications the kriging model fits into an optimization framework where the kriging surrogate is used to build a response surface that is paired with a heuristic acquisition function to determine which parameter values are expected to yield the greatest design improvement.  Such applications are not directly applicable to the hi2lo problem of interest.  Kriging techniques have also been used to build spatial-temporal surrogates of rainfall for the assessment of flooding risks \cite{hsu2011integrated}.  It is under the context spatial interpolation where Kriging is particularly relevant to the hi2lo problem at hand. Kriging is generally applicable when estimates of the mean and variance of a random field are desired in between sparse training data samples.  
+Since its inception, kriging has been employed to build surrogate models of complex physics where mechanistic models are unavailable.  Notably, kriging approaches have been used to construct a surrogate model of aerospike nozzle performance to enable efficient optimization of many design parameters \cite{simpson2001kriging}.  Similarly, kriging has been applied to airfoil design optimization \cite{jeong2005efficient}.  In theses applications the kriging model fits into an optimization framework where the kriging surrogate is used to build a response surface that is paired with a heuristic acquisition function to determine which parameter values are expected to yield the greatest design improvement. 
+% Such applications are not directly applicable to the hi2lo problem of interest.  
+Kriging techniques have also been used to build spatial-temporal surrogates of rainfall for the assessment of flooding risks \cite{hsu2011integrated}.  It is under the context spatial interpolation where kriging is particularly relevant to the hi2lo problem at hand. Kriging is generally applicable when estimates of the mean and variance of a random field are desired in between sparse training data samples.  
 % An example of application of kriging to a soil quality data set is left to Hengl et. al \cite{Hengl07}.
 \index{Kriging}
 
-Next, a brief introduction to the kriging procedure is given followed by an the application to a CFD and CTF data source.  The general approach is given in equation \ref{eq:simple_krig_a} where the surface temperature field, $T(z)$, is decomposed into a constant mean, $\mu_T$ and stochastic component, $\varepsilon$, where $z$ represents the axial and azimuthal coordinates on the rod surface. Simple kriging assumes that the mean of the underlying field does not drift as a function of location in the input space and therefore only requires the fitting of a covariance function which describes the statistical spatial autocorrelation between the known data.  
+Next, a brief introduction to the kriging procedure is given followed by an the application to a CFD and CTF data source.  The general approach is given in equation \ref{eq:simple_krig_a} where the surface temperature field, $T(z)$, is decomposed into a constant mean, $\mu_T$ and stochastic component, $\epsilon$, where $z$ represents the axial and azimuthal coordinates on the rod surface. Simple kriging assumes that the mean of the underlying field does not drift as a function of location in the input space and therefore only requires the fitting of a covariance function which describes the statistical spatial autocorrelation between the known data.  
 
 \begin{equation}
-T(z) = \mu_f + \epsilon(z),\ \epsilon \sim \mathcal N(0, C(z;\theta))
+T(z) = \mu_f + \epsilon(z),\ \epsilon \sim \mathcal N(0, K(z;\theta))
 \label{eq:simple_krig_a}
 \end{equation}
-Where $C(z;\theta)$ is a function  with free parameters, $\theta$, that generates a valid covariance matrix .  Let us assume that the mean of the temperature field is given by the subhcannel code and that fine scale temperature field data is available at locations $\mathbf z = \{z_0, z_1, .. z_N\}$ where $N$ is the number of CFD surface mesh elements on the rod surface.  Thus $C(\cdot)$ generates an $NxN$ matrix which describes the spatial autocorrelation present in the CFD field data.  The covarience generation function is provided in equation ().
+Where $K(z;\theta)$ is a function  with free parameters, $\theta$, that generates a valid covariance matrix.  Assume that a constant mean of the temperature field, $\mu_T$, is given by the subchannel code and that fine scale CFD temperature field data, $T_{cfd}$, is available at locations $\mathbf z = \{z_0, z_1, .. z_N\}$ where $N$ is the number of CFD surface mesh elements on the rod surface.  The residuals then are given by: $e = \mu_T(z) - T_{cfd}(z)$.  $K(\cdot)$ generates an $N$x$N$ matrix which describes the spatial autocorrelation present in the CFD field data.  A commonly used squared-exponential covarience generation function is provided in equation \ref{eq:sq_exp_cov} \cite{rasmussen2004gaussian}.
 
 \begin{equation}
-C(z;\theta)_{ij} = \frac{1}{\theta_0} \sum_j e^{- \frac{(z_i - z_j)^2}{\theta_1^2}}
+K(z;\theta)_{ij} = \frac{1}{\theta_0} \sum_j e^{- \frac{(z_i - z_j)^2}{\theta_1^2}}
+\label{eq:sq_exp_cov}
 \end{equation}
+The parameters of the covariance function can be fit to the known residual vector $e$ using a maximum likelihood approach.  The likelihood function is given by equation \ref{eq:like_gpr} \cite{rasmussen2004gaussian}.
 
-RK approaches decompose the problem into serperate mean-predicting and stochastic components.
+\begin{equation}
+\mathcal L(e|z) = \frac{1}{(2\pi)^{(n/2)}\sqrt{ det(K)}} e^{-(1/2)(T_{cfd}-\mu)^T K^{-1} (T_{cfd}-\mu)}
+\label{eq:like_gpr}
+\end{equation}
+Note this also assumes that the CFD data has no uncertainty for simplicity.  The log likelihood is given by equation \ref{eq:ln_like_gpr}.
 
-Advanced kriging strategies such as regression kriging (RK) forgo the assumption of constant mean by decomposing the interpolation problem into mean-predicting and bias-correcting residual models \cite{Hengl07}.  In an RK framework, the spatial-autocorrelation in the residuals computed about the mean are captured by a simple kriging model.  The mean response may be generated by a variety of regression strategies, with a common choice being an ordinary least squares model though works which investigate the use of random forests or more advanced machine learning strategies in this role are pervasive \cite{LI20111647} \cite{LI2017112}.
+\begin{equation}
+ln \mathcal L(e|z) = -\frac{1}{2} e^T K^{-1} e - \frac{1}{2} ln (det(K)) - \frac{n}{2}ln(2\pi)
+\label{eq:ln_like_gpr}
+\end{equation}
+Efficient methods for computing the mean and drawing samples from the fitted kriging model can be found in ().
+% RK approaches decompose the problem into separate mean-predicting and stochastic components.
+
+Advanced kriging strategies such as regression kriging (RK) forgo the assumption of constant mean by decomposing the interpolation problem into mean-predicting and bias-correcting residual models \cite{Hengl07}.  In an RK framework, the spatial-autocorrelation in the residuals computed about the mean are captured by a simple kriging model.  The mean response may be generated by a variety of regression strategies, with a common choice being an ordinary least squares model though works which investigate the use of random forests or more advanced machine learning strategies in this role are pervasive \cite{LI20111647} \cite{LI2017112}.  In this application consider the low fidelity thermal hydraulic estimates obtained by the subchannel code CTF to provide the mean prediction denoted by $\mu_{T,\mathrm{ctf}}$.
 \index{Kriging!Regression Kriging}
+
+So far only the spatial coordinates on the rod surface have been used.  The RK model aims to interpolate between different grid orientation and core conditions which requires introducing auxiliary features, $p$, into the input space.  The auxiliary features consist of both geometric and thermal hydraulic attributes such as local power, flow rate, and grid geometry.  The auxiliary features themselves can be functions of space.
 
 % The initial approach taken to construct a RK model shown in equation \ref{eq:decomp} shows strong parallels to the hi2lo method developed in the current work.  However, the primary focus of a RK model is to capture spatial autocorrelations in the field data where the current work does not seek to model spatial autocorrelation of a random field since such information is extraneous when making crud predictions with a one-dimensional crud model.   If the ability to predict the full 2-D surface distributions of the FOI are desired then a RK model could yield the requisite fine scale surface distributions with uncertainty estimates provided future study.
 
@@ -270,17 +287,19 @@ In the RK approach shown in figure \ref{fit:rk}, the subchannel code provides a 
 
 \begin{figure}[hbtp]
 	\centering
-	\includegraphics[scale=.35]{images/rk_example.png}
-	\caption[Regression kriging example.]{Regression kriging example \cite{Hengl07}.  In the figure $z(s)$ represents the fine scale CFD data samples, $\hat m(s)$ corresponds to the coarse fidelity model predictions and $\hat z(s)$ is the RK model output.}
+	\includegraphics[scale=.35]{figs/theory/rk_example.png}
+	\caption[Regression kriging example.]{Regression kriging example \cite{Hengl07}.  $T_{\mathrm{cfd}}$ represents the fine scale CFD data samples, $\mu_{T,\mathrm{ctf}}$ corresponds to the coarse fidelity model predictions and $\hat T$ is the RK model mean output.}
 	\label{fit:rk}
 \end{figure}
 
-Variance estimates made by the RK model assume that residuals are normally distributed which is not necessarily the case for residuals derived by subtracting CFD results from subchannel rod-surface fields.  Additionally, the example here only considered the prediction of a single rod surface field, $T$.  Crud prediction also requires estimates for the near-wall TKE and surface BHF.  Each of these fields could be interpolated separately but care should be taken to preserve correlations between them because it is the action of hot locations on the rod surface occurring in coincidence with low local TKE which gives rise to the thickest crud deposits.  
+Several difficulties preclude the application of kriging directly to the hi2lo problem at hand.  The first issue involves  minimizing the likelihood function in equation () which is required to fit the covarience function to the known data.  This involves solving a system of order $O(N^3)$ [ref].  $N$ is governed by the size of the CFD training data pool.  Sparse approximations to the kriging matrix have been proposed [ref]; however, scaling kriging strategies to large data sets is an area of ongoing research [refs].
+
+Furthermore, variance estimates provided by the RK model assume that residuals are normally distributed which is not necessarily the case for residuals derived by subtracting CFD results from subchannel rod-surface fields.  Additionally, the example here only considered the prediction of a single rod surface field, $T$.  Crud prediction also requires estimates for the near-wall TKE and surface BHF.  Each of these fields could be interpolated separately but care should be taken to preserve correlations between them because it is the action of hot locations on the rod surface occurring in coincidence with low local TKE which gives rise to the thickest crud deposits.  
 
 
 \section{Copula}
 
-In contrast to multivariate Gaussian based approaches, non-Gaussian dependence structures between two or more correlated random variables can be represented by a copula.  In particular, preserving the statistical relationship between the temperature and near-wall TKE on a small, localized patch on the rod surface is of great interest in this work.
+In contrast to multivariate Gaussian based approaches, non-Gaussian dependence structures between two or more correlated random variables can be represented by a copula.  In particular, preserving the statistical relationship between the temperature and near-wall TKE on a small, localized patch on the rod surface is of great interest in this work.  It cannot be assumed that the dependence structure between these fields follows a symmetric multivariate Gaussian.
 
 Copula have seen historical use in the finance industry to
 predict correlated extreme value risks in credit portfolios
