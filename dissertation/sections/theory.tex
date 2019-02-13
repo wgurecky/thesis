@@ -284,7 +284,7 @@ It can be shown that the sample quantiles are distributed according to equation 
     \label{eq:theory_qdist_1}
 \end{align}
 
-In equation \ref{eq:theory_qdist_1} the variance associated with a sample quantile depends on the CDF and PDF of the true distribution function of interest.  The underlying CDF from which a sample population is typically unknown and the goal is often to infer properties of this distribution from the sample population.  Therefore, it is not possible to employ equation \ref{eq:theory_qdist_1} directly to compute the variance of a given sample quantile unless the underlying CDF is known.  Note that this is indeed the case in section \ref{chap:GBRT} where the large sample quantile theory is employed to check the residuals of a quantile regression procedure because the underlying distribution of the data was prespecified to be Gaussian.  However, from more complex cases where the nature of the distribution functions is unknown, such as with raw CFD data, equation  \ref{eq:theory_qdist_1} is not directly useful but still can be used to aid interpretation of the quantile regression predictions.
+In equation \ref{eq:theory_qdist_1} the variance associated with a sample quantile depends on the CDF and PDF of the true distribution function of interest.  The underlying CDF from which a sample population is drawn is typically unknown and the goal is often to infer properties of this distribution from the sample population.  Therefore, it is not possible to employ equation \ref{eq:theory_qdist_1} directly to compute the variance of a given sample quantile unless the underlying CDF is known.  Note that this is indeed the case in section \ref{chap:GBRT} where the large sample quantile theory is employed to check the residuals of a quantile regression procedure because the underlying distribution of the data was prespecified to be Gaussian.  However, from more complex cases where the nature of the distribution functions is unknown, such as with raw CFD data, equation  \ref{eq:theory_qdist_1} is not directly useful but still can be used to aid interpretation of the quantile regression predictions.
 
 \begin{figure}[H]%
     \captionsetup[subfigure]{justification=centering}
@@ -312,35 +312,35 @@ In equation \ref{eq:theory_qdist_1} the variance associated with a sample quanti
     \label{fig:beta_g_theory}%
 \end{figure}
 
-The sampled temperatures may be tallied over each CTF face to estimate the fractional area that exceeds some threshold temperature.  The probability of exceeding a threshold temperature is shown in equation \ref{eq:pr_thresh}.
+The sampled temperatures may be tallied over each CTF face to estimate the fractional area that exceeds some threshold temperature.  The probability of exceeding a threshold temperature, $T^*$, is shown in equation \ref{eq:pr_thresh}.
 
     \begin{equation}
     p_e = Pr(T > T^*) = 1 - \int_0^{T^*} f_T dT
     \label{eq:pr_thresh}
     \end{equation}
 
-    Let $q_p = F_T^{-1}(1 - p_e)$
+    Let $q_{p_e} = F_T^{-1}(1 - p_e)$
     denote the quantile associated with the threshold probability, $p_e$.
     $F_T^{-1}$ is the inverse CDF function and $f_T$ is the probability density function of temperature on the patch.
 
     The sample quantile corresponding to $p_e$ is distributed according to:
 
    \begin{eqnarray}
-    q_p &\sim \mathcal N \left( F_T^{-1}(p), \sigma^2_{q_p} \right) \\
-    \sigma^2_{q_p} &= \frac{p(1 - p)}{n[f_T(F_T^{-1}(p))]^2}
+    q_{p_e} &\sim \mathcal N \left( F_T^{-1}(p_e), \sigma^2_{q_{p_e}} \right) \\
+    \sigma^2_{q_{p_e}} &= \frac{p_e(1 - p_e)}{n[f_T(F_T^{-1}(p_e))]^2}
     \end{eqnarray}
 
     The variance of upper tail probability mass estimate can be found by standard propagation of uncertainty principles:
    \begin{equation}
-    \sigma_p^2 = \left(\frac{\partial p_e}{\partial q_p} \right)^2 \cdot \sigma_{q_p}^2 +\  HOT.
+    \sigma_{p_e}^2 = \left(\frac{\partial p_e}{\partial q_{p_e}} \right)^2 \cdot \sigma_{q_{p_e}}^2 +\  HOT.
     \label{eq:pr_thresh_uncert}
     \end{equation}
 
     Where
    \begin{eqnarray}
-    \frac{\partial p_e}{\partial q_p} &= \frac{\partial}{\partial q_p} \left( 1 - \int_0^{q_p} f_T dT \right) \nonumber \\
-    &= \frac{\partial}{\partial q_p} \left( -F_T(q_p) + F_T(0) \right) \nonumber \\
-    &= -f_T(q_p)
+    \frac{\partial p_e}{\partial q_{p_e}} &= \frac{\partial}{\partial q_{p_e}} \left( 1 - \int_0^{q_{p_e}} f_T dT \right) \nonumber \\
+    &= \frac{\partial}{\partial q_{p_e}} \left( -F_T(q_{p_e}) + F_T(0) \right) \nonumber \\
+    &= -f_T(q_{p_e})
     \end{eqnarray}
     This dictates that estimates of extreme upper tail integrals carry large relative uncertainties.
 
@@ -357,7 +357,7 @@ The sampled temperatures may be tallied over each CTF face to estimate the fract
 \subsection{Gradient Boosted Regression Trees}
 \label{chap:GBRT}
 
-A data driven machine learning model is used to predict quantiles, $\{ \hat \theta_\tau \}$, required to reconstruct cumulative density functions as shown in equation \ref{eq:cdf_from_qtau}.  The desired quantiles of the cladding surface temperature and TKE fields are conditioned upon the local core state denoted here by $\mathbf p$.  The vector $\mathbf p$ contains the local thermal hydraulic conditions in the core and local geometric grid and pin factors.  The purpose of this vector is to uniquely identify each CTF face in the core though some set of explanatory features.  The problem is then of conditional quantile prediction and this is performed by gradient boosted regression trees in this work.
+A data driven machine learning model is used to predict quantiles, $\{ \hat \theta_\tau \}$, required to reconstruct cumulative density functions as shown in equation \ref{eq:cdf_from_qtau}.  The desired quantiles of the cladding surface temperature and TKE fields are conditioned upon the local core state denoted here by $\mathbf p$.  The vector $\mathbf p$ contains the local thermal hydraulic conditions in the core and local geometric grid and pin factors.  The purpose of this vector is to uniquely identify each CTF face in the core through a set of explanatory features.  The problem is then of conditional quantile prediction and this is performed by gradient boosted regression trees in this work.
 
 \begin{figure}[H]
     \centering
